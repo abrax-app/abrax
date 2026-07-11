@@ -22,7 +22,11 @@ fn paste_via_clipboard(
     paste_delay_after_ms: u64,
 ) -> Result<(), String> {
     let clipboard = app_handle.clipboard();
-    let clipboard_content = clipboard.read_text().unwrap_or_default();
+    // Save whatever is currently on the clipboard so pasting our text doesn't
+    // destroy it. read_text/read_image return Err for absent formats, so a
+    // copied image no longer collapses to an empty string on restore (R5).
+    let saved_text = clipboard.read_text().ok();
+    let saved_image = clipboard.read_image().ok();
 
     // Write text to clipboard first
     // On Wayland, prefer wl-copy for better compatibility (especially with umlauts)
@@ -64,17 +68,28 @@ fn paste_via_clipboard(
 
     std::thread::sleep(Duration::from_millis(paste_delay_after_ms));
 
-    // Restore original clipboard content
-    // On Wayland, prefer wl-copy for better compatibility
-    #[cfg(target_os = "linux")]
-    if is_wayland() && is_wl_copy_available() {
-        let _ = write_clipboard_via_wl_copy(&clipboard_content);
-    } else {
-        let _ = clipboard.write_text(&clipboard_content);
-    }
+    // Restore the original clipboard. An image takes priority — losing a copied
+    // image to a dictation is the worst surprise (R5). If the original was
+    // neither text nor image we can't round-trip it, so we leave our pasted text
+    // rather than wiping the clipboard to an empty string.
+    if let Some(img) = saved_image {
+        let _ = clipboard.write_image(&img);
+    } else if let Some(text) = saved_text {
+        #[cfg(target_os = "linux")]
+        {
+            // On Wayland, prefer wl-copy for better compatibility (umlauts, etc.)
+            if is_wayland() && is_wl_copy_available() {
+                let _ = write_clipboard_via_wl_copy(&text);
+            } else {
+                let _ = clipboard.write_text(&text);
+            }
+        }
 
-    #[cfg(not(target_os = "linux"))]
-    let _ = clipboard.write_text(&clipboard_content);
+        #[cfg(not(target_os = "linux"))]
+        {
+            let _ = clipboard.write_text(&text);
+        }
+    }
 
     Ok(())
 }
