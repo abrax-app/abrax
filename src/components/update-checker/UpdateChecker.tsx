@@ -116,7 +116,7 @@ const UpdateChecker: React.FC<UpdateCheckerProps> = ({ className = "" }) => {
       const update = await check();
 
       if (!update) {
-        console.log("No update available during install attempt");
+        setUpdateAvailable(false);
         return;
       }
 
