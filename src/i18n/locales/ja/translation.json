@@ -574,6 +574,11 @@
       },
       "acknowledgments": {
         "title": "謝辞",
+        "upstream": {
+          "title": "Handy（アップストリームプロジェクト）",
+          "description": "Abrax の基盤となっているオープンソースのローカル音声入力アプリ",
+          "details": "Abrax は CJ Pais 氏とコントリビューターによる Handy の独立フォークで、MIT ライセンスで公開されています。素晴らしい基盤に感謝します。提携や推奨を意味するものではありません。"
+        },
         "ggml": {
           "title": "ggml",
           "description": "オンデバイス機械学習推論のための高性能テンソルライブラリ",

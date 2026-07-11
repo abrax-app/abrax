@@ -578,6 +578,11 @@
       },
       "acknowledgments": {
         "title": "Acknowledgments",
+        "upstream": {
+          "title": "Handy (upstream project)",
+          "description": "The open-source local dictation app Abrax is built on",
+          "details": "Abrax is an independent fork of Handy, by CJ Pais and contributors, released under the MIT license. Huge thanks for the outstanding foundation. No affiliation or endorsement implied."
+        },
         "ggml": {
           "title": "ggml",
           "description": "High-performance tensor library for on-device machine learning inference",

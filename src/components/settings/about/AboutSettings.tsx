@@ -10,6 +10,7 @@ import { AppLanguageSelector } from "../AppLanguageSelector";
 import { ShowWhatsNewOnUpdate } from "../ShowWhatsNewOnUpdate";
 import { ThemeSelector } from "../ThemeSelector";
 import { LogDirectory } from "../debug";
+import AbraxLogo from "../../icons/AbraxLogo";
 
 export const AboutSettings: React.FC = () => {
   const { t } = useTranslation();
@@ -39,6 +40,9 @@ export const AboutSettings: React.FC = () => {
 
   return (
     <div className="max-w-3xl w-full mx-auto space-y-6">
+      <div className="flex justify-center pt-2 text-text">
+        <AbraxLogo width={220} />
+      </div>
       <SettingsGroup title={t("settings.about.title")}>
         <AppLanguageSelector descriptionMode="tooltip" grouped={true} />
         <ThemeSelector descriptionMode="tooltip" grouped={true} />
@@ -82,6 +86,18 @@ export const AboutSettings: React.FC = () => {
       </SettingsGroup>
 
       <SettingsGroup title={t("settings.about.acknowledgments.title")}>
+        <SettingContainer
+          title={t("settings.about.acknowledgments.upstream.title")}
+          description={t(
+            "settings.about.acknowledgments.upstream.description",
+          )}
+          grouped={true}
+          layout="stacked"
+        >
+          <div className="text-sm text-mid-gray">
+            {t("settings.about.acknowledgments.upstream.details")}
+          </div>
+        </SettingContainer>
         <SettingContainer
           title={t("settings.about.acknowledgments.ggml.title")}
           description={t("settings.about.acknowledgments.ggml.description")}

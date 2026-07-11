@@ -574,6 +574,11 @@
       },
       "acknowledgments": {
         "title": "致謝",
+        "upstream": {
+          "title": "Handy（上游專案）",
+          "description": "Abrax 所基於的開源本地聽寫應用程式",
+          "details": "Abrax 是 Handy（CJ Pais 及貢獻者，以 MIT 授權發布）的獨立分支。非常感謝出色的基礎。不代表任何隸屬或背書關係。"
+        },
         "ggml": {
           "title": "ggml",
           "description": "針對 OpenAI Whisper 自動語音識別模型的高效能推理引擎",

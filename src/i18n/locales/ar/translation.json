@@ -553,6 +553,11 @@
       },
       "acknowledgments": {
         "title": "شكر وتقدير",
+        "upstream": {
+          "title": "Handy (المشروع الأصلي)",
+          "description": "تطبيق الإملاء المحلي مفتوح المصدر الذي بُني عليه Abrax",
+          "details": "Abrax تفريعة مستقلة من Handy، من CJ Pais والمساهمين، صادر برخصة MIT. شكر كبير على الأساس المتميز. لا يعني أي انتساب أو تأييد."
+        },
         "ggml": {
           "title": "ggml",
           "description": "استنتاج عالي الأداء لنموذج التعرف التلقائي على الكلام Whisper من OpenAI",

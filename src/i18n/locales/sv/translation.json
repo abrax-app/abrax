@@ -574,6 +574,11 @@
       },
       "acknowledgments": {
         "title": "Tack till",
+        "upstream": {
+          "title": "Handy (upstream-projekt)",
+          "description": "Dikteringsappen med öppen källkod som Abrax bygger på",
+          "details": "Abrax är en oberoende fork av Handy, av CJ Pais och medarbetare, utgiven under MIT-licensen. Stort tack för den enastående grunden. Ingen anknytning eller rekommendation antyds."
+        },
         "ggml": {
           "title": "ggml",
           "description": "Högpresterande inferens av OpenAI:s Whisper-modell för automatisk taligenkänning",

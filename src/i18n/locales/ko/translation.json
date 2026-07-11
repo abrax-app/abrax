@@ -574,6 +574,11 @@
       },
       "acknowledgments": {
         "title": "감사의 말",
+        "upstream": {
+          "title": "Handy(업스트림 프로젝트)",
+          "description": "Abrax의 기반이 된 오픈소스 로컬 받아쓰기 앱",
+          "details": "Abrax는 CJ Pais와 기여자들이 MIT 라이선스로 공개한 Handy의 독립 포크입니다. 훌륭한 기반에 깊이 감사드립니다. 제휴나 보증을 의미하지 않습니다."
+        },
         "ggml": {
           "title": "ggml",
           "description": "OpenAI의 Whisper 자동 음성 인식 모델의 고성능 추론",

@@ -574,6 +574,11 @@
       },
       "acknowledgments": {
         "title": "תודות",
+        "upstream": {
+          "title": "Handy (פרויקט המקור)",
+          "description": "אפליקציית ההכתבה המקומית בקוד פתוח שעליה בנוי Abrax",
+          "details": "Abrax הוא פיצול עצמאי של Handy, מאת CJ Pais והתורמים, בשחרור תחת רישיון MIT. תודה גדולה על הבסיס יוצא הדופן. אין בכך שיוך או המלצה."
+        },
         "ggml": {
           "title": "ggml",
           "description": "הסקה מהירה לביצועים גבוהים עבור מודל זיהוי הדיבור Whisper של OpenAI",

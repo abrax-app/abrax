@@ -574,6 +574,11 @@
       },
       "acknowledgments": {
         "title": "Podziękowania",
+        "upstream": {
+          "title": "Handy (projekt bazowy)",
+          "description": "Otwartoźródłowa aplikacja do lokalnego dyktowania, na której zbudowano Abrax",
+          "details": "Abrax to niezależny fork projektu Handy autorstwa CJ Paisa i współtwórców, wydany na licencji MIT. Wielkie podziękowania za znakomitą bazę. Nie oznacza powiązania ani rekomendacji."
+        },
         "ggml": {
           "title": "ggml",
           "description": "Wydajne wykonywanie modelu rozpoznawania mowy Whisper od OpenAI",

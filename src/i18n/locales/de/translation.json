@@ -574,6 +574,11 @@
       },
       "acknowledgments": {
         "title": "Danksagungen",
+        "upstream": {
+          "title": "Handy (Upstream-Projekt)",
+          "description": "Die quelloffene lokale Diktier-App, auf der Abrax aufbaut",
+          "details": "Abrax ist ein unabhängiger Fork von Handy von CJ Pais und Mitwirkenden, veröffentlicht unter MIT-Lizenz. Großer Dank für die herausragende Grundlage. Keine Zugehörigkeit oder Befürwortung impliziert."
+        },
         "ggml": {
           "title": "ggml",
           "description": "Hochleistungs-Inferenz des Whisper-Spracherkennungsmodells von OpenAI",

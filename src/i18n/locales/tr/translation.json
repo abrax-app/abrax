@@ -574,6 +574,11 @@
       },
       "acknowledgments": {
         "title": "Teşekkürler",
+        "upstream": {
+          "title": "Handy (kaynak proje)",
+          "description": "Abrax'ın üzerine inşa edildiği açık kaynaklı yerel dikte uygulaması",
+          "details": "Abrax, CJ Pais ve katkıda bulunanların MIT lisansıyla yayımladığı Handy'nin bağımsız bir çatallamasıdır. Olağanüstü temel için çok teşekkürler. Bağlılık veya onay anlamına gelmez."
+        },
         "ggml": {
           "title": "ggml",
           "description": "OpenAI'nin Whisper otomatik konuşma tanıma modelinin yüksek performanslı çıkarımı",

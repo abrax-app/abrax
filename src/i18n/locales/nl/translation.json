@@ -578,6 +578,11 @@
       },
       "acknowledgments": {
         "title": "Dankbetuigingen",
+        "upstream": {
+          "title": "Handy (upstream-project)",
+          "description": "De open-source lokale dicteer-app waarop Abrax is gebouwd",
+          "details": "Abrax is een onafhankelijke fork van Handy, van CJ Pais en bijdragers, uitgebracht onder de MIT-licentie. Veel dank voor de uitstekende basis. Geen affiliatie of goedkeuring geïmpliceerd."
+        },
         "ggml": {
           "title": "ggml",
           "description": "Krachtige tensorbibliotheek voor lokale AI-verwerking",

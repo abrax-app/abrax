@@ -574,6 +574,11 @@
       },
       "acknowledgments": {
         "title": "Lời cảm ơn",
+        "upstream": {
+          "title": "Handy (dự án gốc)",
+          "description": "Ứng dụng đọc chính tả cục bộ mã nguồn mở mà Abrax được xây dựng trên đó",
+          "details": "Abrax là một bản fork độc lập của Handy, của CJ Pais và các cộng tác viên, phát hành theo giấy phép MIT. Xin cảm ơn nền tảng xuất sắc. Không hàm ý liên kết hay chứng thực."
+        },
         "ggml": {
           "title": "ggml",
           "description": "Suy luận hiệu suất cao của mô hình nhận dạng giọng nói tự động Whisper của OpenAI",
