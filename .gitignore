@@ -72,3 +72,7 @@ project-ops/
 docs/CODE_AUDIT.md
 estrategia/
 *.privado.md
+
+# Clave privada del updater — ignorada SIEMPRE (vive en ../../.secrets-abrax/,
+# fuera de este repo; esta entrada blinda cualquier copia accidental).
+.secrets-abrax/
