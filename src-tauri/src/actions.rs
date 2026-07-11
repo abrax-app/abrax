@@ -737,10 +737,13 @@ impl ShortcutAction for TranscribeAction {
 
                     match transcription_result {
                         Ok(transcription) => {
+                            // Privacy: log timing and length, never the dictated
+                            // text, so handy.log stays free of transcript bodies
+                            // by default (S3).
                             debug!(
-                                "Transcription completed in {:?}: '{}'",
+                                "Transcription completed in {:?} ({} chars)",
                                 transcription_time.elapsed(),
-                                transcription
+                                transcription.chars().count()
                             );
 
                             if post_process {

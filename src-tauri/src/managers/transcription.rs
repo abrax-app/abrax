@@ -6,7 +6,7 @@ use crate::settings::{
     TranscribeAcceleratorSetting,
 };
 use anyhow::Result;
-use log::{debug, error, info, warn};
+use log::{debug, error, info, trace, warn};
 use serde::{Deserialize, Serialize};
 use specta::Type;
 use std::panic::{catch_unwind, AssertUnwindSafe};
@@ -1418,7 +1418,14 @@ impl TranscriptionManager {
         if final_result.is_empty() {
             info!("Transcription result is empty");
         } else {
-            info!("Transcription result: {}", final_result);
+            // Privacy: never write the dictated text to the log at info level
+            // (handy.log defaults to Debug and is shared for support). Log only
+            // the length; the full text is available at trace level (S3).
+            info!(
+                "Transcription result: {} chars",
+                final_result.chars().count()
+            );
+            trace!("Transcription result text: {}", final_result);
         }
 
         self.maybe_unload_immediately("transcription");
