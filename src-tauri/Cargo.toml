@@ -1,11 +1,11 @@
 [package]
-name = "handy"
+name = "abrax"
 version = "0.9.1"
-description = "Handy"
-authors = ["cjpais"]
+description = "Abrax — dictado por voz local para vibe coders"
+authors = ["Equipo Abrax"]
 edition = "2021"
 license = "MIT"
-default-run = "handy"
+default-run = "abrax"
 
 [profile.dev]
 incremental = true # Compile your binary in smaller steps.

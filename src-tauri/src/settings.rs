@@ -497,7 +497,10 @@ fn default_autostart_enabled() -> bool {
 }
 
 fn default_update_checks_enabled() -> bool {
-    true
+    // Abrax: updater deshabilitado por defecto. La desconexión del upstream
+    // (endpoint + par de claves minisign) está pendiente hasta Fase 11; ver
+    // docs/RELEASING.md. Ningún build debe buscar releases de cjpais/Handy.
+    false
 }
 
 fn default_show_whats_new_on_update() -> bool {
