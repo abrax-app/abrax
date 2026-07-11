@@ -26,7 +26,10 @@ dist-ssr
 *.sln
 *.sw?
 
-.claude/
+# .claude/ SE VERSIONA en el fork (des-ignorado por decisión del 2026-07-11):
+# skills/agentes técnicos (audio-reactive-sphere, futuristic-product-ui,
+# codebase-audit) se publican como flex; revisar sanidad competitiva antes
+# de hacer público el repo. Los locales siguen ignorados (ver abajo).
 
 /target/
 recording_*
