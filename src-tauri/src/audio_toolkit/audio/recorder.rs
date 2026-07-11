@@ -328,7 +328,17 @@ impl AudioRecorder {
         if let Some(tx) = &self.cmd_tx {
             tx.send(Cmd::Stop(resp_tx))?;
         }
-        Ok(resp_rx.recv()?) // wait for the samples
+        // Bounded wait: the worker now processes Stop and drains within ~2s even
+        // if the device stalled (R1), so a reply should always arrive. Cap the
+        // wait anyway so a wedged worker cannot hang the caller — and the
+        // recorder lock it holds — indefinitely.
+        match resp_rx.recv_timeout(Duration::from_secs(5)) {
+            Ok(samples) => Ok(samples),
+            Err(_) => Err(Box::new(Error::new(
+                std::io::ErrorKind::TimedOut,
+                "Audio worker did not return recorded samples in time (the input device may have stalled)",
+            ))),
+        }
     }
 
     pub fn close(&mut self) -> Result<(), Box<dyn std::error::Error>> {
@@ -597,13 +607,21 @@ fn run_consumer(
         }
     }
 
-    // Runs until the stream closes and `recv` returns `Err`.
-    while let Ok(chunk) = sample_rx.recv() {
+    // Runs until the sample channel disconnects. We use recv_timeout instead
+    // of a blocking recv so Stop/Shutdown are honored even when the device
+    // stalls and stops delivering samples (Bluetooth/USB disconnect, suspend);
+    // a blocking recv would leave the pipeline — and the recorder lock it holds
+    // — hung forever (R1).
+    loop {
         // Handle pending commands BEFORE the in-flight chunk so a Start
         // captures it. Commands used to be polled after processing, which
         // silently dropped one buffer period of audio (~10ms built-in, up to
         // ~100ms on Bluetooth) at every recording start.
-        let mut pending = Some(chunk);
+        let mut pending = match sample_rx.recv_timeout(Duration::from_millis(100)) {
+            Ok(chunk) => Some(chunk),
+            Err(mpsc::RecvTimeoutError::Timeout) => None,
+            Err(mpsc::RecvTimeoutError::Disconnected) => break,
+        };
         while let Ok(cmd) = cmd_rx.try_recv() {
             match cmd {
                 Cmd::Start(policy, sent_at) => {
