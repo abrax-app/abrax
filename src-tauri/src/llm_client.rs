@@ -101,6 +101,11 @@ fn create_client(provider: &PostProcessProvider, api_key: &str) -> Result<reqwes
     let headers = build_headers(provider, api_key)?;
     reqwest::Client::builder()
         .default_headers(headers)
+        // Bounded timeouts so post-processing can never leave the pipeline in
+        // "Processing" forever when the provider stalls or the network is a
+        // black hole (R6). The demo must never hang on the network.
+        .connect_timeout(std::time::Duration::from_secs(10))
+        .timeout(std::time::Duration::from_secs(60))
         .build()
         .map_err(|e| format!("Failed to build HTTP client: {}", e))
 }

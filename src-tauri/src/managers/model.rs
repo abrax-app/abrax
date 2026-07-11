@@ -1892,8 +1892,14 @@ impl ModelManager {
             disarmed: false,
         };
 
-        // Create HTTP client with range request for resuming
-        let client = reqwest::Client::new();
+        // Create HTTP client with range request for resuming. No total timeout
+        // (large models legitimately take minutes) but a connect timeout and a
+        // per-read timeout so a stalled connection fails instead of freezing the
+        // progress bar and the Cancel button indefinitely (R7).
+        let client = reqwest::Client::builder()
+            .connect_timeout(std::time::Duration::from_secs(30))
+            .read_timeout(std::time::Duration::from_secs(60))
+            .build()?;
         let mut request = client.get(&url);
 
         if resume_from > 0 {
