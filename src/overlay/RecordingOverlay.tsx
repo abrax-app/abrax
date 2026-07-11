@@ -113,7 +113,14 @@ const RecordingOverlay: React.FC = () => {
       };
     };
 
-    setupEventListeners();
+    const setupPromise = setupEventListeners();
+    return () => {
+      // setupEventListeners resolves to the unlisten cleanup; await it so the
+      // 5 listeners are always torn down on unmount. Previously the returned
+      // cleanup was dropped, leaking listeners on remount / double-registering
+      // under StrictMode in dev (F2).
+      setupPromise.then((cleanup) => cleanup?.());
+    };
   }, []);
 
   // Elapsed timer while the Live overlay is visible.
