@@ -1,0 +1,27 @@
+# Normalización de fin de línea — resuelve el falso positivo de Prettier en Windows
+# (checkout CRLF vs `endOfLine: lf`). El repo canoniza LF en el index.
+* text=auto eol=lf
+
+# Scripts que DEBEN conservar su fin de línea nativo
+*.ps1 text eol=crlf
+*.bat text eol=crlf
+*.cmd text eol=crlf
+*.sh  text eol=lf
+
+# Binarios y assets: nunca normalizar ni difear como texto
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.icns binary
+*.wav binary
+*.onnx binary
+*.bin binary
+*.gguf binary
+*.tar.gz binary
+*.woff binary
+*.woff2 binary
+*.ttf binary
+bun.lock -diff
+Cargo.lock -diff

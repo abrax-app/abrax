@@ -42,3 +42,30 @@ blob-report/
 
 # Nix build output
 result
+.claude/settings.local.json
+.claude/agent-memory-local/
+project-ops/local/
+*.rebrand-kit.tmp
+
+# ─────────────────────────────────────────────────────────────
+# DOCUMENTOS DE ESTRATEGIA E INTERNOS — JAMÁS al historial público.
+# Contienen análisis de competidores, calendario de hackathon, triage y
+# bitácora de trabajo. El repo público debe nacer limpio de todos ellos.
+# (Su copia maestra vive fuera del worktree, en ../../kit/.)
+# ─────────────────────────────────────────────────────────────
+CLAUDE.md
+ESTADO.md
+PLAN_MAESTRO.md
+INFORME_SYNC*.md
+PROJECT_BRIEF.md
+CLAUDE_REBRAND.md
+PLAN_HACKATHON.md
+RESPUESTA_AUDITORIA_G1.md
+BONUS_FEATURES.md
+PROMPT_MAESTRO*.md
+PROMPT_SYNC.md
+LEEME_KIT.md
+project-ops/
+docs/CODE_AUDIT.md
+estrategia/
+*.privado.md
