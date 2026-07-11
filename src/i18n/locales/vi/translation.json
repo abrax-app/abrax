@@ -364,6 +364,22 @@
         "remove": "Xóa {{word}}",
         "duplicate": "\"{{word}}\" đã tồn tại"
       },
+      "customFillerWords": {
+        "title": "Bộ lọc từ đệm",
+        "description": "Các từ đệm bị xóa khỏi bản ghi (ví dụ \"ừm\", \"à\"). Không có danh sách riêng thì dùng danh sách mặc định của ngôn ngữ; xóa hết danh sách để tắt bộ lọc.",
+        "placeholder": "Thêm từ",
+        "add": "Thêm",
+        "remove": "Xóa {{word}}",
+        "duplicate": "\"{{word}}\" đã tồn tại",
+        "mode": {
+          "defaults": "Đang bật: danh sách mặc định của ngôn ngữ",
+          "custom": "Đang bật: danh sách riêng",
+          "disabled": "Bộ lọc đã tắt (bản ghi không được lọc)"
+        },
+        "applyPreset": "Áp dụng preset es-419",
+        "resetDefaults": "Khôi phục danh sách mặc định",
+        "disable": "Tắt bộ lọc"
+      },
       "voiceActivityDetection": {
         "title": "Voice Activity Detection",
         "description": "Filter silence from recordings. Streaming-capable models use a longer VAD tail; disabling VAD records raw audio."

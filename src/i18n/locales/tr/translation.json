@@ -364,6 +364,22 @@
         "remove": "{{word}} Kaldır",
         "duplicate": "\"{{word}}\" zaten mevcut"
       },
+      "customFillerWords": {
+        "title": "Dolgu sözcüğü filtresi",
+        "description": "Transkripsiyondan kaldırılan dolgu sözcükleri (örn. \"ıı\", \"hmm\"). Özel liste yoksa dilin varsayılan listesi kullanılır; filtreyi kapatmak için listeyi boşaltın.",
+        "placeholder": "Sözcük ekle",
+        "add": "Ekle",
+        "remove": "{{word}} kaldır",
+        "duplicate": "\"{{word}}\" zaten var",
+        "mode": {
+          "defaults": "Etkin: dilin varsayılan listesi",
+          "custom": "Etkin: özel liste",
+          "disabled": "Filtre kapalı (transkripsiyon filtrelenmez)"
+        },
+        "applyPreset": "es-419 ön ayarını uygula",
+        "resetDefaults": "Varsayılan listeye dön",
+        "disable": "Filtreyi kapat"
+      },
       "voiceActivityDetection": {
         "title": "Voice Activity Detection",
         "description": "Filter silence from recordings. Streaming-capable models use a longer VAD tail; disabling VAD records raw audio."

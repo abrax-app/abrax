@@ -364,6 +364,22 @@
         "remove": "{{word}} entfernen",
         "duplicate": "\"{{word}}\" existiert bereits"
       },
+      "customFillerWords": {
+        "title": "Füllwort-Filter",
+        "description": "Füllwörter, die aus der Transkription entfernt werden (z. B. „äh“, „ähm“). Ohne eigene Liste gilt die Standardliste der Sprache; eine leere Liste deaktiviert den Filter.",
+        "placeholder": "Füllwort hinzufügen",
+        "add": "Hinzufügen",
+        "remove": "{{word}} entfernen",
+        "duplicate": "„{{word}}“ existiert bereits",
+        "mode": {
+          "defaults": "Aktiv: Standardliste der Sprache",
+          "custom": "Aktiv: eigene Liste",
+          "disabled": "Filter deaktiviert (Transkription wird nicht gefiltert)"
+        },
+        "applyPreset": "Preset es-419 anwenden",
+        "resetDefaults": "Standardliste wiederherstellen",
+        "disable": "Filter deaktivieren"
+      },
       "voiceActivityDetection": {
         "title": "Voice Activity Detection",
         "description": "Filter silence from recordings. Streaming-capable models use a longer VAD tail; disabling VAD records raw audio."

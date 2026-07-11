@@ -364,6 +364,22 @@
         "remove": "Usuń {{word}}",
         "duplicate": "\"{{word}}\" już istnieje"
       },
+      "customFillerWords": {
+        "title": "Filtr słów wypełniających",
+        "description": "Słowa wypełniające usuwane z transkrypcji (np. \"yyy\", \"hmm\"). Bez własnej listy używana jest lista domyślna języka; opróżnij listę, aby wyłączyć filtr.",
+        "placeholder": "Dodaj słowo",
+        "add": "Dodaj",
+        "remove": "Usuń {{word}}",
+        "duplicate": "\"{{word}}\" już istnieje",
+        "mode": {
+          "defaults": "Aktywne: domyślna lista języka",
+          "custom": "Aktywne: własna lista",
+          "disabled": "Filtr wyłączony (transkrypcja nie jest filtrowana)"
+        },
+        "applyPreset": "Zastosuj preset es-419",
+        "resetDefaults": "Przywróć listę domyślną",
+        "disable": "Wyłącz filtr"
+      },
       "voiceActivityDetection": {
         "title": "Voice Activity Detection",
         "description": "Filter silence from recordings. Streaming-capable models use a longer VAD tail; disabling VAD records raw audio."

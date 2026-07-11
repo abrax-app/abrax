@@ -343,6 +343,22 @@
         "remove": "إزالة {{word}}",
         "duplicate": "\"{{word}}\" موجود بالفعل"
       },
+      "customFillerWords": {
+        "title": "مرشّح كلمات الحشو",
+        "description": "كلمات الحشو التي تُحذف من النص المفرّغ (مثل «همم»). دون قائمة مخصّصة تُستخدم قائمة اللغة الافتراضية؛ أفرِغ القائمة لإيقاف المرشّح.",
+        "placeholder": "إضافة كلمة",
+        "add": "إضافة",
+        "remove": "إزالة {{word}}",
+        "duplicate": "«{{word}}» موجودة بالفعل",
+        "mode": {
+          "defaults": "نشط: قائمة اللغة الافتراضية",
+          "custom": "نشط: قائمة مخصّصة",
+          "disabled": "المرشّح متوقف (لا يُفلتَر النص)"
+        },
+        "applyPreset": "تطبيق الإعداد المسبق es-419",
+        "resetDefaults": "استعادة القائمة الافتراضية",
+        "disable": "إيقاف المرشّح"
+      },
       "voiceActivityDetection": {
         "title": "Voice Activity Detection",
         "description": "Filter silence from recordings. Streaming-capable models use a longer VAD tail; disabling VAD records raw audio."

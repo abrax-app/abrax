@@ -364,6 +364,22 @@
         "remove": "Ta bort {{word}}",
         "duplicate": "\"{{word}}\" finns redan"
       },
+      "customFillerWords": {
+        "title": "Utfyllnadsordsfilter",
+        "description": "Utfyllnadsord som tas bort från transkriptionen (t.ex. \"eh\", \"hmm\"). Utan egen lista används språkets standardlista; töm listan för att stänga av filtret.",
+        "placeholder": "Lägg till ord",
+        "add": "Lägg till",
+        "remove": "Ta bort {{word}}",
+        "duplicate": "\"{{word}}\" finns redan",
+        "mode": {
+          "defaults": "Aktiv: språkets standardlista",
+          "custom": "Aktiv: egen lista",
+          "disabled": "Filtret avstängt (transkriptionen filtreras inte)"
+        },
+        "applyPreset": "Använd förinställningen es-419",
+        "resetDefaults": "Återställ standardlistan",
+        "disable": "Stäng av filtret"
+      },
       "voiceActivityDetection": {
         "title": "Voice Activity Detection",
         "description": "Filter silence from recordings. Streaming-capable models use a longer VAD tail; disabling VAD records raw audio."

@@ -364,6 +364,22 @@
         "remove": "Удалить {{word}}",
         "duplicate": "\"{{word}}\" уже существует"
       },
+      "customFillerWords": {
+        "title": "Фильтр слов-паразитов",
+        "description": "Слова-паразиты, удаляемые из расшифровки (напр., «хм», «ммм»). Без своего списка используется список языка по умолчанию; очистите список, чтобы отключить фильтр.",
+        "placeholder": "Добавить слово",
+        "add": "Добавить",
+        "remove": "Удалить {{word}}",
+        "duplicate": "«{{word}}» уже существует",
+        "mode": {
+          "defaults": "Активно: список языка по умолчанию",
+          "custom": "Активно: свой список",
+          "disabled": "Фильтр отключён (расшифровка не фильтруется)"
+        },
+        "applyPreset": "Применить пресет es-419",
+        "resetDefaults": "Вернуть список по умолчанию",
+        "disable": "Отключить фильтр"
+      },
       "voiceActivityDetection": {
         "title": "Voice Activity Detection",
         "description": "Filter silence from recordings. Streaming-capable models use a longer VAD tail; disabling VAD records raw audio."

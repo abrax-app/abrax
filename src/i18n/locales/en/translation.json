@@ -364,6 +364,22 @@
         "remove": "Remove {{word}}",
         "duplicate": "\"{{word}}\" already exists"
       },
+      "customFillerWords": {
+        "title": "Filler Words Filter",
+        "description": "Filler words removed from transcriptions (e.g. \"um\", \"uh\"). Without a custom list, the language defaults are used; empty the list to turn filtering off.",
+        "placeholder": "Add a filler word",
+        "add": "Add",
+        "remove": "Remove {{word}}",
+        "duplicate": "\"{{word}}\" already exists",
+        "mode": {
+          "defaults": "Active: language default list",
+          "custom": "Active: custom list",
+          "disabled": "Filter disabled (transcripts are not filtered)"
+        },
+        "applyPreset": "Apply es-419 preset",
+        "resetDefaults": "Restore default list",
+        "disable": "Disable filter"
+      },
       "voiceActivityDetection": {
         "title": "Voice Activity Detection",
         "description": "Filter silence from recordings. Streaming-capable models use a longer VAD tail; disabling VAD records raw audio."

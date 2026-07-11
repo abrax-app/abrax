@@ -364,6 +364,22 @@
         "remove": "刪除 {{word}}",
         "duplicate": "「{{word}}」已存在"
       },
+      "customFillerWords": {
+        "title": "填充詞過濾",
+        "description": "從轉寫中移除的填充詞（如「嗯」「呃」）。沒有自訂清單時使用該語言的預設清單；清空清單即可關閉過濾。",
+        "placeholder": "新增填充詞",
+        "add": "新增",
+        "remove": "移除 {{word}}",
+        "duplicate": "「{{word}}」已存在",
+        "mode": {
+          "defaults": "已啟用：語言預設清單",
+          "custom": "已啟用：自訂清單",
+          "disabled": "過濾已關閉（轉寫不會被過濾）"
+        },
+        "applyPreset": "套用 es-419 預設",
+        "resetDefaults": "還原預設清單",
+        "disable": "關閉過濾"
+      },
       "voiceActivityDetection": {
         "title": "Voice Activity Detection",
         "description": "Filter silence from recordings. Streaming-capable models use a longer VAD tail; disabling VAD records raw audio."

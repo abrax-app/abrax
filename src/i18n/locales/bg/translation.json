@@ -364,6 +364,22 @@
         "remove": "Премахване на {{word}}",
         "duplicate": "„{{word}}“ вече съществува"
       },
+      "customFillerWords": {
+        "title": "Филтър за паразитни думи",
+        "description": "Паразитни думи, премахвани от транскрипцията (напр. „хм“, „ммм“). Без собствен списък се използва списъкът по подразбиране за езика; изпразнете списъка, за да изключите филтъра.",
+        "placeholder": "Добавяне на дума",
+        "add": "Добави",
+        "remove": "Премахни {{word}}",
+        "duplicate": "„{{word}}“ вече съществува",
+        "mode": {
+          "defaults": "Активно: списък по подразбиране за езика",
+          "custom": "Активно: собствен списък",
+          "disabled": "Филтърът е изключен (транскрипцията не се филтрира)"
+        },
+        "applyPreset": "Приложи пресет es-419",
+        "resetDefaults": "Възстанови списъка по подразбиране",
+        "disable": "Изключи филтъра"
+      },
       "voiceActivityDetection": {
         "title": "Voice Activity Detection",
         "description": "Filter silence from recordings. Streaming-capable models use a longer VAD tail; disabling VAD records raw audio."

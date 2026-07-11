@@ -364,6 +364,22 @@
         "remove": "{{word}} verwijderen",
         "duplicate": "\"{{word}}\" bestaat al"
       },
+      "customFillerWords": {
+        "title": "Stopwoordenfilter",
+        "description": "Stopwoorden die uit de transcriptie worden verwijderd (bijv. \"uh\", \"ehm\"). Zonder eigen lijst wordt de standaardlijst van de taal gebruikt; maak de lijst leeg om het filter uit te schakelen.",
+        "placeholder": "Stopwoord toevoegen",
+        "add": "Toevoegen",
+        "remove": "{{word}} verwijderen",
+        "duplicate": "\"{{word}}\" bestaat al",
+        "mode": {
+          "defaults": "Actief: standaardlijst van de taal",
+          "custom": "Actief: eigen lijst",
+          "disabled": "Filter uitgeschakeld (transcriptie wordt niet gefilterd)"
+        },
+        "applyPreset": "Preset es-419 toepassen",
+        "resetDefaults": "Standaardlijst herstellen",
+        "disable": "Filter uitschakelen"
+      },
       "voiceActivityDetection": {
         "title": "Spraakactiviteitsdetectie (VAD)",
         "description": "Filter stilte uit opnames. Streaming-modellen gebruiken een langere VAD-uitloop; het uitschakelen van VAD neemt de ruwe audio op."

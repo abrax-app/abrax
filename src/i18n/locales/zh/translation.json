@@ -364,6 +364,22 @@
         "remove": "删除 {{word}}",
         "duplicate": "\"{{word}}\" 已存在"
       },
+      "customFillerWords": {
+        "title": "填充词过滤",
+        "description": "从转写中移除的填充词（如“嗯”“呃”）。没有自定义列表时使用该语言的默认列表；清空列表即可关闭过滤。",
+        "placeholder": "添加填充词",
+        "add": "添加",
+        "remove": "移除 {{word}}",
+        "duplicate": "“{{word}}”已存在",
+        "mode": {
+          "defaults": "已启用：语言默认列表",
+          "custom": "已启用：自定义列表",
+          "disabled": "过滤已关闭（转写不会被过滤）"
+        },
+        "applyPreset": "应用 es-419 预设",
+        "resetDefaults": "恢复默认列表",
+        "disable": "关闭过滤"
+      },
       "voiceActivityDetection": {
         "title": "Voice Activity Detection",
         "description": "Filter silence from recordings. Streaming-capable models use a longer VAD tail; disabling VAD records raw audio."

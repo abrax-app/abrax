@@ -364,6 +364,22 @@
         "remove": "Remover {{word}}",
         "duplicate": "\"{{word}}\" já existe"
       },
+      "customFillerWords": {
+        "title": "Filtro de vícios de linguagem",
+        "description": "Palavras de preenchimento removidas da transcrição (ex.: \"ahm\", \"hmm\"). Sem lista própria, usa-se a lista padrão do idioma; esvazie a lista para desativar o filtro.",
+        "placeholder": "Adicionar palavra",
+        "add": "Adicionar",
+        "remove": "Remover {{word}}",
+        "duplicate": "\"{{word}}\" já existe",
+        "mode": {
+          "defaults": "Ativo: lista padrão do idioma",
+          "custom": "Ativo: lista própria",
+          "disabled": "Filtro desativado (a transcrição não é filtrada)"
+        },
+        "applyPreset": "Aplicar preset es-419",
+        "resetDefaults": "Restaurar lista padrão",
+        "disable": "Desativar filtro"
+      },
       "voiceActivityDetection": {
         "title": "Voice Activity Detection",
         "description": "Filter silence from recordings. Streaming-capable models use a longer VAD tail; disabling VAD records raw audio."

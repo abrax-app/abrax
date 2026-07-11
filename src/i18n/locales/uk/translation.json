@@ -364,6 +364,22 @@
         "remove": "Видалити {{word}}",
         "duplicate": "\"{{word}}\" вже існує"
       },
+      "customFillerWords": {
+        "title": "Фільтр слів-паразитів",
+        "description": "Слова-паразити, які вилучаються з розшифровки (напр., «хм», «ммм»). Без власного списку використовується типовий список мови; очистіть список, щоб вимкнути фільтр.",
+        "placeholder": "Додати слово",
+        "add": "Додати",
+        "remove": "Видалити {{word}}",
+        "duplicate": "«{{word}}» вже існує",
+        "mode": {
+          "defaults": "Активно: типовий список мови",
+          "custom": "Активно: власний список",
+          "disabled": "Фільтр вимкнено (розшифровка не фільтрується)"
+        },
+        "applyPreset": "Застосувати пресет es-419",
+        "resetDefaults": "Відновити типовий список",
+        "disable": "Вимкнути фільтр"
+      },
       "voiceActivityDetection": {
         "title": "Voice Activity Detection",
         "description": "Filter silence from recordings. Streaming-capable models use a longer VAD tail; disabling VAD records raw audio."

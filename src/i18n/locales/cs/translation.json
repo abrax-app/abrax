@@ -364,6 +364,22 @@
         "remove": "Odebrat {{word}}",
         "duplicate": "\"{{word}}\" již existuje"
       },
+      "customFillerWords": {
+        "title": "Filtr výplňových slov",
+        "description": "Výplňová slova odstraňovaná z přepisu (např. \"ehm\", \"hmm\"). Bez vlastního seznamu se používá výchozí seznam jazyka; vyprázdněním seznamu filtr vypnete.",
+        "placeholder": "Přidat slovo",
+        "add": "Přidat",
+        "remove": "Odebrat {{word}}",
+        "duplicate": "\"{{word}}\" už existuje",
+        "mode": {
+          "defaults": "Aktivní: výchozí seznam jazyka",
+          "custom": "Aktivní: vlastní seznam",
+          "disabled": "Filtr vypnut (přepis se nefiltruje)"
+        },
+        "applyPreset": "Použít preset es-419",
+        "resetDefaults": "Obnovit výchozí seznam",
+        "disable": "Vypnout filtr"
+      },
       "voiceActivityDetection": {
         "title": "Voice Activity Detection",
         "description": "Filter silence from recordings. Streaming-capable models use a longer VAD tail; disabling VAD records raw audio."

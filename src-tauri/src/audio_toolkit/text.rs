@@ -525,6 +525,16 @@ mod tests {
     }
 
     #[test]
+    fn test_filter_custom_filler_multiword_phrase() {
+        // El preset es-419 incluye frases con espacio ("o sea"); el regex las
+        // trata como literal y solo corta la frase completa entre límites de palabra.
+        let custom = Some(vec!["o sea".to_string(), "eh".to_string()]);
+        let text = "Eso o sea funciona eh y osea no se toca";
+        let result = filter_transcription_output(text, "es", &custom);
+        assert_eq!(result, "Eso funciona y osea no se toca");
+    }
+
+    #[test]
     fn test_filter_unknown_language_uses_fallback() {
         let text = "uh I think uhm this works";
         let result = filter_transcription_output(text, "xx", &None);

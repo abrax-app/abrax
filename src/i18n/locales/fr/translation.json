@@ -364,6 +364,22 @@
         "remove": "Supprimer {{word}}",
         "duplicate": "\"{{word}}\" existe déjà"
       },
+      "customFillerWords": {
+        "title": "Filtre de mots de remplissage",
+        "description": "Mots de remplissage supprimés de la transcription (p. ex. « euh », « hmm »). Sans liste personnalisée, la liste par défaut de la langue est utilisée ; videz la liste pour désactiver le filtre.",
+        "placeholder": "Ajouter un mot",
+        "add": "Ajouter",
+        "remove": "Supprimer {{word}}",
+        "duplicate": "« {{word}} » existe déjà",
+        "mode": {
+          "defaults": "Actif : liste par défaut de la langue",
+          "custom": "Actif : liste personnalisée",
+          "disabled": "Filtre désactivé (la transcription n'est pas filtrée)"
+        },
+        "applyPreset": "Appliquer le préréglage es-419",
+        "resetDefaults": "Rétablir la liste par défaut",
+        "disable": "Désactiver le filtre"
+      },
       "voiceActivityDetection": {
         "title": "Voice Activity Detection",
         "description": "Filter silence from recordings. Streaming-capable models use a longer VAD tail; disabling VAD records raw audio."

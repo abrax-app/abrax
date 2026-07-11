@@ -364,6 +364,22 @@
         "remove": "{{word}} 제거",
         "duplicate": "\"{{word}}\"이(가) 이미 존재합니다"
       },
+      "customFillerWords": {
+        "title": "간투어 필터",
+        "description": "전사에서 제거할 간투어입니다(예: \"음\", \"어\"). 사용자 목록이 없으면 언어 기본 목록을 사용하며, 목록을 비우면 필터가 꺼집니다.",
+        "placeholder": "단어 추가",
+        "add": "추가",
+        "remove": "{{word}} 제거",
+        "duplicate": "\"{{word}}\"은(는) 이미 있습니다",
+        "mode": {
+          "defaults": "활성: 언어 기본 목록",
+          "custom": "활성: 사용자 목록",
+          "disabled": "필터 꺼짐(전사가 필터링되지 않음)"
+        },
+        "applyPreset": "es-419 프리셋 적용",
+        "resetDefaults": "기본 목록 복원",
+        "disable": "필터 끄기"
+      },
       "voiceActivityDetection": {
         "title": "Voice Activity Detection",
         "description": "Filter silence from recordings. Streaming-capable models use a longer VAD tail; disabling VAD records raw audio."

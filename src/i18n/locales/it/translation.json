@@ -364,6 +364,22 @@
         "remove": "Rimuovi {{word}}",
         "duplicate": "\"{{word}}\" esiste già"
       },
+      "customFillerWords": {
+        "title": "Filtro intercalari",
+        "description": "Parole riempitive rimosse dalla trascrizione (es. \"ehm\", \"hmm\"). Senza una lista personalizzata si usa quella predefinita della lingua; svuota la lista per disattivare il filtro.",
+        "placeholder": "Aggiungi parola",
+        "add": "Aggiungi",
+        "remove": "Rimuovi {{word}}",
+        "duplicate": "\"{{word}}\" esiste già",
+        "mode": {
+          "defaults": "Attivo: lista predefinita della lingua",
+          "custom": "Attivo: lista personalizzata",
+          "disabled": "Filtro disattivato (la trascrizione non viene filtrata)"
+        },
+        "applyPreset": "Applica preset es-419",
+        "resetDefaults": "Ripristina lista predefinita",
+        "disable": "Disattiva filtro"
+      },
       "voiceActivityDetection": {
         "title": "Rilevamento dell'attività vocale",
         "description": "Filtra il silenzio dalle registrazioni. I modelli che supportano lo streaming utilizzano una coda VAD più lunga; disabilitando la VAD si registra l'audio grezzo."

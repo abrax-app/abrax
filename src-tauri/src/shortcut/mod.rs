@@ -751,6 +751,19 @@ pub fn update_custom_words(app: AppHandle, words: Vec<String>) -> Result<(), Str
 
 #[tauri::command]
 #[specta::specta]
+pub fn update_custom_filler_words(
+    app: AppHandle,
+    words: Option<Vec<String>>,
+) -> Result<(), String> {
+    // None = lista por defecto del idioma · Some(vec) = lista propia · Some([]) = filtro apagado
+    let mut settings = settings::get_settings(&app);
+    settings.custom_filler_words = words;
+    settings::write_settings(&app, settings);
+    Ok(())
+}
+
+#[tauri::command]
+#[specta::specta]
 pub fn change_word_correction_threshold_setting(
     app: AppHandle,
     threshold: f64,

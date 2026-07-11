@@ -364,6 +364,22 @@
         "remove": "הסר את {{word}}",
         "duplicate": "\"{{word}}\" כבר קיימת"
       },
+      "customFillerWords": {
+        "title": "מסנן מילות מילוי",
+        "description": "מילות מילוי שמוסרות מהתמלול (למשל \"אמם\", \"המם\"). ללא רשימה מותאמת נעשה שימוש ברשימת ברירת המחדל של השפה; רוקנו את הרשימה כדי לכבות את המסנן.",
+        "placeholder": "הוספת מילה",
+        "add": "הוסף",
+        "remove": "הסר {{word}}",
+        "duplicate": "\"{{word}}\" כבר קיימת",
+        "mode": {
+          "defaults": "פעיל: רשימת ברירת המחדל של השפה",
+          "custom": "פעיל: רשימה מותאמת",
+          "disabled": "המסנן כבוי (התמלול אינו מסונן)"
+        },
+        "applyPreset": "החל ערכת es-419",
+        "resetDefaults": "שחזר את רשימת ברירת המחדל",
+        "disable": "כבה את המסנן"
+      },
       "voiceActivityDetection": {
         "title": "Voice Activity Detection",
         "description": "Filter silence from recordings. Streaming-capable models use a longer VAD tail; disabling VAD records raw audio."

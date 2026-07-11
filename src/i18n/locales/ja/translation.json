@@ -364,6 +364,22 @@
         "remove": "{{word}}を削除",
         "duplicate": "「{{word}}」は既に存在します"
       },
+      "customFillerWords": {
+        "title": "フィラー語フィルター",
+        "description": "文字起こしから削除するフィラー語（例:「えーと」「うーん」）。独自リストがない場合は言語のデフォルトリストを使用します。リストを空にするとフィルターは無効になります。",
+        "placeholder": "フィラー語を追加",
+        "add": "追加",
+        "remove": "{{word}} を削除",
+        "duplicate": "「{{word}}」は既に存在します",
+        "mode": {
+          "defaults": "有効: 言語のデフォルトリスト",
+          "custom": "有効: カスタムリスト",
+          "disabled": "フィルター無効（文字起こしはフィルターされません）"
+        },
+        "applyPreset": "es-419 プリセットを適用",
+        "resetDefaults": "デフォルトリストに戻す",
+        "disable": "フィルターを無効にする"
+      },
       "voiceActivityDetection": {
         "title": "音声区間検出 (VAD)",
         "description": "録音から無音部分を除去します。ストリーミング対応モデルはより長い音声検出区間を使用します。VAD を無効にすると音声をそのまま録音します。"
