@@ -184,6 +184,9 @@ fn initialize_core_logic(app_handle: &AppHandle) {
     app_handle.manage(transcription_manager.clone());
     app_handle.manage(history_manager.clone());
     app_handle.manage(tray::CurrentTrayIconState::new());
+    // [ESCUCHA] El motor TTS vive en su propio hilo y se inicializa perezosamente
+    // en el primer uso, así que crearlo aquí no cuesta nada en el arranque.
+    app_handle.manage(Arc::new(managers::escucha::EscuchaManager::new()));
 
     // Note: Shortcuts are NOT initialized here.
     // The frontend is responsible for calling the `initialize_shortcuts` command
@@ -631,6 +634,15 @@ pub fn run(cli_args: CliArgs) {
             dictionary::set_dictionary_enabled,
             dictionary::update_custom_replacements,
             prompt_compiler::compile_prompt,
+            // [ESCUCHA] Lectura en voz alta (TTS del sistema)
+            commands::escucha::escucha_list_voices,
+            commands::escucha::escucha_speak,
+            commands::escucha::escucha_stop,
+            commands::escucha::escucha_status,
+            commands::escucha::escucha_preprocess,
+            commands::escucha::escucha_read_file,
+            commands::escucha::escucha_read_clipboard,
+            commands::escucha::escucha_update_settings,
         ])
         .events(collect_events![
             managers::history::HistoryUpdatePayload,

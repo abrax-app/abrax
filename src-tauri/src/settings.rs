@@ -492,6 +492,24 @@ pub struct AppSettings {
     /// `overlay_position` (position `none` → style `None`).
     #[serde(default = "default_overlay_style")]
     pub overlay_style: OverlayStyle,
+    // [ESCUCHA] --- Lectura en voz alta ---------------------------------------
+    /// Id de la voz del sistema para la prosa (None = la app elige la primera es-*).
+    #[serde(default)]
+    pub escucha_voz_prosa: Option<String>,
+    /// Id de la voz del sistema para el código.
+    #[serde(default)]
+    pub escucha_voz_codigo: Option<String>,
+    /// Multiplicador de velocidad de la prosa (1.0 = normal).
+    #[serde(default = "default_escucha_rate_prosa")]
+    pub escucha_rate_prosa: f32,
+    /// Multiplicador de velocidad del código (por defecto algo más lento:
+    /// los símbolos verbalizados se siguen mejor).
+    #[serde(default = "default_escucha_rate_codigo")]
+    pub escucha_rate_codigo: f32,
+    /// Cuánto símbolo se pronuncia al leer código (Natural calla los cierres).
+    #[serde(default)]
+    pub escucha_verbosidad_simbolos: crate::managers::escucha::preproceso::VerbosidadSimbolos,
+    // [ESCUCHA] -----------------------------------------------------------------
 }
 
 fn default_model() -> String {
@@ -757,6 +775,16 @@ fn default_typing_tool() -> TypingTool {
     TypingTool::Auto
 }
 
+// [ESCUCHA]
+fn default_escucha_rate_prosa() -> f32 {
+    1.0
+}
+
+// [ESCUCHA]
+fn default_escucha_rate_codigo() -> f32 {
+    0.9
+}
+
 fn ensure_post_process_defaults(settings: &mut AppSettings) -> bool {
     let mut changed = false;
     for provider in default_post_process_providers() {
@@ -927,6 +955,12 @@ pub fn get_default_settings() -> AppSettings {
         extra_recording_buffer_ms: 0,
         vad_enabled: default_vad_enabled(),
         overlay_style: default_overlay_style(),
+        // [ESCUCHA]
+        escucha_voz_prosa: None,
+        escucha_voz_codigo: None,
+        escucha_rate_prosa: default_escucha_rate_prosa(),
+        escucha_rate_codigo: default_escucha_rate_codigo(),
+        escucha_verbosidad_simbolos: Default::default(),
     }
 }
 
