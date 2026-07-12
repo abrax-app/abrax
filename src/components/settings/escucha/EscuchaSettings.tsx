@@ -356,9 +356,7 @@ export const EscuchaSettings: React.FC = () => {
             <Square className="w-4 h-4" />
             <span>{t("escucha.stop")}</span>
           </Button>
-          <p className="text-xs text-text/50 ms-auto">
-            {t("escucha.escHint")}
-          </p>
+          <p className="text-xs text-text/50 ms-auto">{t("escucha.escHint")}</p>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
