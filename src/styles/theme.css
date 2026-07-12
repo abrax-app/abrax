@@ -9,11 +9,14 @@
   --light-color-background: #fbfbfb;
   --light-color-logo-primary: #8b5cf6;
   --light-color-logo-stroke: #05060f;
+  /* Cian de marca oscurecido en tema claro para sostener contraste de texto */
+  --light-color-brand-cyan: #0e7e9c;
 
   --dark-color-text: #fbfbfb;
   --dark-color-background: #2c2b29;
   --dark-color-logo-primary: #8b5cf6;
   --dark-color-logo-stroke: #e8ecf4;
+  --dark-color-brand-cyan: #2fd9ff;
 
   /* Tokens that do not change between light and dark */
   --color-background-ui: #8b5cf6;
@@ -26,6 +29,7 @@
   --color-background: var(--light-color-background);
   --color-logo-primary: var(--light-color-logo-primary);
   --color-logo-stroke: var(--light-color-logo-stroke);
+  --color-brand-cyan: var(--light-color-brand-cyan);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -34,5 +38,6 @@
     --color-background: var(--dark-color-background);
     --color-logo-primary: var(--dark-color-logo-primary);
     --color-logo-stroke: var(--dark-color-logo-stroke);
+    --color-brand-cyan: var(--dark-color-brand-cyan);
   }
 }

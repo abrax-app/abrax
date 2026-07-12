@@ -654,5 +654,8 @@
   "overlay": {
     "transcribing": "Transcribing...",
     "processing": "Processing..."
+  },
+  "logo": {
+    "tagline": "« Di la <accent>palabra</accent>. »"
   }
 }

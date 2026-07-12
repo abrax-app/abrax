@@ -654,5 +654,8 @@
   },
   "whatsNew": {
     "title": "Điểm mới trong Abrax v{{version}}"
+  },
+  "logo": {
+    "tagline": "« Di la <accent>palabra</accent>. »"
   }
 }

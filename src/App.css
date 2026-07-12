@@ -71,6 +71,7 @@
   --color-background: var(--light-color-background);
   --color-logo-primary: var(--light-color-logo-primary);
   --color-logo-stroke: var(--light-color-logo-stroke);
+  --color-brand-cyan: var(--light-color-brand-cyan);
 }
 
 :root[data-theme="dark"] {
@@ -78,6 +79,7 @@
   --color-background: var(--dark-color-background);
   --color-logo-primary: var(--dark-color-logo-primary);
   --color-logo-stroke: var(--dark-color-logo-stroke);
+  --color-brand-cyan: var(--dark-color-brand-cyan);
 }
 
 /* macOS - tint native overlay scrollbar thumb */

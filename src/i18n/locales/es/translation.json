@@ -595,7 +595,7 @@
     "checkingUpdates": "Buscando actualizaciones...",
     "updateAvailableShort": "Actualización disponible",
     "upToDate": "Actualizado",
-    "updateCheckingDisabled": "Búsqueda de Actualizaciones Deshabilitada",
+    "updateCheckingDisabled": "Actualizaciones automáticas desactivadas",
     "downloading": "Descargando... {{progress}}%",
     "installing": "Instalando...",
     "preparing": "Preparando...",
@@ -654,5 +654,8 @@
   },
   "whatsNew": {
     "title": "Nuevo en Abrax v{{version}}"
+  },
+  "logo": {
+    "tagline": "« Di la <accent>palabra</accent>. »"
   }
 }

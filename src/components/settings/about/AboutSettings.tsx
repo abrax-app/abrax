@@ -41,7 +41,7 @@ export const AboutSettings: React.FC = () => {
   return (
     <div className="max-w-3xl w-full mx-auto space-y-6">
       <div className="flex justify-center pt-2 text-text">
-        <AbraxLogo width={220} />
+        <AbraxLogo width={240} withTagline />
       </div>
       <SettingsGroup title={t("settings.about.title")}>
         <AppLanguageSelector descriptionMode="tooltip" grouped={true} />

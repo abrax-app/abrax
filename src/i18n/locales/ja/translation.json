@@ -654,5 +654,8 @@
   },
   "whatsNew": {
     "title": "Abrax v{{version}} の新機能"
+  },
+  "logo": {
+    "tagline": "« Di la <accent>palabra</accent>. »"
   }
 }

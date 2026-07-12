@@ -654,5 +654,8 @@
   },
   "whatsNew": {
     "title": "Abrax v{{version}}의 새 소식"
+  },
+  "logo": {
+    "tagline": "« Di la <accent>palabra</accent>. »"
   }
 }
