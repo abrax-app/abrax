@@ -724,6 +724,7 @@
     "readClipboard": "Czytaj schowek",
     "play": "Czytaj",
     "pause": "Pauza",
+    "pauseHint": "Pauza na końcu bieżącego zdania",
     "resume": "Wznów",
     "stop": "Zatrzymaj",
     "speed": "Szybkość",

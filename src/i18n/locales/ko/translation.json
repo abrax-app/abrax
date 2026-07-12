@@ -724,6 +724,7 @@
     "readClipboard": "클립보드 읽기",
     "play": "읽기",
     "pause": "일시정지",
+    "pauseHint": "현재 문장 끝에서 일시 정지됩니다",
     "resume": "계속",
     "stop": "정지",
     "speed": "속도",

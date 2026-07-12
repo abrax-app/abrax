@@ -724,6 +724,7 @@
     "readClipboard": "Ler área de transferência",
     "play": "Ler",
     "pause": "Pausar",
+    "pauseHint": "Pausa no fim da frase atual",
     "resume": "Continuar",
     "stop": "Parar",
     "speed": "Velocidade",

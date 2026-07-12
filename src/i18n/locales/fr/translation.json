@@ -724,6 +724,7 @@
     "readClipboard": "Lire le presse-papiers",
     "play": "Lire",
     "pause": "Pause",
+    "pauseHint": "Pause à la fin de la phrase en cours",
     "resume": "Reprendre",
     "stop": "Arrêter",
     "speed": "Vitesse",

@@ -724,6 +724,7 @@
     "readClipboard": "Leggi appunti",
     "play": "Leggi",
     "pause": "Pausa",
+    "pauseHint": "Pausa alla fine della frase in corso",
     "resume": "Riprendi",
     "stop": "Ferma",
     "speed": "Velocità",

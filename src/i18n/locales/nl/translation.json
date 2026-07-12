@@ -724,6 +724,7 @@
     "readClipboard": "Klembord voorlezen",
     "play": "Lezen",
     "pause": "Pauze",
+    "pauseHint": "Pauzeert aan het einde van de huidige zin",
     "resume": "Hervatten",
     "stop": "Stoppen",
     "speed": "Snelheid",

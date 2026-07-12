@@ -330,7 +330,7 @@ export const EscuchaSettings: React.FC = () => {
             size="md"
             disabled={!motorDisponible || oraciones.length === 0}
             className="flex items-center gap-2"
-            title={leyendo ? t("escucha.pause") : t("escucha.play")}
+            title={leyendo ? t("escucha.pauseHint") : t("escucha.play")}
           >
             {leyendo ? (
               <Pause className="w-4 h-4" />
@@ -356,7 +356,9 @@ export const EscuchaSettings: React.FC = () => {
             <Square className="w-4 h-4" />
             <span>{t("escucha.stop")}</span>
           </Button>
-          <p className="text-xs text-text/50 ms-auto">{t("escucha.escHint")}</p>
+          <p className="text-xs text-text/50 ms-auto">
+            {t("escucha.pauseHint")} · {t("escucha.escHint")}
+          </p>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

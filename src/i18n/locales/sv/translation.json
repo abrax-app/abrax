@@ -724,6 +724,7 @@
     "readClipboard": "Läs urklipp",
     "play": "Läs",
     "pause": "Paus",
+    "pauseHint": "Pausar i slutet av den aktuella meningen",
     "resume": "Fortsätt",
     "stop": "Stoppa",
     "speed": "Hastighet",

@@ -724,6 +724,7 @@
     "readClipboard": "Přečíst schránku",
     "play": "Číst",
     "pause": "Pauza",
+    "pauseHint": "Pauza na konci aktuální věty",
     "resume": "Pokračovat",
     "stop": "Zastavit",
     "speed": "Rychlost",

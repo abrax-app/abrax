@@ -724,6 +724,7 @@
     "readClipboard": "Zwischenablage vorlesen",
     "play": "Lesen",
     "pause": "Pause",
+    "pauseHint": "Pausiert am Ende des aktuellen Satzes",
     "resume": "Fortsetzen",
     "stop": "Stopp",
     "speed": "Tempo",

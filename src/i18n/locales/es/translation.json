@@ -724,6 +724,7 @@
     "readClipboard": "Leer portapapeles",
     "play": "Leer",
     "pause": "Pausar",
+    "pauseHint": "Pausa al final de la oración en curso",
     "resume": "Continuar",
     "stop": "Detener",
     "speed": "Velocidad",

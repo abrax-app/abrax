@@ -724,6 +724,7 @@
     "readClipboard": "Đọc clipboard",
     "play": "Đọc",
     "pause": "Tạm dừng",
+    "pauseHint": "Tạm dừng ở cuối câu hiện tại",
     "resume": "Tiếp tục",
     "stop": "Dừng",
     "speed": "Tốc độ",

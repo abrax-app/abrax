@@ -724,6 +724,7 @@
     "readClipboard": "Read clipboard",
     "play": "Read",
     "pause": "Pause",
+    "pauseHint": "Pauses at the end of the current sentence",
     "resume": "Resume",
     "stop": "Stop",
     "speed": "Speed",

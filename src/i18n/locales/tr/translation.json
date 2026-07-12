@@ -724,6 +724,7 @@
     "readClipboard": "Panoyu oku",
     "play": "Oku",
     "pause": "Duraklat",
+    "pauseHint": "Geçerli cümlenin sonunda duraklatır",
     "resume": "Devam et",
     "stop": "Durdur",
     "speed": "Hız",

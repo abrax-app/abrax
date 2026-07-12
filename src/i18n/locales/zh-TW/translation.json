@@ -724,6 +724,7 @@
     "readClipboard": "朗讀剪貼簿",
     "play": "朗讀",
     "pause": "暫停",
+    "pauseHint": "在目前句子結束時暫停",
     "resume": "繼續",
     "stop": "停止",
     "speed": "語速",
