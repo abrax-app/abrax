@@ -62,3 +62,17 @@ Estado consolidado al **2026-07-11**. Toda afirmación de este documento está r
 ## 7. Atribución
 
 ABRAX es un fork de **Handy**, creado por **CJ Pais** y publicado bajo licencia **MIT**. Gran parte del mérito de que esta app exista —el pipeline de dictado, el soporte multiplataforma, la base de i18n— es del proyecto original y de sus contribuidores. Conservamos `LICENSE`, `ATTRIBUTION.md` y `UPSTREAM.md`, y el About de la app reconoce explícitamente al proyecto original. ABRAX no está afiliado a Handy ni a su autor.
+
+---
+
+## [ESCUCHA] Rama `feat/escucha` — 12/07/2026 (pendiente de fusión)
+
+Sesión paralela en worktree propio (base `afcdcb9`). ABRAX lee tu código:
+sección **Escucha** con TTS del sistema (crate `tts`, MIT — cero descargas,
+100% local), preprocesador markdown/código es-419 (símbolos verbalizados,
+identificadores partidos, encabezados anunciados), voces y velocidades
+independientes para prosa y código, resaltado de línea en lectura, "Leer
+portapapeles" y Esc para detener. 19 tests nuevos (suite 138/138 verde en la
+rama) · i18n ×22 en paridad · diseño de voz neural Piper en
+`docs/ESCUCHA_FASE2.md` (solo documento). Detalle completo en
+`INFORME_ESCUCHA.md`. Fusión: protocolo §F del brief de sesión.
