@@ -50,7 +50,7 @@ Estado consolidado al **2026-07-11**. Toda afirmación de este documento está r
 
 ## 6. Pendiente declarado
 
-- Migración de las 17 fuentes de descarga de modelos a hosting con checksums anclados — fecha objetivo 22/07.
+- Fuentes de descarga de modelos: **11 de 16 migradas a Hugging Face** con URL anclada por commit y sha256 verificado por descarga real (los 3 Whisper GGML en el repo oficial de ggerganov; el resto en mirrors byte-idénticos). Las 5 restantes (Moonshine base/tiny, GigaAM, Canary ×2) no existen fuera del hosting del upstream: se migran a un espejo propio (archivos ya verificados y preservados localmente) — fecha objetivo 22/07.
 - Superficie de error visible cuando la ventana está oculta (F1) — scopeado, en cola.
 - Estados de carga/vacío/error con reintento en modelos y onboarding (F3/F4) — scopeado, en cola.
 - Visualizador de audio del overlay — en diseño; se activará solo bajo demanda (nunca emisión continua).

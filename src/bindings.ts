@@ -874,7 +874,9 @@ export type ModelInfo = { id: string; name: string; description: string; filenam
  */
 export type ModelSource = 
 /**
- * Direct HTTP download from a URL (current blob.handy.computer hosting).
+ * Direct HTTP download from a URL. Hugging Face `resolve` URLs pinned by
+ * commit where a byte-identical file exists (verified by sha256); the rest
+ * still on the upstream blob hosting until a first-party mirror exists.
  */
 { Url: { url: string; 
 /**

@@ -41,7 +41,9 @@ pub enum EngineType {
 /// for downloading and on-disk resolution.
 #[derive(Debug, Clone, Serialize, Deserialize, Type)]
 pub enum ModelSource {
-    /// Direct HTTP download from a URL (current blob.handy.computer hosting).
+    /// Direct HTTP download from a URL. Hugging Face `resolve` URLs pinned by
+    /// commit where a byte-identical file exists (verified by sha256); the rest
+    /// still on the upstream blob hosting until a first-party mirror exists.
     Url {
         url: String,
         /// Expected SHA-256 for integrity verification; `None` skips it.
@@ -490,7 +492,7 @@ impl ModelManager {
                 description: "Fast and fairly accurate.".to_string(),
                 filename: "ggml-small.bin".to_string(),
                 source: ModelSource::Url {
-                    url: "https://blob.handy.computer/ggml-small.bin".to_string(),
+                    url: "https://huggingface.co/ggerganov/whisper.cpp/resolve/5359861c739e955e79d9a303bcbc70fb988958b1/ggml-small.bin".to_string(),
                     sha256: Some(
                         "1be3a9b2063867b937e64e2ec7483364a79917e157fa98c5d94b5c1fffea987b"
                             .to_string(),
@@ -523,7 +525,7 @@ impl ModelManager {
                 description: "Good accuracy, medium speed".to_string(),
                 filename: "whisper-medium-q4_1.bin".to_string(),
                 source: ModelSource::Url {
-                    url: "https://blob.handy.computer/whisper-medium-q4_1.bin".to_string(),
+                    url: "https://huggingface.co/IrieDinamik/vox-jot-stt-whisper-medium-q4_1/resolve/7446c0ce70f7eaeb9209a3c3d55d00238128f9aa/whisper-medium-q4_1.bin".to_string(),
                     sha256: Some(
                         "79283fc1f9fe12ca3248543fbd54b73292164d8df5a16e095e2bceeaaabddf57"
                             .to_string(),
@@ -555,7 +557,7 @@ impl ModelManager {
                 description: "Balanced accuracy and speed.".to_string(),
                 filename: "ggml-large-v3-turbo.bin".to_string(),
                 source: ModelSource::Url {
-                    url: "https://blob.handy.computer/ggml-large-v3-turbo.bin".to_string(),
+                    url: "https://huggingface.co/ggerganov/whisper.cpp/resolve/5359861c739e955e79d9a303bcbc70fb988958b1/ggml-large-v3-turbo.bin".to_string(),
                     sha256: Some(
                         "1fc70f774d38eb169993ac391eea357ef47c88757ef72ee5943879b7e8e2bc69"
                             .to_string(),
@@ -587,7 +589,7 @@ impl ModelManager {
                 description: "Good accuracy, but slow.".to_string(),
                 filename: "ggml-large-v3-q5_0.bin".to_string(),
                 source: ModelSource::Url {
-                    url: "https://blob.handy.computer/ggml-large-v3-q5_0.bin".to_string(),
+                    url: "https://huggingface.co/ggerganov/whisper.cpp/resolve/5359861c739e955e79d9a303bcbc70fb988958b1/ggml-large-v3-q5_0.bin".to_string(),
                     sha256: Some(
                         "d75795ecff3f83b5faa89d1900604ad8c780abd5739fae406de19f23ecd98ad1"
                             .to_string(),
@@ -620,7 +622,7 @@ impl ModelManager {
                     .to_string(),
                 filename: "breeze-asr-q5_k.bin".to_string(),
                 source: ModelSource::Url {
-                    url: "https://blob.handy.computer/breeze-asr-q5_k.bin".to_string(),
+                    url: "https://huggingface.co/alan314159/Breeze-ASR-25-whispercpp/resolve/c7f120183c8e8ad932f315e04e3d0359d839702d/ggml-model-q5_k.bin".to_string(),
                     sha256: Some(
                         "8efbf0ce8a3f50fe332b7617da787fb81354b358c288b008d3bdef8359df64c6"
                             .to_string(),
@@ -653,7 +655,7 @@ impl ModelManager {
                 description: "English only. The best model for English speakers.".to_string(),
                 filename: "parakeet-tdt-0.6b-v2-int8".to_string(), // Directory name
                 source: ModelSource::Url {
-                    url: "https://blob.handy.computer/parakeet-v2-int8.tar.gz".to_string(),
+                    url: "https://huggingface.co/Verbavoice/parakeet-tdt-0.6b-v2-int8/resolve/b12b0e5cfeb9e06ceaf713859b65e719c8d2a9d7/parakeet-v2-int8.tar.gz".to_string(),
                     sha256: Some(
                         "ac9b9429984dd565b25097337a887bb7f0f8ac393573661c651f0e7d31563991"
                             .to_string(),
@@ -695,7 +697,7 @@ impl ModelManager {
                 description: "Fast and accurate. Supports 25 European languages.".to_string(),
                 filename: "parakeet-tdt-0.6b-v3-int8".to_string(), // Directory name
                 source: ModelSource::Url {
-                    url: "https://blob.handy.computer/parakeet-v3-int8.tar.gz".to_string(),
+                    url: "https://huggingface.co/brenorb/parakeet-tdt-0.6b-v3-int8-onnx-bundle/resolve/a130d8ebc760de23aa657a32fe55ec12a00287a2/parakeet-v3-int8.tar.gz".to_string(),
                     sha256: Some(
                         "43d37191602727524a7d8c6da0eef11c4ba24320f5b4730f1a2497befc2efa77"
                             .to_string(),
@@ -792,7 +794,7 @@ impl ModelManager {
                 description: "Fast, English only. Good balance of speed and accuracy.".to_string(),
                 filename: "moonshine-small-streaming-en".to_string(),
                 source: ModelSource::Url {
-                    url: "https://blob.handy.computer/moonshine-small-streaming-en.tar.gz"
+                    url: "https://huggingface.co/0xhark/handy-asr-models/resolve/d3be0865effd431014bd7bf706ed6127cce193f5/moonshine-small-streaming-en.tar.gz"
                         .to_string(),
                     sha256: Some(
                         "dbb3e1c1832bd88a4ac712f7449a136cc2c9a18c5fe33a12ed1b7cb1cfe9cdd5"
@@ -825,7 +827,7 @@ impl ModelManager {
                 description: "English only. High quality.".to_string(),
                 filename: "moonshine-medium-streaming-en".to_string(),
                 source: ModelSource::Url {
-                    url: "https://blob.handy.computer/moonshine-medium-streaming-en.tar.gz"
+                    url: "https://huggingface.co/0xhark/handy-asr-models/resolve/d3be0865effd431014bd7bf706ed6127cce193f5/moonshine-medium-streaming-en.tar.gz"
                         .to_string(),
                     sha256: Some(
                         "07a66f3bff1c77e75a2f637e5a263928a08baae3c29c4c053fc968a9a9373d13"
@@ -865,7 +867,7 @@ impl ModelManager {
                     .to_string(),
                 filename: "sense-voice-int8".to_string(),
                 source: ModelSource::Url {
-                    url: "https://blob.handy.computer/sense-voice-int8.tar.gz".to_string(),
+                    url: "https://huggingface.co/0xhark/handy-asr-models/resolve/d3be0865effd431014bd7bf706ed6127cce193f5/sense-voice-int8.tar.gz".to_string(),
                     sha256: Some(
                         "171d611fe5d353a50bbb741b6f3ef42559b1565685684e9aa888ef563ba3e8a4"
                             .to_string(),
@@ -1022,7 +1024,7 @@ impl ModelManager {
                 description: "A large, slower, but very accurate multilingual model.".to_string(),
                 filename: "cohere-int8".to_string(),
                 source: ModelSource::Url {
-                    url: "https://blob.handy.computer/cohere-int8.tar.gz".to_string(),
+                    url: "https://huggingface.co/smcleod/cohere-transcribe-03-2026-int8/resolve/5eca62b1c2547dd554ab45c15b738bb7ebf3a7a7/cohere-int8.tar.gz".to_string(),
                     sha256: Some(
                         "ea2257d52434f3644574f187dcdcf666e302cd11b92866116ab8e14cd9c887f0"
                             .to_string(),
