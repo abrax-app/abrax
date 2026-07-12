@@ -30,9 +30,11 @@ export const AboutSettings: React.FC = () => {
     fetchVersion();
   }, []);
 
+  // Las donaciones van al proyecto original (Handy, de CJ Pais): crédito
+  // conservado, sin confundir a nadie sobre a quién apoya.
   const handleDonateClick = async () => {
     try {
-      await openUrl("https://abrax.app");
+      await openUrl("https://handy.computer/donate");
     } catch (error) {
       console.error("Failed to open donate link:", error);
     }

@@ -619,9 +619,9 @@
         "button": "Xem trên GitHub"
       },
       "supportDevelopment": {
-        "title": "Hỗ trợ phát triển",
-        "description": "Giúp chúng tôi tiếp tục xây dựng Abrax",
-        "button": "Quyên góp"
+        "title": "Ủng hộ Handy (dự án gốc)",
+        "description": "Các khoản quyên góp được gửi tới CJ Pais, tác giả của Handy — dự án mà ABRAX được fork từ đó.",
+        "button": "Ủng hộ Handy"
       },
       "acknowledgments": {
         "title": "Lời cảm ơn",

@@ -619,9 +619,9 @@
         "button": "GitHub で見る"
       },
       "supportDevelopment": {
-        "title": "開発を支援",
-        "description": "Abrax の開発を支援してください",
-        "button": "寄付する"
+        "title": "Handy（オリジナルプロジェクト）を支援",
+        "description": "寄付は Handy の作者 CJ Pais に届きます。ABRAX は Handy のフォークです。",
+        "button": "Handy を支援"
       },
       "acknowledgments": {
         "title": "謝辞",

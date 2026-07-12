@@ -619,9 +619,9 @@
         "button": "Вижте в GitHub"
       },
       "supportDevelopment": {
-        "title": "Подкрепете разработката",
-        "description": "Помогнете ни да продължим да развиваме Abrax",
-        "button": "Дарение"
+        "title": "Подкрепете Handy (оригиналния проект)",
+        "description": "Даренията отиват при CJ Pais, създателя на Handy — проектът, от който ABRAX е форк.",
+        "button": "Подкрепете Handy"
       },
       "acknowledgments": {
         "title": "Благодарности",

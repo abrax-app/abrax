@@ -619,9 +619,9 @@
         "button": "在 GitHub 上檢視"
       },
       "supportDevelopment": {
-        "title": "支持開發",
-        "description": "幫助我們繼續開發 Abrax",
-        "button": "捐贈"
+        "title": "支持 Handy（原始專案）",
+        "description": "捐款將支付給 Handy 的作者 CJ Pais——ABRAX 是該專案的分支。",
+        "button": "支持 Handy"
       },
       "acknowledgments": {
         "title": "致謝",

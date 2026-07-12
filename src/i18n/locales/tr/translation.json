@@ -619,9 +619,9 @@
         "button": "GitHub'da Görüntüle"
       },
       "supportDevelopment": {
-        "title": "Geliştirmeyi Destekle",
-        "description": "Abrax'yi geliştirmeye devam etmemize yardımcı olun",
-        "button": "Bağış Yap"
+        "title": "Handy'yi destekleyin (özgün proje)",
+        "description": "Bağışlar, ABRAX'ın çatallandığı proje olan Handy'nin yaratıcısı CJ Pais'e gider.",
+        "button": "Handy'yi destekle"
       },
       "acknowledgments": {
         "title": "Teşekkürler",

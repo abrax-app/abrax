@@ -619,9 +619,9 @@
         "button": "GitHub에서 보기"
       },
       "supportDevelopment": {
-        "title": "개발 지원",
-        "description": "Abrax 개발을 계속할 수 있도록 도와주세요",
-        "button": "후원하기"
+        "title": "Handy(원본 프로젝트) 후원",
+        "description": "후원금은 Handy의 제작자 CJ Pais에게 전달됩니다. ABRAX는 Handy의 포크입니다.",
+        "button": "Handy 후원하기"
       },
       "acknowledgments": {
         "title": "감사의 말",

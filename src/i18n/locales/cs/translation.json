@@ -619,9 +619,9 @@
         "button": "Zobrazit na GitHubu"
       },
       "supportDevelopment": {
-        "title": "Podpořte vývoj",
-        "description": "Pomozte nám pokračovat ve vývoji Abrax",
-        "button": "Přispět"
+        "title": "Podpořte Handy (původní projekt)",
+        "description": "Dary jdou CJ Paisovi, tvůrci projektu Handy — projektu, z něhož je ABRAX fork.",
+        "button": "Podpořit Handy"
       },
       "acknowledgments": {
         "title": "Poděkování",

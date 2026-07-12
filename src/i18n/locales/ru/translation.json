@@ -619,9 +619,9 @@
         "button": "Посмотреть на GitHub"
       },
       "supportDevelopment": {
-        "title": "Поддержка развития",
-        "description": "Помогите нам продолжать развитие Abrax",
-        "button": "Поддержать"
+        "title": "Поддержать Handy (оригинальный проект)",
+        "description": "Пожертвования идут CJ Pais, создателю Handy — проекта, форком которого является ABRAX.",
+        "button": "Поддержать Handy"
       },
       "acknowledgments": {
         "title": "Благодарности",

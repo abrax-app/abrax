@@ -623,9 +623,9 @@
         "button": "GitHub मा हेर्नुहोस्"
       },
       "supportDevelopment": {
-        "title": "विकासलाई सहयोग गर्नुहोस्",
-        "description": "Abrax निर्माण जारी राख्न हामीलाई सहयोग गर्नुहोस्",
-        "button": "दान गर्नुहोस्"
+        "title": "Handy (मूल परियोजना) लाई सहयोग गर्नुहोस्",
+        "description": "दान Handy का निर्माता CJ Pais लाई जान्छ — ABRAX त्यही परियोजनाको फोर्क हो।",
+        "button": "Handy लाई सहयोग"
       },
       "acknowledgments": {
         "title": "आभार",
