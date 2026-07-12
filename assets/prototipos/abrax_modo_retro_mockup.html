@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ABRAX · MODO RETRO ('98) — mockup navegable</title>
+<style>
+  :root{
+    --cian:#2FD9FF; --violeta:#8B5CF6; --magenta:#F23DC4;
+    --tinta:#05040C; --chrome:#171232; --chrome2:#221A4A;
+    --bisel-luz:#5A4FA8; --bisel-somb:#060412;
+    --texto:#CFD6FF; --led:#9DF2FF;
+  }
+  html[data-tema="imperial"]{
+    --cian:#F2C41D; --violeta:#E88A1A; --magenta:#E8442A;
+    --tinta:#0A0906; --chrome:#191408; --chrome2:#26200C;
+    --bisel-luz:#8F7A2E; --bisel-somb:#050402;
+    --texto:#E4DCB8; --led:#FFE28A;
+  }
+  html[data-tema="imperial"] .barra{
+    background:repeating-linear-gradient(90deg,#3A2F12 0 3px, #241C08 3px 6px);
+  }
+  *{box-sizing:border-box;margin:0;padding:0; user-select:none}
+  body{
+    min-height:100vh; overflow:hidden;
+    background:
+      radial-gradient(900px 500px at 78% 8%, #0C0A22 0%, transparent 55%),
+      radial-gradient(700px 500px at 10% 95%, #150A22 0%, transparent 50%),
+      var(--tinta);
+    font-family:ui-monospace,"Cascadia Code",Menlo,Consolas,monospace;
+    color:var(--texto);
+  }
+  /* ── chrome retro: biseles duros ── */
+  .vent{
+    position:absolute; width:440px;
+    background:linear-gradient(180deg, var(--chrome2), var(--chrome));
+    border:2px solid; border-color:var(--bisel-luz) var(--bisel-somb) var(--bisel-somb) var(--bisel-luz);
+    box-shadow:0 10px 30px rgba(0,0,0,.6);
+  }
+  .barra{
+    height:20px; display:flex; align-items:center; gap:6px; padding:0 4px;
+    background:repeating-linear-gradient(90deg,#2A2154 0 3px, #1A1440 3px 6px);
+    border-bottom:1px solid var(--bisel-somb); cursor:grab;
+  }
+  .barra:active{cursor:grabbing}
+  .barra .ico{width:13px;height:13px;flex:none;cursor:pointer}
+  .barra b{
+    flex:1; text-align:center; font-size:9px; letter-spacing:.34em; color:#B9C2F5;
+    text-shadow:0 1px 0 #000; font-weight:600;
+  }
+  .btn3d{
+    width:13px;height:13px; flex:none; font-size:8px; line-height:9px; color:#0b0820;
+    background:linear-gradient(180deg,#8f84d8,#5A4FA8);
+    border:1px solid; border-color:#C9C0FF #241C52 #241C52 #C9C0FF;
+    cursor:pointer; text-align:center; padding:0;
+  }
+  .btn3d:active{border-color:#241C52 #C9C0FF #C9C0FF #241C52}
+  .vent.plegada > *:not(.barra){display:none}
+  .hueco{ /* pantallitas hundidas */
+    background:#04030C; border:2px solid;
+    border-color:var(--bisel-somb) var(--bisel-luz) var(--bisel-luz) var(--bisel-somb);
+  }
+  /* ── VENTANA PRINCIPAL ── */
+  #vMain{left:60px; top:48px; z-index:30}
+  #vMain .cuerpo{display:grid; grid-template-columns:150px 1fr; gap:8px; padding:10px}
+  #reloj{
+    height:44px; display:flex; align-items:center; justify-content:center; gap:4px;
+    font-size:26px; font-weight:700; color:var(--led); letter-spacing:2px;
+    text-shadow:0 0 8px rgba(47,217,255,.7);
+  }
+  #reloj .rec{width:9px;height:9px;border-radius:50%;background:#3a2f57; margin-right:4px}
+  #reloj.on .rec{background:var(--magenta); box-shadow:0 0 8px var(--magenta); animation:parp 1s steps(1) infinite}
+  @keyframes parp{50%{opacity:.25}}
+  #espectro{width:100%; height:44px; display:block}
+  #marquee{grid-column:1/-1; height:20px; overflow:hidden; position:relative}
+  #marquee span{
+    position:absolute; white-space:nowrap; font-size:11px; letter-spacing:.18em;
+    color:var(--led); text-shadow:0 0 6px rgba(47,217,255,.5); top:3px;
+    animation:desfile 14s linear infinite;
+  }
+  @keyframes desfile{from{transform:translateX(440px)}to{transform:translateX(-100%)}}
+  #vMain .lamparas{grid-column:1/-1; display:flex; gap:6px; align-items:center; font-size:8.5px; letter-spacing:.14em}
+  .lamp{padding:2px 7px; border:1px solid; border-color:var(--bisel-somb) var(--bisel-luz) var(--bisel-luz) var(--bisel-somb);
+    background:#0A0718; color:#4d4779; cursor:pointer}
+  .lamp.on{color:var(--led); text-shadow:0 0 6px rgba(47,217,255,.6)}
+  .lamp.mg.on{color:var(--magenta); text-shadow:0 0 6px rgba(242,61,196,.6)}
+  #vMain .transporte{grid-column:1/-1; display:flex; gap:5px; align-items:center; padding-top:2px}
+  .tbtn{
+    min-width:34px; height:24px; font-size:11px; color:#0b0820; cursor:pointer;
+    background:linear-gradient(180deg,#9A90DE,#5A4FA8);
+    border:2px solid; border-color:#CFC7FF #241C52 #241C52 #CFC7FF;
+  }
+  .tbtn:active{border-color:#241C52 #CFC7FF #CFC7FF #241C52}
+  .tbtn.rec{color:#7a0f52; font-weight:700}
+  .sliders{grid-column:1/-1; display:flex; gap:12px; align-items:center; font-size:8.5px; letter-spacing:.14em; color:#8f8ac0}
+  input[type=range]{-webkit-appearance:none; appearance:none; height:8px; flex:1;
+    background:#04030C; border:1px solid; border-color:var(--bisel-somb) var(--bisel-luz) var(--bisel-luz) var(--bisel-somb)}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none; width:14px; height:16px;
+    background:linear-gradient(180deg,#B7AEF2,#6a5fc0); border:1px solid #241C52; cursor:pointer}
+  /* ── VENTANA AJUSTES (ex-EQ) ── */
+  #vEq{left:60px; top:262px; z-index:20}
+  #vEq .cuerpo{padding:10px; display:flex; flex-direction:column; gap:8px}
+  #vEq .fila-onoff{display:flex; gap:6px; align-items:center}
+  #vEq .eq{display:flex; gap:10px; justify-content:space-between; padding:6px 4px 2px}
+  .banda{display:flex; flex-direction:column; align-items:center; gap:5px; font-size:7.5px; letter-spacing:.1em; color:#8f8ac0}
+  .banda input[type=range]{writing-mode:vertical-lr; direction:rtl; width:8px; height:78px; flex:none}
+  .banda input[type=range]::-webkit-slider-thumb{width:16px;height:12px}
+  /* ── VENTANA HISTORIAL (ex-playlist) ── */
+  #vHist{left:560px; top:48px; width:400px; z-index:25}
+  #vHist .lista{margin:8px; height:216px; overflow-y:auto; font-size:11px; line-height:1.9; padding:4px 6px}
+  #vHist .lista::-webkit-scrollbar{width:14px}
+  #vHist .lista::-webkit-scrollbar-thumb{background:linear-gradient(180deg,#8f84d8,#5A4FA8); border:2px solid #0A0718}
+  #vHist .lista::-webkit-scrollbar-track{background:#0A0718}
+  .pista{display:flex; gap:8px; color:#79E8FF; cursor:pointer; padding:0 4px; white-space:nowrap; overflow:hidden}
+  .pista .num{color:#6a63a0}
+  .pista .txt{flex:1; overflow:hidden; text-overflow:ellipsis}
+  .pista .dur{color:#6a63a0}
+  .pista.sel{background:#1D2C6E; color:#fff}
+  #vHist .botonera{display:flex; gap:5px; padding:0 8px 8px}
+  .mini{font-size:8px; letter-spacing:.1em; padding:4px 8px; color:#0b0820; cursor:pointer;
+    background:linear-gradient(180deg,#9A90DE,#5A4FA8);
+    border:2px solid; border-color:#CFC7FF #241C52 #241C52 #CFC7FF}
+  .mini:active{border-color:#241C52 #CFC7FF #CFC7FF #241C52}
+  /* ── menú clásico ── */
+  #menu{
+    position:absolute; z-index:99; min-width:190px; display:none;
+    background:var(--chrome); border:2px solid;
+    border-color:var(--bisel-luz) var(--bisel-somb) var(--bisel-somb) var(--bisel-luz);
+    font-size:11px; padding:3px; box-shadow:6px 8px 0 rgba(0,0,0,.45);
+  }
+  #menu.on{display:block}
+  #menu .it{padding:5px 12px; cursor:pointer; letter-spacing:.08em; display:flex; justify-content:space-between}
+  #menu .it:hover{background:#1D2C6E; color:#fff}
+  #menu hr{border:none; border-top:1px solid var(--bisel-somb); border-bottom:1px solid var(--bisel-luz); margin:3px 2px}
+  #menu .tit{padding:4px 12px; font-size:8px; letter-spacing:.3em; color:#6a63a0}
+  /* ── toast + tooltip retro ── */
+  #toast{
+    position:fixed; left:50%; bottom:26px; transform:translateX(-50%); z-index:98;
+    background:var(--chrome); border:2px solid;
+    border-color:var(--bisel-luz) var(--bisel-somb) var(--bisel-somb) var(--bisel-luz);
+    padding:8px 16px; font-size:11px; letter-spacing:.1em; color:var(--led);
+    display:none;
+  }
+  #toast.on{display:block}
+  #tip{
+    position:fixed; z-index:97; max-width:250px; display:none;
+    background:#0D0A22; border:1px solid var(--bisel-luz);
+    padding:7px 10px; font-size:10.5px; line-height:1.55; color:var(--texto);
+    box-shadow:4px 5px 0 rgba(0,0,0,.5);
+  }
+  #tip.on{display:block}
+  #tip b{display:block; color:#fff; letter-spacing:.12em; font-size:9px; margin-bottom:3px}
+  #tip kbd{border:1px solid var(--bisel-luz); padding:0 5px; font-size:9.5px; background:#161233; color:#fff}
+  /* placa de contexto */
+  #placa{position:fixed; right:16px; bottom:14px; font-size:9px; letter-spacing:.16em; color:#4d4779; text-align:right; line-height:1.7}
+  #placa a{color:#7a72b8; cursor:pointer; text-decoration:underline}
+  .iso{fill:none; stroke-linecap:round}
+  @media (prefers-reduced-motion: reduce){ #marquee span{animation:none; position:static} #reloj.on .rec{animation:none} }
+</style>
+</head>
+<body>
+
+<!-- ═══ VENTANA PRINCIPAL ═══ -->
+<div class="vent" id="vMain" style="width:440px">
+  <div class="barra" data-drag="vMain">
+    <svg class="ico" viewBox="0 0 24 24" data-menu title="Menú de ABRAX"><circle cx="12" cy="12" r="9" class="iso" stroke="#B9C2F5" stroke-width="2"/><circle cx="12" cy="12" r="5" class="iso" stroke="#B9C2F5" stroke-width="2" stroke-dasharray="0.1 3.4"/><circle cx="12" cy="12" r="1.6" fill="#fff"/></svg>
+    <b>Λ B R Λ X · MODO RETRO</b>
+    <button class="btn3d" data-shade="vMain" title="Plegar (doble clic en la barra también)">▔</button>
+    <button class="btn3d" data-close="vMain" title="Cerrar ventana">✕</button>
+  </div>
+  <div class="cuerpo">
+    <div class="hueco" id="reloj" data-hint="Tiempo de dictado|Cuenta mientras grabas. El punto magenta parpadea al grabar.|"><span class="rec"></span><span id="digitos">00:00</span></div>
+    <canvas class="hueco" id="espectro" width="252" height="44" data-hint="Analizador de espectro|Tu voz en 19 bandas — el ADN visual de la esfera, versión '98.|"></canvas>
+    <div class="hueco" id="marquee"><span id="letrero">ΛBRΛX ··· DI LA PALABRA ··· MODO RETRO '98 ··· 100% LOCAL ··· ESPAÑOL DE PRIMERA CLASE ···</span></div>
+    <div class="lamparas">
+      <span class="lamp on" data-hint="Modelo activo|Canary 180M Flash — corre en tu equipo, sin nube.|">CANARY 180M</span>
+      <span class="lamp on" data-hint="Idioma|Modelo escuchando en español.|">ES</span>
+      <span class="lamp on" data-hint="100% local|Tu voz jamás sale del computador.|">LOCAL</span>
+      <span class="lamp mg on" id="lampMule" data-hint="Filtro de muletillas|Clic para encender/apagar. «eh», «digamos», «ya po»… desaparecen al instante.|">MULETILLAS</span>
+      <span class="lamp on" id="lampDicc" data-hint="Diccionario Vivo|Aprendió 247 términos de tu repo. Clic para apagar.|">DICC·247</span>
+    </div>
+    <div class="transporte">
+      <button class="tbtn rec" id="btnRec" data-hint="DICTAR|Clic (o mantén el atajo global) y habla. El texto aparece donde estés escribiendo.|Ctrl,Space">●</button>
+      <button class="tbtn" id="btnStop" data-hint="Detener|Corta la grabación en curso.|Esc">■</button>
+      <button class="tbtn" data-abre="vEq" data-hint="Ajustes|Abre la consola de ajustes rápidos.|">🎚</button>
+      <button class="tbtn" data-abre="vHist" data-hint="Historial|Abre la lista de dictados.|">≡</button>
+      <button class="tbtn" id="btnVarita" data-hint="Compilador de Prompts|Estructura tu último dictado en secciones con linter de ambigüedades.|">✦</button>
+    </div>
+    <div class="sliders">
+      <span>VOL</span><input type="range" min="0" max="100" value="82" data-hint="Volumen|De los sonidos de inicio/fin (hechos por Antonio).|">
+      <span>VEL</span><input type="range" min="0" max="100" value="50" data-hint="Velocidad de lectura|Para el modo Escucha.|">
+    </div>
+  </div>
+</div>
+
+<!-- ═══ VENTANA AJUSTES (ex-ecualizador) ═══ -->
+<div class="vent" id="vEq" style="width:440px">
+  <div class="barra" data-drag="vEq">
+    <svg class="ico" viewBox="0 0 24 24"><path d="M5 9v8M12 5v12M19 8v9" class="iso" stroke="#B9C2F5" stroke-width="2.4"/></svg>
+    <b>ΛBRΛX · AJUSTES RÁPIDOS</b>
+    <button class="btn3d" data-shade="vEq">▔</button>
+    <button class="btn3d" data-close="vEq">✕</button>
+  </div>
+  <div class="cuerpo">
+    <div class="fila-onoff">
+      <span class="lamp on" data-hint="Push to talk|Mantener presionado para hablar.|">PTT ON</span>
+      <span class="lamp on" data-hint="Detección de voz|Silero filtra los silencios.|">VAD</span>
+      <span class="lamp" data-hint="Traducir al inglés|Apagado: dictas y escribe en español.|">TRAD EN</span>
+      <span class="lamp on" data-hint="Overlay Esfera|La esfera late en el overlay al dictar.|">ESFERA</span>
+      <button class="mini" id="btnPresets" data-hint="Secciones completas|El menú clásico con todas las secciones de ABRAX.|">SECCIONES ▾</button>
+    </div>
+    <div class="eq hueco" style="padding:8px 10px">
+      <div class="banda"><input type="range" min="0" max="100" value="82"><span>VOL</span></div>
+      <div class="banda"><input type="range" min="0" max="100" value="50"><span>PROSA</span></div>
+      <div class="banda"><input type="range" min="0" max="100" value="38"><span>CÓDIGO</span></div>
+      <div class="banda"><input type="range" min="0" max="100" value="18" data-hint="Umbral de corrección|Qué tan parecido debe sonar algo para corregirse hacia tu diccionario.|"><span>UMBRAL</span></div>
+      <div class="banda"><input type="range" min="0" max="100" value="65"><span>MIC</span></div>
+      <div class="banda"><input type="range" min="0" max="100" value="70"><span>SALIDA</span></div>
+      <div class="banda"><input type="range" min="0" max="100" value="30" data-hint="Buffer extra|Milisegundos de grabación tras soltar la tecla — no se corta tu última sílaba.|"><span>BUFFER</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ VENTANA HISTORIAL (ex-playlist) ═══ -->
+<div class="vent" id="vHist">
+  <div class="barra" data-drag="vHist">
+    <svg class="ico" viewBox="0 0 24 24"><path d="M5 7h14M5 12h14M5 17h9" class="iso" stroke="#B9C2F5" stroke-width="2.2"/></svg>
+    <b>ΛBRΛX · HISTORIAL</b>
+    <button class="btn3d" data-shade="vHist">▔</button>
+    <button class="btn3d" data-close="vHist">✕</button>
+  </div>
+  <div class="lista hueco" id="lista" data-hint="Historial|Doble clic en una entrada = copiar al portapapeles. Todo vive en tu disco.|"></div>
+  <div class="botonera">
+    <button class="mini">COPIAR</button><button class="mini">★ GUARDAR</button>
+    <button class="mini">BORRAR</button><button class="mini" id="btnVarita2">✦ COMPILAR</button>
+    <span style="flex:1"></span>
+    <span style="font-size:9px;color:#6a63a0;letter-spacing:.1em;align-self:center" id="contadorLista"></span>
+  </div>
+</div>
+
+<!-- menú clásico -->
+<div id="menu">
+  <div class="tit">ΛBRΛX</div>
+  <div class="it" data-nav="General">General</div>
+  <div class="it" data-nav="Modelos">Modelos <span>›</span></div>
+  <div class="it" data-nav="Diccionario Vivo">Diccionario Vivo <span>›</span></div>
+  <div class="it" data-nav="Compilador">Compilador <span>›</span></div>
+  <div class="it" data-nav="Escucha">Escucha <span>›</span></div>
+  <div class="it" data-nav="Avanzado">Avanzado</div>
+  <div class="it" data-nav="Acerca de">Acerca de</div>
+  <hr>
+  <div class="tit">VENTANAS</div>
+  <div class="it" data-toggle="vMain">Principal</div>
+  <div class="it" data-toggle="vEq">Ajustes rápidos</div>
+  <div class="it" data-toggle="vHist">Historial</div>
+  <hr>
+  <div class="it" id="volverOrbital">↺ Volver al modo Orbital</div>
+  <hr>
+  <div class="it" id="itTema">🎨 Tema: <span id="temaLabel">ΛBRΛX</span></div>
+</div>
+
+<div id="toast"></div>
+<div id="tip" role="tooltip"></div>
+<div id="placa">
+  MODO RETRO '98 — skin de ABRAX inspirado en los reproductores clásicos<br>
+  misma app · misma ventana transparente · <a id="linkOrbital">ui_shell: orbital ↺</a>
+</div>
+
+<script>
+"use strict";
+const $ = s => document.querySelector(s);
+const reducido = matchMedia("(prefers-reduced-motion: reduce)").matches;
+let grabando = false, seg = 0, relojId = 0, zTop = 40;
+
+/* ═ ESPECTRO retro: 19 barras con picos que caen ═ */
+const cv = $("#espectro"), ctx = cv.getContext("2d");
+const NB = 19, alturas = new Array(NB).fill(2), picos = new Array(NB).fill(2);
+let COL = { a:"#2FD9FF", b:"#8B5CF6", c:"#F23DC4" };
+function refrescarCOL(){
+  const cs = getComputedStyle(document.documentElement);
+  COL = { a:cs.getPropertyValue("--cian").trim(), b:cs.getPropertyValue("--violeta").trim(), c:cs.getPropertyValue("--magenta").trim() };
+}
+function leerTema(){ try { return localStorage.getItem("abrax_tema") || "abrax"; } catch(e){ return "abrax"; } }
+let temaActual = leerTema();
+document.documentElement.dataset.tema = temaActual;
+function pintarEspectro(t){
+  ctx.clearRect(0,0,252,44);
+  for(let i=0;i<NB;i++){
+    const energia = grabando ? 1 : 0.22;
+    const objetivo = (Math.abs(Math.sin(t*2.1 + i*0.9)) * 0.55
+                    + Math.abs(Math.sin(t*3.7 + i*1.7)) * 0.45) * 40 * energia + 2;
+    alturas[i] += (objetivo - alturas[i]) * (reducido ? 1 : 0.3);
+    picos[i] = Math.max(picos[i] - 0.55, alturas[i]);
+    const x = 4 + i*13, h = alturas[i];
+    const g = ctx.createLinearGradient(0, 44, 0, 44 - h);
+    g.addColorStop(0, COL.a); g.addColorStop(.7, COL.b); g.addColorStop(1, COL.c);
+    ctx.fillStyle = g;
+    for(let y = 0; y < h; y += 4) ctx.fillRect(x, 40 - y, 9, 3);
+    ctx.fillStyle = COL.c;
+    ctx.fillRect(x, 40 - picos[i], 9, 2);
+  }
+  if(!reducido || grabando) requestAnimationFrame(ts => pintarEspectro(ts/1000));
+}
+requestAnimationFrame(ts => pintarEspectro(ts/1000));
+
+/* ═ reloj de dictado ═ */
+function tic(){
+  seg++;
+  $("#digitos").textContent = String(Math.floor(seg/60)).padStart(2,"0") + ":" + String(seg%60).padStart(2,"0");
+}
+
+/* ═ dictado demo: marquee tipea y suelta al historial ═ */
+const FRASES = [
+  "crea un useAuthStore que persista el token en el localStorage",
+  "kubectl get pods del namespace de staging",
+  "necesito que el informe quede listo antes de la reunión del lunes",
+];
+let fraseIdx = 0, fraseActual = "";
+function empezar(){
+  if(grabando) return;
+  grabando = true; seg = 0; tic();
+  $("#reloj").classList.add("on");
+  relojId = setInterval(tic, 1000);
+  fraseActual = FRASES[fraseIdx++ % FRASES.length];
+  const L = $("#letrero");
+  L.style.animation = "none"; L.style.position = "static"; L.textContent = "";
+  let i = 0;
+  empezar.typer = setInterval(()=>{
+    if(i < fraseActual.length) L.textContent += fraseActual[i++];
+  }, 55);
+}
+function detener(){
+  if(!grabando) return;
+  grabando = false;
+  clearInterval(relojId); clearInterval(empezar.typer);
+  $("#reloj").classList.remove("on");
+  agregarPista(fraseActual);
+  const L = $("#letrero");
+  L.textContent = "✓ PEGADO DONDE ESTABAS ESCRIBIENDO ··· ΛBRΛX ··· DI LA PALABRA ···";
+  L.style.position = ""; L.style.animation = "";
+  avisar("✓ pegado donde estabas escribiendo");
+}
+$("#btnRec").addEventListener("click", ()=> grabando ? detener() : empezar());
+$("#btnStop").addEventListener("click", detener);
+
+/* ═ historial-playlist ═ */
+const PISTAS = [
+  ["valida el rut y devuelve verdadero o falso", "0:04"],
+  ["use auth store → useAuthStore (diccionario)", "0:03"],
+  ["necesito que el informe quede listo antes de la reunión", "0:05"],
+  ["hola comunidad, esta aplicación funciona sin internet", "0:06"],
+];
+function agregarPista(txt){
+  PISTAS.unshift([txt, "0:0" + (3 + Math.floor(Math.random()*4))]);
+  pintarLista();
+}
+function pintarLista(){
+  $("#lista").innerHTML = PISTAS.map((p,i)=>
+    `<div class="pista${i===0?" sel":""}" data-i="${i}">
+       <span class="num">${i+1}.</span><span class="txt">${p[0]}</span><span class="dur">${p[1]}</span>
+     </div>`).join("");
+  $("#contadorLista").textContent = PISTAS.length + " DICTADOS · LOCAL";
+}
+pintarLista();
+$("#lista").addEventListener("dblclick", e=>{
+  const fila = e.target.closest(".pista");
+  if(fila) avisar("⧉ copiado al portapapeles");
+});
+$("#lista").addEventListener("click", e=>{
+  const fila = e.target.closest(".pista");
+  if(!fila) return;
+  document.querySelectorAll(".pista").forEach(p=>p.classList.remove("sel"));
+  fila.classList.add("sel");
+});
+
+/* ═ varita: compilador ═ */
+function compilar(){
+  avisar("✦ COMPILADO: contexto + tarea + requisitos · ⚠ 2 ambigüedades marcadas");
+}
+$("#btnVarita").addEventListener("click", compilar);
+$("#btnVarita2").addEventListener("click", compilar);
+
+/* ═ lámparas conmutables ═ */
+["#lampMule","#lampDicc"].forEach(sel=>{
+  $(sel).addEventListener("click", function(){
+    this.classList.toggle("on");
+    avisar(this.textContent + (this.classList.contains("on") ? " · ENCENDIDO" : " · APAGADO"));
+  });
+});
+
+/* ═ ventanas: drag, plegar (windowshade), cerrar, traer al frente ═ */
+let dragWin = null, dx = 0, dy = 0;
+document.addEventListener("mousedown", e=>{
+  const barra = e.target.closest(".barra");
+  const win = e.target.closest(".vent");
+  if(win) win.style.zIndex = ++zTop;
+  if(!barra || e.target.closest(".btn3d") || e.target.closest("[data-menu]")) return;
+  dragWin = document.getElementById(barra.dataset.drag);
+  const r = dragWin.getBoundingClientRect();
+  dx = e.clientX - r.left; dy = e.clientY - r.top;
+});
+document.addEventListener("mousemove", e=>{
+  if(!dragWin) return;
+  dragWin.style.left = Math.max(0, e.clientX - dx) + "px";
+  dragWin.style.top  = Math.max(0, e.clientY - dy) + "px";
+});
+document.addEventListener("mouseup", ()=> dragWin = null);
+document.addEventListener("dblclick", e=>{
+  const barra = e.target.closest(".barra");
+  if(barra) document.getElementById(barra.dataset.drag).classList.toggle("plegada");
+});
+document.querySelectorAll("[data-shade]").forEach(b=>
+  b.addEventListener("click", ()=> document.getElementById(b.dataset.shade).classList.toggle("plegada")));
+document.querySelectorAll("[data-close]").forEach(b=>
+  b.addEventListener("click", ()=> document.getElementById(b.dataset.close).style.display = "none"));
+document.querySelectorAll("[data-abre]").forEach(b=>
+  b.addEventListener("click", ()=>{
+    const w = document.getElementById(b.dataset.abre);
+    w.style.display = ""; w.classList.remove("plegada"); w.style.zIndex = ++zTop;
+  }));
+
+/* ═ menú clásico ═ */
+const menu = $("#menu");
+function abrirMenu(x, y){
+  menu.style.left = x + "px"; menu.style.top = y + "px";
+  menu.classList.add("on");
+}
+document.querySelector("[data-menu]").addEventListener("click", e=>{
+  const r = e.currentTarget.getBoundingClientRect();
+  abrirMenu(r.left, r.bottom + 4); e.stopPropagation();
+});
+$("#btnPresets").addEventListener("click", e=>{
+  const r = e.currentTarget.getBoundingClientRect();
+  abrirMenu(r.left, r.bottom + 4); e.stopPropagation();
+});
+document.addEventListener("click", e=>{ if(!e.target.closest("#menu")) menu.classList.remove("on"); });
+menu.addEventListener("click", e=>{
+  const it = e.target.closest(".it");
+  if(!it) return;
+  menu.classList.remove("on");
+  if(it.dataset.nav) avisar("Abriría la sección: " + it.dataset.nav.toUpperCase());
+  if(it.dataset.toggle){
+    const w = document.getElementById(it.dataset.toggle);
+    w.style.display = (w.style.display === "none") ? "" : "none";
+  }
+});
+function volverOrbital(){ avisar("↺ ui_shell → ORBITAL · la esfera te espera (conmutación en Ajustes)"); }
+$("#volverOrbital").addEventListener("click", volverOrbital);
+function aplicarTemaRetro(t){
+  temaActual = t;
+  document.documentElement.dataset.tema = t;
+  refrescarCOL();
+  $("#temaLabel").textContent = t === "imperial" ? "IMPERIAL" : "ΛBRΛX";
+  try { localStorage.setItem("abrax_tema", t); } catch(e){}
+}
+$("#itTema").addEventListener("click", ()=>{
+  aplicarTemaRetro(temaActual === "imperial" ? "abrax" : "imperial");
+  avisar("🎨 tema guardado: " + (temaActual === "imperial" ? "IMPERIAL" : "ΛBRΛX"));
+});
+aplicarTemaRetro(temaActual);
+$("#linkOrbital").addEventListener("click", volverOrbital);
+
+/* ═ toast + tooltip retro ═ */
+function avisar(msg){
+  const t = $("#toast");
+  t.textContent = msg; t.classList.add("on");
+  clearTimeout(avisar.t); avisar.t = setTimeout(()=> t.classList.remove("on"), 2400);
+}
+const tip = $("#tip");
+document.addEventListener("mouseover", e=>{
+  const el = e.target.closest("[data-hint]");
+  if(!el){ tip.classList.remove("on"); return; }
+  const [tit, desc, keys] = (el.dataset.hint||"").split("|");
+  tip.innerHTML = "<b>"+tit+"</b>"+(desc||"") +
+    (keys ? '<div style="margin-top:5px">mantén '+keys.split(",").map(k=>"<kbd>"+k.trim()+"</kbd>").join(" + ")+"</div>" : "");
+  tip.classList.add("on");
+  const r = el.getBoundingClientRect(), tw = tip.offsetWidth || 220, th = tip.offsetHeight || 60;
+  let x = Math.min(Math.max(8, r.left + r.width/2 - tw/2), innerWidth - tw - 8);
+  let y = r.top - th - 10; if(y < 6) y = r.bottom + 10;
+  tip.style.left = x + "px"; tip.style.top = y + "px";
+});
+
+/* ═ teclado ═ */
+document.addEventListener("keydown", e=>{
+  if(e.code === "Space" && e.ctrlKey){ e.preventDefault(); empezar(); }
+  if(e.key === "Escape"){ menu.classList.remove("on"); detener(); }
+});
+document.addEventListener("keyup", e=>{
+  if(e.code === "Space" || e.key === "Control") detener();
+});
+</script>
+</body>
+</html>
