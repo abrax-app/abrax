@@ -1,10 +1,9 @@
 # Escucha — Fase 2: voz neural premium (Piper/ONNX)
 
-> **Estado: SOLO DISEÑO.** Este documento se escribió el 12/07/2026 durante la
-> sesión paralela de la feature Escucha (rama `feat/escucha`). No hay código de
-> Fase 2 en el repo; el MVP de Fase 1 corre sobre el TTS del sistema operativo
-> (crate `tts`: WinRT en Windows, AVSpeech en macOS, speech-dispatcher en
-> Linux). Ver `src-tauri/src/managers/escucha/`.
+> **Estado: SOLO DISEÑO.** No hay código de Fase 2 en el repo; el MVP de
+> Fase 1 corre sobre el TTS del sistema operativo (crate `tts`: WinRT en
+> Windows, AVSpeech en macOS, speech-dispatcher en Linux). Ver
+> `src-tauri/src/managers/escucha/`.
 
 ## Por qué Piper
 
