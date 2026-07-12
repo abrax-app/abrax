@@ -43,6 +43,11 @@ pub async fn download_model(
             "model-download-failed",
             serde_json::json!({ "model_id": &model_id, "error": error }),
         );
+        crate::user_alerts::alert(
+            &app_handle,
+            crate::user_alerts::AlertKind::ModelDownload,
+            Some(error.clone()),
+        );
     }
 
     result

@@ -6,7 +6,13 @@
     "unloadModel": "Uvolnit model",
     "model": "Model",
     "quit": "Ukončit",
-    "cancel": "Zrušit"
+    "cancel": "Zrušit",
+    "errorTitle": "Abrax narazil na problém",
+    "errorRecording": "Nahrávání se nepodařilo spustit. Otevřete Abrax pro podrobnosti.",
+    "errorTranscription": "Přepis selhal. Otevřete Abrax a zkuste to znovu z historie.",
+    "errorPaste": "Text se nepodařilo vložit. Je uložen v historii.",
+    "errorModelLoad": "Hlasový model se nepodařilo načíst. Otevřete Abrax pro příčinu.",
+    "errorModelDownload": "Stažení modelu selhalo. Otevřete Abrax a zkuste to znovu."
   },
   "sidebar": {
     "general": "Obecné",
@@ -117,7 +123,8 @@
         "checkFailed": "Nepodařilo se zkontrolovat oprávnění. Zkuste to prosím znovu.",
         "requestFailed": "Nepodařilo se požádat o oprávnění. Zkuste to prosím znovu."
       }
-    }
+    },
+    "emptyCatalog": "Nejsou k dispozici žádné modely. Zkontrolujte log a restartujte Abrax."
   },
   "modelSelector": {
     "custom": "Vlastní",
@@ -151,7 +158,8 @@
     },
     "cancel": "Zrušit",
     "cancelDownload": "Zrušit stahování",
-    "legacy": "Zastaralé"
+    "legacy": "Zastaralé",
+    "downloadFailed": "Stažení selhalo"
   },
   "settings": {
     "modelSettings": {
@@ -453,7 +461,8 @@
       "retranscribe": "Přepsat znovu",
       "retranscribeError": "Opětovný přepis se nezdařil. Zkuste to prosím znovu.",
       "transcribing": "Přepisuji...",
-      "transcriptionFailed": "Přepis selhal. Můžete zkusit přepis znovu pomocí ikony opakování."
+      "transcriptionFailed": "Přepis selhal. Můžete zkusit přepis znovu pomocí ikony opakování.",
+      "loadError": "Historii se nepodařilo načíst. Vaše diktáty jsou stále na disku."
     },
     "debug": {
       "title": "Ladění",
@@ -612,7 +621,8 @@
     "open": "Otevřít",
     "copy": "Kopírovat",
     "clear": "Vymazat",
-    "noOptionsFound": "Nenalezeny žádné možnosti"
+    "noOptionsFound": "Nenalezeny žádné možnosti",
+    "retry": "Zkusit znovu"
   },
   "accessibility": {
     "permissionsDescription": "Abrax potřebuje oprávnění usnadnění přístupu, aby mohlo psát přepsaný text.",
@@ -634,7 +644,15 @@
     "modelLoadFailedUnknown": "neznámý model",
     "pasteFailedTitle": "Vložení textu se nezdařilo",
     "pasteFailed": "Text nebylo možné vložit do aktivní aplikace.",
-    "transcriptionFailedTitle": "Přepis selhal"
+    "transcriptionFailedTitle": "Přepis selhal",
+    "recordingFailedTitle": "Nahrávání selhalo",
+    "modelLoadFailedTitle": "Model se nepodařilo načíst",
+    "modelDownloadFailedTitle": "Stažení modelu selhalo",
+    "center": {
+      "title": "Nedávné chyby ({{count}})",
+      "dismiss": "Zavřít",
+      "toggle": "Zobrazit všechny chyby"
+    }
   },
   "appLanguage": {
     "title": "Jazyk aplikace",

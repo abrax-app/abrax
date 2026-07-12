@@ -6,7 +6,13 @@
     "unloadModel": "تفريغ النموذج",
     "model": "النموذج",
     "quit": "إنهاء",
-    "cancel": "إلغاء"
+    "cancel": "إلغاء",
+    "errorTitle": "واجه Abrax مشكلة",
+    "errorRecording": "تعذر بدء التسجيل. افتح Abrax لمعرفة السبب.",
+    "errorTranscription": "فشل التفريغ. افتح Abrax لإعادة المحاولة من السجل.",
+    "errorPaste": "تعذر لصق النص. تم حفظه في السجل.",
+    "errorModelLoad": "فشل تحميل نموذج الكلام. افتح Abrax لمعرفة السبب.",
+    "errorModelDownload": "فشل تنزيل النموذج. افتح Abrax لإعادة المحاولة."
   },
   "sidebar": {
     "general": "عام",
@@ -117,7 +123,8 @@
         "checkFailed": "فشل التحقق من الأذونات. يرجير المحاولة مرة أخرى.",
         "requestFailed": "فشل طلب الإذن. يرجى المحاولة مرة أخرى."
       }
-    }
+    },
+    "emptyCatalog": "لا توجد نماذج متاحة. تحقق من السجل وأعد تشغيل Abrax."
   },
   "modelSelector": {
     "custom": "مخصص",
@@ -151,7 +158,8 @@
       "translate": "ترجمة",
       "streaming": "يعرض النسخ المباشر أثناء التحدث"
     },
-    "legacy": "قديم"
+    "legacy": "قديم",
+    "downloadFailed": "فشل التنزيل"
   },
   "settings": {
     "general": {
@@ -432,7 +440,8 @@
       "retranscribe": "إعادة النسخ",
       "retranscribeError": "فشلت إعادة النسخ. يرجى المحاولة مرة أخرى.",
       "transcribing": "جارٍ النسخ...",
-      "transcriptionFailed": "فشل النسخ. يمكنك إعادة النسخ باستخدام أيقونة إعادة المحاولة."
+      "transcriptionFailed": "فشل النسخ. يمكنك إعادة النسخ باستخدام أيقونة إعادة المحاولة.",
+      "loadError": "تعذر تحميل السجل. لا تزال إملاءاتك على القرص."
     },
     "debug": {
       "title": "تصحيح الأخطاء",
@@ -612,7 +621,8 @@
     "open": "فتح",
     "copy": "نسخ",
     "clear": "مسح",
-    "noOptionsFound": "لم يتم العثور على خيارات"
+    "noOptionsFound": "لم يتم العثور على خيارات",
+    "retry": "إعادة المحاولة"
   },
   "accessibility": {
     "permissionsDescription": ".يحتاج Abrax إلى أذونات إمكانية الوصول لكتابة النص المفرغ",
@@ -634,7 +644,15 @@
     "modelLoadFailedUnknown": "نموذج غير معروف",
     "pasteFailedTitle": "فشل لصق النص",
     "pasteFailed": "تعذر لصق النص في التطبيق النشط.",
-    "transcriptionFailedTitle": "فشل التفريغ النصي"
+    "transcriptionFailedTitle": "فشل التفريغ النصي",
+    "recordingFailedTitle": "فشل التسجيل",
+    "modelLoadFailedTitle": "فشل تحميل النموذج",
+    "modelDownloadFailedTitle": "فشل تنزيل النموذج",
+    "center": {
+      "title": "الأخطاء الأخيرة ({{count}})",
+      "dismiss": "تجاهل",
+      "toggle": "عرض كل الأخطاء"
+    }
   },
   "appLanguage": {
     "title": "لغة التطبيق",

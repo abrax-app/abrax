@@ -6,7 +6,13 @@
     "unloadModel": "Zwolnij model",
     "model": "Model",
     "quit": "Zamknij",
-    "cancel": "Anuluj"
+    "cancel": "Anuluj",
+    "errorTitle": "Abrax napotkał problem",
+    "errorRecording": "Nie udało się rozpocząć nagrywania. Otwórz Abrax, aby poznać przyczynę.",
+    "errorTranscription": "Transkrypcja nie powiodła się. Otwórz Abrax, aby ponowić z historii.",
+    "errorPaste": "Nie udało się wkleić tekstu. Został zapisany w historii.",
+    "errorModelLoad": "Nie udało się wczytać modelu mowy. Otwórz Abrax, aby poznać przyczynę.",
+    "errorModelDownload": "Pobieranie modelu nie powiodło się. Otwórz Abrax, aby ponowić."
   },
   "sidebar": {
     "general": "Ogólne",
@@ -117,7 +123,8 @@
         "checkFailed": "Nie udało się sprawdzić uprawnień. Spróbuj ponownie.",
         "requestFailed": "Nie udało się poprosić o uprawnienie. Spróbuj ponownie."
       }
-    }
+    },
+    "emptyCatalog": "Brak dostępnych modeli. Sprawdź log i uruchom Abrax ponownie."
   },
   "modelSelector": {
     "custom": "Własny",
@@ -151,7 +158,8 @@
     },
     "cancel": "Anuluj",
     "cancelDownload": "Anuluj pobieranie",
-    "legacy": "Przestarzałe"
+    "legacy": "Przestarzałe",
+    "downloadFailed": "Pobieranie nie powiodło się"
   },
   "settings": {
     "modelSettings": {
@@ -453,7 +461,8 @@
       "retranscribe": "Transkrybuj ponownie",
       "retranscribeError": "Nie udało się ponownie transkrybować. Spróbuj ponownie.",
       "transcribing": "Transkrybuję...",
-      "transcriptionFailed": "Transkrypcja nie powiodła się. Możesz transkrybować ponownie za pomocą ikony ponowienia."
+      "transcriptionFailed": "Transkrypcja nie powiodła się. Możesz transkrybować ponownie za pomocą ikony ponowienia.",
+      "loadError": "Nie udało się wczytać historii. Twoje dyktanda nadal są na dysku."
     },
     "debug": {
       "title": "Debugowanie",
@@ -612,7 +621,8 @@
     "open": "Otwórz",
     "copy": "Kopiuj",
     "clear": "Wyczyść",
-    "noOptionsFound": "Nie znaleziono opcji"
+    "noOptionsFound": "Nie znaleziono opcji",
+    "retry": "Ponów"
   },
   "accessibility": {
     "permissionsDescription": "Abrax potrzebuje uprawnień dostępności, aby wpisywać transkrybowany tekst.",
@@ -634,7 +644,15 @@
     "modelLoadFailedUnknown": "nieznany model",
     "pasteFailedTitle": "Nie udało się wkleić tekstu",
     "pasteFailed": "Nie można było wkleić tekstu do aktywnej aplikacji.",
-    "transcriptionFailedTitle": "Transkrypcja nie powiodła się"
+    "transcriptionFailedTitle": "Transkrypcja nie powiodła się",
+    "recordingFailedTitle": "Nagrywanie nie powiodło się",
+    "modelLoadFailedTitle": "Nie udało się wczytać modelu",
+    "modelDownloadFailedTitle": "Pobieranie modelu nie powiodło się",
+    "center": {
+      "title": "Ostatnie błędy ({{count}})",
+      "dismiss": "Odrzuć",
+      "toggle": "Pokaż wszystkie błędy"
+    }
   },
   "appLanguage": {
     "title": "Język aplikacji",

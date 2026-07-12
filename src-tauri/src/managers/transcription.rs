@@ -494,6 +494,11 @@ impl TranscriptionManager {
                     error: Some(error_msg.to_string()),
                 },
             );
+            crate::user_alerts::alert(
+                &self.app_handle,
+                crate::user_alerts::AlertKind::ModelLoad,
+                Some(format!("{}: {}", model_info.name, error_msg)),
+            );
             return Err(anyhow::anyhow!(error_msg));
         }
 
@@ -522,6 +527,11 @@ impl TranscriptionManager {
                     model_name: Some(model_info.name.clone()),
                     error: Some(error_msg.to_string()),
                 },
+            );
+            crate::user_alerts::alert(
+                &self.app_handle,
+                crate::user_alerts::AlertKind::ModelLoad,
+                Some(format!("{}: {}", model_info.name, error_msg)),
             );
         };
 
@@ -717,6 +727,21 @@ impl TranscriptionManager {
             let settings = get_settings(&self_clone.app_handle);
             if let Err(e) = self_clone.load_model(&settings.selected_model) {
                 error!("Failed to load model: {}", e);
+                // load_model alerta en sus fallos internos, pero los errores
+                // previos (modelo inexistente/no seleccionado) salían solo por
+                // el log — el usuario dictaba contra una app muda.
+                if settings.selected_model.is_empty()
+                    || self_clone
+                        .model_manager
+                        .get_model_info(&settings.selected_model)
+                        .is_none()
+                {
+                    crate::user_alerts::alert(
+                        &self_clone.app_handle,
+                        crate::user_alerts::AlertKind::ModelLoad,
+                        Some(e.to_string()),
+                    );
+                }
             }
             let mut is_loading = self_clone.is_loading.lock().unwrap();
             *is_loading = false;

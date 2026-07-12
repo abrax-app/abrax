@@ -21,16 +21,10 @@ use std::collections::HashMap;
 use std::future::Future;
 use std::sync::Arc;
 use std::time::{Duration, Instant};
+use tauri::AppHandle;
 use tauri::Manager;
-use tauri::{AppHandle, Emitter};
 
 const CANCELLATION_POLL_INTERVAL: Duration = Duration::from_millis(25);
-
-#[derive(Clone, serde::Serialize)]
-struct RecordingErrorEvent {
-    error_type: String,
-    detail: Option<String>,
-}
 
 /// Drop guard that notifies the [`TranscriptionCoordinator`] when the
 /// transcription pipeline finishes — whether it completes normally or panics.
@@ -589,20 +583,14 @@ impl ShortcutAction for TranscribeAction {
             utils::hide_recording_overlay(app);
             change_tray_icon(app, TrayIconState::Idle);
             if let Some(err) = recording_error {
-                let error_type = if is_microphone_access_denied(&err) {
-                    "microphone_permission_denied"
+                let kind = if is_microphone_access_denied(&err) {
+                    crate::user_alerts::AlertKind::RecordingPermissionDenied
                 } else if is_no_input_device_error(&err) {
-                    "no_input_device"
+                    crate::user_alerts::AlertKind::RecordingNoDevice
                 } else {
-                    "unknown"
+                    crate::user_alerts::AlertKind::Recording
                 };
-                let _ = app.emit(
-                    "recording-error",
-                    RecordingErrorEvent {
-                        error_type: error_type.to_string(),
-                        detail: Some(err),
-                    },
-                );
+                crate::user_alerts::alert(app, kind, Some(err));
             }
         }
 
@@ -810,7 +798,11 @@ impl ShortcutAction for TranscribeAction {
                                         ),
                                         Err(e) => {
                                             error!("Failed to paste transcription: {}", e);
-                                            let _ = ah_clone.emit("paste-error", ());
+                                            crate::user_alerts::alert(
+                                                &ah_clone,
+                                                crate::user_alerts::AlertKind::Paste,
+                                                None,
+                                            );
                                         }
                                     }
                                     utils::hide_recording_overlay(&ah_clone);
@@ -834,9 +826,15 @@ impl ShortcutAction for TranscribeAction {
                             }
 
                             error!("Transcription failed: {}", err);
-                            // Surface the failure to the UI (toast). The full
-                            // message is also in handy.log via the line above.
-                            let _ = ah.emit("transcription-error", err.to_string());
+                            // Surface the failure through the single alert
+                            // channel (toast + centro + notificación nativa si
+                            // la ventana está oculta). El mensaje completo
+                            // también queda en handy.log por la línea de arriba.
+                            crate::user_alerts::alert(
+                                &ah,
+                                crate::user_alerts::AlertKind::Transcription,
+                                Some(err.to_string()),
+                            );
                             // Save entry with empty text so user can retry
                             if wav_saved {
                                 if let Err(save_err) = hm.save_entry(

@@ -6,7 +6,13 @@
     "unloadModel": "卸載模型",
     "model": "模型",
     "quit": "結束",
-    "cancel": "取消"
+    "cancel": "取消",
+    "errorTitle": "Abrax 遇到問題",
+    "errorRecording": "無法開始錄音。開啟 Abrax 查看原因。",
+    "errorTranscription": "轉錄失敗。開啟 Abrax 從歷史記錄重試。",
+    "errorPaste": "無法貼上文字。已儲存在歷史記錄中。",
+    "errorModelLoad": "語音模型載入失敗。開啟 Abrax 查看原因。",
+    "errorModelDownload": "模型下載失敗。開啟 Abrax 重試。"
   },
   "sidebar": {
     "general": "一般",
@@ -117,7 +123,8 @@
         "checkFailed": "檢查權限失敗，請重試",
         "requestFailed": "請求權限失敗，請重試"
       }
-    }
+    },
+    "emptyCatalog": "沒有可用的模型。請檢查日誌並重新啟動 Abrax。"
   },
   "modelSelector": {
     "custom": "自訂",
@@ -151,7 +158,8 @@
       "translate": "翻譯為英語",
       "streaming": "在您說話時即時顯示轉錄"
     },
-    "legacy": "舊版"
+    "legacy": "舊版",
+    "downloadFailed": "下載失敗"
   },
   "settings": {
     "modelSettings": {
@@ -453,7 +461,8 @@
       "retranscribe": "重新轉錄",
       "retranscribeError": "重新轉錄失敗，請重試。",
       "transcribing": "轉錄中...",
-      "transcriptionFailed": "轉錄失敗。您可以使用重試圖示重新轉錄。"
+      "transcriptionFailed": "轉錄失敗。您可以使用重試圖示重新轉錄。",
+      "loadError": "無法載入歷史記錄。你的聽寫內容仍保存在磁碟上。"
     },
     "debug": {
       "title": "偵錯",
@@ -612,7 +621,8 @@
     "open": "開啟",
     "copy": "複製",
     "clear": "清除",
-    "noOptionsFound": "未找到選項"
+    "noOptionsFound": "未找到選項",
+    "retry": "重試"
   },
   "accessibility": {
     "permissionsDescription": "Abrax 需要輔助使用權限才能輸入轉錄的文字",
@@ -634,7 +644,15 @@
     "modelLoadFailedUnknown": "未知模型",
     "pasteFailedTitle": "貼上文字失敗",
     "pasteFailed": "無法將文字貼上至目前作用中的應用程式。",
-    "transcriptionFailedTitle": "轉錄失敗"
+    "transcriptionFailedTitle": "轉錄失敗",
+    "recordingFailedTitle": "錄音失敗",
+    "modelLoadFailedTitle": "模型載入失敗",
+    "modelDownloadFailedTitle": "模型下載失敗",
+    "center": {
+      "title": "最近的錯誤（{{count}}）",
+      "dismiss": "關閉",
+      "toggle": "顯示所有錯誤"
+    }
   },
   "appLanguage": {
     "title": "應用程式語言",

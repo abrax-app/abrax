@@ -6,7 +6,13 @@
     "unloadModel": "Avlasta modell",
     "model": "Modell",
     "quit": "Avsluta",
-    "cancel": "Avbryt"
+    "cancel": "Avbryt",
+    "errorTitle": "Abrax stötte på ett problem",
+    "errorRecording": "Inspelningen kunde inte starta. Öppna Abrax för mer information.",
+    "errorTranscription": "Transkriberingen misslyckades. Öppna Abrax och försök igen från historiken.",
+    "errorPaste": "Texten kunde inte klistras in. Den är sparad i historiken.",
+    "errorModelLoad": "Talmodellen kunde inte läsas in. Öppna Abrax för orsaken.",
+    "errorModelDownload": "Modellnedladdningen misslyckades. Öppna Abrax för att försöka igen."
   },
   "sidebar": {
     "general": "Allmänt",
@@ -117,7 +123,8 @@
         "checkFailed": "Misslyckades med att kontrollera behörigheter. Försök igen.",
         "requestFailed": "Misslyckades med att begära behörighet. Försök igen."
       }
-    }
+    },
+    "emptyCatalog": "Inga modeller tillgängliga. Kontrollera loggen och starta om Abrax."
   },
   "modelSelector": {
     "custom": "Anpassad",
@@ -151,7 +158,8 @@
       "translate": "Översätt till engelska",
       "streaming": "Visar transkription i realtid medan du talar"
     },
-    "legacy": "Äldre"
+    "legacy": "Äldre",
+    "downloadFailed": "Nedladdningen misslyckades"
   },
   "settings": {
     "modelSettings": {
@@ -453,7 +461,8 @@
       "retranscribe": "Transkribera igen",
       "retranscribeError": "Misslyckades med att transkribera igen. Försök igen.",
       "transcribing": "Transkriberar...",
-      "transcriptionFailed": "Transkribering misslyckades. Du kan transkribera igen med hjälp av ikonen för nytt försök."
+      "transcriptionFailed": "Transkribering misslyckades. Du kan transkribera igen med hjälp av ikonen för nytt försök.",
+      "loadError": "Historiken kunde inte läsas in. Dina diktat finns kvar på disken."
     },
     "debug": {
       "title": "Felsökning",
@@ -612,7 +621,8 @@
     "open": "Öppna",
     "copy": "Kopiera",
     "clear": "Rensa",
-    "noOptionsFound": "Inga alternativ hittades"
+    "noOptionsFound": "Inga alternativ hittades",
+    "retry": "Försök igen"
   },
   "accessibility": {
     "permissionsDescription": "Abrax behöver behörighet för hjälpmedel för att kunna skriva transkriberad text.",
@@ -634,7 +644,15 @@
     "noInputDevice": "Ingen ljudenhet hittades. Anslut en mikrofon eller ett headset och försök igen.",
     "pasteFailedTitle": "Det gick inte att klistra in texten",
     "pasteFailed": "Texten kunde inte klistras in i det aktiva programmet.",
-    "transcriptionFailedTitle": "Transkriptionen misslyckades"
+    "transcriptionFailedTitle": "Transkriptionen misslyckades",
+    "recordingFailedTitle": "Inspelningen misslyckades",
+    "modelLoadFailedTitle": "Modellen kunde inte läsas in",
+    "modelDownloadFailedTitle": "Modellnedladdningen misslyckades",
+    "center": {
+      "title": "Senaste fel ({{count}})",
+      "dismiss": "Avfärda",
+      "toggle": "Visa alla fel"
+    }
   },
   "appLanguage": {
     "title": "Applikationsspråk",

@@ -6,7 +6,13 @@
     "unloadModel": "Décharger le modèle",
     "model": "Modèle",
     "quit": "Quitter",
-    "cancel": "Annuler"
+    "cancel": "Annuler",
+    "errorTitle": "Abrax a rencontré un problème",
+    "errorRecording": "L'enregistrement n'a pas pu démarrer. Ouvrez Abrax pour en savoir plus.",
+    "errorTranscription": "La transcription a échoué. Ouvrez Abrax pour réessayer depuis l'historique.",
+    "errorPaste": "Le texte n'a pas pu être collé. Il est enregistré dans votre historique.",
+    "errorModelLoad": "Le modèle vocal n'a pas pu être chargé. Ouvrez Abrax pour en connaître la cause.",
+    "errorModelDownload": "Le téléchargement du modèle a échoué. Ouvrez Abrax pour réessayer."
   },
   "sidebar": {
     "general": "Général",
@@ -117,7 +123,8 @@
         "checkFailed": "Échec de la vérification des autorisations. Veuillez réessayer.",
         "requestFailed": "Échec de la demande d'autorisation. Veuillez réessayer."
       }
-    }
+    },
+    "emptyCatalog": "Aucun modèle disponible. Vérifiez le journal et redémarrez Abrax."
   },
   "modelSelector": {
     "custom": "Personnalisé",
@@ -151,7 +158,8 @@
     },
     "cancel": "Annuler",
     "cancelDownload": "Annuler le téléchargement",
-    "legacy": "Hérité"
+    "legacy": "Hérité",
+    "downloadFailed": "Échec du téléchargement"
   },
   "settings": {
     "modelSettings": {
@@ -453,7 +461,8 @@
       "retranscribe": "Re-transcrire",
       "retranscribeError": "Impossible de re-transcrire. Veuillez réessayer.",
       "transcribing": "Transcription en cours...",
-      "transcriptionFailed": "La transcription a échoué. Vous pouvez re-transcrire en utilisant l'icône de réessai."
+      "transcriptionFailed": "La transcription a échoué. Vous pouvez re-transcrire en utilisant l'icône de réessai.",
+      "loadError": "Impossible de charger l'historique. Vos dictées sont toujours sur le disque."
     },
     "debug": {
       "title": "Débogage",
@@ -612,7 +621,8 @@
     "open": "Ouvrir",
     "copy": "Copier",
     "clear": "Effacer",
-    "noOptionsFound": "Aucune option trouvée"
+    "noOptionsFound": "Aucune option trouvée",
+    "retry": "Réessayer"
   },
   "accessibility": {
     "permissionsDescription": "Abrax a besoin des autorisations d'accessibilité pour taper le texte transcrit.",
@@ -634,7 +644,15 @@
     "modelLoadFailedUnknown": "modèle inconnu",
     "pasteFailedTitle": "Échec du collage du texte",
     "pasteFailed": "Le texte n'a pas pu être collé dans l'application active.",
-    "transcriptionFailedTitle": "Échec de la transcription"
+    "transcriptionFailedTitle": "Échec de la transcription",
+    "recordingFailedTitle": "Échec de l'enregistrement",
+    "modelLoadFailedTitle": "Échec du chargement du modèle",
+    "modelDownloadFailedTitle": "Échec du téléchargement du modèle",
+    "center": {
+      "title": "Erreurs récentes ({{count}})",
+      "dismiss": "Ignorer",
+      "toggle": "Afficher toutes les erreurs"
+    }
   },
   "appLanguage": {
     "title": "Langue de l'application",

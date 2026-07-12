@@ -6,7 +6,13 @@
     "unloadModel": "Model ontladen",
     "model": "Model",
     "quit": "Afsluiten",
-    "cancel": "Annuleren"
+    "cancel": "Annuleren",
+    "errorTitle": "Abrax is op een probleem gestuit",
+    "errorRecording": "De opname kon niet starten. Open Abrax voor details.",
+    "errorTranscription": "De transcriptie is mislukt. Open Abrax om het opnieuw te proberen via de geschiedenis.",
+    "errorPaste": "De tekst kon niet worden geplakt. Deze is opgeslagen in je geschiedenis.",
+    "errorModelLoad": "Het spraakmodel kon niet worden geladen. Open Abrax voor de oorzaak.",
+    "errorModelDownload": "De modeldownload is mislukt. Open Abrax om het opnieuw te proberen."
   },
   "sidebar": {
     "general": "Algemeen",
@@ -117,7 +123,8 @@
         "checkFailed": "Machtigingen controleren mislukt. Probeer het opnieuw.",
         "requestFailed": "Machtiging aanvragen mislukt. Probeer het opnieuw."
       }
-    }
+    },
+    "emptyCatalog": "Geen modellen beschikbaar. Controleer het logboek en herstart Abrax."
   },
   "modelSelector": {
     "custom": "Aangepast",
@@ -151,7 +158,8 @@
       "translation": "Kan vertalen naar het Engels",
       "translate": "Vertalen",
       "streaming": "Toont live transcriptie tijdens het spreken"
-    }
+    },
+    "downloadFailed": "Download mislukt"
   },
   "settings": {
     "modelSettings": {
@@ -453,7 +461,8 @@
       "retranscribe": "Opnieuw transcriberen",
       "retranscribeError": "Opnieuw transcriberen mislukt. Probeer het opnieuw.",
       "transcribing": "Transcriberen...",
-      "transcriptionFailed": "Transcriptie mislukt. Je kunt het opnieuw proberen via het herlaad-pictogram."
+      "transcriptionFailed": "Transcriptie mislukt. Je kunt het opnieuw proberen via het herlaad-pictogram.",
+      "loadError": "De geschiedenis kon niet worden geladen. Je dictaten staan nog op de schijf."
     },
     "debug": {
       "title": "Probleemoplossing",
@@ -615,7 +624,8 @@
     "open": "Openen",
     "copy": "Kopiëren",
     "clear": "Wissen",
-    "noOptionsFound": "Geen opties gevonden"
+    "noOptionsFound": "Geen opties gevonden",
+    "retry": "Opnieuw proberen"
   },
   "accessibility": {
     "permissionsDescription": "Abrax heeft toegankelijkheidsmachtigingen nodig om getranscribeerde tekst te kunnen typen.",
@@ -637,7 +647,15 @@
     "modelLoadFailedUnknown": "onbekend model",
     "pasteFailedTitle": "Tekst plakken mislukt",
     "pasteFailed": "Tekst kon niet worden geplakt in de actieve applicatie.",
-    "transcriptionFailedTitle": "Transcriptie mislukt"
+    "transcriptionFailedTitle": "Transcriptie mislukt",
+    "recordingFailedTitle": "Opname mislukt",
+    "modelLoadFailedTitle": "Model kon niet worden geladen",
+    "modelDownloadFailedTitle": "Modeldownload mislukt",
+    "center": {
+      "title": "Recente fouten ({{count}})",
+      "dismiss": "Negeren",
+      "toggle": "Alle fouten tonen"
+    }
   },
   "appLanguage": {
     "title": "Interfacetaal",

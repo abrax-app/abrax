@@ -6,7 +6,13 @@
     "unloadModel": "Dỡ mô hình",
     "model": "Mô hình",
     "quit": "Thoát",
-    "cancel": "Hủy"
+    "cancel": "Hủy",
+    "errorTitle": "Abrax gặp sự cố",
+    "errorRecording": "Không thể bắt đầu ghi âm. Mở Abrax để xem lý do.",
+    "errorTranscription": "Phiên âm thất bại. Mở Abrax để thử lại từ Lịch sử.",
+    "errorPaste": "Không thể dán văn bản. Nó đã được lưu trong Lịch sử.",
+    "errorModelLoad": "Không tải được mô hình giọng nói. Mở Abrax để xem nguyên nhân.",
+    "errorModelDownload": "Tải mô hình thất bại. Mở Abrax để thử lại."
   },
   "sidebar": {
     "general": "Chung",
@@ -117,7 +123,8 @@
         "checkFailed": "Không thể kiểm tra quyền. Vui lòng thử lại.",
         "requestFailed": "Không thể yêu cầu quyền. Vui lòng thử lại."
       }
-    }
+    },
+    "emptyCatalog": "Không có mô hình nào khả dụng. Kiểm tra nhật ký và khởi động lại Abrax."
   },
   "modelSelector": {
     "custom": "Tùy chỉnh",
@@ -151,7 +158,8 @@
     },
     "cancel": "Hủy",
     "cancelDownload": "Hủy tải xuống",
-    "legacy": "Cũ"
+    "legacy": "Cũ",
+    "downloadFailed": "Tải xuống thất bại"
   },
   "settings": {
     "modelSettings": {
@@ -453,7 +461,8 @@
       "retranscribe": "Phiên âm lại",
       "retranscribeError": "Không thể phiên âm lại. Vui lòng thử lại.",
       "transcribing": "Đang phiên âm...",
-      "transcriptionFailed": "Phiên âm thất bại. Bạn có thể phiên âm lại bằng biểu tượng thử lại."
+      "transcriptionFailed": "Phiên âm thất bại. Bạn có thể phiên âm lại bằng biểu tượng thử lại.",
+      "loadError": "Không thể tải lịch sử. Các bản đọc chính tả vẫn còn trên đĩa."
     },
     "debug": {
       "title": "Gỡ lỗi",
@@ -612,7 +621,8 @@
     "open": "Mở",
     "copy": "Sao chép",
     "clear": "Xóa",
-    "noOptionsFound": "Không tìm thấy tùy chọn"
+    "noOptionsFound": "Không tìm thấy tùy chọn",
+    "retry": "Thử lại"
   },
   "accessibility": {
     "permissionsDescription": "Abrax cần quyền truy cập để gõ văn bản đã chuyển đổi.",
@@ -634,7 +644,15 @@
     "modelLoadFailedUnknown": "mô hình không xác định",
     "pasteFailedTitle": "Không thể dán văn bản",
     "pasteFailed": "Không thể dán văn bản vào ứng dụng đang hoạt động.",
-    "transcriptionFailedTitle": "Phiên âm thất bại"
+    "transcriptionFailedTitle": "Phiên âm thất bại",
+    "recordingFailedTitle": "Ghi âm thất bại",
+    "modelLoadFailedTitle": "Không tải được mô hình",
+    "modelDownloadFailedTitle": "Tải mô hình thất bại",
+    "center": {
+      "title": "Lỗi gần đây ({{count}})",
+      "dismiss": "Bỏ qua",
+      "toggle": "Hiện tất cả lỗi"
+    }
   },
   "appLanguage": {
     "title": "Ngôn ngữ ứng dụng",

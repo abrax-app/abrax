@@ -6,7 +6,13 @@
     "unloadModel": "卸载模型",
     "model": "模型",
     "quit": "退出",
-    "cancel": "取消"
+    "cancel": "取消",
+    "errorTitle": "Abrax 遇到问题",
+    "errorRecording": "无法开始录音。打开 Abrax 查看原因。",
+    "errorTranscription": "转录失败。打开 Abrax 从历史记录中重试。",
+    "errorPaste": "无法粘贴文本。已保存在历史记录中。",
+    "errorModelLoad": "语音模型加载失败。打开 Abrax 查看原因。",
+    "errorModelDownload": "模型下载失败。打开 Abrax 重试。"
   },
   "sidebar": {
     "general": "通用",
@@ -117,7 +123,8 @@
         "checkFailed": "检查权限失败。请重试。",
         "requestFailed": "请求权限失败。请重试。"
       }
-    }
+    },
+    "emptyCatalog": "没有可用的模型。请检查日志并重启 Abrax。"
   },
   "modelSelector": {
     "custom": "自定义",
@@ -151,7 +158,8 @@
     },
     "cancel": "取消",
     "cancelDownload": "取消下载",
-    "legacy": "旧版"
+    "legacy": "旧版",
+    "downloadFailed": "下载失败"
   },
   "settings": {
     "modelSettings": {
@@ -453,7 +461,8 @@
       "retranscribe": "重新转录",
       "retranscribeError": "重新转录失败。请重试。",
       "transcribing": "转录中...",
-      "transcriptionFailed": "转录失败。您可以使用重试图标重新转录。"
+      "transcriptionFailed": "转录失败。您可以使用重试图标重新转录。",
+      "loadError": "无法加载历史记录。你的听写内容仍保存在磁盘上。"
     },
     "debug": {
       "title": "调试",
@@ -612,7 +621,8 @@
     "open": "打开",
     "copy": "复制",
     "clear": "清除",
-    "noOptionsFound": "未找到选项"
+    "noOptionsFound": "未找到选项",
+    "retry": "重试"
   },
   "accessibility": {
     "permissionsDescription": "Abrax 需要辅助功能权限才能输入转录的文字。",
@@ -634,7 +644,15 @@
     "modelLoadFailedUnknown": "未知模型",
     "pasteFailedTitle": "粘贴文本失败",
     "pasteFailed": "无法将文本粘贴到当前活动的应用程序中。",
-    "transcriptionFailedTitle": "转录失败"
+    "transcriptionFailedTitle": "转录失败",
+    "recordingFailedTitle": "录音失败",
+    "modelLoadFailedTitle": "模型加载失败",
+    "modelDownloadFailedTitle": "模型下载失败",
+    "center": {
+      "title": "最近的错误（{{count}}）",
+      "dismiss": "关闭",
+      "toggle": "显示所有错误"
+    }
   },
   "appLanguage": {
     "title": "应用语言",

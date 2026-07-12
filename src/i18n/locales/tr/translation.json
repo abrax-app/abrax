@@ -6,7 +6,13 @@
     "unloadModel": "Modeli boşalt",
     "model": "Model",
     "quit": "Çıkış",
-    "cancel": "İptal"
+    "cancel": "İptal",
+    "errorTitle": "Abrax bir sorunla karşılaştı",
+    "errorRecording": "Kayıt başlatılamadı. Nedenini görmek için Abrax'ı aç.",
+    "errorTranscription": "Yazıya dökme başarısız. Geçmişten yeniden denemek için Abrax'ı aç.",
+    "errorPaste": "Metin yapıştırılamadı. Geçmişinde kayıtlı.",
+    "errorModelLoad": "Konuşma modeli yüklenemedi. Nedenini görmek için Abrax'ı aç.",
+    "errorModelDownload": "Model indirme başarısız oldu. Yeniden denemek için Abrax'ı aç."
   },
   "sidebar": {
     "general": "Genel",
@@ -117,7 +123,8 @@
         "checkFailed": "İzinler kontrol edilemedi. Lütfen tekrar deneyin.",
         "requestFailed": "İzin isteği başarısız oldu. Lütfen tekrar deneyin."
       }
-    }
+    },
+    "emptyCatalog": "Kullanılabilir model yok. Günlüğü kontrol edip Abrax'ı yeniden başlatın."
   },
   "modelSelector": {
     "custom": "Özel",
@@ -151,7 +158,8 @@
     },
     "cancel": "İptal",
     "cancelDownload": "İndirmeyi iptal et",
-    "legacy": "Eski"
+    "legacy": "Eski",
+    "downloadFailed": "İndirme başarısız"
   },
   "settings": {
     "modelSettings": {
@@ -453,7 +461,8 @@
       "retranscribe": "Yeniden yazıya dök",
       "retranscribeError": "Yeniden yazıya dökme başarısız oldu. Lütfen tekrar deneyin.",
       "transcribing": "Yazıya döküyor...",
-      "transcriptionFailed": "Transkripsiyon başarısız oldu. Yeniden deneme simgesini kullanarak tekrar yazıya dökebilirsiniz."
+      "transcriptionFailed": "Transkripsiyon başarısız oldu. Yeniden deneme simgesini kullanarak tekrar yazıya dökebilirsiniz.",
+      "loadError": "Geçmiş yüklenemedi. Diktelerin hâlâ diskte."
     },
     "debug": {
       "title": "Hata Ayıklama",
@@ -612,7 +621,8 @@
     "open": "Aç",
     "copy": "Kopyala",
     "clear": "Temizle",
-    "noOptionsFound": "Seçenek bulunamadı"
+    "noOptionsFound": "Seçenek bulunamadı",
+    "retry": "Yeniden dene"
   },
   "accessibility": {
     "permissionsDescription": "Abrax, transkribe edilen metni yazabilmek için erişilebilirlik izinlerine ihtiyaç duyar.",
@@ -634,7 +644,15 @@
     "modelLoadFailedUnknown": "bilinmeyen model",
     "pasteFailedTitle": "Metin yapıştırılamadı",
     "pasteFailed": "Metin etkin uygulamaya yapıştırılamadı.",
-    "transcriptionFailedTitle": "Transkripsiyon başarısız oldu"
+    "transcriptionFailedTitle": "Transkripsiyon başarısız oldu",
+    "recordingFailedTitle": "Kayıt başarısız",
+    "modelLoadFailedTitle": "Model yüklenemedi",
+    "modelDownloadFailedTitle": "Model indirme başarısız",
+    "center": {
+      "title": "Son hatalar ({{count}})",
+      "dismiss": "Kapat",
+      "toggle": "Tüm hataları göster"
+    }
   },
   "appLanguage": {
     "title": "Uygulama Dili",

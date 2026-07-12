@@ -6,7 +6,13 @@
     "unloadModel": "Rilascia modello",
     "model": "Modello",
     "quit": "Esci",
-    "cancel": "Annulla"
+    "cancel": "Annulla",
+    "errorTitle": "Abrax ha riscontrato un problema",
+    "errorRecording": "Impossibile avviare la registrazione. Apri Abrax per i dettagli.",
+    "errorTranscription": "La trascrizione non è riuscita. Apri Abrax per riprovare dalla cronologia.",
+    "errorPaste": "Impossibile incollare il testo. È salvato nella cronologia.",
+    "errorModelLoad": "Impossibile caricare il modello vocale. Apri Abrax per la causa.",
+    "errorModelDownload": "Il download del modello non è riuscito. Apri Abrax per riprovare."
   },
   "sidebar": {
     "general": "Generale",
@@ -117,7 +123,8 @@
         "checkFailed": "Impossibile verificare i permessi. Riprova.",
         "requestFailed": "Impossibile richiedere il permesso. Riprova."
       }
-    }
+    },
+    "emptyCatalog": "Nessun modello disponibile. Controlla il log e riavvia Abrax."
   },
   "modelSelector": {
     "custom": "Personalizzato",
@@ -151,7 +158,8 @@
     },
     "cancel": "Annulla",
     "cancelDownload": "Annulla download",
-    "legacy": "Obsoleto"
+    "legacy": "Obsoleto",
+    "downloadFailed": "Download non riuscito"
   },
   "settings": {
     "modelSettings": {
@@ -453,7 +461,8 @@
       "retranscribe": "Ri-trascrivere",
       "retranscribeError": "Impossibile ri-trascrivere. Riprova.",
       "transcribing": "Trascrizione in corso...",
-      "transcriptionFailed": "Trascrizione fallita. Puoi ri-trascrivere usando l'icona di ripetizione."
+      "transcriptionFailed": "Trascrizione fallita. Puoi ri-trascrivere usando l'icona di ripetizione.",
+      "loadError": "Impossibile caricare la cronologia. Le tue dettature sono ancora sul disco."
     },
     "debug": {
       "title": "Debug",
@@ -612,7 +621,8 @@
     "open": "Apri",
     "copy": "Copia",
     "clear": "Svuota",
-    "noOptionsFound": "Nessuna opzione trovata"
+    "noOptionsFound": "Nessuna opzione trovata",
+    "retry": "Riprova"
   },
   "accessibility": {
     "permissionsDescription": "Abrax ha bisogno dei permessi di accessibilità per digitare il testo trascritto.",
@@ -634,7 +644,15 @@
     "modelLoadFailedUnknown": "modello sconosciuto",
     "pasteFailedTitle": "Impossibile incollare il testo",
     "pasteFailed": "Non è stato possibile incollare il testo nell'applicazione attiva.",
-    "transcriptionFailedTitle": "Trascrizione non riuscita"
+    "transcriptionFailedTitle": "Trascrizione non riuscita",
+    "recordingFailedTitle": "Registrazione non riuscita",
+    "modelLoadFailedTitle": "Impossibile caricare il modello",
+    "modelDownloadFailedTitle": "Download del modello non riuscito",
+    "center": {
+      "title": "Errori recenti ({{count}})",
+      "dismiss": "Ignora",
+      "toggle": "Mostra tutti gli errori"
+    }
   },
   "appLanguage": {
     "title": "Lingua Applicazione",

@@ -1,22 +1,21 @@
 import { useEffect, useState, useRef, type ReactNode } from "react";
 import { toast, Toaster } from "sonner";
 import { useTranslation } from "react-i18next";
-import { listen } from "@tauri-apps/api/event";
 import { platform } from "@tauri-apps/plugin-os";
 import {
   checkAccessibilityPermission,
   checkMicrophonePermission,
 } from "tauri-plugin-macos-permissions-api";
-import { ModelStateEvent, RecordingErrorEvent } from "./lib/types/events";
 import "./App.css";
 import AccessibilityPermissions from "./components/AccessibilityPermissions";
+import AlertsBanner, { alertTitleKey } from "./components/AlertsBanner";
 import Footer from "./components/footer";
 import Onboarding, { AccessibilityOnboarding } from "./components/onboarding";
 import { Sidebar, SidebarSection, SECTIONS_CONFIG } from "./components/Sidebar";
 import { WhatsNewGate } from "./components/whats-new";
 import { useSettings } from "./hooks/useSettings";
 import { useSettingsStore } from "./stores/settingsStore";
-import { commands } from "@/bindings";
+import { commands, events } from "@/bindings";
 import { getLanguageDirection, initializeRTL } from "@/lib/utils/rtl";
 
 type OnboardingStep = "accessibility" | "model" | "done";
@@ -96,74 +95,26 @@ function App() {
     };
   }, [settings?.debug_mode, updateSetting]);
 
-  // Listen for recording errors from the backend and show a toast
+  // Canal único de errores (F1): un solo listener convierte cada UserAlertEvent
+  // en un toast localizado. La persistencia (centro de errores) vive en
+  // alertsStore/AlertsBanner, y la notificación nativa con ventana oculta la
+  // envía el backend — misma fuente, tres superficies.
   useEffect(() => {
-    const unlisten = listen<RecordingErrorEvent>("recording-error", (event) => {
-      const { error_type, detail } = event.payload;
-
-      if (error_type === "microphone_permission_denied") {
+    const unlisten = events.userAlertEvent.listen((event) => {
+      const { kind, detail } = event.payload;
+      const title = t(alertTitleKey(kind));
+      if (kind === "recording_permission_denied") {
         const currentPlatform = platform();
-        const platformKey = `errors.micPermissionDenied.${currentPlatform}`;
-        const description = t(platformKey, {
+        const description = t(`errors.micPermissionDenied.${currentPlatform}`, {
           defaultValue: t("errors.micPermissionDenied.generic"),
         });
-        toast.error(t("errors.micPermissionDeniedTitle"), { description });
-      } else if (error_type === "no_input_device") {
-        toast.error(t("errors.noInputDeviceTitle"), {
-          description: t("errors.noInputDevice"),
-        });
+        toast.error(title, { description });
+      } else if (kind === "recording_no_device") {
+        toast.error(title, { description: t("errors.noInputDevice") });
+      } else if (kind === "paste") {
+        toast.error(title, { description: t("errors.pasteFailed") });
       } else {
-        toast.error(
-          t("errors.recordingFailed", { error: detail ?? "Unknown error" }),
-        );
-      }
-    });
-    return () => {
-      unlisten.then((fn) => fn());
-    };
-  }, [t]);
-
-  // Listen for paste failures and show a toast.
-  // The technical error detail is logged to handy.log on the Rust side
-  // (see actions.rs `error!("Failed to paste transcription: ...")`),
-  // so we show a localized, user-friendly message here instead of the raw error.
-  useEffect(() => {
-    const unlisten = listen("paste-error", () => {
-      toast.error(t("errors.pasteFailedTitle"), {
-        description: t("errors.pasteFailed"),
-      });
-    });
-    return () => {
-      unlisten.then((fn) => fn());
-    };
-  }, [t]);
-
-  // Listen for transcription failures and show a toast.
-  // The payload is the backend error message (also logged to handy.log).
-  useEffect(() => {
-    const unlisten = listen<string>("transcription-error", (event) => {
-      toast.error(t("errors.transcriptionFailedTitle"), {
-        description: event.payload,
-      });
-    });
-    return () => {
-      unlisten.then((fn) => fn());
-    };
-  }, [t]);
-
-  // Listen for model loading failures and show a toast
-  useEffect(() => {
-    const unlisten = listen<ModelStateEvent>("model-state-changed", (event) => {
-      if (event.payload.event_type === "loading_failed") {
-        toast.error(
-          t("errors.modelLoadFailed", {
-            model:
-              event.payload.model_name || t("errors.modelLoadFailedUnknown"),
-          }),
-          {
-            description: event.payload.error,
-          },
-        );
+        toast.error(title, { description: detail ?? undefined });
       }
     });
     return () => {
@@ -301,6 +252,7 @@ function App() {
           <div className="flex-1 flex flex-col overflow-hidden">
             <div className="flex-1 overflow-y-auto">
               <div className="flex flex-col items-center p-4 gap-4">
+                <AlertsBanner />
                 <AccessibilityPermissions />
                 {renderSettingsContent(currentSection)}
               </div>

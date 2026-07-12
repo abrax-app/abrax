@@ -6,7 +6,13 @@
     "unloadModel": "Unload Model",
     "model": "Model",
     "quit": "Quit",
-    "cancel": "Cancel"
+    "cancel": "Cancel",
+    "errorTitle": "Abrax ran into a problem",
+    "errorRecording": "Recording couldn't start. Open Abrax to see why.",
+    "errorTranscription": "Transcription failed. Open Abrax to retry from History.",
+    "errorPaste": "The text couldn't be pasted. It's saved in your History.",
+    "errorModelLoad": "The speech model failed to load. Open Abrax to see the cause.",
+    "errorModelDownload": "The model download failed. Open Abrax to retry."
   },
   "sidebar": {
     "general": "General",
@@ -117,7 +123,8 @@
         "checkFailed": "Failed to check permissions. Please try again.",
         "requestFailed": "Failed to request permission. Please try again."
       }
-    }
+    },
+    "emptyCatalog": "No models available. Check the log and restart Abrax."
   },
   "modelSelector": {
     "custom": "Custom",
@@ -151,7 +158,8 @@
       "translation": "Can translate to English",
       "translate": "Translate",
       "streaming": "Shows live transcription as you speak"
-    }
+    },
+    "downloadFailed": "Download failed"
   },
   "settings": {
     "modelSettings": {
@@ -453,7 +461,8 @@
       "retranscribe": "Re-transcribe",
       "retranscribeError": "Failed to re-transcribe. Please try again.",
       "transcribing": "Transcribing...",
-      "transcriptionFailed": "Transcription failed. You can re-transcribe using the retry icon."
+      "transcriptionFailed": "Transcription failed. You can re-transcribe using the retry icon.",
+      "loadError": "History couldn't be loaded. Your dictations are still on disk."
     },
     "debug": {
       "title": "Debug",
@@ -615,7 +624,8 @@
     "open": "Open",
     "copy": "Copy",
     "clear": "Clear",
-    "noOptionsFound": "No options found"
+    "noOptionsFound": "No options found",
+    "retry": "Retry"
   },
   "accessibility": {
     "permissionsDescription": "Abrax needs accessibility permissions to type transcribed text.",
@@ -637,7 +647,15 @@
     "modelLoadFailedUnknown": "unknown model",
     "pasteFailedTitle": "Failed to Paste Text",
     "pasteFailed": "Text could not be pasted into the active application.",
-    "transcriptionFailedTitle": "Transcription Failed"
+    "transcriptionFailedTitle": "Transcription Failed",
+    "recordingFailedTitle": "Recording failed",
+    "modelLoadFailedTitle": "Model failed to load",
+    "modelDownloadFailedTitle": "Model download failed",
+    "center": {
+      "title": "Recent errors ({{count}})",
+      "dismiss": "Dismiss",
+      "toggle": "Show all errors"
+    }
   },
   "appLanguage": {
     "title": "Application Language",

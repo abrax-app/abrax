@@ -6,7 +6,13 @@
     "unloadModel": "Modell entladen",
     "model": "Modell",
     "quit": "Beenden",
-    "cancel": "Abbrechen"
+    "cancel": "Abbrechen",
+    "errorTitle": "Abrax hat ein Problem festgestellt",
+    "errorRecording": "Die Aufnahme konnte nicht starten. Öffne Abrax für Details.",
+    "errorTranscription": "Die Transkription ist fehlgeschlagen. Öffne Abrax und versuche es im Verlauf erneut.",
+    "errorPaste": "Der Text konnte nicht eingefügt werden. Er ist im Verlauf gespeichert.",
+    "errorModelLoad": "Das Sprachmodell konnte nicht geladen werden. Öffne Abrax für die Ursache.",
+    "errorModelDownload": "Der Modell-Download ist fehlgeschlagen. Öffne Abrax, um es erneut zu versuchen."
   },
   "sidebar": {
     "general": "Allgemein",
@@ -117,7 +123,8 @@
         "checkFailed": "Berechtigungsprüfung fehlgeschlagen. Bitte erneut versuchen.",
         "requestFailed": "Berechtigungsanfrage fehlgeschlagen. Bitte erneut versuchen."
       }
-    }
+    },
+    "emptyCatalog": "Keine Modelle verfügbar. Prüfe das Log und starte Abrax neu."
   },
   "modelSelector": {
     "custom": "Benutzerdefiniert",
@@ -151,7 +158,8 @@
     },
     "cancel": "Abbrechen",
     "cancelDownload": "Download abbrechen",
-    "legacy": "Veraltet"
+    "legacy": "Veraltet",
+    "downloadFailed": "Download fehlgeschlagen"
   },
   "settings": {
     "modelSettings": {
@@ -453,7 +461,8 @@
       "retranscribe": "Erneut transkribieren",
       "retranscribeError": "Erneute Transkription fehlgeschlagen. Bitte versuche es erneut.",
       "transcribing": "Transkribiere...",
-      "transcriptionFailed": "Transkription fehlgeschlagen. Du kannst über das Wiederholen-Symbol erneut transkribieren."
+      "transcriptionFailed": "Transkription fehlgeschlagen. Du kannst über das Wiederholen-Symbol erneut transkribieren.",
+      "loadError": "Der Verlauf konnte nicht geladen werden. Deine Diktate sind weiterhin auf der Festplatte."
     },
     "debug": {
       "title": "Debug",
@@ -612,7 +621,8 @@
     "open": "Öffnen",
     "copy": "Kopieren",
     "clear": "Leeren",
-    "noOptionsFound": "Keine Optionen gefunden"
+    "noOptionsFound": "Keine Optionen gefunden",
+    "retry": "Erneut versuchen"
   },
   "accessibility": {
     "permissionsDescription": "Abrax benötigt Bedienungshilfen-Berechtigungen, um transkribierten Text einzugeben.",
@@ -634,7 +644,15 @@
     "modelLoadFailedUnknown": "unbekanntes Modell",
     "pasteFailedTitle": "Text konnte nicht eingefügt werden",
     "pasteFailed": "Der Text konnte nicht in die aktive Anwendung eingefügt werden.",
-    "transcriptionFailedTitle": "Transkription fehlgeschlagen"
+    "transcriptionFailedTitle": "Transkription fehlgeschlagen",
+    "recordingFailedTitle": "Aufnahme fehlgeschlagen",
+    "modelLoadFailedTitle": "Modell konnte nicht geladen werden",
+    "modelDownloadFailedTitle": "Modell-Download fehlgeschlagen",
+    "center": {
+      "title": "Letzte Fehler ({{count}})",
+      "dismiss": "Verwerfen",
+      "toggle": "Alle Fehler anzeigen"
+    }
   },
   "appLanguage": {
     "title": "Anwendungssprache",

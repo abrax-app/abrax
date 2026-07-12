@@ -19,6 +19,7 @@ mod signal_handle;
 mod transcription_coordinator;
 mod tray;
 mod tray_i18n;
+mod user_alerts;
 mod utils;
 
 pub use cli::CliArgs;
@@ -621,11 +622,14 @@ pub fn run(cli_args: CliArgs) {
             commands::history::update_history_limit,
             commands::history::update_recording_retention_period,
             helpers::clamshell::is_laptop,
+            user_alerts::get_recent_alerts,
+            user_alerts::clear_recent_alerts,
         ])
         .events(collect_events![
             managers::history::HistoryUpdatePayload,
             managers::transcription::StreamTextEvent,
             managers::transcription::StreamPhaseEvent,
+            user_alerts::UserAlertEvent,
         ]);
 
     #[cfg(debug_assertions)] // <- Only export on non-release builds
@@ -724,6 +728,7 @@ pub fn run(cli_args: CliArgs) {
         .plugin(tauri_plugin_process::init())
         .plugin(tauri_plugin_updater::Builder::new().build())
         .plugin(tauri_plugin_os::init())
+        .plugin(tauri_plugin_notification::init())
         .plugin(tauri_plugin_clipboard_manager::init())
         .plugin(tauri_plugin_macos_permissions::init())
         .plugin(tauri_plugin_opener::init())

@@ -6,7 +6,13 @@
     "unloadModel": "モデルをアンロード",
     "model": "モデル",
     "quit": "終了",
-    "cancel": "キャンセル"
+    "cancel": "キャンセル",
+    "errorTitle": "Abrax で問題が発生しました",
+    "errorRecording": "録音を開始できませんでした。Abrax を開いて原因を確認してください。",
+    "errorTranscription": "文字起こしに失敗しました。Abrax を開いて履歴から再試行してください。",
+    "errorPaste": "テキストを貼り付けられませんでした。履歴に保存されています。",
+    "errorModelLoad": "音声モデルの読み込みに失敗しました。Abrax を開いて原因を確認してください。",
+    "errorModelDownload": "モデルのダウンロードに失敗しました。Abrax を開いて再試行してください。"
   },
   "sidebar": {
     "general": "一般",
@@ -117,7 +123,8 @@
         "checkFailed": "権限の確認に失敗しました。もう一度お試しください。",
         "requestFailed": "権限のリクエストに失敗しました。もう一度お試しください。"
       }
-    }
+    },
+    "emptyCatalog": "利用可能なモデルがありません。ログを確認して Abrax を再起動してください。"
   },
   "modelSelector": {
     "custom": "カスタム",
@@ -151,7 +158,8 @@
     },
     "cancel": "キャンセル",
     "cancelDownload": "ダウンロードをキャンセル",
-    "legacy": "旧式"
+    "legacy": "旧式",
+    "downloadFailed": "ダウンロードに失敗しました"
   },
   "settings": {
     "modelSettings": {
@@ -453,7 +461,8 @@
       "retranscribe": "再文字起こし",
       "retranscribeError": "再文字起こしに失敗しました。もう一度お試しください。",
       "transcribing": "文字起こし中…",
-      "transcriptionFailed": "文字起こしに失敗しました。リトライアイコンを使用して再文字起こしできます。"
+      "transcriptionFailed": "文字起こしに失敗しました。リトライアイコンを使用して再文字起こしできます。",
+      "loadError": "履歴を読み込めませんでした。音声入力データはディスクに残っています。"
     },
     "debug": {
       "title": "デバッグ",
@@ -612,7 +621,8 @@
     "open": "開く",
     "copy": "コピー",
     "clear": "クリア",
-    "noOptionsFound": "オプションが見つかりません"
+    "noOptionsFound": "オプションが見つかりません",
+    "retry": "再試行"
   },
   "accessibility": {
     "permissionsDescription": "Abrax が文字起こしテキストを入力するには、アクセシビリティ権限が必要です。",
@@ -634,7 +644,15 @@
     "modelLoadFailedUnknown": "不明なモデル",
     "pasteFailedTitle": "テキストの貼り付けに失敗しました",
     "pasteFailed": "アクティブなアプリにテキストを貼り付けられませんでした。",
-    "transcriptionFailedTitle": "文字起こしに失敗しました"
+    "transcriptionFailedTitle": "文字起こしに失敗しました",
+    "recordingFailedTitle": "録音に失敗しました",
+    "modelLoadFailedTitle": "モデルの読み込みに失敗しました",
+    "modelDownloadFailedTitle": "モデルのダウンロードに失敗しました",
+    "center": {
+      "title": "最近のエラー（{{count}}）",
+      "dismiss": "閉じる",
+      "toggle": "すべてのエラーを表示"
+    }
   },
   "appLanguage": {
     "title": "アプリの言語",

@@ -6,7 +6,13 @@
     "unloadModel": "פרוק מודל",
     "model": "מודל",
     "quit": "יציאה",
-    "cancel": "ביטול"
+    "cancel": "ביטול",
+    "errorTitle": "Abrax נתקל בבעיה",
+    "errorRecording": "לא ניתן להתחיל את ההקלטה. פתח את Abrax לפרטים.",
+    "errorTranscription": "התמלול נכשל. פתח את Abrax כדי לנסות שוב מההיסטוריה.",
+    "errorPaste": "לא ניתן להדביק את הטקסט. הוא נשמר בהיסטוריה שלך.",
+    "errorModelLoad": "טעינת מודל הדיבור נכשלה. פתח את Abrax לפרטים.",
+    "errorModelDownload": "הורדת המודל נכשלה. פתח את Abrax כדי לנסות שוב."
   },
   "sidebar": {
     "general": "כללי",
@@ -117,7 +123,8 @@
         "checkFailed": "בדיקת ההרשאות נכשלה. נסה שוב.",
         "requestFailed": "בקשת ההרשאה נכשלה. נסה שוב."
       }
-    }
+    },
+    "emptyCatalog": "אין מודלים זמינים. בדוק את היומן והפעל מחדש את Abrax."
   },
   "modelSelector": {
     "custom": "מותאם אישית",
@@ -151,7 +158,8 @@
       "translate": "תרגם לאנגלית",
       "streaming": "מציג תמלול חי תוך כדי דיבור"
     },
-    "legacy": "מדור קודם"
+    "legacy": "מדור קודם",
+    "downloadFailed": "ההורדה נכשלה"
   },
   "settings": {
     "modelSettings": {
@@ -453,7 +461,8 @@
       "retranscribe": "תמלל מחדש",
       "retranscribeError": "תמלול מחדש נכשל. נסה שוב.",
       "transcribing": "מתמלל...",
-      "transcriptionFailed": "התמלול נכשל. אפשר לתמלל מחדש באמצעות אייקון הניסיון החוזר."
+      "transcriptionFailed": "התמלול נכשל. אפשר לתמלל מחדש באמצעות אייקון הניסיון החוזר.",
+      "loadError": "לא ניתן לטעון את ההיסטוריה. ההכתבות שלך עדיין בדיסק."
     },
     "debug": {
       "title": "ניפוי שגיאות",
@@ -612,7 +621,8 @@
     "open": "פתח",
     "copy": "העתק",
     "clear": "נקה",
-    "noOptionsFound": "לא נמצאו אפשרויות"
+    "noOptionsFound": "לא נמצאו אפשרויות",
+    "retry": "נסה שוב"
   },
   "accessibility": {
     "permissionsDescription": "Abrax צריך הרשאות נגישות כדי להקליד את הטקסט המתומלל.",
@@ -634,7 +644,15 @@
     "modelLoadFailedUnknown": "מודל לא ידוע",
     "pasteFailedTitle": "ההדבקה נכשלה",
     "pasteFailed": "לא ניתן היה להדביק את הטקסט ביישום הפעיל.",
-    "transcriptionFailedTitle": "התמלול נכשל"
+    "transcriptionFailedTitle": "התמלול נכשל",
+    "recordingFailedTitle": "ההקלטה נכשלה",
+    "modelLoadFailedTitle": "טעינת המודל נכשלה",
+    "modelDownloadFailedTitle": "הורדת המודל נכשלה",
+    "center": {
+      "title": "שגיאות אחרונות ({{count}})",
+      "dismiss": "סגור",
+      "toggle": "הצג את כל השגיאות"
+    }
   },
   "appLanguage": {
     "title": "שפת האפליקציה",

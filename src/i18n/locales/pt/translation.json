@@ -6,7 +6,13 @@
     "unloadModel": "Descarregar modelo",
     "model": "Modelo",
     "quit": "Sair",
-    "cancel": "Cancelar"
+    "cancel": "Cancelar",
+    "errorTitle": "O Abrax encontrou um problema",
+    "errorRecording": "Não foi possível iniciar a gravação. Abra o Abrax para ver o motivo.",
+    "errorTranscription": "A transcrição falhou. Abra o Abrax para tentar novamente pelo histórico.",
+    "errorPaste": "Não foi possível colar o texto. Ele está salvo no seu histórico.",
+    "errorModelLoad": "O modelo de voz não pôde ser carregado. Abra o Abrax para ver a causa.",
+    "errorModelDownload": "O download do modelo falhou. Abra o Abrax para tentar novamente."
   },
   "sidebar": {
     "general": "Geral",
@@ -117,7 +123,8 @@
         "checkFailed": "Erro ao verificar permissões. Por favor, tente novamente.",
         "requestFailed": "Erro ao solicitar permissão. Por favor, tente novamente."
       }
-    }
+    },
+    "emptyCatalog": "Nenhum modelo disponível. Verifique o log e reinicie o Abrax."
   },
   "modelSelector": {
     "custom": "Personalizado",
@@ -151,7 +158,8 @@
     },
     "cancel": "Cancelar",
     "cancelDownload": "Cancelar download",
-    "legacy": "Legado"
+    "legacy": "Legado",
+    "downloadFailed": "Falha no download"
   },
   "settings": {
     "modelSettings": {
@@ -453,7 +461,8 @@
       "retranscribe": "Re-transcrever",
       "retranscribeError": "Falha ao re-transcrever. Por favor, tente novamente.",
       "transcribing": "Transcrevendo...",
-      "transcriptionFailed": "A transcrição falhou. Você pode re-transcrever usando o ícone de tentar novamente."
+      "transcriptionFailed": "A transcrição falhou. Você pode re-transcrever usando o ícone de tentar novamente.",
+      "loadError": "Não foi possível carregar o histórico. Seus ditados continuam no disco."
     },
     "debug": {
       "title": "Depuração",
@@ -612,7 +621,8 @@
     "open": "Abrir",
     "copy": "Copiar",
     "clear": "Limpar",
-    "noOptionsFound": "Nenhuma opção encontrada"
+    "noOptionsFound": "Nenhuma opção encontrada",
+    "retry": "Tentar novamente"
   },
   "accessibility": {
     "permissionsDescription": "O Abrax precisa de permissões de acessibilidade para digitar o texto transcrito.",
@@ -634,7 +644,15 @@
     "modelLoadFailedUnknown": "modelo desconhecido",
     "pasteFailedTitle": "Falha ao colar o texto",
     "pasteFailed": "Não foi possível colar o texto no aplicativo ativo.",
-    "transcriptionFailedTitle": "Falha na transcrição"
+    "transcriptionFailedTitle": "Falha na transcrição",
+    "recordingFailedTitle": "Falha na gravação",
+    "modelLoadFailedTitle": "Falha ao carregar o modelo",
+    "modelDownloadFailedTitle": "Falha no download do modelo",
+    "center": {
+      "title": "Erros recentes ({{count}})",
+      "dismiss": "Dispensar",
+      "toggle": "Mostrar todos os erros"
+    }
   },
   "appLanguage": {
     "title": "Idioma da Aplicação",

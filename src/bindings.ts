@@ -800,6 +800,19 @@ async isLaptop() : Promise<Result<boolean, string>> {
     if(e instanceof Error) throw e;
     else return { status: "error", error: e  as any };
 }
+},
+/**
+ * Errores recientes (más nuevo primero) para poblar el centro de errores al
+ * abrir la ventana — cubre los fallos ocurridos antes de montar el listener.
+ */
+async getRecentAlerts() : Promise<UserAlertEvent[]> {
+    return await TAURI_INVOKE("get_recent_alerts");
+},
+/**
+ * Descartar el centro de errores.
+ */
+async clearRecentAlerts() : Promise<void> {
+    await TAURI_INVOKE("clear_recent_alerts");
 }
 }
 
@@ -809,11 +822,13 @@ async isLaptop() : Promise<Result<boolean, string>> {
 export const events = __makeEvents__<{
 historyUpdatePayload: HistoryUpdatePayload,
 streamPhaseEvent: StreamPhaseEvent,
-streamTextEvent: StreamTextEvent
+streamTextEvent: StreamTextEvent,
+userAlertEvent: UserAlertEvent
 }>({
 historyUpdatePayload: "history-update-payload",
 streamPhaseEvent: "stream-phase-event",
-streamTextEvent: "stream-text-event"
+streamTextEvent: "stream-text-event",
+userAlertEvent: "user-alert-event"
 })
 
 /** user-defined constants **/
@@ -822,6 +837,7 @@ streamTextEvent: "stream-text-event"
 
 /** user-defined types **/
 
+export type AlertKind = "recording_permission_denied" | "recording_no_device" | "recording" | "transcription" | "paste" | "model_load" | "model_download"
 /**
  * The container-level `serde(default)` (backed by the `Default` impl below)
  * guarantees every field — including ones added in the future — falls back to
@@ -966,6 +982,15 @@ export type StreamWorkKind = "transcribing" | "polishing"
 export type Theme = "system" | "light" | "dark"
 export type TranscribeAcceleratorSetting = "auto" | "cpu" | "gpu"
 export type TypingTool = "auto" | "wtype" | "kwtype" | "dotool" | "ydotool" | "xdotool"
+export type UserAlertEvent = { kind: AlertKind; 
+/**
+ * Mensaje técnico (error de motor/red/dispositivo); nunca texto dictado.
+ */
+detail: string | null; 
+/**
+ * Momento del fallo, epoch en milisegundos.
+ */
+ts_ms: number }
 export type WindowsMicrophonePermissionStatus = { supported: boolean; overall_access: PermissionAccess; device_access: PermissionAccess; app_access: PermissionAccess; desktop_app_access: PermissionAccess }
 
 /** tauri-specta globals **/
