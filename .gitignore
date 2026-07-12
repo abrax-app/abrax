@@ -59,7 +59,10 @@ project-ops/local/
 CLAUDE.md
 ESTADO.md
 PLAN_MAESTRO.md
-INFORME_SYNC*.md
+# Convención de géneros (fallo del estratega 12/07): INFORME_*/IDEAS/ESTADO
+# jamás se trackean — nacen fuera del repo o se destrackean en el mismo commit.
+INFORME_*.md
+IDEAS.md
 PROJECT_BRIEF.md
 CLAUDE_REBRAND.md
 PLAN_HACKATHON.md
