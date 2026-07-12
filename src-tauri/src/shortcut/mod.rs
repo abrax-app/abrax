@@ -16,7 +16,7 @@ mod tauri_impl;
 use log::{error, info, warn};
 use serde::Serialize;
 use specta::Type;
-use tauri::{AppHandle, Emitter, Manager};
+use tauri::{AppHandle, Manager};
 use tauri_plugin_autostart::ManagerExt;
 
 #[cfg(all(target_os = "macos", target_arch = "aarch64"))]
@@ -293,16 +293,6 @@ pub fn change_keyboard_implementation_setting(
 
     // Register all shortcuts with new implementation, resetting invalid ones
     let reset_bindings = register_all_shortcuts_for_implementation(&app, new_impl);
-
-    // Emit event to notify frontend of the change
-    let _ = app.emit(
-        "settings-changed",
-        serde_json::json!({
-            "setting": "keyboard_implementation",
-            "value": implementation,
-            "reset_bindings": reset_bindings
-        }),
-    );
 
     info!("Keyboard implementation switched to {:?}", new_impl);
 
@@ -621,15 +611,6 @@ pub fn change_debug_mode_setting(app: AppHandle, enabled: bool) -> Result<(), St
     // debug mode, so logs are forwarded to the frontend only while it is on.
     crate::WEBVIEW_LOG_STREAMING.store(enabled, std::sync::atomic::Ordering::Relaxed);
 
-    // Emit event to notify frontend of debug mode change
-    let _ = app.emit(
-        "settings-changed",
-        serde_json::json!({
-            "setting": "debug_mode",
-            "value": enabled
-        }),
-    );
-
     Ok(())
 }
 
@@ -639,15 +620,6 @@ pub fn change_start_hidden_setting(app: AppHandle, enabled: bool) -> Result<(), 
     let mut settings = settings::get_settings(&app);
     settings.start_hidden = enabled;
     settings::write_settings(&app, settings);
-
-    // Notify frontend
-    let _ = app.emit(
-        "settings-changed",
-        serde_json::json!({
-            "setting": "start_hidden",
-            "value": enabled
-        }),
-    );
 
     Ok(())
 }
@@ -667,15 +639,6 @@ pub fn change_autostart_setting(app: AppHandle, enabled: bool) -> Result<(), Str
         let _ = autostart_manager.disable();
     }
 
-    // Notify frontend
-    let _ = app.emit(
-        "settings-changed",
-        serde_json::json!({
-            "setting": "autostart_enabled",
-            "value": enabled
-        }),
-    );
-
     Ok(())
 }
 
@@ -685,14 +648,6 @@ pub fn change_update_checks_setting(app: AppHandle, enabled: bool) -> Result<(),
     let mut settings = settings::get_settings(&app);
     settings.update_checks_enabled = enabled;
     settings::write_settings(&app, settings);
-
-    let _ = app.emit(
-        "settings-changed",
-        serde_json::json!({
-            "setting": "update_checks_enabled",
-            "value": enabled
-        }),
-    );
 
     Ok(())
 }
@@ -707,14 +662,6 @@ pub fn change_show_whats_new_on_update_setting(
     settings.show_whats_new_on_update = enabled;
     settings::write_settings(&app, settings);
 
-    let _ = app.emit(
-        "settings-changed",
-        serde_json::json!({
-            "setting": "show_whats_new_on_update",
-            "value": enabled
-        }),
-    );
-
     Ok(())
 }
 
@@ -728,14 +675,6 @@ pub fn change_whats_new_last_seen_version_setting(
     let mut settings = settings::get_settings(&app);
     settings.whats_new_last_seen_version = version.clone();
     settings::write_settings(&app, settings);
-
-    let _ = app.emit(
-        "settings-changed",
-        serde_json::json!({
-            "setting": "whats_new_last_seen_version",
-            "value": version
-        }),
-    );
 
     Ok(())
 }
