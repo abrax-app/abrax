@@ -860,6 +860,92 @@ async updateCustomReplacements(replacements: CustomReplacement[]) : Promise<Resu
  */
 async compilePrompt(text: string) : Promise<CompiledPrompt> {
     return await TAURI_INVOKE("compile_prompt", { text });
+},
+async escuchaListVoices() : Promise<Result<VozEscucha[], string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("escucha_list_voices") };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+/**
+ * `rate` es un multiplicador de velocidad (1.0 = normal); ver
+ * `managers::escucha::map_rate` para el mapeo al rango nativo del backend.
+ */
+async escuchaSpeak(texto: string, vozId: string | null, rate: number | null) : Promise<Result<null, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("escucha_speak", { texto, vozId, rate }) };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+async escuchaStop() : Promise<Result<null, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("escucha_stop") };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+async escuchaStatus() : Promise<Result<EstadoEscucha, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("escucha_status") };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+/**
+ * Preprocesa contenido (markdown/código/auto) en la cola de oraciones que el
+ * panel Escucha lee y resalta. Puro: no toca el motor TTS.
+ */
+async escuchaPreprocess(contenido: string, modo: ModoLectura, verbosidad: VerbosidadSimbolos) : Promise<Result<OracionHablable[], string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("escucha_preprocess", { contenido, modo, verbosidad }) };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+/**
+ * Lee el archivo de texto que el usuario eligió en el diálogo del panel.
+ * Vive en Rust en vez de plugin-fs para no ampliar el scope compartido de
+ * capabilities; el límite de tamaño evita tragar binarios gigantes.
+ */
+async escuchaReadFile(ruta: string) : Promise<Result<string, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("escucha_read_file", { ruta }) };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+/**
+ * "Leer portapapeles": el texto copiado, leído desde Rust para no añadir el
+ * permiso clipboard read al capabilities compartido. No se registra en logs.
+ */
+async escuchaReadClipboard() : Promise<Result<string, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("escucha_read_clipboard") };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+/**
+ * Persiste la configuración de Escucha de una vez. Comando propio (en vez de
+ * un change_* por campo en shortcut/mod.rs) para no tocar ese archivo
+ * caliente compartido con la sesión paralela.
+ */
+async escuchaUpdateSettings(vozProsa: string | null, vozCodigo: string | null, rateProsa: number, rateCodigo: number, verbosidad: VerbosidadSimbolos) : Promise<Result<null, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("escucha_update_settings", { vozProsa, vozCodigo, rateProsa, rateCodigo, verbosidad }) };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
 }
 }
 
@@ -937,7 +1023,28 @@ dictionary_project?: DictionaryProject | null; model_unload_timeout?: ModelUnloa
  * not gated on this — that follows model capability. Migrated from the old
  * `overlay_position` (position `none` → style `None`).
  */
-overlay_style?: OverlayStyle }
+overlay_style?: OverlayStyle; 
+/**
+ * Id de la voz del sistema para la prosa (None = la app elige la primera es-*).
+ */
+escucha_voz_prosa?: string | null; 
+/**
+ * Id de la voz del sistema para el código.
+ */
+escucha_voz_codigo?: string | null; 
+/**
+ * Multiplicador de velocidad de la prosa (1.0 = normal).
+ */
+escucha_rate_prosa?: number; 
+/**
+ * Multiplicador de velocidad del código (por defecto algo más lento:
+ * los símbolos verbalizados se siguen mejor).
+ */
+escucha_rate_codigo?: number; 
+/**
+ * Cuánto símbolo se pronuncia al leer código (Natural calla los cierres).
+ */
+escucha_verbosidad_simbolos?: VerbosidadSimbolos }
 export type AudioDevice = { index: string; name: string; is_default: boolean }
 export type AutoSubmitKey = "enter" | "ctrl_enter" | "cmd_enter"
 export type AvailableAccelerators = { transcribe: string[]; ort: string[]; gpu_devices: GpuDeviceOption[] }
@@ -966,6 +1073,12 @@ export type EngineType =
  * the file, so this one variant covers the whole transcribe-cpp family.
  */
 "TranscribeCpp" | "Parakeet" | "Moonshine" | "MoonshineStreaming" | "SenseVoice" | "GigaAM" | "Canary" | "Cohere"
+export type EstadoEscucha = { hablando: boolean; 
+/**
+ * `false` si el motor del SO no pudo inicializarse (sin TTS instalado,
+ * speech-dispatcher ausente en Linux, etc.).
+ */
+motor_disponible: boolean }
 export type GpuDeviceOption = { id: number; name: string; total_vram_mb: number }
 export type HistoryEntry = { id: number; file_name: string; timestamp: number; saved: boolean; title: string; transcription_text: string; post_processed_text: string | null; post_process_prompt: string | null; post_process_requested: boolean }
 export type HistoryUpdatePayload = { action: "added"; entry: HistoryEntry } | { action: "updated"; entry: HistoryEntry } | { action: "deleted"; id: number } | { action: "toggled"; id: number }
@@ -1008,6 +1121,29 @@ sha256: string | null } } |
  */
 "Local"
 export type ModelUnloadTimeout = "never" | "immediately" | "min_2" | "min_5" | "min_10" | "min_15" | "hour_1" | "sec_15"
+/**
+ * Cómo interpretar el contenido a leer.
+ */
+export type ModoLectura = 
+/**
+ * Segmentación markdown: prosa/encabezados con voz natural, bloques de
+ * código con voz técnica.
+ */
+"markdown" | 
+/**
+ * Todo el contenido es código: se lee línea a línea verbalizado.
+ */
+"codigo" | 
+/**
+ * Heurística: si el texto "parece código" se lee como código; si no,
+ * como markdown (que degrada bien a prosa plana).
+ */
+"auto"
+/**
+ * Una unidad de lectura: el panel habla `texto_hablable` con la voz `voz` y
+ * resalta las líneas `linea_inicio..=linea_fin` (1-based) del documento.
+ */
+export type OracionHablable = { texto_hablable: string; voz: VozTrozo; linea_inicio: number; linea_fin: number }
 export type OrtAcceleratorSetting = "auto" | "cpu" | "cuda" | "directml" | "rocm"
 export type OverlayPosition = "top" | "bottom"
 /**
@@ -1075,6 +1211,28 @@ detail: string | null;
  * Momento del fallo, epoch en milisegundos.
  */
 ts_ms: number }
+/**
+ * Cuánto símbolo se pronuncia al leer código. `Natural` calla los cierres de
+ * paréntesis/llaves/corchetes (menos ruido al oído); `Literal` pronuncia
+ * "abre"/"cierra" en cada uno (fidelidad total, útil para dictar de vuelta).
+ */
+export type VerbosidadSimbolos = "natural" | "literal"
+/**
+ * Una voz instalada en el sistema operativo.
+ */
+export type VozEscucha = { id: string; nombre: string; 
+/**
+ * Etiqueta BCP-47 reportada por el SO (p. ej. "es-MX", "en-US").
+ */
+idioma: string; 
+/**
+ * `true` si el idioma empieza con "es" — el selector las lista primero.
+ */
+es_espanol: boolean }
+/**
+ * Con qué voz debe leerse un trozo: la de prosa (natural) o la técnica.
+ */
+export type VozTrozo = "prosa" | "codigo"
 export type WindowsMicrophonePermissionStatus = { supported: boolean; overall_access: PermissionAccess; device_access: PermissionAccess; app_access: PermissionAccess; desktop_app_access: PermissionAccess }
 
 /** tauri-specta globals **/
