@@ -493,7 +493,16 @@
       "retranscribeError": "Nie udało się ponownie transkrybować. Spróbuj ponownie.",
       "transcribing": "Transkrybuję...",
       "transcriptionFailed": "Transkrypcja nie powiodła się. Możesz transkrybować ponownie za pomocą ikony ponowienia.",
-      "loadError": "Nie udało się wczytać historii. Twoje dyktanda nadal są na dysku."
+      "loadError": "Nie udało się wczytać historii. Twoje dyktanda nadal są na dysku.",
+      "compiler": {
+        "action": "Skompiluj do promptu",
+        "title": "Kompilator promptów",
+        "description": "Twoje dyktando, ustrukturyzowane dla AI: kontekst, zadanie, wymagania i format — niejasne terminy oznaczone. Wszystko lokalnie, bez LLM.",
+        "raw": "Surowe dyktando",
+        "compiled": "Skompilowany prompt",
+        "copy": "Kopiuj prompt",
+        "error": "Nie udało się skompilować promptu"
+      }
     },
     "debug": {
       "title": "Debugowanie",

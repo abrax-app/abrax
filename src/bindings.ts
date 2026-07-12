@@ -852,6 +852,14 @@ async updateCustomReplacements(replacements: CustomReplacement[]) : Promise<Resu
     if(e instanceof Error) throw e;
     else return { status: "error", error: e  as any };
 }
+},
+/**
+ * Comando: compila un dictado en prompt estructurado. El CONTEXTO se
+ * enriquece con el proyecto activo del Diccionario Vivo y los términos del
+ * repo que aparezcan en el texto.
+ */
+async compilePrompt(text: string) : Promise<CompiledPrompt> {
+    return await TAURI_INVOKE("compile_prompt", { text });
 }
 }
 
@@ -877,6 +885,15 @@ userAlertEvent: "user-alert-event"
 /** user-defined types **/
 
 export type AlertKind = "recording_permission_denied" | "recording_no_device" | "recording" | "transcription" | "paste" | "model_load" | "model_download"
+export type AmbiguityWarning = { 
+/**
+ * El término vago tal como apareció en el dictado.
+ */
+term: string; 
+/**
+ * Pregunta concreta que lo desarma.
+ */
+question: string }
 /**
  * The container-level `serde(default)` (backed by the `Default` impl below)
  * guarantees every field — including ones added in the future — falls back to
@@ -926,6 +943,7 @@ export type AutoSubmitKey = "enter" | "ctrl_enter" | "cmd_enter"
 export type AvailableAccelerators = { transcribe: string[]; ort: string[]; gpu_devices: GpuDeviceOption[] }
 export type BindingResponse = { success: boolean; binding: ShortcutBinding | null; error: string | null }
 export type ClipboardHandling = "dont_modify" | "copy_to_clipboard"
+export type CompiledPrompt = { markdown: string; warnings: AmbiguityWarning[] }
 /**
  * Un reemplazo exacto del Diccionario Vivo: token transcrito → texto final.
  */

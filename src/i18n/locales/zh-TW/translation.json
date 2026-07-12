@@ -493,7 +493,16 @@
       "retranscribeError": "重新轉錄失敗，請重試。",
       "transcribing": "轉錄中...",
       "transcriptionFailed": "轉錄失敗。您可以使用重試圖示重新轉錄。",
-      "loadError": "無法載入歷史記錄。你的聽寫內容仍保存在磁碟上。"
+      "loadError": "無法載入歷史記錄。你的聽寫內容仍保存在磁碟上。",
+      "compiler": {
+        "action": "編譯為提示詞",
+        "title": "提示詞編譯器",
+        "description": "把你的聽寫為 AI 結構化：脈絡、任務、需求和格式——並標記模糊詞語。全程本機，不涉及任何 LLM。",
+        "raw": "原始聽寫",
+        "compiled": "編譯後的提示詞",
+        "copy": "複製提示詞",
+        "error": "無法編譯提示詞"
+      }
     },
     "debug": {
       "title": "偵錯",

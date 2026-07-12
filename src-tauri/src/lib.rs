@@ -14,6 +14,7 @@ mod llm_client;
 mod managers;
 mod overlay;
 pub mod portable;
+mod prompt_compiler;
 mod settings;
 mod shortcut;
 mod signal_handle;
@@ -629,6 +630,7 @@ pub fn run(cli_args: CliArgs) {
             dictionary::get_dictionary_stats,
             dictionary::set_dictionary_enabled,
             dictionary::update_custom_replacements,
+            prompt_compiler::compile_prompt,
         ])
         .events(collect_events![
             managers::history::HistoryUpdatePayload,

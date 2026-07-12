@@ -493,7 +493,16 @@
       "retranscribeError": "Failed to re-transcribe. Please try again.",
       "transcribing": "Transcribing...",
       "transcriptionFailed": "Transcription failed. You can re-transcribe using the retry icon.",
-      "loadError": "History couldn't be loaded. Your dictations are still on disk."
+      "loadError": "History couldn't be loaded. Your dictations are still on disk.",
+      "compiler": {
+        "action": "Compile into a prompt",
+        "title": "Prompt compiler",
+        "description": "Your dictation, structured for an AI: context, task, requirements and format — with vague terms flagged. All local, no LLM involved.",
+        "raw": "Raw dictation",
+        "compiled": "Compiled prompt",
+        "copy": "Copy prompt",
+        "error": "The prompt couldn't be compiled"
+      }
     },
     "debug": {
       "title": "Debug",

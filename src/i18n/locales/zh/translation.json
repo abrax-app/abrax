@@ -493,7 +493,16 @@
       "retranscribeError": "重新转录失败。请重试。",
       "transcribing": "转录中...",
       "transcriptionFailed": "转录失败。您可以使用重试图标重新转录。",
-      "loadError": "无法加载历史记录。你的听写内容仍保存在磁盘上。"
+      "loadError": "无法加载历史记录。你的听写内容仍保存在磁盘上。",
+      "compiler": {
+        "action": "编译为提示词",
+        "title": "提示词编译器",
+        "description": "把你的听写为 AI 结构化：上下文、任务、要求和格式——并标记模糊词语。全程本地，不涉及任何 LLM。",
+        "raw": "原始听写",
+        "compiled": "编译后的提示词",
+        "copy": "复制提示词",
+        "error": "无法编译提示词"
+      }
     },
     "debug": {
       "title": "调试",

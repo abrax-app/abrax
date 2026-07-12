@@ -493,7 +493,16 @@
       "retranscribeError": "Yeniden yazıya dökme başarısız oldu. Lütfen tekrar deneyin.",
       "transcribing": "Yazıya döküyor...",
       "transcriptionFailed": "Transkripsiyon başarısız oldu. Yeniden deneme simgesini kullanarak tekrar yazıya dökebilirsiniz.",
-      "loadError": "Geçmiş yüklenemedi. Diktelerin hâlâ diskte."
+      "loadError": "Geçmiş yüklenemedi. Diktelerin hâlâ diskte.",
+      "compiler": {
+        "action": "Prompt olarak derle",
+        "title": "Prompt derleyici",
+        "description": "Dikten, bir yapay zekâ için yapılandırıldı: bağlam, görev, gereksinimler ve biçim — belirsiz terimler işaretli. Tamamen yerel, LLM yok.",
+        "raw": "Ham dikte",
+        "compiled": "Derlenmiş prompt",
+        "copy": "Promptu kopyala",
+        "error": "Prompt derlenemedi"
+      }
     },
     "debug": {
       "title": "Hata Ayıklama",

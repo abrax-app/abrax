@@ -493,7 +493,16 @@
       "retranscribeError": "Misslyckades med att transkribera igen. Försök igen.",
       "transcribing": "Transkriberar...",
       "transcriptionFailed": "Transkribering misslyckades. Du kan transkribera igen med hjälp av ikonen för nytt försök.",
-      "loadError": "Historiken kunde inte läsas in. Dina diktat finns kvar på disken."
+      "loadError": "Historiken kunde inte läsas in. Dina diktat finns kvar på disken.",
+      "compiler": {
+        "action": "Kompilera till prompt",
+        "title": "Promptkompilator",
+        "description": "Din diktering, strukturerad för en AI: kontext, uppgift, krav och format — vaga termer flaggas. Allt lokalt, utan LLM.",
+        "raw": "Rå diktering",
+        "compiled": "Kompilerad prompt",
+        "copy": "Kopiera prompt",
+        "error": "Prompten kunde inte kompileras"
+      }
     },
     "debug": {
       "title": "Felsökning",

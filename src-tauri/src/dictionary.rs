@@ -567,6 +567,8 @@ pub struct LoadedDictionary {
     /// que "factura" dictada terminara en "facturas".
     pub fuzzy_terms: Vec<String>,
     pub joined_lookup: HashMap<String, String>,
+    /// Todos los términos indexados, para consultas de mención (compilador).
+    pub all_terms: Vec<String>,
 }
 
 static ACTIVE: Lazy<RwLock<Option<Arc<LoadedDictionary>>>> = Lazy::new(|| RwLock::new(None));
@@ -618,7 +620,30 @@ fn compile(index: &DictionaryIndex) -> LoadedDictionary {
     LoadedDictionary {
         fuzzy_terms,
         joined_lookup,
+        all_terms: index.terms.iter().map(|t| t.term.clone()).collect(),
     }
+}
+
+/// Términos del diccionario activo mencionados en el texto (comparación por
+/// clave normalizada). Alimenta el CONTEXTO del compilador de prompts.
+pub fn terms_mentioned_in(text: &str) -> Vec<String> {
+    let Some(dict) = ACTIVE.read().unwrap().clone() else {
+        return Vec::new();
+    };
+    let keys: HashSet<String> = text
+        .split_whitespace()
+        .map(build_match_key)
+        .filter(|k| k.len() >= MIN_TERM_LEN)
+        .collect();
+    let mut mentioned: Vec<String> = dict
+        .all_terms
+        .iter()
+        .filter(|term| keys.contains(&build_match_key(term)))
+        .cloned()
+        .collect();
+    mentioned.sort();
+    mentioned.dedup();
+    mentioned
 }
 
 fn index_path(app: &AppHandle) -> Result<PathBuf, String> {
