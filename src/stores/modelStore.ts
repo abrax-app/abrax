@@ -3,7 +3,6 @@ import { subscribeWithSelector } from "zustand/middleware";
 import { produce } from "immer";
 import { listen } from "@tauri-apps/api/event";
 import { commands, type ModelInfo } from "@/bindings";
-import { toast } from "sonner";
 
 interface DownloadProgress {
   model_id: string;
@@ -28,6 +27,9 @@ interface ModelsStore {
   extractingModels: Record<string, true>;
   downloadProgress: Record<string, DownloadProgress>;
   downloadStats: Record<string, DownloadStats>;
+  /** Último error de descarga/extracción por modelo (F3): la card lo muestra
+   * con su botón Reintentar; se limpia al reintentar la descarga. */
+  downloadErrors: Record<string, string>;
   loading: boolean;
   error: string | null;
   initialized: boolean;
@@ -64,6 +66,7 @@ export const useModelStore = create<ModelsStore>()(
     extractingModels: {},
     downloadProgress: {},
     downloadStats: {},
+    downloadErrors: {},
     loading: true,
     error: null,
     initialized: false,
@@ -164,6 +167,7 @@ export const useModelStore = create<ModelsStore>()(
         set({ error: null });
         set(
           produce((state) => {
+            delete state.downloadErrors[modelId];
             state.downloadingModels[modelId] = true;
             state.downloadProgress[modelId] = {
               model_id: modelId,
@@ -343,9 +347,11 @@ export const useModelStore = create<ModelsStore>()(
               delete state.downloadProgress[modelId];
               delete state.downloadStats[modelId];
               state.error = error;
+              // La card del modelo muestra causa + Reintentar (F3); el toast
+              // lo emite el canal único de alertas (App.tsx).
+              state.downloadErrors[modelId] = error;
             }),
           );
-          toast.error(error);
         },
       );
 
@@ -394,6 +400,7 @@ export const useModelStore = create<ModelsStore>()(
             produce((state) => {
               delete state.extractingModels[modelId];
               state.error = `Failed to extract model: ${event.payload.error}`;
+              state.downloadErrors[modelId] = event.payload.error;
             }),
           );
         },

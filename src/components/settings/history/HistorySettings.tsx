@@ -64,6 +64,9 @@ export const HistorySettings: React.FC = () => {
   const osType = useOsType();
   const [entries, setEntries] = useState<HistoryEntry[]>([]);
   const [loading, setLoading] = useState(true);
+  // F7: un fallo de carga se distingue de "sin dictados" — cada uno con su
+  // propio estado y copy.
+  const [loadError, setLoadError] = useState(false);
   const [hasMore, setHasMore] = useState(true);
   const sentinelRef = useRef<HTMLDivElement>(null);
   const entriesRef = useRef<HistoryEntry[]>([]);
@@ -92,9 +95,14 @@ export const HistorySettings: React.FC = () => {
           isFirstPage ? newEntries : [...prev, ...newEntries],
         );
         setHasMore(has_more);
+        setLoadError(false);
+      } else if (isFirstPage) {
+        console.error("Failed to load history entries:", result.error);
+        setLoadError(true);
       }
     } catch (error) {
       console.error("Failed to load history entries:", error);
+      if (isFirstPage) setLoadError(true);
     } finally {
       setLoading(false);
       loadingRef.current = false;
@@ -240,6 +248,15 @@ export const HistorySettings: React.FC = () => {
     content = (
       <div className="px-4 py-3 text-center text-text/60">
         {t("settings.history.loading")}
+      </div>
+    );
+  } else if (loadError) {
+    content = (
+      <div className="px-4 py-3 text-center space-y-2">
+        <p className="text-text/80">{t("settings.history.loadError")}</p>
+        <Button variant="secondary" size="sm" onClick={() => loadPage()}>
+          {t("common.retry")}
+        </Button>
       </div>
     );
   } else if (entries.length === 0) {

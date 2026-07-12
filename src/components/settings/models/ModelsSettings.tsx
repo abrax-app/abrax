@@ -47,6 +47,7 @@ export const ModelsSettings: React.FC = () => {
     selectModel,
     deleteModel,
     rescanLocalModels,
+    downloadErrors,
   } = useModelStore();
 
   // click outside handler for language dropdown
@@ -375,6 +376,7 @@ export const ModelsSettings: React.FC = () => {
                 onCancel={handleModelCancel}
                 downloadProgress={getDownloadProgress(model.id)}
                 downloadSpeed={getDownloadSpeed(model.id)}
+                errorMessage={downloadErrors[model.id]}
                 showRecommended={false}
               />
             ))}
@@ -397,6 +399,7 @@ export const ModelsSettings: React.FC = () => {
                   onCancel={handleModelCancel}
                   downloadProgress={getDownloadProgress(model.id)}
                   downloadSpeed={getDownloadSpeed(model.id)}
+                  errorMessage={downloadErrors[model.id]}
                   showRecommended={true}
                 />
               ))}

@@ -23,6 +23,7 @@ const Onboarding: React.FC<OnboardingProps> = ({ onModelSelected }) => {
     extractingModels,
     downloadProgress,
     downloadStats,
+    downloadErrors,
     cancelDownload,
   } = useModelStore();
   const [selectedModelId, setSelectedModelId] = useState<string | null>(null);
@@ -154,6 +155,13 @@ const Onboarding: React.FC<OnboardingProps> = ({ onModelSelected }) => {
 
       <div className="max-w-[600px] w-full mx-auto text-center flex-1 flex flex-col min-h-0">
         <div className="space-y-6 pb-6">
+          {/* F4: el catálogo también tiene estados — cargando y vacío/fallo,
+              en vez de una pantalla en blanco. */}
+          {models.length === 0 && (
+            <p className="text-sm text-text/60 py-8">
+              {t("onboarding.emptyCatalog")}
+            </p>
+          )}
           {models.some((m: ModelInfo) => m.is_downloaded) && (
             <div className="space-y-3">
               <div className="text-left">
@@ -196,6 +204,7 @@ const Onboarding: React.FC<OnboardingProps> = ({ onModelSelected }) => {
                   onCancel={handleCancelDownload}
                   downloadProgress={getModelDownloadProgress(model.id)}
                   downloadSpeed={getModelDownloadSpeed(model.id)}
+                  errorMessage={downloadErrors[model.id]}
                   showRecommended={false}
                 />
               ))}
@@ -211,6 +220,7 @@ const Onboarding: React.FC<OnboardingProps> = ({ onModelSelected }) => {
                   onCancel={handleCancelDownload}
                   downloadProgress={getModelDownloadProgress(model.id)}
                   downloadSpeed={getModelDownloadSpeed(model.id)}
+                  errorMessage={downloadErrors[model.id]}
                   showRecommended={false}
                 />
               ))}
@@ -246,6 +256,7 @@ const Onboarding: React.FC<OnboardingProps> = ({ onModelSelected }) => {
                     onCancel={handleCancelDownload}
                     downloadProgress={getModelDownloadProgress(model.id)}
                     downloadSpeed={getModelDownloadSpeed(model.id)}
+                    errorMessage={downloadErrors[model.id]}
                     showRecommended={false}
                   />
                 ))}
