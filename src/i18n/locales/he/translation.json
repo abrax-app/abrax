@@ -723,6 +723,25 @@
   "whatsNew": {
     "title": "חדש ב-Abrax v{{version}}"
   },
+  "shell": {
+    "title": "צורת החלון",
+    "description": "בחר את צורת החלון של Abrax. קלאסי הוא חלון ההגדרות הרגיל; Orbital הופך את האפליקציה לכדור מרחף; Retro הוא סקין של נגן קלאסי. עדכון מסגרת החלון יושלם עם הפעלתו מחדש של Abrax.",
+    "options": {
+      "classic": "קלאסי",
+      "orbital": "Orbital",
+      "retro": "Retro"
+    }
+  },
+  "orbital": {
+    "menu": "תפריט Abrax",
+    "close": "סגור",
+    "hint": "החזק {{atajo}} ודבר — שחרר כדי להדביק",
+    "hintNoBinding": "הגדר קיצור דרך להכתבה תחת כללי, ואז החזק אותו ודבר",
+    "controls": {
+      "minimize": "מזער",
+      "hide": "הסתר למגש"
+    }
+  },
   "logo": {
     "tagline": "« Di la <accent>palabra</accent>. »"
   },

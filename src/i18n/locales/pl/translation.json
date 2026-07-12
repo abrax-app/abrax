@@ -723,6 +723,25 @@
   "whatsNew": {
     "title": "Nowości w Abrax v{{version}}"
   },
+  "shell": {
+    "title": "Kształt okna",
+    "description": "Wybierz kształt okna Abrax. Klasyczny to standardowe okno ustawień; Orbital zmienia aplikację w pływającą sferę; Retro to skórka klasycznego odtwarzacza. Ramka okna zostanie w pełni zastosowana po ponownym uruchomieniu Abrax.",
+    "options": {
+      "classic": "Klasyczny",
+      "orbital": "Orbital",
+      "retro": "Retro"
+    }
+  },
+  "orbital": {
+    "menu": "Menu Abrax",
+    "close": "Zamknij",
+    "hint": "przytrzymaj {{atajo}} i mów — puść, aby wkleić",
+    "hintNoBinding": "ustaw skrót dyktowania w sekcji Ogólne, a następnie przytrzymaj go i mów",
+    "controls": {
+      "minimize": "Minimalizuj",
+      "hide": "Ukryj w zasobniku"
+    }
+  },
   "logo": {
     "tagline": "« Di la <accent>palabra</accent>. »"
   },

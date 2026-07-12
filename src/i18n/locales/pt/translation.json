@@ -723,6 +723,25 @@
   "whatsNew": {
     "title": "Novidades no Abrax v{{version}}"
   },
+  "shell": {
+    "title": "Forma da janela",
+    "description": "Escolha a forma da janela do Abrax. Clássico é a janela de ajustes de sempre; Orbital transforma o app numa esfera flutuante; Retro é um skin de reprodutor clássico. A moldura da janela termina de ser aplicada ao reiniciar o Abrax.",
+    "options": {
+      "classic": "Clássico",
+      "orbital": "Orbital",
+      "retro": "Retro"
+    }
+  },
+  "orbital": {
+    "menu": "Menu do Abrax",
+    "close": "Fechar",
+    "hint": "mantenha {{atajo}} pressionado e fale — solte para colar",
+    "hintNoBinding": "defina um atalho de ditado em Geral e mantenha-o pressionado ao falar",
+    "controls": {
+      "minimize": "Minimizar",
+      "hide": "Ocultar na bandeja"
+    }
+  },
   "logo": {
     "tagline": "« Di la <accent>palabra</accent>. »"
   },

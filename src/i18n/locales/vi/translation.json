@@ -723,6 +723,25 @@
   "whatsNew": {
     "title": "Điểm mới trong Abrax v{{version}}"
   },
+  "shell": {
+    "title": "Kiểu cửa sổ",
+    "description": "Chọn hình dạng cửa sổ Abrax. Cổ điển là cửa sổ cài đặt tiêu chuẩn; Orbital biến ứng dụng thành một quả cầu nổi; Retro là giao diện kiểu trình phát cổ điển. Khung cửa sổ sẽ hoàn tất cập nhật khi Abrax khởi động lại.",
+    "options": {
+      "classic": "Cổ điển",
+      "orbital": "Orbital",
+      "retro": "Retro"
+    }
+  },
+  "orbital": {
+    "menu": "Menu Abrax",
+    "close": "Đóng",
+    "hint": "giữ {{atajo}} và nói — thả ra để dán",
+    "hintNoBinding": "đặt phím tắt đọc chính tả trong mục Chung, rồi giữ và nói",
+    "controls": {
+      "minimize": "Thu nhỏ",
+      "hide": "Ẩn vào khay hệ thống"
+    }
+  },
   "logo": {
     "tagline": "« Di la <accent>palabra</accent>. »"
   },

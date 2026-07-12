@@ -298,6 +298,29 @@ pub enum UiTheme {
     Imperial,
 }
 
+/// Shape of the main window, orthogonal to [`UiTheme`] (palette) and [`Theme`]
+/// (light/dark). `Classic` is the default decorated settings window and the
+/// permanent fallback. `Orbital` and `Retro` are frameless/transparent shells:
+/// the app becomes a floating sphere (Orbital) or a stack of retro-player
+/// windows (Retro). Both consume the palette tokens, so a shell never hardcodes
+/// color. The frameless/transparent chrome is decided at window build time, so
+/// switching shells takes full effect on the next launch.
+#[derive(Serialize, Deserialize, Debug, Clone, Copy, PartialEq, Eq, Type)]
+#[serde(rename_all = "snake_case")]
+pub enum UiShell {
+    Classic,
+    Orbital,
+    Retro,
+}
+
+impl UiShell {
+    /// Whether this shell wants a frameless, transparent window. `Classic`
+    /// keeps the native decorated chrome; `Orbital`/`Retro` paint their own.
+    pub fn wants_transparency(self) -> bool {
+        matches!(self, UiShell::Orbital | UiShell::Retro)
+    }
+}
+
 #[derive(Serialize, Deserialize, Debug, Clone, Copy, PartialEq, Eq, Type, Default)]
 #[serde(rename_all = "snake_case")]
 pub enum TypingTool {
@@ -473,6 +496,8 @@ pub struct AppSettings {
     pub theme: Theme,
     #[serde(default = "default_ui_theme")]
     pub ui_theme: UiTheme,
+    #[serde(default = "default_ui_shell")]
+    pub ui_shell: UiShell,
     #[serde(default)]
     pub experimental_enabled: bool,
     #[serde(default)]
@@ -640,6 +665,10 @@ fn default_theme() -> Theme {
 
 fn default_ui_theme() -> UiTheme {
     UiTheme::Abrax
+}
+
+fn default_ui_shell() -> UiShell {
+    UiShell::Classic
 }
 
 fn default_post_process_enabled() -> bool {
@@ -959,6 +988,7 @@ pub fn get_default_settings() -> AppSettings {
         app_language: default_app_language(),
         theme: default_theme(),
         ui_theme: default_ui_theme(),
+        ui_shell: default_ui_shell(),
         experimental_enabled: false,
         lazy_stream_close: false,
         keyboard_implementation: KeyboardImplementation::default(),
@@ -1380,6 +1410,24 @@ mod tests {
             .insert("ui_theme".into(), serde_json::json!("cosmic"));
         assert!(serde_json::from_value::<AppSettings>(stored.clone()).is_err());
         assert_eq!(salvage_settings(&stored).ui_theme, default_ui_theme());
+    }
+
+    /// A store written before shells existed has no `ui_shell` key and must
+    /// load as Classic; an unknown shell (e.g. written by a newer build) must
+    /// salvage to the default instead of resetting the whole store.
+    #[test]
+    fn ui_shell_defaults_and_salvages() {
+        let settings: AppSettings =
+            serde_json::from_value(serde_json::json!({})).expect("ui_shell needs a serde default");
+        assert_eq!(settings.ui_shell, UiShell::Classic);
+
+        let mut stored = default_settings_json();
+        stored
+            .as_object_mut()
+            .unwrap()
+            .insert("ui_shell".into(), serde_json::json!("holographic"));
+        assert!(serde_json::from_value::<AppSettings>(stored.clone()).is_err());
+        assert_eq!(salvage_settings(&stored).ui_shell, default_ui_shell());
     }
 
     #[test]

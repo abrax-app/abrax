@@ -723,6 +723,25 @@
   "whatsNew": {
     "title": "Novità in Abrax v{{version}}"
   },
+  "shell": {
+    "title": "Forma della finestra",
+    "description": "Scegli la forma della finestra di Abrax. Classica è la finestra delle impostazioni di sempre; Orbitale trasforma l'app in una sfera fluttuante; Retro è uno skin da lettore classico. La cornice della finestra completa l'aggiornamento al riavvio di Abrax.",
+    "options": {
+      "classic": "Classica",
+      "orbital": "Orbitale",
+      "retro": "Retro"
+    }
+  },
+  "orbital": {
+    "menu": "Menu di Abrax",
+    "close": "Chiudi",
+    "hint": "tieni premuto {{atajo}} e parla — rilascia per incollare",
+    "hintNoBinding": "imposta una scorciatoia di dettatura in Generale, poi tienila premuta e parla",
+    "controls": {
+      "minimize": "Riduci a icona",
+      "hide": "Nascondi nell'area di notifica"
+    }
+  },
   "logo": {
     "tagline": "« Di la <accent>palabra</accent>. »"
   },

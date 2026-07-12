@@ -723,6 +723,25 @@
   "whatsNew": {
     "title": "Novinky v Abrax v{{version}}"
   },
+  "shell": {
+    "title": "Tvar okna",
+    "description": "Vyberte tvar okna aplikace Abrax. Klasický je běžné okno nastavení; Orbital promění aplikaci v plovoucí kouli; Retro je skin klasického přehrávače. Změna rámečku okna se dokončí po restartu Abrax.",
+    "options": {
+      "classic": "Klasický",
+      "orbital": "Orbital",
+      "retro": "Retro"
+    }
+  },
+  "orbital": {
+    "menu": "Nabídka Abrax",
+    "close": "Zavřít",
+    "hint": "podržte {{atajo}} a mluvte — uvolněním vložíte",
+    "hintNoBinding": "nastavte zkratku pro diktování v části Obecné, poté ji podržte a mluvte",
+    "controls": {
+      "minimize": "Minimalizovat",
+      "hide": "Skrýt do oznamovací oblasti"
+    }
+  },
   "logo": {
     "tagline": "« Di la <accent>palabra</accent>. »"
   },

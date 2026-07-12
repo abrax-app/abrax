@@ -723,6 +723,25 @@
   "whatsNew": {
     "title": "Abrax v{{version}} yenilikleri"
   },
+  "shell": {
+    "title": "Pencere biçimi",
+    "description": "Abrax penceresinin biçimini seç. Klasik, her zamanki ayarlar penceresidir; Orbital uygulamayı yüzen bir küreye dönüştürür; Retro klasik bir oynatıcı görünümüdür. Pencere çerçevesi, Abrax yeniden başlatıldığında güncellenmesini tamamlar.",
+    "options": {
+      "classic": "Klasik",
+      "orbital": "Orbital",
+      "retro": "Retro"
+    }
+  },
+  "orbital": {
+    "menu": "Abrax menüsü",
+    "close": "Kapat",
+    "hint": "{{atajo}} tuşunu basılı tut ve konuş — yapıştırmak için bırak",
+    "hintNoBinding": "Genel bölümünden bir dikte kısayolu belirle, sonra basılı tutup konuş",
+    "controls": {
+      "minimize": "Küçült",
+      "hide": "Sistem tepsisine gizle"
+    }
+  },
   "logo": {
     "tagline": "« Di la <accent>palabra</accent>. »"
   },

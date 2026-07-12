@@ -723,6 +723,25 @@
   "whatsNew": {
     "title": "Abrax v{{version}} の新機能"
   },
+  "shell": {
+    "title": "ウィンドウの形状",
+    "description": "Abrax ウィンドウの形状を選びます。クラシックは従来の設定ウィンドウ、オービタルはアプリを浮かぶ球体に変え、レトロはクラシックプレーヤー風のスキンです。ウィンドウ枠の変更は Abrax の再起動時に完了します。",
+    "options": {
+      "classic": "クラシック",
+      "orbital": "オービタル",
+      "retro": "レトロ"
+    }
+  },
+  "orbital": {
+    "menu": "Abrax メニュー",
+    "close": "閉じる",
+    "hint": "{{atajo}} を押したまま話す — 離すと貼り付け",
+    "hintNoBinding": "「一般」で音声入力のショートカットを設定し、押したまま話してください",
+    "controls": {
+      "minimize": "最小化",
+      "hide": "トレイに格納"
+    }
+  },
   "logo": {
     "tagline": "« Di la <accent>palabra</accent>. »"
   },

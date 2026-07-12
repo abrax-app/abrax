@@ -12,6 +12,7 @@ import AlertsBanner, { alertTitleKey } from "./components/AlertsBanner";
 import Footer from "./components/footer";
 import Onboarding, { AccessibilityOnboarding } from "./components/onboarding";
 import { Sidebar, SidebarSection, SECTIONS_CONFIG } from "./components/Sidebar";
+import { OrbitalShell } from "./components/orbital/OrbitalShell";
 import { WhatsNewGate } from "./components/whats-new";
 import { useSettings } from "./hooks/useSettings";
 import { useSettingsStore } from "./stores/settingsStore";
@@ -235,6 +236,16 @@ function App() {
     );
   } else if (onboardingStep === "model") {
     content = <Onboarding onModelSelected={handleModelSelected} />;
+  } else if (settings?.ui_shell === "orbital") {
+    // Shell orbital: la esfera hospeda las mismas secciones dentro del iris.
+    content = (
+      <div dir={direction}>
+        <OrbitalShell
+          activeSection={currentSection}
+          onSectionChange={setCurrentSection}
+        />
+      </div>
+    );
   } else {
     content = (
       <div

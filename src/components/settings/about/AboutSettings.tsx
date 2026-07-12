@@ -9,6 +9,7 @@ import { AppDataDirectory } from "../AppDataDirectory";
 import { AppLanguageSelector } from "../AppLanguageSelector";
 import { ShowWhatsNewOnUpdate } from "../ShowWhatsNewOnUpdate";
 import { PaletteSelector } from "../PaletteSelector";
+import { ShellSelector } from "../ShellSelector";
 import { ThemeSelector } from "../ThemeSelector";
 import { LogDirectory } from "../debug";
 import AbraxLogo from "../../icons/AbraxLogo";
@@ -50,6 +51,7 @@ export const AboutSettings: React.FC = () => {
         <AppLanguageSelector descriptionMode="tooltip" grouped={true} />
         <ThemeSelector descriptionMode="tooltip" grouped={true} />
         <PaletteSelector descriptionMode="tooltip" grouped={true} />
+        <ShellSelector descriptionMode="tooltip" grouped={true} />
         <SettingContainer
           title={t("settings.about.version.title")}
           description={t("settings.about.version.description")}

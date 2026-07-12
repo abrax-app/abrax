@@ -723,6 +723,25 @@
   "whatsNew": {
     "title": "الجديد في Abrax v{{version}}"
   },
+  "shell": {
+    "title": "شكل النافذة",
+    "description": "اختر شكل نافذة Abrax. الكلاسيكي هو نافذة الإعدادات المعتادة؛ وOrbital يحوّل التطبيق إلى كرة عائمة؛ وRetro هو مظهر مشغّل كلاسيكي. يكتمل تحديث إطار النافذة عند إعادة تشغيل Abrax.",
+    "options": {
+      "classic": "كلاسيكي",
+      "orbital": "Orbital",
+      "retro": "Retro"
+    }
+  },
+  "orbital": {
+    "menu": "قائمة Abrax",
+    "close": "إغلاق",
+    "hint": "اضغط مطوّلًا على {{atajo}} وتحدّث — حرّره للصق",
+    "hintNoBinding": "عيّن اختصار إملاء في قسم العام، ثم اضغط عليه مطوّلًا وتحدّث",
+    "controls": {
+      "minimize": "تصغير",
+      "hide": "إخفاء إلى علبة النظام"
+    }
+  },
   "logo": {
     "tagline": "« Di la <accent>palabra</accent>. »"
   },

@@ -1,4 +1,4 @@
-import { commands, type Theme, type UiTheme } from "@/bindings";
+import { commands, type Theme, type UiShell, type UiTheme } from "@/bindings";
 
 /**
  * Appearance handling: light/dark mode and color palette.
@@ -23,15 +23,27 @@ export const THEME_STORAGE_KEY = "abrax.theme";
 /** Pre-rebrand storage key, read once as a fallback so nobody gets reset. */
 const LEGACY_THEME_STORAGE_KEY = "handy.theme";
 export const UI_THEME_STORAGE_KEY = "abrax.palette";
+/**
+ * Window shell (`classic`/`orbital`/`retro`) — the SHAPE axis, orthogonal to
+ * mode and palette. Mirrored to localStorage so the boot can set `data-shell`
+ * synchronously and paint the transparent backdrop without a flash of the
+ * classic layout. The window chrome (frameless/transparent) is decided
+ * backend-side at build time; this only drives the CSS/React shell.
+ */
+export const SHELL_STORAGE_KEY = "abrax.shell";
 
 export const THEME_OPTIONS: Theme[] = ["system", "light", "dark"];
 export const UI_THEME_OPTIONS: UiTheme[] = ["abrax", "imperial"];
+export const UI_SHELL_OPTIONS: UiShell[] = ["classic", "orbital", "retro"];
 
 const isTheme = (value: unknown): value is Theme =>
   value === "system" || value === "light" || value === "dark";
 
 const isUiTheme = (value: unknown): value is UiTheme =>
   value === "abrax" || value === "imperial";
+
+const isUiShell = (value: unknown): value is UiShell =>
+  value === "classic" || value === "orbital" || value === "retro";
 
 /**
  * Apply a mode + palette pair to a document root. Pure DOM: no persistence.
@@ -78,6 +90,28 @@ export const applyUiTheme = (uiTheme: UiTheme): void => {
   applyAppearanceToRoot(getStoredTheme(), uiTheme);
 };
 
+/**
+ * Apply the window shell to a document root. Pure DOM: `classic` clears the
+ * attribute (the base, decorated layout) and any other shell sets `data-shell`,
+ * which the shell CSS keys off to go transparent and mount its own chrome.
+ */
+export const applyShellToRoot = (
+  shell: UiShell,
+  root: HTMLElement = document.documentElement,
+): void => {
+  if (shell === "classic") {
+    delete root.dataset.shell;
+  } else {
+    root.dataset.shell = shell;
+  }
+};
+
+/** Apply a shell and remember it for the next launch. */
+export const applyShell = (shell: UiShell): void => {
+  persist(SHELL_STORAGE_KEY, shell);
+  applyShellToRoot(shell);
+};
+
 /** Read the last-applied mode for synchronous boot-time application. */
 export const getStoredTheme = (): Theme => {
   try {
@@ -107,9 +141,21 @@ export const getStoredUiTheme = (): UiTheme => {
   return "abrax";
 };
 
-/** Apply the persisted mode + palette from the last launch, synchronously. */
+/** Read the last-applied shell for synchronous boot-time application. */
+export const getStoredShell = (): UiShell => {
+  try {
+    const stored = localStorage.getItem(SHELL_STORAGE_KEY);
+    if (isUiShell(stored)) return stored;
+  } catch {
+    // ignore
+  }
+  return "classic";
+};
+
+/** Apply the persisted mode + palette + shell from the last launch, synchronously. */
 export const applyStoredAppearance = (): void => {
   applyAppearanceToRoot(getStoredTheme(), getStoredUiTheme());
+  applyShellToRoot(getStoredShell());
 };
 
 /** Apply the persisted appearance from AppSettings (the source of truth). */
@@ -119,9 +165,12 @@ export const syncThemeFromSettings = async (): Promise<void> => {
     if (result.status === "ok") {
       const theme = result.data.theme ?? "system";
       const uiTheme = result.data.ui_theme ?? "abrax";
+      const uiShell = result.data.ui_shell ?? "classic";
       persist(THEME_STORAGE_KEY, theme);
       persist(UI_THEME_STORAGE_KEY, uiTheme);
+      persist(SHELL_STORAGE_KEY, uiShell);
       applyAppearanceToRoot(theme, uiTheme);
+      applyShellToRoot(uiShell);
     }
   } catch (e) {
     console.warn("Failed to sync theme from settings:", e);

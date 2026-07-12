@@ -723,6 +723,25 @@
     "transcribing": "Transcribing...",
     "processing": "Processing..."
   },
+  "shell": {
+    "title": "Window shell",
+    "description": "Choose the shape of the Abrax window. Classic is the standard settings window; Orbital turns the app into a floating sphere; Retro is a classic-player skin. The window frame finishes updating when Abrax restarts.",
+    "options": {
+      "classic": "Classic",
+      "orbital": "Orbital",
+      "retro": "Retro"
+    }
+  },
+  "orbital": {
+    "menu": "Abrax menu",
+    "close": "Close",
+    "hint": "hold {{atajo}} and speak — release to paste",
+    "hintNoBinding": "set a dictation shortcut in General, then hold it and speak",
+    "controls": {
+      "minimize": "Minimize",
+      "hide": "Hide to tray"
+    }
+  },
   "logo": {
     "tagline": "« Di la <accent>palabra</accent>. »"
   },

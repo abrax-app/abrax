@@ -723,6 +723,25 @@
   "whatsNew": {
     "title": "Abrax v{{version}} 新功能"
   },
+  "shell": {
+    "title": "視窗外觀",
+    "description": "選擇 Abrax 視窗的外形。「經典」是一般的設定視窗；Orbital 會將應用程式變成漂浮的球體；Retro 是復古播放器風格的外觀。視窗外框會在 Abrax 重新啟動後完成套用。",
+    "options": {
+      "classic": "經典",
+      "orbital": "Orbital",
+      "retro": "Retro"
+    }
+  },
+  "orbital": {
+    "menu": "Abrax 選單",
+    "close": "關閉",
+    "hint": "按住 {{atajo}} 說話 — 放開即貼上",
+    "hintNoBinding": "在「一般」中設定聽寫快速鍵，然後按住它說話",
+    "controls": {
+      "minimize": "最小化",
+      "hide": "隱藏到系統匣"
+    }
+  },
   "logo": {
     "tagline": "« Di la <accent>palabra</accent>. »"
   },

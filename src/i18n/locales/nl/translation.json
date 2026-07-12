@@ -723,6 +723,25 @@
     "transcribing": "Transcriberen...",
     "processing": "Verwerken..."
   },
+  "shell": {
+    "title": "Venstervorm",
+    "description": "Kies de vorm van het Abrax-venster. Klassiek is het standaard instellingenvenster; Orbital verandert de app in een zwevende bol; Retro is een skin van een klassieke speler. Het vensterkader wordt volledig bijgewerkt zodra Abrax opnieuw opstart.",
+    "options": {
+      "classic": "Klassiek",
+      "orbital": "Orbital",
+      "retro": "Retro"
+    }
+  },
+  "orbital": {
+    "menu": "Abrax-menu",
+    "close": "Sluiten",
+    "hint": "houd {{atajo}} ingedrukt en spreek — laat los om te plakken",
+    "hintNoBinding": "stel een dicteersneltoets in bij Algemeen en houd die ingedrukt terwijl je spreekt",
+    "controls": {
+      "minimize": "Minimaliseren",
+      "hide": "Verbergen in systeemvak"
+    }
+  },
   "logo": {
     "tagline": "« Di la <accent>palabra</accent>. »"
   },

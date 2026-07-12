@@ -723,6 +723,25 @@
   "whatsNew": {
     "title": "Neu in Abrax v{{version}}"
   },
+  "shell": {
+    "title": "Fensterform",
+    "description": "Wähle die Form des Abrax-Fensters. Klassisch ist das gewohnte Einstellungsfenster; Orbital verwandelt die App in eine schwebende Kugel; Retro ist ein klassischer Player-Skin. Der Fensterrahmen wird beim Neustart von Abrax vollständig übernommen.",
+    "options": {
+      "classic": "Klassisch",
+      "orbital": "Orbital",
+      "retro": "Retro"
+    }
+  },
+  "orbital": {
+    "menu": "Abrax-Menü",
+    "close": "Schließen",
+    "hint": "halte {{atajo}} gedrückt und sprich — zum Einfügen loslassen",
+    "hintNoBinding": "lege in Allgemein ein Diktier-Kürzel fest und halte es beim Sprechen gedrückt",
+    "controls": {
+      "minimize": "Minimieren",
+      "hide": "In den Tray ausblenden"
+    }
+  },
   "logo": {
     "tagline": "« Di la <accent>palabra</accent>. »"
   },

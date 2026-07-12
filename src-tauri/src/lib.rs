@@ -535,6 +535,8 @@ pub fn run(cli_args: CliArgs) {
             shortcut::change_sound_theme_setting,
             shortcut::change_theme_setting,
             shortcut::change_ui_theme_setting,
+            shortcut::change_ui_shell_setting,
+            signal_handle::trigger_transcription,
             shortcut::change_start_hidden_setting,
             shortcut::change_autostart_setting,
             shortcut::change_translate_to_english_setting,
@@ -807,24 +809,51 @@ pub fn run(cli_args: CliArgs) {
                 return Ok(());
             }
 
+            // Read settings BEFORE building the window: the shell (classic vs
+            // orbital/retro) decides whether the main window is a normal
+            // decorated window or a frameless/transparent one, and that chrome
+            // can only be chosen at build time.
+            let mut settings = get_settings(app.handle());
+            let frameless =
+                settings.ui_shell.wants_transparency() && utils::supports_transparency();
+
+            // Window size per shell: classic keeps the compact settings window;
+            // orbital is a square canvas for the sphere; retro needs room for the
+            // stacked player windows.
+            let ((w, h), (min_w, min_h)) = match (frameless, settings.ui_shell) {
+                (true, settings::UiShell::Orbital) => ((820.0, 800.0), (640.0, 640.0)),
+                (true, settings::UiShell::Retro) => ((980.0, 700.0), (720.0, 560.0)),
+                _ => ((680.0, 570.0), (680.0, 570.0)),
+            };
+
             // Create main window programmatically so we can set data_directory
             // for portable mode (redirects WebView2 cache to portable Data dir)
             let mut win_builder =
                 tauri::WebviewWindowBuilder::new(app, "main", tauri::WebviewUrl::App("/".into()))
                     .title("Abrax")
-                    .inner_size(680.0, 570.0)
-                    .min_inner_size(680.0, 570.0)
+                    .inner_size(w, h)
+                    .min_inner_size(min_w, min_h)
                     .resizable(true)
                     .maximizable(false)
                     .visible(false);
+
+            // Orbital/Retro shells own their chrome: no OS title bar, no shadow
+            // (a shadow would betray the invisible rectangle), transparent so
+            // the sphere/windows float. Classic keeps the native frame and is
+            // the fallback when the platform can't do transparency.
+            if frameless {
+                win_builder = win_builder
+                    .decorations(false)
+                    .transparent(true)
+                    .shadow(false)
+                    .center();
+            }
 
             if let Some(data_dir) = portable::data_dir() {
                 win_builder = win_builder.data_directory(data_dir.join("webview"));
             }
 
             win_builder.build()?;
-
-            let mut settings = get_settings(app.handle());
 
             // Apply the persisted appearance theme to the Windows title bar before
             // the window is shown, so it matches the in-app palette without a flash

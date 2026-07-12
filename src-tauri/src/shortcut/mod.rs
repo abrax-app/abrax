@@ -24,7 +24,7 @@ use crate::settings::APPLE_INTELLIGENCE_DEFAULT_MODEL_ID;
 use crate::settings::{
     self, get_settings, AppSettings, AutoSubmitKey, ClipboardHandling, KeyboardImplementation,
     LLMPrompt, OverlayPosition, OverlayStyle, PasteMethod, ShortcutBinding, SoundTheme, Theme,
-    TypingTool, UiTheme, APPLE_INTELLIGENCE_PROVIDER_ID,
+    TypingTool, UiShell, UiTheme, APPLE_INTELLIGENCE_PROVIDER_ID,
 };
 use crate::tray;
 
@@ -535,6 +535,28 @@ pub fn change_ui_theme_setting(app: AppHandle, ui_theme: String) -> Result<(), S
     apply_window_theme(&app, effective);
     #[cfg(not(target_os = "windows"))]
     let _ = effective;
+    Ok(())
+}
+
+/// Persists the window shell (`classic`/`orbital`/`retro`). Unlike the palette,
+/// the shell only takes full effect on the next launch, because the
+/// frameless/transparent chrome is decided when the window is built; this
+/// command just records the choice so the next boot builds the right window.
+#[tauri::command]
+#[specta::specta]
+pub fn change_ui_shell_setting(app: AppHandle, ui_shell: String) -> Result<(), String> {
+    let mut settings = settings::get_settings(&app);
+    let parsed = match ui_shell.as_str() {
+        "classic" => UiShell::Classic,
+        "orbital" => UiShell::Orbital,
+        "retro" => UiShell::Retro,
+        other => {
+            warn!("Invalid ui shell '{}', defaulting to classic", other);
+            UiShell::Classic
+        }
+    };
+    settings.ui_shell = parsed;
+    settings::write_settings(&app, settings);
     Ok(())
 }
 

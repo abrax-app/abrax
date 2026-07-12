@@ -69,6 +69,28 @@ async changeUiThemeSetting(uiTheme: string) : Promise<Result<null, string>> {
     else return { status: "error", error: e  as any };
 }
 },
+/**
+ * Persists the window shell (`classic`/`orbital`/`retro`). Unlike the palette,
+ * the shell only takes full effect on the next launch, because the
+ * frameless/transparent chrome is decided when the window is built; this
+ * command just records the choice so the next boot builds the right window.
+ */
+async changeUiShellSetting(uiShell: string) : Promise<Result<null, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("change_ui_shell_setting", { uiShell }) };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+/**
+ * Toggle dictation from the UI (e.g. clicking the orbital home sphere). Mirrors
+ * the global-shortcut / CLI `--toggle-transcription` path by reusing the shared
+ * coordinator entry point, so it adds no new recording pipeline.
+ */
+async triggerTranscription() : Promise<void> {
+    await TAURI_INVOKE("trigger_transcription");
+},
 async changeStartHiddenSetting(enabled: boolean) : Promise<Result<null, string>> {
     try {
     return { status: "ok", data: await TAURI_INVOKE("change_start_hidden_setting", { enabled }) };
@@ -1025,7 +1047,7 @@ custom_replacements?: CustomReplacement[];
  * del código indexándolo localmente. El índice vive en el datadir;
  * nada sale del equipo.
  */
-dictionary_project?: DictionaryProject | null; model_unload_timeout?: ModelUnloadTimeout; word_correction_threshold?: number; history_limit?: number; recording_retention_period?: RecordingRetentionPeriod; paste_method?: PasteMethod; clipboard_handling?: ClipboardHandling; auto_submit?: boolean; auto_submit_key?: AutoSubmitKey; post_process_enabled?: boolean; post_process_provider_id?: string; post_process_providers?: PostProcessProvider[]; post_process_api_keys?: SecretMap; post_process_models?: Partial<{ [key in string]: string }>; post_process_prompts?: LLMPrompt[]; post_process_selected_prompt_id?: string | null; mute_while_recording?: boolean; append_trailing_space?: boolean; app_language?: string; theme?: Theme; ui_theme?: UiTheme; experimental_enabled?: boolean; lazy_stream_close?: boolean; keyboard_implementation?: KeyboardImplementation; show_tray_icon?: boolean; paste_delay_ms?: number; paste_delay_after_ms?: number; typing_tool?: TypingTool; external_script_path?: string | null; custom_filler_words?: string[] | null; transcribe_accelerator?: TranscribeAcceleratorSetting; ort_accelerator?: OrtAcceleratorSetting; transcribe_gpu_device?: number; extra_recording_buffer_ms?: number; vad_enabled?: boolean; 
+dictionary_project?: DictionaryProject | null; model_unload_timeout?: ModelUnloadTimeout; word_correction_threshold?: number; history_limit?: number; recording_retention_period?: RecordingRetentionPeriod; paste_method?: PasteMethod; clipboard_handling?: ClipboardHandling; auto_submit?: boolean; auto_submit_key?: AutoSubmitKey; post_process_enabled?: boolean; post_process_provider_id?: string; post_process_providers?: PostProcessProvider[]; post_process_api_keys?: SecretMap; post_process_models?: Partial<{ [key in string]: string }>; post_process_prompts?: LLMPrompt[]; post_process_selected_prompt_id?: string | null; mute_while_recording?: boolean; append_trailing_space?: boolean; app_language?: string; theme?: Theme; ui_theme?: UiTheme; ui_shell?: UiShell; experimental_enabled?: boolean; lazy_stream_close?: boolean; keyboard_implementation?: KeyboardImplementation; show_tray_icon?: boolean; paste_delay_ms?: number; paste_delay_after_ms?: number; typing_tool?: TypingTool; external_script_path?: string | null; custom_filler_words?: string[] | null; transcribe_accelerator?: TranscribeAcceleratorSetting; ort_accelerator?: OrtAcceleratorSetting; transcribe_gpu_device?: number; extra_recording_buffer_ms?: number; vad_enabled?: boolean; 
 /**
  * Which recording overlay to show: None / Minimal / Live. Streaming mode is
  * not gated on this — that follows model capability. Migrated from the old
@@ -1210,6 +1232,16 @@ export type TermSource = "code" | "branch" | "path"
 export type Theme = "system" | "light" | "dark"
 export type TranscribeAcceleratorSetting = "auto" | "cpu" | "gpu"
 export type TypingTool = "auto" | "wtype" | "kwtype" | "dotool" | "ydotool" | "xdotool"
+/**
+ * Shape of the main window, orthogonal to [`UiTheme`] (palette) and [`Theme`]
+ * (light/dark). `Classic` is the default decorated settings window and the
+ * permanent fallback. `Orbital` and `Retro` are frameless/transparent shells:
+ * the app becomes a floating sphere (Orbital) or a stack of retro-player
+ * windows (Retro). Both consume the palette tokens, so a shell never hardcodes
+ * color. The frameless/transparent chrome is decided at window build time, so
+ * switching shells takes full effect on the next launch.
+ */
+export type UiShell = "classic" | "orbital" | "retro"
 /**
  * Color palette for the whole UI, orthogonal to [`Theme`] (light/dark).
  * `Abrax` is the brand palette (cyan/violet/magenta); `Imperial` is a

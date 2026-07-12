@@ -44,6 +44,22 @@ pub fn cancel_current_operation(app: &AppHandle) {
     info!("Operation cancellation completed - returned to idle state");
 }
 
+/// Whether the platform can render a transparent, frameless window. Windows
+/// (WebView2) and macOS (private API, enabled in `tauri.conf.json`) support it;
+/// on Linux it needs a compositor, so we require an active display server and
+/// otherwise fall back to the decorated classic-style window (the orbital/retro
+/// shells still render, just on a solid backdrop instead of a floating one).
+pub fn supports_transparency() -> bool {
+    #[cfg(target_os = "linux")]
+    {
+        std::env::var("WAYLAND_DISPLAY").is_ok() || std::env::var("DISPLAY").is_ok()
+    }
+    #[cfg(not(target_os = "linux"))]
+    {
+        true
+    }
+}
+
 /// Check if using the Wayland display server protocol
 #[cfg(target_os = "linux")]
 pub fn is_wayland() -> bool {

@@ -723,6 +723,25 @@
   "whatsNew": {
     "title": "Nytt i Abrax v{{version}}"
   },
+  "shell": {
+    "title": "Fönsterform",
+    "description": "Välj formen på Abrax-fönstret. Klassisk är det vanliga inställningsfönstret; Orbital förvandlar appen till en svävande sfär; Retro är ett skal i klassisk spelarstil. Fönsterramen uppdateras färdigt när Abrax startar om.",
+    "options": {
+      "classic": "Klassisk",
+      "orbital": "Orbital",
+      "retro": "Retro"
+    }
+  },
+  "orbital": {
+    "menu": "Abrax-meny",
+    "close": "Stäng",
+    "hint": "håll in {{atajo}} och tala — släpp för att klistra in",
+    "hintNoBinding": "ställ in ett dikteringskortkommando i Allmänt och håll det sedan intryckt när du talar",
+    "controls": {
+      "minimize": "Minimera",
+      "hide": "Dölj till systemfältet"
+    }
+  },
   "logo": {
     "tagline": "« Di la <accent>palabra</accent>. »"
   },

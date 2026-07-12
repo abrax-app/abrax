@@ -1,0 +1,259 @@
+/* Orbital shell — la ventana-esfera. Estilos estructurales portados del
+   prototipo `assets/prototipos/abrax_mockup_app_v6.html`. Regla de oro: NO
+   hardcodear color de marca; todo sale de los tokens de `ui_theme` (theme.css),
+   así un cambio de paleta retiñe el shell sin tocar este archivo. */
+
+#orbital-stage {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  font-family: ui-monospace, "Cascadia Code", "JetBrains Mono", Menlo, Consolas,
+    monospace;
+}
+
+/* Fondo tinta que "flota": opaco al centro (legibilidad del iris) y desvaneciendo
+   a transparente en las esquinas, para que la ventana transparente deje ver el
+   escritorio. En plataformas sin transparencia real (fallback), simplemente se
+   ve como una superficie oscura. */
+.orbital-backdrop {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(
+      130% 130% at 50% 44%,
+      color-mix(in srgb, var(--esfera-fondo) 92%, transparent) 0%,
+      color-mix(in srgb, var(--esfera-fondo) 66%, transparent) 68%,
+      transparent 100%
+    ),
+    radial-gradient(
+      680px 420px at 76% 12%,
+      color-mix(in srgb, var(--esfera-stop-a) 12%, transparent) 0%,
+      transparent 60%
+    ),
+    radial-gradient(
+      620px 420px at 16% 92%,
+      color-mix(in srgb, var(--esfera-stop-c) 12%, transparent) 0%,
+      transparent 58%
+    );
+}
+
+/* Franja superior invisible para arrastrar la ventana sin marco. */
+.orbital-dragstrip {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 108px;
+  height: 46px;
+  z-index: 4;
+}
+
+.orbital-marca {
+  position: absolute;
+  top: 16px;
+  left: 22px;
+  z-index: 5;
+  opacity: 0.92;
+}
+
+/* Controles de ventana fantasma (arriba a la derecha). */
+.orbital-winctrl {
+  position: absolute;
+  top: 14px;
+  right: 16px;
+  display: flex;
+  gap: 6px;
+  z-index: 8;
+}
+.orbital-winctrl button {
+  width: 28px;
+  height: 28px;
+  display: grid;
+  place-items: center;
+  border-radius: 8px;
+  border: 1px solid color-mix(in srgb, var(--color-mid-gray) 45%, transparent);
+  background: color-mix(in srgb, var(--esfera-fondo) 55%, transparent);
+  color: var(--color-text);
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+  backdrop-filter: blur(6px);
+  transition: border-color 0.14s ease, color 0.14s ease;
+}
+.orbital-winctrl button:hover {
+  border-color: var(--esfera-stop-c);
+  color: var(--esfera-blanco);
+}
+
+/* Columna flotante para banners de error/permiso (sólo aparecen si hay algo). */
+.orbital-alerts {
+  position: absolute;
+  top: 54px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 7;
+  width: min(560px, 88%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  pointer-events: none;
+}
+.orbital-alerts > * {
+  pointer-events: auto;
+}
+
+#orbital-orbe {
+  position: absolute;
+  left: 50%;
+  top: 48%;
+  transform: translate(-50%, -50%);
+  width: min(740px, 92vmin);
+  aspect-ratio: 1;
+  z-index: 2;
+}
+
+.orbital-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
+}
+
+.orbital-menu {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.orbital-nodo {
+  pointer-events: auto;
+  cursor: pointer;
+}
+.orbital-nodo .halo {
+  fill: currentColor;
+  opacity: 0.1;
+}
+.orbital-nodo .aro {
+  fill: color-mix(in srgb, var(--esfera-fondo) 82%, transparent);
+  stroke: currentColor;
+  stroke-width: 2.1;
+  transition: stroke-width 0.16s ease, filter 0.16s ease;
+}
+.orbital-nodo.sel .aro,
+.orbital-nodo:focus-visible .aro {
+  stroke-width: 3.2;
+  filter: drop-shadow(0 0 9px currentColor);
+}
+.orbital-nodo .glifo {
+  color: var(--esfera-blanco);
+  pointer-events: none;
+}
+.orbital-nodo .etq {
+  font-size: 12px;
+  letter-spacing: 0.2em;
+  fill: var(--color-mid-gray);
+  pointer-events: none;
+  transition: fill 0.16s ease;
+}
+.orbital-nodo.sel .etq,
+.orbital-nodo:focus-visible .etq {
+  fill: var(--esfera-blanco);
+}
+.orbital-nodo:focus {
+  outline: none;
+}
+.orbital-nodo:focus-visible {
+  outline: none;
+}
+
+/* El contenido de sección vive DENTRO del iris — sin ventana. */
+#orbital-iris {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: min(460px, 66%);
+  height: min(74%, 560px);
+  z-index: 6;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease 0.14s;
+}
+#orbital-iris.abierto {
+  opacity: 1;
+  pointer-events: auto;
+}
+.orbital-iris-body {
+  height: 100%;
+  overflow-y: auto;
+  scrollbar-width: none;
+  padding: 64px 8px 78px;
+  /* La máscara oculta píxeles, NO clics: por eso el ✕ lleva z-index propio. */
+  -webkit-mask-image: linear-gradient(
+    transparent,
+    #000 60px,
+    #000 calc(100% - 72px),
+    transparent
+  );
+  mask-image: linear-gradient(
+    transparent,
+    #000 60px,
+    #000 calc(100% - 72px),
+    transparent
+  );
+}
+.orbital-iris-body::-webkit-scrollbar {
+  display: none;
+}
+.orbital-iris-cerrar {
+  position: absolute;
+  top: 2px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2; /* por encima de la máscara */
+  width: 28px;
+  height: 28px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  border: 1px solid color-mix(in srgb, var(--color-mid-gray) 45%, transparent);
+  background: color-mix(in srgb, var(--esfera-fondo) 55%, transparent);
+  color: var(--color-text);
+  font: inherit;
+  cursor: pointer;
+  backdrop-filter: blur(6px);
+  transition: border-color 0.14s ease, color 0.14s ease;
+}
+.orbital-iris-cerrar:hover {
+  border-color: var(--esfera-stop-c);
+  color: var(--esfera-blanco);
+}
+
+.orbital-hint {
+  position: absolute;
+  left: 50%;
+  bottom: 30px;
+  transform: translateX(-50%);
+  z-index: 3;
+  text-align: center;
+  width: min(640px, 92vw);
+  pointer-events: none;
+  font-size: 11.5px;
+  letter-spacing: 0.06em;
+  color: var(--color-mid-gray);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #orbital-iris {
+    transition: none;
+  }
+  .orbital-nodo .aro {
+    transition: none;
+  }
+}

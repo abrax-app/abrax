@@ -723,6 +723,25 @@
   "whatsNew": {
     "title": "Nouveautés de Abrax v{{version}}"
   },
+  "shell": {
+    "title": "Forme de la fenêtre",
+    "description": "Choisissez la forme de la fenêtre d'Abrax. Classique est la fenêtre de réglages habituelle ; Orbital transforme l'application en une sphère flottante ; Rétro est un habillage de lecteur classique. Le cadre de la fenêtre finit de s'appliquer au redémarrage d'Abrax.",
+    "options": {
+      "classic": "Classique",
+      "orbital": "Orbital",
+      "retro": "Rétro"
+    }
+  },
+  "orbital": {
+    "menu": "Menu d'Abrax",
+    "close": "Fermer",
+    "hint": "maintenez {{atajo}} et parlez — relâchez pour coller",
+    "hintNoBinding": "définissez un raccourci de dictée dans Général, puis maintenez-le et parlez",
+    "controls": {
+      "minimize": "Réduire",
+      "hide": "Masquer dans la barre système"
+    }
+  },
   "logo": {
     "tagline": "« Di la <accent>palabra</accent>. »"
   },
