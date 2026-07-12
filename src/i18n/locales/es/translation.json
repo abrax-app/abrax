@@ -21,7 +21,8 @@
     "postProcessing": "Post Proceso",
     "history": "Historial",
     "debug": "Depuración",
-    "about": "Acerca de"
+    "about": "Acerca de",
+    "escucha": "Escucha"
   },
   "onboarding": {
     "subtitle": "Para comenzar, elige un modelo de transcripción",
@@ -716,5 +717,30 @@
   },
   "logo": {
     "tagline": "« Di la <accent>palabra</accent>. »"
+  },
+  "escucha": {
+    "title": "Escucha",
+    "openFile": "Abrir archivo…",
+    "readClipboard": "Leer portapapeles",
+    "play": "Leer",
+    "pause": "Pausar",
+    "resume": "Continuar",
+    "stop": "Detener",
+    "speed": "Velocidad",
+    "voiceProse": "Voz de prosa",
+    "voiceCode": "Voz de código",
+    "noVoices": "No se encontraron voces del sistema",
+    "empty": "Abre un archivo o lee el portapapeles para empezar.",
+    "engineUnavailable": "El motor de voz del sistema no está disponible.",
+    "errorRead": "No se pudo leer el contenido.",
+    "errorSpeak": "No se pudo reproducir la lectura.",
+    "escHint": "Esc detiene la lectura.",
+    "clipboard": "Portapapeles",
+    "clipboardEmpty": "El portapapeles no tiene texto.",
+    "fileFilter": "Texto, Markdown o código",
+    "sentences": "{{total}} oraciones",
+    "verbosity": "Símbolos",
+    "verbosityNatural": "Natural (menos ruido)",
+    "verbosityLiteral": "Literal (todos los símbolos)"
   }
 }

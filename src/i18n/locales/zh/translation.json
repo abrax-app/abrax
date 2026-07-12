@@ -21,7 +21,8 @@
     "postProcessing": "后处理",
     "history": "历史记录",
     "debug": "调试",
-    "about": "关于"
+    "about": "关于",
+    "escucha": "朗读"
   },
   "onboarding": {
     "subtitle": "请选择一个转录模型以开始使用",
@@ -716,5 +717,30 @@
   },
   "logo": {
     "tagline": "« Di la <accent>palabra</accent>. »"
+  },
+  "escucha": {
+    "title": "朗读",
+    "openFile": "打开文件…",
+    "readClipboard": "朗读剪贴板",
+    "play": "朗读",
+    "pause": "暂停",
+    "resume": "继续",
+    "stop": "停止",
+    "speed": "语速",
+    "voiceProse": "文本语音",
+    "voiceCode": "代码语音",
+    "noVoices": "未找到系统语音",
+    "empty": "打开文件或朗读剪贴板即可开始。",
+    "engineUnavailable": "系统语音引擎不可用。",
+    "errorRead": "无法读取内容。",
+    "errorSpeak": "无法播放朗读。",
+    "escHint": "按 Esc 停止朗读。",
+    "clipboard": "剪贴板",
+    "clipboardEmpty": "剪贴板中没有文本。",
+    "fileFilter": "文本、Markdown 或代码",
+    "sentences": "{{total}} 个句子",
+    "verbosity": "符号",
+    "verbosityNatural": "自然（更少噪音）",
+    "verbosityLiteral": "逐字（所有符号）"
   }
 }

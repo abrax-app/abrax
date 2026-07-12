@@ -21,7 +21,8 @@
     "history": "السجل",
     "debug": "تصحيح الأخطاء",
     "about": "حول",
-    "models": "النماذج"
+    "models": "النماذج",
+    "escucha": "الاستماع"
   },
   "onboarding": {
     "subtitle": "للبدء، اختر نموذج التفريغ الصوتي",
@@ -716,5 +717,30 @@
   },
   "logo": {
     "tagline": "« Di la <accent>palabra</accent>. »"
+  },
+  "escucha": {
+    "title": "الاستماع",
+    "openFile": "فتح ملف…",
+    "readClipboard": "قراءة الحافظة",
+    "play": "قراءة",
+    "pause": "إيقاف مؤقت",
+    "resume": "متابعة",
+    "stop": "إيقاف",
+    "speed": "السرعة",
+    "voiceProse": "صوت النثر",
+    "voiceCode": "صوت الكود",
+    "noVoices": "لم يتم العثور على أصوات النظام",
+    "empty": "افتح ملفًا أو اقرأ الحافظة للبدء.",
+    "engineUnavailable": "محرك الكلام في النظام غير متاح.",
+    "errorRead": "تعذّرت قراءة المحتوى.",
+    "errorSpeak": "تعذّر تشغيل القراءة.",
+    "escHint": "Esc يوقف القراءة.",
+    "clipboard": "الحافظة",
+    "clipboardEmpty": "لا يوجد نص في الحافظة.",
+    "fileFilter": "نص أو Markdown أو كود",
+    "sentences": "{{total}} جمل",
+    "verbosity": "الرموز",
+    "verbosityNatural": "طبيعي (ضوضاء أقل)",
+    "verbosityLiteral": "حرفي (كل الرموز)"
   }
 }

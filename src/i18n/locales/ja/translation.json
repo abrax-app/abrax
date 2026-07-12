@@ -21,7 +21,8 @@
     "postProcessing": "後処理",
     "history": "履歴",
     "debug": "デバッグ",
-    "about": "概要"
+    "about": "概要",
+    "escucha": "読み上げ"
   },
   "onboarding": {
     "subtitle": "開始するには、文字起こしのモデルを選択してください",
@@ -716,5 +717,30 @@
   },
   "logo": {
     "tagline": "« Di la <accent>palabra</accent>. »"
+  },
+  "escucha": {
+    "title": "読み上げ",
+    "openFile": "ファイルを開く…",
+    "readClipboard": "クリップボードを読む",
+    "play": "読む",
+    "pause": "一時停止",
+    "resume": "再開",
+    "stop": "停止",
+    "speed": "速度",
+    "voiceProse": "文章の声",
+    "voiceCode": "コードの声",
+    "noVoices": "システム音声が見つかりません",
+    "empty": "ファイルを開くか、クリップボードを読み上げて開始します。",
+    "engineUnavailable": "システムの音声エンジンを利用できません。",
+    "errorRead": "内容を読み込めませんでした。",
+    "errorSpeak": "読み上げを再生できませんでした。",
+    "escHint": "Esc で読み上げを停止します。",
+    "clipboard": "クリップボード",
+    "clipboardEmpty": "クリップボードにテキストがありません。",
+    "fileFilter": "テキスト、Markdown、コード",
+    "sentences": "{{total}} 文",
+    "verbosity": "記号",
+    "verbosityNatural": "自然（ノイズ控えめ）",
+    "verbosityLiteral": "リテラル（すべての記号）"
   }
 }

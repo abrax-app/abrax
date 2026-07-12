@@ -21,7 +21,8 @@
     "postProcessing": "후처리",
     "history": "히스토리",
     "debug": "디버그",
-    "about": "정보"
+    "about": "정보",
+    "escucha": "읽어주기"
   },
   "onboarding": {
     "subtitle": "시작하려면 음성 인식 모델을 선택하세요",
@@ -716,5 +717,30 @@
   },
   "logo": {
     "tagline": "« Di la <accent>palabra</accent>. »"
+  },
+  "escucha": {
+    "title": "읽어주기",
+    "openFile": "파일 열기…",
+    "readClipboard": "클립보드 읽기",
+    "play": "읽기",
+    "pause": "일시정지",
+    "resume": "계속",
+    "stop": "정지",
+    "speed": "속도",
+    "voiceProse": "산문 음성",
+    "voiceCode": "코드 음성",
+    "noVoices": "시스템 음성을 찾을 수 없습니다",
+    "empty": "시작하려면 파일을 열거나 클립보드를 읽어주세요.",
+    "engineUnavailable": "시스템 음성 엔진을 사용할 수 없습니다.",
+    "errorRead": "내용을 읽을 수 없습니다.",
+    "errorSpeak": "읽기를 재생할 수 없습니다.",
+    "escHint": "Esc 키로 읽기를 중지합니다.",
+    "clipboard": "클립보드",
+    "clipboardEmpty": "클립보드에 텍스트가 없습니다.",
+    "fileFilter": "텍스트, Markdown 또는 코드",
+    "sentences": "문장 {{total}}개",
+    "verbosity": "기호",
+    "verbosityNatural": "자연스럽게 (소음 적음)",
+    "verbosityLiteral": "그대로 (모든 기호)"
   }
 }

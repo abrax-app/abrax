@@ -21,7 +21,8 @@
     "postProcessing": "Post-Elaborazione",
     "history": "Cronologia",
     "debug": "Debug",
-    "about": "Informazioni"
+    "about": "Informazioni",
+    "escucha": "Ascolto"
   },
   "onboarding": {
     "subtitle": "Per cominciare, scegli un modello di riconoscimento vocale",
@@ -716,5 +717,30 @@
   },
   "logo": {
     "tagline": "« Di la <accent>palabra</accent>. »"
+  },
+  "escucha": {
+    "title": "Ascolto",
+    "openFile": "Apri file…",
+    "readClipboard": "Leggi appunti",
+    "play": "Leggi",
+    "pause": "Pausa",
+    "resume": "Riprendi",
+    "stop": "Ferma",
+    "speed": "Velocità",
+    "voiceProse": "Voce prosa",
+    "voiceCode": "Voce codice",
+    "noVoices": "Nessuna voce di sistema trovata",
+    "empty": "Apri un file o leggi gli appunti per iniziare.",
+    "engineUnavailable": "Il motore vocale di sistema non è disponibile.",
+    "errorRead": "Impossibile leggere il contenuto.",
+    "errorSpeak": "Impossibile riprodurre la lettura.",
+    "escHint": "Esc ferma la lettura.",
+    "clipboard": "Appunti",
+    "clipboardEmpty": "Gli appunti non contengono testo.",
+    "fileFilter": "Testo, Markdown o codice",
+    "sentences": "{{total}} frasi",
+    "verbosity": "Simboli",
+    "verbosityNatural": "Naturale (meno rumore)",
+    "verbosityLiteral": "Letterale (tutti i simboli)"
   }
 }

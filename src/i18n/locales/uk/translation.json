@@ -21,7 +21,8 @@
     "postProcessing": "Постобробка",
     "history": "Історія",
     "debug": "Дебаг",
-    "about": "Інфо"
+    "about": "Інфо",
+    "escucha": "Озвучення"
   },
   "onboarding": {
     "subtitle": "Для початку оберіть модель транскрипції",
@@ -716,5 +717,30 @@
   },
   "logo": {
     "tagline": "« Di la <accent>palabra</accent>. »"
+  },
+  "escucha": {
+    "title": "Озвучення",
+    "openFile": "Відкрити файл…",
+    "readClipboard": "Прочитати буфер обміну",
+    "play": "Читати",
+    "pause": "Пауза",
+    "resume": "Продовжити",
+    "stop": "Стоп",
+    "speed": "Швидкість",
+    "voiceProse": "Голос прози",
+    "voiceCode": "Голос коду",
+    "noVoices": "Системні голоси не знайдено",
+    "empty": "Відкрийте файл або прочитайте буфер обміну, щоб почати.",
+    "engineUnavailable": "Системний мовний рушій недоступний.",
+    "errorRead": "Не вдалося прочитати вміст.",
+    "errorSpeak": "Не вдалося відтворити читання.",
+    "escHint": "Esc зупиняє читання.",
+    "clipboard": "Буфер обміну",
+    "clipboardEmpty": "У буфері обміну немає тексту.",
+    "fileFilter": "Текст, Markdown або код",
+    "sentences": "{{total}} речень",
+    "verbosity": "Символи",
+    "verbosityNatural": "Природно (менше шуму)",
+    "verbosityLiteral": "Буквально (усі символи)"
   }
 }

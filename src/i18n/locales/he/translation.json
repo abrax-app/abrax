@@ -21,7 +21,8 @@
     "postProcessing": "עיבוד משלים",
     "history": "היסטוריה",
     "debug": "ניפוי שגיאות",
-    "about": "אודות"
+    "about": "אודות",
+    "escucha": "הקראה"
   },
   "onboarding": {
     "subtitle": "כדי להתחיל, בחר מודל תמלול",
@@ -716,5 +717,30 @@
   },
   "logo": {
     "tagline": "« Di la <accent>palabra</accent>. »"
+  },
+  "escucha": {
+    "title": "הקראה",
+    "openFile": "פתיחת קובץ…",
+    "readClipboard": "הקראת הלוח",
+    "play": "הקראה",
+    "pause": "השהיה",
+    "resume": "המשך",
+    "stop": "עצירה",
+    "speed": "מהירות",
+    "voiceProse": "קול פרוזה",
+    "voiceCode": "קול קוד",
+    "noVoices": "לא נמצאו קולות מערכת",
+    "empty": "פתחו קובץ או הקריאו את הלוח כדי להתחיל.",
+    "engineUnavailable": "מנוע הדיבור של המערכת אינו זמין.",
+    "errorRead": "לא ניתן לקרוא את התוכן.",
+    "errorSpeak": "לא ניתן להפעיל את ההקראה.",
+    "escHint": "Esc עוצר את ההקראה.",
+    "clipboard": "לוח",
+    "clipboardEmpty": "אין טקסט בלוח.",
+    "fileFilter": "טקסט, Markdown או קוד",
+    "sentences": "{{total}} משפטים",
+    "verbosity": "סמלים",
+    "verbosityNatural": "טבעי (פחות רעש)",
+    "verbosityLiteral": "מילולי (כל הסמלים)"
   }
 }
