@@ -708,6 +708,14 @@
       "dark": "Scuro"
     }
   },
+  "palette": {
+    "title": "Palette",
+    "description": "Scegli la palette di colori di Abrax. Imperial è scura per design: finché è attiva, forza la modalità scura.",
+    "options": {
+      "abrax": "ABRAX",
+      "imperial": "Imperial"
+    }
+  },
   "overlay": {
     "transcribing": "Trascrizione...",
     "processing": "Elaborazione..."

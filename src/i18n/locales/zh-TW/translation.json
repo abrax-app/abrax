@@ -708,6 +708,14 @@
       "dark": "深色"
     }
   },
+  "palette": {
+    "title": "調色盤",
+    "description": "選擇 Abrax 的配色方案。Imperial 是刻意設計的深色主題：啟用期間將強制使用深色模式。",
+    "options": {
+      "abrax": "ABRAX",
+      "imperial": "Imperial"
+    }
+  },
   "overlay": {
     "transcribing": "正在轉錄...",
     "processing": "處理中..."

@@ -1,61 +1,127 @@
-import { commands, type Theme } from "@/bindings";
+import { commands, type Theme, type UiTheme } from "@/bindings";
 
 /**
- * Appearance theme handling.
+ * Appearance handling: light/dark mode and color palette.
  *
- * Abrax already ships a full light palette and a full dark palette (see
- * `App.css`). This module lets the user pick which one is used instead of
- * always following the OS:
- *  - `system` removes the override so the `prefers-color-scheme` media query
- *    governs (the historical behaviour).
- *  - `light` / `dark` set `data-theme` on the document root, whose
- *    higher-specificity CSS selectors win over the media query.
+ * Two orthogonal settings drive the CSS tokens (see `styles/theme.css`):
+ *  - `theme` (light/dark mode): `system` removes the override so the
+ *    `prefers-color-scheme` media query governs; `light`/`dark` set
+ *    `data-theme` on the document root, whose higher-specificity CSS
+ *    selectors win over the media query.
+ *  - `ui_theme` (palette): `abrax` is the brand palette and leaves the root
+ *    untouched; other palettes set `data-ui-theme`, which re-points the
+ *    color tokens wholesale. Imperial is dark by design, so while it is
+ *    active the effective mode is forced to `dark` — the stored `theme`
+ *    is preserved and governs again when the palette returns to abrax.
  *
- * The choice is persisted in `AppSettings` (source of truth) and mirrored to
- * localStorage so it can be applied synchronously on boot, before React mounts,
- * avoiding a flash of the wrong palette.
+ * Both choices are persisted in `AppSettings` (source of truth) and mirrored
+ * to localStorage so they can be applied synchronously on boot, before React
+ * mounts, avoiding a flash of the wrong palette.
  */
 
-export const THEME_STORAGE_KEY = "handy.theme";
+export const THEME_STORAGE_KEY = "abrax.theme";
+/** Pre-rebrand storage key, read once as a fallback so nobody gets reset. */
+const LEGACY_THEME_STORAGE_KEY = "handy.theme";
+export const UI_THEME_STORAGE_KEY = "abrax.palette";
 
 export const THEME_OPTIONS: Theme[] = ["system", "light", "dark"];
+export const UI_THEME_OPTIONS: UiTheme[] = ["abrax", "imperial"];
 
 const isTheme = (value: unknown): value is Theme =>
   value === "system" || value === "light" || value === "dark";
 
-/** Apply a theme to the document root and remember it for the next launch. */
-export const applyTheme = (theme: Theme): void => {
-  const root = document.documentElement;
-  if (theme === "system") {
+const isUiTheme = (value: unknown): value is UiTheme =>
+  value === "abrax" || value === "imperial";
+
+/**
+ * Apply a mode + palette pair to a document root. Pure DOM: no persistence.
+ * Exported so the overlay window (which reads its own copy of the settings)
+ * can render with the same palette rules as the main window.
+ */
+export const applyAppearanceToRoot = (
+  theme: Theme,
+  uiTheme: UiTheme,
+  root: HTMLElement = document.documentElement,
+): void => {
+  if (uiTheme === "abrax") {
+    delete root.dataset.uiTheme;
+  } else {
+    root.dataset.uiTheme = uiTheme;
+  }
+  // Imperial is a dark palette by design: force dark while it is active.
+  const effective: Theme = uiTheme === "imperial" ? "dark" : theme;
+  if (effective === "system") {
     delete root.dataset.theme;
   } else {
-    root.dataset.theme = theme;
+    root.dataset.theme = effective;
   }
+};
+
+const persist = (key: string, value: string): void => {
   try {
-    localStorage.setItem(THEME_STORAGE_KEY, theme);
+    localStorage.setItem(key, value);
   } catch {
     // localStorage may be unavailable (e.g. private mode); the setting still
     // persists in AppSettings, so this only costs a one-frame flash on boot.
   }
 };
 
-/** Read the last-applied theme for synchronous boot-time application. */
+/** Apply a light/dark mode and remember it for the next launch. */
+export const applyTheme = (theme: Theme): void => {
+  persist(THEME_STORAGE_KEY, theme);
+  applyAppearanceToRoot(theme, getStoredUiTheme());
+};
+
+/** Apply a palette and remember it for the next launch. */
+export const applyUiTheme = (uiTheme: UiTheme): void => {
+  persist(UI_THEME_STORAGE_KEY, uiTheme);
+  applyAppearanceToRoot(getStoredTheme(), uiTheme);
+};
+
+/** Read the last-applied mode for synchronous boot-time application. */
 export const getStoredTheme = (): Theme => {
   try {
     const stored = localStorage.getItem(THEME_STORAGE_KEY);
     if (isTheme(stored)) return stored;
+    // One-time migration from the pre-rebrand key: read it, adopt it under
+    // the new key, and never look back (the old key is left behind, inert).
+    const legacy = localStorage.getItem(LEGACY_THEME_STORAGE_KEY);
+    if (isTheme(legacy)) {
+      persist(THEME_STORAGE_KEY, legacy);
+      return legacy;
+    }
   } catch {
     // ignore
   }
   return "system";
 };
 
-/** Apply the persisted theme from AppSettings (the source of truth). */
+/** Read the last-applied palette for synchronous boot-time application. */
+export const getStoredUiTheme = (): UiTheme => {
+  try {
+    const stored = localStorage.getItem(UI_THEME_STORAGE_KEY);
+    if (isUiTheme(stored)) return stored;
+  } catch {
+    // ignore
+  }
+  return "abrax";
+};
+
+/** Apply the persisted mode + palette from the last launch, synchronously. */
+export const applyStoredAppearance = (): void => {
+  applyAppearanceToRoot(getStoredTheme(), getStoredUiTheme());
+};
+
+/** Apply the persisted appearance from AppSettings (the source of truth). */
 export const syncThemeFromSettings = async (): Promise<void> => {
   try {
     const result = await commands.getAppSettings();
     if (result.status === "ok") {
-      applyTheme(result.data.theme ?? "system");
+      const theme = result.data.theme ?? "system";
+      const uiTheme = result.data.ui_theme ?? "abrax";
+      persist(THEME_STORAGE_KEY, theme);
+      persist(UI_THEME_STORAGE_KEY, uiTheme);
+      applyAppearanceToRoot(theme, uiTheme);
     }
   } catch (e) {
     console.warn("Failed to sync theme from settings:", e);

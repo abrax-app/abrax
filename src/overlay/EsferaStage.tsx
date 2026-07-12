@@ -1,6 +1,6 @@
 import { listen } from "@tauri-apps/api/event";
 import React, { useEffect, useRef } from "react";
-import { EsferaEngine, EsferaState } from "./esfera/engine";
+import { EsferaEngine, EsferaState, readEsferaPalette } from "./esfera/engine";
 
 /** Payload del evento `spectrum` (overlay.rs::emit_spectrum). */
 type SpectrumPayload = {
@@ -24,6 +24,11 @@ const EsferaStage: React.FC<EsferaStageProps> = ({ state, active }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const engineRef = useRef<EsferaEngine | null>(null);
   const disposeTimerRef = useRef<number | null>(null);
+  // Estado más reciente sin volverlo dependencia del efecto de visibilidad:
+  // así crear/re-mostrar el motor arranca en la fase correcta, pero un cambio
+  // de fase NO re-ejecuta ese efecto (evita reconstruir texturas por fase).
+  const stateRef = useRef(state);
+  stateRef.current = state;
 
   // Ciclo de vida del motor, gobernado por la visibilidad del overlay.
   useEffect(() => {
@@ -33,9 +38,14 @@ const EsferaStage: React.FC<EsferaStageProps> = ({ state, active }) => {
         disposeTimerRef.current = null;
       }
       if (!engineRef.current && canvasRef.current) {
+        // El motor lee la paleta activa (tokens CSS) al nacer.
         engineRef.current = new EsferaEngine(canvasRef.current);
+      } else {
+        // Motor reciclado (re-show antes del dispose diferido): la paleta
+        // pudo cambiar mientras estaba oculto — re-leer los tokens.
+        engineRef.current?.setPalette(readEsferaPalette());
       }
-      engineRef.current?.setState(state);
+      engineRef.current?.setState(stateRef.current);
       engineRef.current?.start();
     } else if (engineRef.current) {
       // El rAF se corta ya (cero trabajo con el overlay oculto); el frame
@@ -47,8 +57,9 @@ const EsferaStage: React.FC<EsferaStageProps> = ({ state, active }) => {
         disposeTimerRef.current = null;
       }, DISPOSE_AFTER_FADE_MS);
     }
-  }, [active, state]);
+  }, [active]);
 
+  // Cambios de fase: solo re-tintan el núcleo, sin tocar la geometría/texturas.
   useEffect(() => {
     engineRef.current?.setState(state);
   }, [state]);

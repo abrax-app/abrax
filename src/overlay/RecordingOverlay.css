@@ -53,6 +53,23 @@
   }
 }
 
+/* Modo oscuro forzado (`data-theme="dark"`, que Imperial impone siempre):
+   mismos grises que el media query. Necesario porque el overlay no carga los
+   overrides de App.css — sin esto, la fila de control (etiqueta, hairlines)
+   se quedaría con los grises de modo claro sobre la superficie oscura de
+   Imperial cuando el SO está en claro. */
+:root[data-theme="dark"] {
+  --s-accent-soft: color-mix(
+    in srgb,
+    var(--color-logo-primary) 20%,
+    transparent
+  );
+  --s-muted: #a3a09a;
+  --s-faint: #6f6c66;
+  --s-border: color-mix(in srgb, var(--color-text) 12%, transparent);
+  --s-hair: color-mix(in srgb, var(--color-text) 8%, transparent);
+}
+
 /* ============================================================
    Unified overlay stage — one fixed, transparent container shared by the compact
    pill and the Live panel (both render the same `.scard` base). The card is
@@ -362,7 +379,13 @@
   position: relative;
   width: 100%;
   height: var(--ov-esfera-stage-h);
-  background: radial-gradient(ellipse at 50% 42%, #0a0c1c 0%, #05060f 72%);
+  /* Escenario de tinta profunda en ambos temas (dirección de arte); los
+     tokens siguen a la paleta activa (theme.css) junto con la esfera. */
+  background: radial-gradient(
+    ellipse at 50% 42%,
+    var(--esfera-fondo-claro, #0a0c1c) 0%,
+    var(--esfera-fondo, #05060f) 72%
+  );
 }
 .esfera-stage canvas {
   display: block;

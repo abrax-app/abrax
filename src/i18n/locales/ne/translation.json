@@ -711,6 +711,14 @@
       "dark": "अँध्यारो"
     }
   },
+  "palette": {
+    "title": "रङ योजना",
+    "description": "Abrax को रङ योजना छान्नुहोस्। Imperial डिजाइनद्वारा नै अँध्यारो हो: सक्रिय रहँदा यसले डार्क मोड लागू गर्छ।",
+    "options": {
+      "abrax": "ABRAX",
+      "imperial": "Imperial"
+    }
+  },
   "overlay": {
     "transcribing": "ट्रान्सक्राइब गरिँदैछ...",
     "processing": "प्रशोधन गरिँदैछ..."

@@ -8,6 +8,7 @@ import { Button } from "../../ui/Button";
 import { AppDataDirectory } from "../AppDataDirectory";
 import { AppLanguageSelector } from "../AppLanguageSelector";
 import { ShowWhatsNewOnUpdate } from "../ShowWhatsNewOnUpdate";
+import { PaletteSelector } from "../PaletteSelector";
 import { ThemeSelector } from "../ThemeSelector";
 import { LogDirectory } from "../debug";
 import AbraxLogo from "../../icons/AbraxLogo";
@@ -48,6 +49,7 @@ export const AboutSettings: React.FC = () => {
       <SettingsGroup title={t("settings.about.title")}>
         <AppLanguageSelector descriptionMode="tooltip" grouped={true} />
         <ThemeSelector descriptionMode="tooltip" grouped={true} />
+        <PaletteSelector descriptionMode="tooltip" grouped={true} />
         <SettingContainer
           title={t("settings.about.version.title")}
           description={t("settings.about.version.description")}
@@ -90,9 +92,7 @@ export const AboutSettings: React.FC = () => {
       <SettingsGroup title={t("settings.about.acknowledgments.title")}>
         <SettingContainer
           title={t("settings.about.acknowledgments.upstream.title")}
-          description={t(
-            "settings.about.acknowledgments.upstream.description",
-          )}
+          description={t("settings.about.acknowledgments.upstream.description")}
           grouped={true}
           layout="stacked"
         >

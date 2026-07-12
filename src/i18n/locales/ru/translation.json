@@ -708,6 +708,14 @@
       "dark": "Тёмная"
     }
   },
+  "palette": {
+    "title": "Палитра",
+    "description": "Выберите цветовую палитру Abrax. Imperial тёмная по замыслу: пока она активна, принудительно включается тёмный режим.",
+    "options": {
+      "abrax": "ABRAX",
+      "imperial": "Imperial"
+    }
+  },
   "overlay": {
     "transcribing": "Расшифровка...",
     "processing": "Обработка..."

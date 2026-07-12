@@ -22,9 +22,9 @@ use tauri_plugin_autostart::ManagerExt;
 #[cfg(all(target_os = "macos", target_arch = "aarch64"))]
 use crate::settings::APPLE_INTELLIGENCE_DEFAULT_MODEL_ID;
 use crate::settings::{
-    self, get_settings, AutoSubmitKey, ClipboardHandling, KeyboardImplementation, LLMPrompt,
-    OverlayPosition, OverlayStyle, PasteMethod, ShortcutBinding, SoundTheme, Theme, TypingTool,
-    APPLE_INTELLIGENCE_PROVIDER_ID,
+    self, get_settings, AppSettings, AutoSubmitKey, ClipboardHandling, KeyboardImplementation,
+    LLMPrompt, OverlayPosition, OverlayStyle, PasteMethod, ShortcutBinding, SoundTheme, Theme,
+    TypingTool, UiTheme, APPLE_INTELLIGENCE_PROVIDER_ID,
 };
 use crate::tray;
 
@@ -507,10 +507,45 @@ pub fn change_theme_setting(app: AppHandle, theme: String) -> Result<(), String>
         }
     };
     settings.theme = parsed;
+    let effective = effective_window_theme(&settings);
     settings::write_settings(&app, settings);
     #[cfg(target_os = "windows")]
-    apply_window_theme(&app, parsed);
+    apply_window_theme(&app, effective);
+    #[cfg(not(target_os = "windows"))]
+    let _ = effective;
     Ok(())
+}
+
+#[tauri::command]
+#[specta::specta]
+pub fn change_ui_theme_setting(app: AppHandle, ui_theme: String) -> Result<(), String> {
+    let mut settings = settings::get_settings(&app);
+    let parsed = match ui_theme.as_str() {
+        "abrax" => UiTheme::Abrax,
+        "imperial" => UiTheme::Imperial,
+        other => {
+            warn!("Invalid ui theme '{}', defaulting to abrax", other);
+            UiTheme::Abrax
+        }
+    };
+    settings.ui_theme = parsed;
+    let effective = effective_window_theme(&settings);
+    settings::write_settings(&app, settings);
+    #[cfg(target_os = "windows")]
+    apply_window_theme(&app, effective);
+    #[cfg(not(target_os = "windows"))]
+    let _ = effective;
+    Ok(())
+}
+
+/// Light/dark mode the window chrome should actually show: Imperial is dark by
+/// design and forces dark regardless of the stored [`Theme`], which stays
+/// untouched and governs again when the palette returns to Abrax.
+pub fn effective_window_theme(settings: &AppSettings) -> Theme {
+    match settings.ui_theme {
+        UiTheme::Imperial => Theme::Dark,
+        UiTheme::Abrax => settings.theme,
+    }
 }
 
 /// Applies the appearance setting to the Windows title bar, which CSS

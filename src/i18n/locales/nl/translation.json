@@ -711,6 +711,14 @@
       "dark": "Donker"
     }
   },
+  "palette": {
+    "title": "Palet",
+    "description": "Kies het kleurenpalet van Abrax. Imperial is donker van opzet: zolang het actief is, forceert het de donkere modus.",
+    "options": {
+      "abrax": "ABRAX",
+      "imperial": "Imperial"
+    }
+  },
   "overlay": {
     "transcribing": "Transcriberen...",
     "processing": "Verwerken..."

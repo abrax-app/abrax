@@ -708,6 +708,14 @@
       "dark": "Тъмна"
     }
   },
+  "palette": {
+    "title": "Палитра",
+    "description": "Изберете цветовата палитра на Abrax. Imperial е тъмна по дизайн: докато е активна, налага тъмен режим.",
+    "options": {
+      "abrax": "ABRAX",
+      "imperial": "Imperial"
+    }
+  },
   "overlay": {
     "transcribing": "Транскрибиране...",
     "processing": "Обработка..."

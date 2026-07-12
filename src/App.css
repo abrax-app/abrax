@@ -11,6 +11,7 @@
   --color-logo-stroke: var(--color-logo-stroke);
   --color-text-stroke: var(--color-text-stroke);
   --color-mid-gray: var(--color-mid-gray);
+  --color-on-accent: var(--color-on-accent);
 }
 
 :root {
@@ -60,26 +61,14 @@
 }
 
 /*
- * Explicit theme override, driven by the `theme` setting via
- * `document.documentElement.dataset.theme`. When set, the higher-specificity
- * attribute selectors win over the `prefers-color-scheme` media query above,
- * so a user can keep Abrax light or dark regardless of the OS setting.
- * `system` (or no attribute) leaves the OS in charge.
+ * Los overrides de `data-theme` para los tokens de color de marca viven en
+ * styles/theme.css (compartido por la ventana principal y el overlay). Aquí
+ * solo queda el override específico de la app para la superficie del log,
+ * que el overlay no usa: bajo modo oscuro forzado (incluido Imperial) toma
+ * el mismo tono más oscuro que el media query del sistema.
  */
-:root[data-theme="light"] {
-  --color-text: var(--light-color-text);
-  --color-background: var(--light-color-background);
-  --color-logo-primary: var(--light-color-logo-primary);
-  --color-logo-stroke: var(--light-color-logo-stroke);
-  --color-brand-cyan: var(--light-color-brand-cyan);
-}
-
 :root[data-theme="dark"] {
-  --color-text: var(--dark-color-text);
-  --color-background: var(--dark-color-background);
-  --color-logo-primary: var(--dark-color-logo-primary);
-  --color-logo-stroke: var(--dark-color-logo-stroke);
-  --color-brand-cyan: var(--dark-color-brand-cyan);
+  --color-log-surface: color-mix(in srgb, var(--color-background), black 15%);
 }
 
 /* macOS - tint native overlay scrollbar thumb */
@@ -115,6 +104,13 @@
   .text-stroke {
     -webkit-text-stroke: 2px var(--color-text-stroke);
   }
+}
+
+/* Lockup ABRAX: el degradado multicolor es exclusivo de la paleta ABRAX. En
+   cualquier otra paleta (atributo data-ui-theme presente) el lockup completo
+   —letras, núcleo y glifo (vía --lockup-stop-*)— se aplana al acento1. */
+:root[data-ui-theme] .abrax-lockup {
+  color: var(--color-logo-primary);
 }
 
 .logo-primary {

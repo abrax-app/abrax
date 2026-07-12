@@ -708,6 +708,14 @@
       "dark": "어둡게"
     }
   },
+  "palette": {
+    "title": "팔레트",
+    "description": "Abrax의 색상 팔레트를 선택하세요. Imperial은 의도적으로 어두운 테마로, 활성화된 동안에는 다크 모드가 강제됩니다.",
+    "options": {
+      "abrax": "ABRAX",
+      "imperial": "Imperial"
+    }
+  },
   "overlay": {
     "transcribing": "텍스트로 변환 중...",
     "processing": "처리 중..."

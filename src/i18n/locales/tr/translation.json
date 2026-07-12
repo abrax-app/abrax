@@ -708,6 +708,14 @@
       "dark": "Koyu"
     }
   },
+  "palette": {
+    "title": "Palet",
+    "description": "Abrax'ın renk paletini seçin. Imperial tasarımı gereği koyudur: etkin olduğu sürece koyu modu zorlar.",
+    "options": {
+      "abrax": "ABRAX",
+      "imperial": "Imperial"
+    }
+  },
   "overlay": {
     "transcribing": "Transkribe ediliyor...",
     "processing": "İşleniyor..."

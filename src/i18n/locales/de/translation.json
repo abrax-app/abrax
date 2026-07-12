@@ -708,6 +708,14 @@
       "dark": "Dunkel"
     }
   },
+  "palette": {
+    "title": "Farbpalette",
+    "description": "Wähle die Farbpalette von Abrax. Imperial ist bewusst dunkel gestaltet: solange sie aktiv ist, erzwingt sie den Dunkelmodus.",
+    "options": {
+      "abrax": "ABRAX",
+      "imperial": "Imperial"
+    }
+  },
   "overlay": {
     "transcribing": "Transkribiere...",
     "processing": "Verarbeite..."

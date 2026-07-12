@@ -11,6 +11,7 @@ import type {
   StreamWorkKind,
 } from "@/bindings";
 import i18n, { syncLanguageFromSettings } from "@/i18n";
+import { applyAppearanceToRoot } from "@/lib/utils/theme";
 import { getLanguageDirection } from "@/lib/utils/rtl";
 import EsferaStage from "./EsferaStage";
 import type { EsferaState } from "./esfera/engine";
@@ -79,6 +80,13 @@ const RecordingOverlay: React.FC = () => {
               settings.data.overlay_position === "top" ? "top" : "bottom",
             );
             setStyle(settings.data.overlay_style ?? "minimal");
+            // La paleta activa llega por los mismos tokens CSS que la app:
+            // se aplica a la raíz ANTES de volverse visible, para que la
+            // esfera (que lee los tokens al montar) nazca ya teñida.
+            applyAppearanceToRoot(
+              settings.data.theme ?? "system",
+              settings.data.ui_theme ?? "abrax",
+            );
           }
         } catch {
           // Keep the previous/default placement if settings can't be read.

@@ -27,13 +27,89 @@ type Level = keyof typeof LEVELS;
 const LEVEL_ORDER: Level[] = ["alta", "media", "baja"];
 const DPR_MAX = 1.75;
 
-// Núcleo de estado: blanco cálido al grabar (late con la voz), cian señal al
-// transcribir, violeta ABRAX al post-procesar.
-const CORE_TINTS: Record<EsferaState, number> = {
-  recording: 0xffffff,
-  transcribing: 0x2fd9ff,
-  processing: 0x8b5cf6,
+/**
+ * Paleta de la esfera, leída de los tokens CSS de la raíz (theme.css):
+ * stops del degradado de la membrana, núcleos por estado y colores del
+ * escenario. La paleta activa (`data-ui-theme`) redefine los tokens y la
+ * esfera se re-tiñe sin tocar el motor — cualquier shell (clásico, orbital,
+ * retro) reutiliza esta inyección tal cual. Los respaldos son los valores
+ * del prototipo v2 (paleta ABRAX).
+ *
+ * Cada color es un entero 0xRRGGBB en sRGB crudo: el shader consume los
+ * componentes tal cual (como los vec3 literales del prototipo), sin pasar
+ * por la gestión de color de three.
+ */
+export interface EsferaPalette {
+  /** Exterior frío del degradado (ABRAX: cian). */
+  stopA: number;
+  /** Exterior cálido del degradado (ABRAX: violeta). */
+  stopB: number;
+  /** Anillo interior (ABRAX: magenta). */
+  stopC: number;
+  /** Base clara de picos y transición al núcleo. */
+  base: number;
+  /** Núcleo al grabar (late con la voz). */
+  coreRecording: number;
+  /** Núcleo al transcribir. */
+  coreTranscribing: number;
+  /** Núcleo al post-procesar. */
+  coreProcessing: number;
+  /** Halo suave alrededor del núcleo. */
+  halo: number;
+  /** Brillo central. */
+  glow: number;
+  /** Núcleo opaco que bloquea los puntos traseros. */
+  fondo: number;
+}
+
+const PALETTE_TOKENS: Record<keyof EsferaPalette, [string, number]> = {
+  stopA: ["--esfera-stop-a", 0x33bfff],
+  stopB: ["--esfera-stop-b", 0x7326d9],
+  stopC: ["--esfera-stop-c", 0xff40cc],
+  base: ["--esfera-blanco", 0xfff7fc],
+  coreRecording: ["--esfera-nucleo-grabando", 0xffffff],
+  coreTranscribing: ["--esfera-nucleo-transcribiendo", 0x2fd9ff],
+  coreProcessing: ["--esfera-nucleo-procesando", 0x8b5cf6],
+  halo: ["--esfera-halo", 0xff78c8],
+  glow: ["--esfera-glow", 0xc8f0ff],
+  fondo: ["--esfera-fondo", 0x05060f],
 };
+
+/** `#rgb`/`#rrggbb` → entero 0xRRGGBB; null si el valor no es un hex. */
+function parseHexColor(value: string): number | null {
+  const m = /^#([0-9a-f]{3}|[0-9a-f]{6})$/i.exec(value.trim());
+  if (!m) return null;
+  const h =
+    m[1].length === 3
+      ? m[1]
+          .split("")
+          .map((c) => c + c)
+          .join("")
+      : m[1];
+  return parseInt(h, 16);
+}
+
+/** Lee la paleta activa desde los tokens CSS computados de la raíz. */
+export function readEsferaPalette(
+  root: HTMLElement = document.documentElement,
+): EsferaPalette {
+  const cs = getComputedStyle(root);
+  const palette = {} as EsferaPalette;
+  for (const key of Object.keys(PALETTE_TOKENS) as (keyof EsferaPalette)[]) {
+    const [token, fallback] = PALETTE_TOKENS[key];
+    palette[key] = parseHexColor(cs.getPropertyValue(token)) ?? fallback;
+  }
+  return palette;
+}
+
+/** Componentes sRGB crudos [0,1] para los uniforms del shader. */
+function hexToVec3(hex: number): THREE.Vector3 {
+  return new THREE.Vector3(
+    ((hex >> 16) & 255) / 255,
+    ((hex >> 8) & 255) / 255,
+    (hex & 255) / 255,
+  );
+}
 
 // Si el backend deja de emitir (silencio VAD, fin de la grabación), la esfera
 // decae a su respiración serena en vez de congelarse en el último espectro.
@@ -118,6 +194,10 @@ void main(){
 
 const FRAG = `
 precision mediump float;
+uniform vec3 uStopA;
+uniform vec3 uStopB;
+uniform vec3 uStopC;
+uniform vec3 uBase;
 varying float vEnergy;
 varying float vWarm;
 varying float vShade;
@@ -129,15 +209,12 @@ void main(){
   if (d > 1.0) discard;
   float alpha = exp(-d*3.2) * 0.9;
 
-  // núcleo blanco caliente → rosa fuego → exterior violeta (abajo-izq) / cian (arriba-der)
+  // núcleo claro caliente → anillo interior → exterior B (abajo-izq) / A (arriba-der)
+  // (paleta ABRAX: blanco → magenta → violeta/cian; los stops llegan por uniform)
   float t = clamp((vWorld.x + vWorld.y)*0.30 + 0.5, 0.0, 1.0);
-  vec3 cian    = vec3(0.20, 0.75, 1.00);
-  vec3 violeta = vec3(0.45, 0.15, 0.85);
-  vec3 magenta = vec3(1.00, 0.25, 0.80);
-  vec3 blanco  = vec3(1.00, 0.97, 0.99);
-  vec3 exterior = mix(violeta, cian, t);
-  vec3 col = mix(magenta, exterior, smoothstep(0.18, 0.70, vRR));
-  col = mix(blanco, col, smoothstep(0.02, 0.16, vRR));
+  vec3 exterior = mix(uStopB, uStopA, t);
+  vec3 col = mix(uStopC, exterior, smoothstep(0.18, 0.70, vRR));
+  col = mix(uBase, col, smoothstep(0.02, 0.16, vRR));
   col *= vShade;                                              // sombreado del volado (tela)
   col = mix(col, vec3(1.0, 0.62, 0.42), vWarm*0.5);           // tinte cálido en la dominante
   col = mix(col, vec3(1.0), clamp(vEnergy*vEnergy*0.45, 0.0, 0.75)); // blanco en picos
@@ -146,7 +223,10 @@ void main(){
 `;
 
 /** Textura radial suave para los sprites del núcleo (idéntica al prototipo). */
-function radialTexture(r: number, g: number, b: number, aCenter: number) {
+function radialTexture(hex: number, aCenter: number) {
+  const r = (hex >> 16) & 255;
+  const g = (hex >> 8) & 255;
+  const b = hex & 255;
   const s = 256;
   const cv = document.createElement("canvas");
   cv.width = cv.height = s;
@@ -259,9 +339,19 @@ export class EsferaEngine {
     uPushRing: { value: 0.4 },
     uPushAmt: { value: 0 },
     uBands: { value: new Float32Array(BANDS) },
+    uStopA: { value: new THREE.Vector3() },
+    uStopB: { value: new THREE.Vector3() },
+    uStopC: { value: new THREE.Vector3() },
+    uBase: { value: new THREE.Vector3() },
   };
 
-  constructor(private canvas: HTMLCanvasElement) {
+  private palette: EsferaPalette;
+
+  constructor(
+    private canvas: HTMLCanvasElement,
+    palette: EsferaPalette = readEsferaPalette(),
+  ) {
+    this.palette = palette;
     this.reduced = window.matchMedia(
       "(prefers-reduced-motion: reduce)",
     ).matches;
@@ -288,12 +378,12 @@ export class EsferaEngine {
     // frontales se lean.
     this.darkCore = new THREE.Mesh(
       new THREE.SphereGeometry(0.86, 48, 48),
-      new THREE.MeshBasicMaterial({ color: 0x05050e }),
+      new THREE.MeshBasicMaterial({ color: palette.fondo }),
     );
     this.spinner.add(this.darkCore);
 
     // Punto brillante central (late con la voz) — el núcleo de estado.
-    const glowTex = radialTexture(200, 240, 255, 0.9);
+    const glowTex = radialTexture(palette.glow, 0.9);
     this.textures.push(glowTex);
     this.coreGlow = new THREE.Sprite(
       new THREE.SpriteMaterial({
@@ -307,8 +397,8 @@ export class EsferaEngine {
     this.coreGlow.scale.setScalar(0.34);
     this.spinner.add(this.coreGlow);
 
-    // Halo rosado suave alrededor del núcleo.
-    const haloTex = radialTexture(255, 120, 200, 0.45);
+    // Halo suave alrededor del núcleo (rosado en ABRAX; sigue a la paleta).
+    const haloTex = radialTexture(palette.halo, 0.45);
     this.textures.push(haloTex);
     this.pinkHalo = new THREE.Sprite(
       new THREE.SpriteMaterial({
@@ -321,6 +411,14 @@ export class EsferaEngine {
     this.pinkHalo.position.set(0, 0, 0.95);
     this.pinkHalo.scale.setScalar(1.25);
     this.spinner.add(this.pinkHalo);
+
+    this.applyPaletteUniforms();
+    // Tinte inicial del núcleo: setState() retorna temprano si el estado no
+    // cambia, así que el estado de partida se tiñe aquí (el material por
+    // defecto es blanco, que solo coincide con la paleta ABRAX).
+    (this.coreGlow.material as THREE.SpriteMaterial).color.setHex(
+      this.coreTint(this.state),
+    );
 
     this.material = new THREE.ShaderMaterial({
       uniforms: this.uniforms,
@@ -400,12 +498,66 @@ export class EsferaEngine {
     // Con movimiento reducido no hay rAF: la esfera es estática por diseño.
   }
 
+  /** Tinte del núcleo para una fase del dictado, según la paleta activa. */
+  private coreTint(state: EsferaState): number {
+    switch (state) {
+      case "recording":
+        return this.palette.coreRecording;
+      case "transcribing":
+        return this.palette.coreTranscribing;
+      case "processing":
+        return this.palette.coreProcessing;
+    }
+  }
+
+  /** Vuelca los stops de la paleta a los uniforms del shader. */
+  private applyPaletteUniforms() {
+    this.uniforms.uStopA.value.copy(hexToVec3(this.palette.stopA));
+    this.uniforms.uStopB.value.copy(hexToVec3(this.palette.stopB));
+    this.uniforms.uStopC.value.copy(hexToVec3(this.palette.stopC));
+    this.uniforms.uBase.value.copy(hexToVec3(this.palette.base));
+  }
+
+  /**
+   * Re-tiñe la esfera en caliente (membrana, núcleos, halo y escenario).
+   * El overlay monta un motor nuevo por sesión de dictado, así que la vía
+   * normal es el constructor; esta entrada queda lista para shells que
+   * cambien de paleta con el motor vivo (orbital/retro).
+   */
+  setPalette(palette: EsferaPalette) {
+    if (this.disposed) return;
+    this.palette = palette;
+    this.applyPaletteUniforms();
+    (this.darkCore.material as THREE.MeshBasicMaterial).color.setHex(
+      palette.fondo,
+    );
+    const glowMat = this.coreGlow.material as THREE.SpriteMaterial;
+    const haloMat = this.pinkHalo.material as THREE.SpriteMaterial;
+    for (const [mat, hex, alpha] of [
+      [glowMat, palette.glow, 0.9],
+      [haloMat, palette.halo, 0.45],
+    ] as const) {
+      const old = mat.map;
+      const tex = radialTexture(hex, alpha);
+      this.textures.push(tex);
+      mat.map = tex;
+      mat.needsUpdate = true;
+      if (old) {
+        const idx = this.textures.indexOf(old);
+        if (idx !== -1) this.textures.splice(idx, 1);
+        old.dispose();
+      }
+    }
+    glowMat.color.setHex(this.coreTint(this.state));
+    if (this.reduced) this.renderOnce();
+  }
+
   /** Cambia el tinte del núcleo según la fase del dictado. */
   setState(state: EsferaState) {
     if (this.disposed || state === this.state) return;
     this.state = state;
     (this.coreGlow.material as THREE.SpriteMaterial).color.setHex(
-      CORE_TINTS[state],
+      this.coreTint(state),
     );
     if (this.reduced) this.renderOnce();
   }
@@ -510,7 +662,7 @@ export class EsferaEngine {
 
   private renderOnce() {
     (this.coreGlow.material as THREE.SpriteMaterial).color.setHex(
-      CORE_TINTS[this.state],
+      this.coreTint(this.state),
     );
     (this.coreGlow.material as THREE.SpriteMaterial).opacity = 0.75;
     this.renderer.render(this.scene, this.camera);

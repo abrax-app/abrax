@@ -708,6 +708,14 @@
       "dark": "Ciemny"
     }
   },
+  "palette": {
+    "title": "Paleta",
+    "description": "Wybierz paletę kolorów Abrax. Imperial jest ciemna z założenia: gdy jest aktywna, wymusza tryb ciemny.",
+    "options": {
+      "abrax": "ABRAX",
+      "imperial": "Imperial"
+    }
+  },
   "overlay": {
     "transcribing": "Transkrypcja...",
     "processing": "Przetwarzanie..."

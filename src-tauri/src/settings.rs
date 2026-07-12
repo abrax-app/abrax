@@ -286,6 +286,18 @@ pub enum Theme {
     Dark,
 }
 
+/// Color palette for the whole UI, orthogonal to [`Theme`] (light/dark).
+/// `Abrax` is the brand palette (cyan/violet/magenta); `Imperial` is a
+/// gold/amber/red palette that is dark by design, so it forces dark mode
+/// while active (the stored [`Theme`] is preserved and applies again on
+/// switching back).
+#[derive(Serialize, Deserialize, Debug, Clone, Copy, PartialEq, Eq, Type)]
+#[serde(rename_all = "snake_case")]
+pub enum UiTheme {
+    Abrax,
+    Imperial,
+}
+
 #[derive(Serialize, Deserialize, Debug, Clone, Copy, PartialEq, Eq, Type, Default)]
 #[serde(rename_all = "snake_case")]
 pub enum TypingTool {
@@ -459,6 +471,8 @@ pub struct AppSettings {
     pub app_language: String,
     #[serde(default = "default_theme")]
     pub theme: Theme,
+    #[serde(default = "default_ui_theme")]
+    pub ui_theme: UiTheme,
     #[serde(default)]
     pub experimental_enabled: bool,
     #[serde(default)]
@@ -622,6 +636,10 @@ fn default_sound_theme() -> SoundTheme {
 
 fn default_theme() -> Theme {
     Theme::System
+}
+
+fn default_ui_theme() -> UiTheme {
+    UiTheme::Abrax
 }
 
 fn default_post_process_enabled() -> bool {
@@ -940,6 +958,7 @@ pub fn get_default_settings() -> AppSettings {
         append_trailing_space: false,
         app_language: default_app_language(),
         theme: default_theme(),
+        ui_theme: default_ui_theme(),
         experimental_enabled: false,
         lazy_stream_close: false,
         keyboard_implementation: KeyboardImplementation::default(),
@@ -1343,6 +1362,24 @@ mod tests {
         assert!(salvaged.onboarding_completed);
         assert_eq!(salvaged.bindings["transcribe"].current_binding, "f13");
         assert_eq!(salvaged.sound_theme, default_sound_theme());
+    }
+
+    /// A store written before the palette existed has no `ui_theme` key and
+    /// must load with the Abrax palette; an unknown palette (e.g. written by
+    /// a newer build) must salvage to the default instead of resetting.
+    #[test]
+    fn ui_theme_defaults_and_salvages() {
+        let settings: AppSettings =
+            serde_json::from_value(serde_json::json!({})).expect("ui_theme needs a serde default");
+        assert_eq!(settings.ui_theme, UiTheme::Abrax);
+
+        let mut stored = default_settings_json();
+        stored
+            .as_object_mut()
+            .unwrap()
+            .insert("ui_theme".into(), serde_json::json!("cosmic"));
+        assert!(serde_json::from_value::<AppSettings>(stored.clone()).is_err());
+        assert_eq!(salvage_settings(&stored).ui_theme, default_ui_theme());
     }
 
     #[test]
