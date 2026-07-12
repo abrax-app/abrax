@@ -42,6 +42,7 @@ Estado consolidado al **2026-07-12**. Toda afirmación de este documento está r
 - **Errores visibles** (`cc5ecf3`, `e1be4f0`). Canal único de alertas con registro reciente, toast localizado y **notificación nativa** cuando la ventana está oculta; banner «Errores recientes» al reabrir; estados de error con causa y Reintentar en modelos, onboarding e historial (F1, F3, F4, F7).
 - **Diccionario Vivo por proyecto** (`63da2be`, `6d6ef19`). ABRAX aprende los términos de tu repositorio (identificadores, ramas, archivos; respeta .gitignore) y corrige el dictado hacia ellos; reemplazos exactos definidos por el usuario; todo local (el índice vive en tu disco).
 - **Compilador de Prompts, modo plantilla** (`c6a4ef8`). Estructura el dictado crudo en CONTEXTO/TAREA/REQUISITOS/FORMATO con linter de ambigüedades es-419 — sin ningún LLM, instantáneo y offline; botón varita en el Historial.
+- **Paletas de color: ABRAX e Imperial** (`87da2de`). Selector «Paleta» en Acerca de, independiente del modo claro/oscuro: **ABRAX** (cian/violeta/magenta de marca) o **Imperial** (oro/ámbar/rojo sobre tinta cálida). Imperial es un tema oscuro por diseño, así que fuerza el modo oscuro mientras está activo y conserva tu preferencia de claro/oscuro para cuando vuelvas a ABRAX. Toda la interfaz sigue la paleta activa vía tokens de tema —botones, toggles, sliders, enlaces, foco, el lockup (que pasa a variante monocroma en Imperial) y **la esfera del overlay**, que late en los colores de la paleta con su núcleo de grabación teñido—. La preferencia se persiste y se aplica al instante, sin reiniciar. Textos en los 22 idiomas (los nombres de paleta no se traducen).
 - **Escucha — ABRAX lee tu código** (rama `feat/escucha`, **fusionada el 12/07** en `b6427e6`). Sección nueva: lectura en voz alta con TTS del sistema (crate `tts`, MIT — cero descargas, 100% local), preprocesador markdown/código es-419 (símbolos verbalizados, identificadores partidos, encabezados anunciados), voces y velocidades independientes para prosa y código, resaltado de la línea en lectura, «Leer portapapeles» y Esc para detener. La pausa opera al final de la oración en curso (documentado en el propio panel, 22 idiomas). 19 tests nuevos; diseño de voz neural en `docs/ESCUCHA_FASE2.md` (solo documento).
 
 ## 5. Limpieza
@@ -59,7 +60,7 @@ Estado consolidado al **2026-07-12**. Toda afirmación de este documento está r
 - Fuentes de descarga de modelos: **11 de 16 migradas a Hugging Face** con URL anclada por commit y sha256 verificado por descarga real (los 3 Whisper GGML en el repo oficial de ggerganov; el resto en mirrors byte-idénticos). Las 5 restantes (Moonshine base/tiny, GigaAM, Canary ×2) no existen fuera del hosting del upstream: se migran a un espejo propio (archivos ya verificados y preservados localmente) — fecha objetivo 22/07.
 - Adaptación de los workflows de CI para builds propios (falta el build macOS sin firma e instrucciones Gatekeeper).
 - Rebranding del README y documentación de privacidad (PRIVACY.md, incluida la nota del índice local del Diccionario).
-- Suite al día de hoy: **160 tests en verde (+1 smoke de audio que se corre aparte)** · clippy sin avisos · 22 idiomas en paridad.
+- Suite al día de hoy: **161 tests en verde (+1 smoke de audio que se corre aparte)** · clippy sin avisos · 22 idiomas en paridad.
 
 ## 7. Atribución
 
