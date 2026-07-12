@@ -1,7 +1,7 @@
 [package]
 name = "abrax"
 version = "0.1.0"
-description = "Abrax — dictado por voz local para vibe coders"
+description = "Dictado con IA 100% local, en español de primera clase."
 authors = ["Equipo Abrax"]
 edition = "2021"
 license = "MIT"
