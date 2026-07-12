@@ -65,10 +65,7 @@ fn build_headers(provider: &PostProcessProvider, api_key: &str) -> Result<Header
 
     // Common headers
     headers.insert(CONTENT_TYPE, HeaderValue::from_static("application/json"));
-    headers.insert(
-        REFERER,
-        HeaderValue::from_static("https://abrax.app"),
-    );
+    headers.insert(REFERER, HeaderValue::from_static("https://abrax.app"));
     headers.insert(
         USER_AGENT,
         HeaderValue::from_static("Abrax/1.0 (+https://abrax.app)"),

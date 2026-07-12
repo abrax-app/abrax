@@ -287,7 +287,8 @@
           "options": {
             "none": "Geen",
             "minimal": "Minimaal",
-            "live": "Live"
+            "live": "Live",
+            "esfera": "Esfera"
           }
         },
         "position": {

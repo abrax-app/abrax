@@ -157,10 +157,13 @@ fn create_audio_recorder(
         )
         .with_level_callback({
             let app_handle = app_handle.clone();
-            move |levels| {
-                utils::emit_levels(&app_handle, &levels);
+            move |frame| {
+                utils::emit_spectrum(&app_handle, &frame);
             }
         })
+        // Subscription gate (R8): the FFT only runs while some window called
+        // start_spectrum — never 24/7 with an always-on microphone.
+        .with_spectrum_gate(crate::overlay::spectrum_gate())
         .with_audio_callback({
             let router = stream_router;
             move |frame| {

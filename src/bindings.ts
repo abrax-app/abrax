@@ -716,6 +716,20 @@ async setClamshellMicrophone(deviceName: string) : Promise<Result<null, string>>
 async isRecording() : Promise<boolean> {
     return await TAURI_INVOKE("is_recording");
 },
+/**
+ * Subscribe the calling window to spectrum frames (R8 subscription model).
+ * Idempotent per window label; frames flow only while ≥1 subscriber exists.
+ */
+async startSpectrum() : Promise<void> {
+    await TAURI_INVOKE("start_spectrum");
+},
+/**
+ * Unsubscribe the calling window from spectrum frames. When the last
+ * subscriber leaves, spectrum analysis and emission stop entirely.
+ */
+async stopSpectrum() : Promise<void> {
+    await TAURI_INVOKE("stop_spectrum");
+},
 async setModelUnloadTimeout(timeout: ModelUnloadTimeout) : Promise<void> {
     await TAURI_INVOKE("set_model_unload_timeout", { timeout });
 },
@@ -900,10 +914,11 @@ export type OverlayPosition = "top" | "bottom"
 /**
  * Which recording overlay to display. `Minimal` and `Live` share one base
  * (the pill); `Live` grows into the panel that shows live transcription text.
- * `None` hides the overlay entirely. Decoupled from whether the model runs in
- * streaming mode (that is driven purely by model capability).
+ * `Esfera` renders the audio-reactive sphere on a square stage. `None` hides
+ * the overlay entirely. Decoupled from whether the model runs in streaming
+ * mode (that is driven purely by model capability).
  */
-export type OverlayStyle = "none" | "minimal" | "live"
+export type OverlayStyle = "none" | "minimal" | "live" | "esfera"
 export type PaginatedHistory = { entries: HistoryEntry[]; has_more: boolean }
 export type PasteMethod = "ctrl_v" | "direct" | "none" | "shift_insert" | "ctrl_shift_v" | "external_script"
 export type PermissionAccess = "allowed" | "denied" | "unknown"

@@ -287,7 +287,8 @@
           "options": {
             "none": "कुनै होइन",
             "minimal": "मिनिमल",
-            "live": "लाइभ"
+            "live": "लाइभ",
+            "esfera": "Esfera"
           }
         },
         "position": {

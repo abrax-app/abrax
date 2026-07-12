@@ -33,6 +33,8 @@
   --ov-open-w: 392px; /* Live panel, expanded */
   --ov-base-h: 40px; /* control-row height (.sbase) */
   --ov-cap-max-h: 64px; /* max height of the scrolling live-text region */
+  --ov-esfera-w: 216px; /* Esfera card width */
+  --ov-esfera-stage-h: 196px; /* Esfera canvas stage height */
 }
 @media (prefers-color-scheme: dark) {
   :root {
@@ -340,6 +342,37 @@
 }
 .sx:active {
   transform: scale(0.95);
+}
+
+/* ============================================================
+   Esfera style — the audio-reactive sphere on a cosmic porthole, with the
+   shared control row underneath. The porthole keeps the prototype's deep-ink
+   backdrop in both themes (art direction); the row inherits the theme tokens
+   like every other overlay form.
+   ============================================================ */
+.scard.esfera {
+  width: var(--ov-esfera-w);
+  border-radius: 20px;
+  animation: none; /* the stage fades via .ov-fade, like the compact pill */
+  /* No width morphing either: the canvas bitmap is sized from the card, so a
+     transitioning width would capture a mid-animation measurement. */
+  transition: none;
+}
+.esfera-stage {
+  position: relative;
+  width: 100%;
+  height: var(--ov-esfera-stage-h);
+  background: radial-gradient(ellipse at 50% 42%, #0a0c1c 0%, #05060f 72%);
+}
+.esfera-stage canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+/* The timer is always readable in the esfera row (no .open state to gate it). */
+.scard.esfera .stimer {
+  opacity: 1;
+  justify-self: center;
 }
 
 /* working state (transcribing / polishing) — spinner + label */

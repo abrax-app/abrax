@@ -120,14 +120,16 @@ pub enum OverlayPosition {
 
 /// Which recording overlay to display. `Minimal` and `Live` share one base
 /// (the pill); `Live` grows into the panel that shows live transcription text.
-/// `None` hides the overlay entirely. Decoupled from whether the model runs in
-/// streaming mode (that is driven purely by model capability).
+/// `Esfera` renders the audio-reactive sphere on a square stage. `None` hides
+/// the overlay entirely. Decoupled from whether the model runs in streaming
+/// mode (that is driven purely by model capability).
 #[derive(Serialize, Deserialize, Debug, Clone, Copy, PartialEq, Eq, Type)]
 #[serde(rename_all = "lowercase")]
 pub enum OverlayStyle {
     None,
     Minimal,
     Live,
+    Esfera,
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone, Copy, PartialEq, Eq, Type, Default)]

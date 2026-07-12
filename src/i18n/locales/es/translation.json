@@ -283,11 +283,12 @@
       "overlay": {
         "style": {
           "title": "Overlay",
-          "description": "Choose the recording overlay: None hides it, Minimal shows a compact pill, Live shows transcription in real time as you speak (streaming-capable models only — look for the Streaming badge in the model picker). On Linux 'None' is recommended.",
+          "description": "Elige el overlay de grabación: Ninguna lo oculta, Minimal muestra una píldora compacta, Live muestra la transcripción en tiempo real mientras hablas (solo modelos con streaming — busca la insignia Streaming en el selector de modelos), Esfera muestra la esfera que reacciona a tu voz. En Linux se recomienda 'Ninguna'.",
           "options": {
             "none": "Ninguna",
             "minimal": "Minimal",
-            "live": "Live"
+            "live": "Live",
+            "esfera": "Esfera"
           }
         },
         "position": {

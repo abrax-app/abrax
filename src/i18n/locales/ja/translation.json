@@ -287,7 +287,8 @@
           "options": {
             "none": "なし",
             "minimal": "ミニマル",
-            "live": "ライブ"
+            "live": "ライブ",
+            "esfera": "エスフェラ"
           }
         },
         "position": {

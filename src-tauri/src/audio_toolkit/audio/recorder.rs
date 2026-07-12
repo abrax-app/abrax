@@ -13,7 +13,7 @@ use cpal::{
 };
 
 use crate::audio_toolkit::{
-    audio::{AudioVisualiser, FrameResampler},
+    audio::{AudioVisualiser, FrameResampler, SpectrumFrame},
     constants,
     vad::{self, VadFrame},
     VoiceActivityDetector,
@@ -75,8 +75,13 @@ pub struct AudioRecorder {
     cmd_tx: Option<mpsc::Sender<Cmd>>,
     worker_handle: Option<std::thread::JoinHandle<()>>,
     vad: Option<VadConfig>,
-    level_cb: Option<Arc<dyn Fn(Vec<f32>) + Send + Sync + 'static>>,
+    level_cb: Option<Arc<dyn Fn(SpectrumFrame) + Send + Sync + 'static>>,
     audio_cb: Option<AudioFrameCallback>,
+    /// Subscription gate for spectrum analysis (R8). When `false`, the consumer
+    /// loop skips the FFT entirely, so an always-on microphone produces zero
+    /// spectrum work/emission while nothing is subscribed. `None` = always on
+    /// (test harnesses without a gate).
+    spectrum_gate: Option<Arc<AtomicBool>>,
     /// Preferred stream config cached per device name. The two HAL property
     /// queries in `get_preferred_config` cost ~40-85ms per open (worse on
     /// USB/Bluetooth), which lands on the keypress->capture path in on-demand
@@ -95,6 +100,7 @@ impl AudioRecorder {
             vad: None,
             level_cb: None,
             audio_cb: None,
+            spectrum_gate: None,
             config_cache: Arc::new(Mutex::new(None)),
         })
     }
@@ -118,9 +124,16 @@ impl AudioRecorder {
 
     pub fn with_level_callback<F>(mut self, cb: F) -> Self
     where
-        F: Fn(Vec<f32>) + Send + Sync + 'static,
+        F: Fn(SpectrumFrame) + Send + Sync + 'static,
     {
         self.level_cb = Some(Arc::new(cb));
+        self
+    }
+
+    /// Attach the spectrum subscription gate (R8): while it reads `false` the
+    /// consumer loop skips FFT analysis and no level callback fires.
+    pub fn with_spectrum_gate(mut self, gate: Arc<AtomicBool>) -> Self {
+        self.spectrum_gate = Some(gate);
         self
     }
 
@@ -159,6 +172,7 @@ impl AudioRecorder {
         let level_cb = self.level_cb.clone();
         // Move the optional real-time audio frame callback into the worker thread
         let audio_cb = self.audio_cb.clone();
+        let spectrum_gate = self.spectrum_gate.clone();
         let config_cache = Arc::clone(&self.config_cache);
 
         let worker = std::thread::spawn(move || {
@@ -275,6 +289,7 @@ impl AudioRecorder {
                         cmd_rx,
                         level_cb,
                         audio_cb,
+                        spectrum_gate,
                         stop_flag,
                         stream_running_at,
                     );
@@ -529,8 +544,9 @@ fn run_consumer(
     vad: Option<VadConfig>,
     sample_rx: mpsc::Receiver<AudioChunk>,
     cmd_rx: mpsc::Receiver<Cmd>,
-    level_cb: Option<Arc<dyn Fn(Vec<f32>) + Send + Sync + 'static>>,
+    level_cb: Option<Arc<dyn Fn(SpectrumFrame) + Send + Sync + 'static>>,
     audio_cb: Option<AudioFrameCallback>,
+    spectrum_gate: Option<Arc<AtomicBool>>,
     stop_flag: Arc<AtomicBool>,
     stream_running_at: Instant,
 ) {
@@ -552,7 +568,12 @@ fn run_consumer(
     let mut awaiting_first_captured_chunk: Option<Instant> = None;
 
     // ---------- spectrum visualisation setup ---------------------------- //
-    const BUCKETS: usize = 16;
+    // 32 logarithmic bands over 70–8000 Hz (regla R8): the full vocal range
+    // from fundamentals to sibilants, matching what the sphere overlay maps
+    // onto núcleo (graves) → borde (agudos).
+    const BUCKETS: usize = 32;
+    const SPECTRUM_MIN_HZ: f32 = 70.0;
+    const SPECTRUM_MAX_HZ: f32 = 8000.0;
     // Scale the FFT window to the device sample rate so the analysis window
     // (~33 ms) and frequency resolution (~30 Hz/bin) stay roughly constant
     // across devices. A fixed 512-sample window collapses the low vocal
@@ -568,9 +589,12 @@ fn run_consumer(
         in_sample_rate,
         window_size,
         BUCKETS,
-        400.0,  // vocal_min_hz
-        4000.0, // vocal_max_hz
+        SPECTRUM_MIN_HZ,
+        SPECTRUM_MAX_HZ,
     );
+    // Tracks gate transitions so a re-subscribe starts from a clean analysis
+    // state instead of stale buffered audio.
+    let mut spectrum_was_wanted = true;
 
     fn handle_frame(
         samples: &[f32],
@@ -733,11 +757,21 @@ fn run_consumer(
         }
 
         // ---------- spectrum processing ---------------------------------- //
-        if let Some(buckets) = visualizer.feed(&raw) {
-            if let Some(cb) = &level_cb {
-                cb(buckets);
+        // Subscription gate (R8): with no subscribers the FFT never runs, so
+        // an always-on microphone costs zero spectrum work and emits nothing.
+        let spectrum_wanted = spectrum_gate
+            .as_ref()
+            .is_none_or(|g| g.load(Ordering::Relaxed));
+        if spectrum_wanted {
+            if let Some(frame) = visualizer.feed(&raw) {
+                if let Some(cb) = &level_cb {
+                    cb(frame);
+                }
             }
+        } else if spectrum_was_wanted {
+            visualizer.reset();
         }
+        spectrum_was_wanted = spectrum_wanted;
 
         // ---------- existing pipeline ------------------------------------ //
         frame_resampler.push(&raw, &mut |frame: &[f32]| {

@@ -6,6 +6,27 @@ const DB_MAX: f32 = -8.0;
 const GAIN: f32 = 1.3;
 const CURVE_POWER: f32 = 0.7;
 
+/// How many of the lowest bands feed the `bass` aggregate (with 32 log bands
+/// over 70–8000 Hz this covers roughly 70–250 Hz — the vocal fundamental).
+const BASS_BANDS: usize = 4;
+
+/// Floor for the slow-decaying RMS peak tracker. Keeps silence normalized to
+/// ~0 instead of letting the tracker collapse and amplify noise.
+const RMS_PEAK_FLOOR: f32 = 0.04;
+
+/// One spectrum analysis frame for the audio-reactive overlay.
+///
+/// `bands` are normalized 0..1 energies ordered low → high frequency; the
+/// aggregates map onto the sphere's visual language: `rms` drives the core,
+/// `bass` the heartbeat, `dominant` the membrane push.
+#[derive(Clone, Debug, serde::Serialize)]
+pub struct SpectrumFrame {
+    pub bands: Vec<f32>,
+    pub rms: f32,
+    pub bass: f32,
+    pub dominant: u16,
+}
+
 pub struct AudioVisualiser {
     fft: Arc<dyn Fft<f32>>,
     window: Vec<f32>,
@@ -15,6 +36,7 @@ pub struct AudioVisualiser {
     buffer: Vec<f32>,
     window_size: usize,
     buckets: usize,
+    rms_peak: f32,
 }
 
 impl AudioVisualiser {
@@ -35,20 +57,20 @@ impl AudioVisualiser {
             })
             .collect();
 
-        // Pre-compute bucket frequency ranges
+        // Pre-compute bucket frequency ranges. True logarithmic spacing
+        // (each band spans a constant frequency *ratio*), so pitch moves
+        // linearly across the bands — what the sphere expects for its
+        // núcleo→borde mapping. Clamped to Nyquist for low-rate devices.
         let nyquist = sample_rate as f32 / 2.0;
-        let freq_min = freq_min.min(nyquist);
-        let freq_max = freq_max.min(nyquist);
+        let freq_min = freq_min.min(nyquist * 0.5).max(1.0);
+        let freq_max = freq_max.min(nyquist * 0.95).max(freq_min * 2.0);
+        let ratio = freq_max / freq_min;
 
         let mut bucket_ranges = Vec::with_capacity(buckets);
 
         for b in 0..buckets {
-            // Use logarithmic spacing for better perceptual representation
-            let log_start = (b as f32 / buckets as f32).powi(2);
-            let log_end = ((b + 1) as f32 / buckets as f32).powi(2);
-
-            let start_hz = freq_min + (freq_max - freq_min) * log_start;
-            let end_hz = freq_min + (freq_max - freq_min) * log_end;
+            let start_hz = freq_min * ratio.powf(b as f32 / buckets as f32);
+            let end_hz = freq_min * ratio.powf((b + 1) as f32 / buckets as f32);
 
             let start_bin = ((start_hz * window_size as f32) / sample_rate as f32) as usize;
             let mut end_bin = ((end_hz * window_size as f32) / sample_rate as f32) as usize;
@@ -74,10 +96,11 @@ impl AudioVisualiser {
             buffer: Vec::with_capacity(window_size * 2),
             window_size,
             buckets,
+            rms_peak: RMS_PEAK_FLOOR,
         }
     }
 
-    pub fn feed(&mut self, samples: &[f32]) -> Option<Vec<f32>> {
+    pub fn feed(&mut self, samples: &[f32]) -> Option<SpectrumFrame> {
         // Add new samples to buffer
         self.buffer.extend_from_slice(samples);
 
@@ -91,6 +114,20 @@ impl AudioVisualiser {
 
         // Remove DC component
         let mean = window_samples.iter().sum::<f32>() / self.window_size as f32;
+
+        // Time-domain RMS (loudness), normalized against a slow-decaying peak
+        // tracker so quiet and hot microphones both land in 0..1 — the same
+        // AGC idea the per-band noise floor applies in the frequency domain.
+        let energy = window_samples
+            .iter()
+            .map(|&s| {
+                let d = s - mean;
+                d * d
+            })
+            .sum::<f32>();
+        let rms_raw = (energy / self.window_size as f32).sqrt();
+        self.rms_peak = (self.rms_peak * 0.995).max(rms_raw).max(RMS_PEAK_FLOOR);
+        let rms = (rms_raw / self.rms_peak).clamp(0.0, 1.0);
 
         // Apply window function and prepare FFT input
         for (i, &sample) in window_samples.iter().enumerate() {
@@ -142,15 +179,104 @@ impl AudioVisualiser {
             buckets[i] = buckets[i] * 0.7 + buckets[i - 1] * 0.15 + buckets[i + 1] * 0.15;
         }
 
+        // Aggregates for the sphere: bass = mean of the lowest bands,
+        // dominant = loudest band index (the membrane push origin).
+        let bass_n = BASS_BANDS.min(buckets.len());
+        let bass = if bass_n > 0 {
+            buckets[..bass_n].iter().sum::<f32>() / bass_n as f32
+        } else {
+            0.0
+        };
+        let dominant = buckets
+            .iter()
+            .enumerate()
+            .max_by(|a, b| a.1.total_cmp(b.1))
+            .map(|(i, _)| i as u16)
+            .unwrap_or(0);
+
         // Clear processed samples from buffer
         self.buffer.clear();
 
-        Some(buckets)
+        Some(SpectrumFrame {
+            bands: buckets,
+            rms,
+            bass,
+            dominant,
+        })
     }
 
     pub fn reset(&mut self) {
         self.buffer.clear();
-        // Reset noise floor to initial values
+        // Reset noise floor and RMS peak tracker to initial values
         self.noise_floor.fill(-40.0);
+        self.rms_peak = RMS_PEAK_FLOOR;
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    /// A pure tone should light up a narrow group of bands, and the frame's
+    /// aggregates must point at that group.
+    #[test]
+    fn tone_produces_dominant_band_and_frame_aggregates() {
+        let sample_rate = 16_000;
+        let window = 512;
+        let mut viz = AudioVisualiser::new(sample_rate, window, 32, 70.0, 8000.0);
+
+        // 440 Hz sine at healthy amplitude
+        let samples: Vec<f32> = (0..window)
+            .map(|i| {
+                (2.0 * std::f32::consts::PI * 440.0 * i as f32 / sample_rate as f32).sin() * 0.5
+            })
+            .collect();
+
+        let frame = viz.feed(&samples).expect("full window must produce frame");
+        assert_eq!(frame.bands.len(), 32);
+        assert!(frame.rms > 0.5, "loud tone should have high rms");
+        assert!(
+            (frame.bands[frame.dominant as usize]
+                - frame.bands.iter().cloned().fold(0.0, f32::max))
+            .abs()
+                < 1e-6,
+            "dominant must index the loudest band"
+        );
+        // 440 Hz with log spacing 70→8000 lands in the lower third
+        assert!(
+            (frame.dominant as usize) < 16,
+            "440 Hz should sit in the lower half of the spectrum, got band {}",
+            frame.dominant
+        );
+    }
+
+    /// Band edges must grow monotonically (true log spacing) and every band
+    /// must own at least one FFT bin.
+    #[test]
+    fn log_band_ranges_are_monotonic_and_nonempty() {
+        let viz = AudioVisualiser::new(48_000, 2048, 32, 70.0, 8000.0);
+        let mut prev_end = 0usize;
+        for (i, &(start, end)) in viz.bucket_ranges.iter().enumerate() {
+            assert!(end > start, "band {i} is empty ({start}..{end})");
+            assert!(start >= prev_end.saturating_sub(1), "band {i} regressed");
+            prev_end = end;
+        }
+        // Last band must not exceed Nyquist bin
+        assert!(viz.bucket_ranges.last().unwrap().1 <= 2048 / 2);
+    }
+
+    /// Silence must normalize to ~0 rms — the peak tracker floor prevents
+    /// silence from being amplified into a false signal.
+    #[test]
+    fn silence_stays_quiet() {
+        let mut viz = AudioVisualiser::new(16_000, 512, 32, 70.0, 8000.0);
+        let silence = vec![0.0f32; 512];
+        let frame = viz.feed(&silence).unwrap();
+        assert!(
+            frame.rms < 0.05,
+            "silence rms should be ~0, got {}",
+            frame.rms
+        );
+        assert!(frame.bass < 0.2, "silence bass should be low");
     }
 }

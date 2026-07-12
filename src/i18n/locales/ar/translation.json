@@ -266,7 +266,8 @@
           "options": {
             "none": "بلا",
             "minimal": "Minimal",
-            "live": "Live"
+            "live": "Live",
+            "esfera": "Esfera"
           }
         },
         "position": {

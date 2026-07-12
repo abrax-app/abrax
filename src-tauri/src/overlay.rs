@@ -1,7 +1,10 @@
+use crate::audio_toolkit::SpectrumFrame;
 use crate::input;
 use crate::settings;
 use crate::settings::{OverlayPosition, OverlayStyle};
+use std::collections::HashSet;
 use std::sync::atomic::{AtomicBool, AtomicU64, Ordering};
+use std::sync::{Arc, LazyLock, Mutex};
 use std::time::{SystemTime, UNIX_EPOCH};
 use tauri::{AppHandle, Emitter, Manager, PhysicalPosition, PhysicalSize};
 
@@ -50,16 +53,24 @@ const OVERLAY_HEIGHT: f64 = 46.0;
 const OVERLAY_STREAM_WIDTH: f64 = 400.0;
 const OVERLAY_STREAM_HEIGHT: f64 = 120.0;
 
-/// Overlay window size (logical) for a given UI state.
-fn overlay_dimensions(state: &str) -> (f64, f64) {
-    if state == "streaming" {
+// Esfera style: a square stage for the audio-reactive sphere plus a slim
+// status row underneath. Constant across states so the window never resizes
+// mid-dictation (the sphere itself morphs between recording/working).
+const OVERLAY_ESFERA_WIDTH: f64 = 240.0;
+const OVERLAY_ESFERA_HEIGHT: f64 = 252.0;
+
+/// Overlay window size (logical) for a given style + UI state.
+fn overlay_dimensions(style: OverlayStyle, state: &str) -> (f64, f64) {
+    if style == OverlayStyle::Esfera {
+        (OVERLAY_ESFERA_WIDTH, OVERLAY_ESFERA_HEIGHT)
+    } else if state == "streaming" {
         (OVERLAY_STREAM_WIDTH, OVERLAY_STREAM_HEIGHT)
     } else {
         (OVERLAY_WIDTH, OVERLAY_HEIGHT)
     }
 }
 
-static LAST_MIC_LEVEL_EMIT: AtomicU64 = AtomicU64::new(0);
+static LAST_SPECTRUM_EMIT: AtomicU64 = AtomicU64::new(0);
 const EMIT_THROTTLE_MS: u64 = 33; // ~30 FPS
 
 #[cfg(target_os = "macos")]
@@ -367,8 +378,9 @@ fn show_overlay_state(app_handle: &AppHandle, state: &str) {
         return;
     }
 
-    // Size the overlay for this state (compact vs. streaming), then position it.
-    let (width, height) = overlay_dimensions(state);
+    // Size the overlay for this style + state (compact vs. streaming vs.
+    // esfera), then position it.
+    let (width, height) = overlay_dimensions(settings.overlay_style, state);
     if let Some(overlay_window) = app_handle.get_webview_window("recording_overlay") {
         #[cfg(target_os = "linux")]
         update_gtk_layer_shell_anchors(&overlay_window);
@@ -458,58 +470,127 @@ pub fn hide_recording_overlay(app_handle: &AppHandle) {
         std::thread::spawn(move || {
             std::thread::sleep(std::time::Duration::from_millis(300));
             let _ = window_clone.hide();
+            // Failsafe for R8: even if the overlay webview never processed
+            // `hide-overlay` (frozen/crashed webview), a hidden overlay must
+            // not keep the spectrum pipeline alive. Idempotent with the
+            // overlay's own stop_spectrum call.
+            spectrum_unsubscribe("recording_overlay");
         });
     }
 }
 
-// Cached "overlay is enabled" flag, kept in sync with overlay_style. Avoids
-// reading the Tauri store on every audio callback (~24 Hz during recording).
-// Defaults to false so the audio path doesn't emit until lib.rs::setup
-// populates the cache from initial settings.
-static OVERLAY_ENABLED: AtomicBool = AtomicBool::new(false);
+// ───────────────────────── Spectrum subscription (R8) ─────────────────────────
+//
+// Emission model: windows subscribe via the `start_spectrum`/`stop_spectrum`
+// commands (keyed by window label, so a double-subscribe from React StrictMode
+// stays idempotent). The shared gate feeds the recorder's consumer loop, which
+// skips FFT analysis entirely while nobody is subscribed — an always-on
+// microphone therefore never produces spectrum work or events 24/7. This
+// replaces the old overlay_style cache (`OVERLAY_ENABLED`): "overlay hidden →
+// unsubscribed" is a strictly stronger guarantee, and also covers the hidden-
+// webview WebKit accumulation from issue #1279.
 
-/// Update the cached overlay-enabled flag. Called from `lib.rs` at
-/// startup after settings load, and from `change_overlay_style_setting`
-/// whenever the user changes whether the overlay is shown.
-pub fn update_overlay_enabled_cache(enabled: bool) {
-    OVERLAY_ENABLED.store(enabled, Ordering::Relaxed);
+static SPECTRUM_SUBSCRIBERS: LazyLock<Mutex<HashSet<String>>> =
+    LazyLock::new(|| Mutex::new(HashSet::new()));
+static SPECTRUM_WANTED: LazyLock<Arc<AtomicBool>> =
+    LazyLock::new(|| Arc::new(AtomicBool::new(false)));
+static SPECTRUM_FRAMES_EMITTED: AtomicU64 = AtomicU64::new(0);
+
+/// The shared gate handed to the audio recorder: `true` while at least one
+/// window is subscribed to spectrum frames.
+pub fn spectrum_gate() -> Arc<AtomicBool> {
+    Arc::clone(&SPECTRUM_WANTED)
 }
 
-pub fn emit_levels(app_handle: &AppHandle, levels: &[f32]) {
-    // Skip emission when the overlay is disabled. The recording_overlay
-    // window is created at boot regardless of overlay_style, so without this
-    // guard a hidden overlay's WebKit subprocess still
-    // processes every event. Each event drives some kind of WebKit
-    // C++ allocation that accumulates without bound (mechanism not
-    // directly characterized; see issue #1279 for the investigation).
-    // For users with `overlay_style: none` (the Linux default) this skip
-    // eliminates the upstream driver of that accumulation.
-    if !OVERLAY_ENABLED.load(Ordering::Relaxed) {
+pub fn spectrum_subscribe(label: &str) {
+    let mut subs = SPECTRUM_SUBSCRIBERS.lock().unwrap();
+    subs.insert(label.to_string());
+    SPECTRUM_WANTED.store(true, Ordering::Relaxed);
+    log::debug!("spectrum: '{}' subscribed ({} total)", label, subs.len());
+}
+
+pub fn spectrum_unsubscribe(label: &str) {
+    let mut subs = SPECTRUM_SUBSCRIBERS.lock().unwrap();
+    let removed = subs.remove(label);
+    if subs.is_empty() {
+        SPECTRUM_WANTED.store(false, Ordering::Relaxed);
+        // Session counter makes "cero emisión al detener" verifiable in the log.
+        let frames = SPECTRUM_FRAMES_EMITTED.swap(0, Ordering::Relaxed);
+        if removed {
+            log::debug!(
+                "spectrum: '{}' unsubscribed — emission stopped ({} frames this session)",
+                label,
+                frames
+            );
+        }
+    } else if removed {
+        log::debug!(
+            "spectrum: '{}' unsubscribed ({} remaining)",
+            label,
+            subs.len()
+        );
+    }
+}
+
+pub fn emit_spectrum(app_handle: &AppHandle, frame: &SpectrumFrame) {
+    // Belt over the recorder-side gate: no subscribers, no emission.
+    if !SPECTRUM_WANTED.load(Ordering::Relaxed) {
         return;
     }
 
-    // Throttle to ~30 FPS. Even with the overlay enabled, the raw audio
-    // callback fires far faster than the UI needs; capping emission rate
-    // cuts the per-frame `eval_script`/IPC volume that drives the wry
-    // memory growth in issue #1279 (upstream tauri-apps/wry#1489).
+    // Throttle to ~30 FPS. The raw audio callback fires far faster than the
+    // UI needs; capping emission rate cuts the per-frame `eval_script`/IPC
+    // volume that drives the wry memory growth in issue #1279
+    // (upstream tauri-apps/wry#1489).
     let now = SystemTime::now()
         .duration_since(UNIX_EPOCH)
         .unwrap_or_default()
         .as_millis() as u64;
-    let last = LAST_MIC_LEVEL_EMIT.load(Ordering::Relaxed);
+    let last = LAST_SPECTRUM_EMIT.load(Ordering::Relaxed);
     if now.saturating_sub(last) < EMIT_THROTTLE_MS {
         return;
     }
-    LAST_MIC_LEVEL_EMIT.store(now, Ordering::Relaxed);
+    LAST_SPECTRUM_EMIT.store(now, Ordering::Relaxed);
 
-    // Target only the overlay window. In Tauri 2 both `AppHandle::emit`
-    // and `WebviewWindow::emit` broadcast to all webviews; Tauri's
-    // listener filter then skips webviews with no registered listener
-    // for the event, so the settings webview never received `mic-level`.
-    // But the previous dual-call pattern still produced two `eval_script`
-    // calls to the overlay per audio callback (one from each .emit()).
-    // `emit_to` with the overlay's window label produces a single
-    // eval_script call per callback, cutting the per-callback WebKit
-    // dispatch work in half.
-    let _ = app_handle.emit_to("recording_overlay", "mic-level", levels);
+    // `emit_to` each subscriber label (instead of a broadcast `emit`) keeps
+    // this a single eval_script per subscribed webview — hidden webviews with
+    // no subscription never see the event (issue #1279).
+    let subs = SPECTRUM_SUBSCRIBERS.lock().unwrap();
+    for label in subs.iter() {
+        let _ = app_handle.emit_to(label.as_str(), "spectrum", frame);
+    }
+    if !subs.is_empty() {
+        SPECTRUM_FRAMES_EMITTED.fetch_add(1, Ordering::Relaxed);
+    }
+}
+
+#[cfg(test)]
+mod spectrum_tests {
+    use super::*;
+
+    /// Subscribe/unsubscribe must be idempotent per label (React StrictMode
+    /// double-mounts) and the gate must only close when the last one leaves.
+    #[test]
+    fn subscription_gate_follows_subscribers() {
+        // Serialize against other tests touching the same statics.
+        spectrum_unsubscribe("test_a");
+        spectrum_unsubscribe("test_b");
+
+        spectrum_subscribe("test_a");
+        spectrum_subscribe("test_a"); // idempotent
+        spectrum_subscribe("test_b");
+        assert!(SPECTRUM_WANTED.load(Ordering::Relaxed));
+
+        spectrum_unsubscribe("test_a");
+        assert!(
+            SPECTRUM_WANTED.load(Ordering::Relaxed),
+            "gate must stay open while a subscriber remains"
+        );
+
+        spectrum_unsubscribe("test_b");
+        assert!(
+            !SPECTRUM_WANTED.load(Ordering::Relaxed),
+            "gate must close when the last subscriber leaves"
+        );
+    }
 }

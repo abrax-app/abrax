@@ -519,7 +519,9 @@ impl ShortcutAction for TranscribeAction {
         let overlay_started = Instant::now();
         match settings.overlay_style {
             OverlayStyle::Live if model_supports_streaming => utils::show_streaming_overlay(app),
-            OverlayStyle::Live | OverlayStyle::Minimal => show_recording_overlay(app),
+            OverlayStyle::Live | OverlayStyle::Minimal | OverlayStyle::Esfera => {
+                show_recording_overlay(app)
+            }
             OverlayStyle::None => {} // show_overlay_state no-ops on None anyway
         }
         // Everything above runs before capture can begin, so each span here is

@@ -592,6 +592,7 @@ pub fn change_overlay_style_setting(app: AppHandle, style: String) -> Result<(),
         "none" => OverlayStyle::None,
         "minimal" => OverlayStyle::Minimal,
         "live" => OverlayStyle::Live,
+        "esfera" => OverlayStyle::Esfera,
         other => {
             warn!("Invalid overlay style '{}', defaulting to minimal", other);
             OverlayStyle::Minimal
@@ -600,9 +601,8 @@ pub fn change_overlay_style_setting(app: AppHandle, style: String) -> Result<(),
     settings.overlay_style = parsed;
     settings::write_settings(&app, settings);
 
-    // Keep the cached overlay-enabled flag in sync so emit_levels stops (or
-    // resumes) emitting on the next audio callback.
-    crate::overlay::update_overlay_enabled_cache(parsed != OverlayStyle::None);
+    // Spectrum emission follows the overlay's subscription (start/stop_spectrum),
+    // so no cached style flag needs syncing here anymore (R8).
 
     // Reposition in case the window needs to re-center for the new style.
     crate::utils::update_overlay_position(&app);

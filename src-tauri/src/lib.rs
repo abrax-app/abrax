@@ -610,6 +610,8 @@ pub fn run(cli_args: CliArgs) {
             commands::audio::check_custom_sounds,
             commands::audio::set_clamshell_microphone,
             commands::audio::is_recording,
+            commands::audio::start_spectrum,
+            commands::audio::stop_spectrum,
             commands::transcription::set_model_unload_timeout,
             commands::history::get_history_entries,
             commands::history::toggle_history_entry_saved,
@@ -821,14 +823,6 @@ pub fn run(cli_args: CliArgs) {
             app.manage(TranscriptionCoordinator::new(app_handle.clone()));
 
             initialize_core_logic(&app_handle);
-
-            // Populate the overlay-enabled cache from initial settings so the
-            // audio path (overlay::emit_levels, called ~24 Hz during recording)
-            // can do a single atomic load instead of reading the Tauri store.
-            // Kept in sync by shortcut::change_overlay_style_setting.
-            overlay::update_overlay_enabled_cache(
-                settings.overlay_style != settings::OverlayStyle::None,
-            );
 
             // Pre-warm GPU/accelerator enumeration on a background thread. The first
             // get_available_accelerators call enumerates ORT execution providers and

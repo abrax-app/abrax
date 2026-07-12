@@ -287,7 +287,8 @@
           "options": {
             "none": "Aucune",
             "minimal": "Minimal",
-            "live": "Live"
+            "live": "Live",
+            "esfera": "Esfera"
           }
         },
         "position": {

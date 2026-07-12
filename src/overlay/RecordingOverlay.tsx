@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import "./RecordingOverlay.css";
 import { commands, events } from "@/bindings";
 import type {
+  OverlayStyle,
   StreamPhase,
   StreamPhaseEvent,
   StreamTextEvent,
@@ -11,17 +12,33 @@ import type {
 } from "@/bindings";
 import i18n, { syncLanguageFromSettings } from "@/i18n";
 import { getLanguageDirection } from "@/lib/utils/rtl";
+import EsferaStage from "./EsferaStage";
+import type { EsferaState } from "./esfera/engine";
 
 type OverlayState = "recording" | "streaming" | "transcribing" | "processing";
 
+/** Payload del evento `spectrum` (overlay.rs::emit_spectrum). */
+type SpectrumPayload = {
+  bands: number[];
+  rms: number;
+  bass: number;
+  dominant: number;
+};
+
 // Number of reactive bars in the waveform (the simple, smoothed style shared by
-// every overlay form). Mic levels arrive as 16 FFT buckets; we take the first N.
+// the pill overlay forms). The spectrum arrives as 32 log bands over 70–8000 Hz;
+// each bar averages 3 consecutive bands across the voice range.
 const WAVE_BARS = 9;
+// First spectrum band the waveform samples from (~130 Hz upward — skips the
+// lowest bands, which carry rumble rather than voice).
+const WAVE_FIRST_BAND = 2;
+const WAVE_BANDS_PER_BAR = 3;
 
 const RecordingOverlay: React.FC = () => {
   const { t } = useTranslation();
   const [isVisible, setIsVisible] = useState(false);
   const [state, setState] = useState<OverlayState>("recording");
+  const [style, setStyle] = useState<OverlayStyle>("minimal");
   const [levels, setLevels] = useState<number[]>(Array(WAVE_BARS).fill(0));
   const [streamText, setStreamText] = useState<StreamTextEvent>({
     committed: "",
@@ -40,7 +57,7 @@ const RecordingOverlay: React.FC = () => {
   // while overflowing, so the resting first line stays crisp flush under the pill.
   const [overflowing, setOverflowing] = useState(false);
 
-  const smoothedLevelsRef = useRef<number[]>(Array(16).fill(0));
+  const smoothedLevelsRef = useRef<number[]>(Array(WAVE_BARS).fill(0));
   // Live-text scroll-back: the text region "sticks" to the newest line while the
   // user is at the bottom; if they scroll up to read history, auto-follow pauses
   // until they scroll back down.
@@ -53,13 +70,15 @@ const RecordingOverlay: React.FC = () => {
       const unlistenShow = await listen("show-overlay", async (event) => {
         await syncLanguageFromSettings();
         // The Live panel flows downward from a top overlay and upward from a
-        // bottom one; read the placement so the layout can flip to match.
+        // bottom one; read the placement so the layout can flip to match. The
+        // style decides which visual renders (pill, panel, or esfera).
         try {
           const settings = await commands.getAppSettings();
           if (settings.status === "ok") {
             setPosition(
               settings.data.overlay_position === "top" ? "top" : "bottom",
             );
+            setStyle(settings.data.overlay_style ?? "minimal");
           }
         } catch {
           // Keep the previous/default placement if settings can't be read.
@@ -68,31 +87,44 @@ const RecordingOverlay: React.FC = () => {
         setState(overlayState);
         if (overlayState === "recording" || overlayState === "streaming") {
           setStreamText({ committed: "", tentative: "" });
+          setElapsed(0);
         }
         if (overlayState === "streaming") {
           setPhase("listening");
           setWorkKind("transcribing");
-          setElapsed(0);
           setSession((s) => s + 1); // remount the card fresh for this session
         }
         setIsVisible(true);
+        // Subscribe to spectrum frames only while visible (R8): the backend
+        // gates FFT + emission on this subscription.
+        void commands.startSpectrum();
       });
 
       const unlistenHide = await listen("hide-overlay", () => {
         setIsVisible(false);
+        // Unsubscribe immediately — emission must stop with the overlay.
+        void commands.stopSpectrum();
       });
 
-      const unlistenLevel = await listen<number[]>("mic-level", (event) => {
-        const newLevels = event.payload as number[];
-        // Exponential smoothing across the 16 buckets, then take the first N
-        // bars for the shared waveform.
-        const smoothed = smoothedLevelsRef.current.map((prev, i) => {
-          const target = newLevels[i] || 0;
-          return prev * 0.7 + target * 0.3;
-        });
-        smoothedLevelsRef.current = smoothed;
-        setLevels(smoothed.slice(0, WAVE_BARS));
-      });
+      const unlistenLevel = await listen<SpectrumPayload>(
+        "spectrum",
+        (event) => {
+          const { bands } = event.payload;
+          // Each bar averages a group of consecutive log bands across the
+          // voice range, then exponential smoothing keeps the motion calm.
+          const smoothed = smoothedLevelsRef.current.map((prev, i) => {
+            const start = WAVE_FIRST_BAND + i * WAVE_BANDS_PER_BAR;
+            let sum = 0;
+            for (let b = start; b < start + WAVE_BANDS_PER_BAR; b++) {
+              sum += bands[b] ?? 0;
+            }
+            const target = sum / WAVE_BANDS_PER_BAR;
+            return prev * 0.7 + target * 0.3;
+          });
+          smoothedLevelsRef.current = smoothed;
+          setLevels(smoothed);
+        },
+      );
 
       const unlistenStream = await events.streamTextEvent.listen((event) => {
         setStreamText(event.payload);
@@ -123,12 +155,15 @@ const RecordingOverlay: React.FC = () => {
     };
   }, []);
 
-  // Elapsed timer while the Live overlay is visible.
+  // Elapsed timer while the Live overlay is visible (the Esfera style also
+  // shows it while listening).
   useEffect(() => {
-    if (state !== "streaming" || !isVisible) return;
+    const wantsTimer =
+      state === "streaming" || (style === "esfera" && state === "recording");
+    if (!wantsTimer || !isVisible) return;
     const id = setInterval(() => setElapsed((e) => e + 1), 1000);
     return () => clearInterval(id);
-  }, [state, isVisible]);
+  }, [state, style, isVisible]);
 
   // Stick to the bottom as text streams in — but only while pinned, so a user who
   // has scrolled up to read history isn't yanked back down by the next chunk.
@@ -213,6 +248,44 @@ const RecordingOverlay: React.FC = () => {
       <div className="sbase-r">{showCancel && cancelBtn}</div>
     </div>
   );
+
+  // ---- Esfera overlay: the audio-reactive sphere on a cosmic stage, with the
+  // shared control row underneath (timer + cancel while listening; spinner +
+  // label while working). Mounted only while visible — hide disposes the GPU.
+  if (style === "esfera") {
+    const working = state === "transcribing" || state === "processing";
+    const esferaState: EsferaState = working
+      ? (state as EsferaState)
+      : "recording";
+    return (
+      <div
+        dir={direction}
+        className={`ov-stage ${position} ov-fade ${isVisible ? "show" : ""}`}
+      >
+        <div className="scard esfera">
+          <div className="esfera-stage">
+            <EsferaStage state={esferaState} active={isVisible} />
+          </div>
+          {working ? (
+            workingRow(
+              state === "processing"
+                ? t("overlay.processing")
+                : t("overlay.transcribing"),
+              true,
+            )
+          ) : (
+            <div className="sbase">
+              <div className="sbase-l">
+                <span className="sdot" />
+              </div>
+              <span className="stimer">{fmtTime(elapsed)}</span>
+              <div className="sbase-r">{cancelBtn}</div>
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  }
 
   // ---- Live overlay: a pill that sculpts open into a panel ----
   if (state === "streaming") {

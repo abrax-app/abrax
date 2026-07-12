@@ -276,3 +276,19 @@ pub fn is_recording(app: AppHandle) -> bool {
     let audio_manager = app.state::<Arc<AudioRecordingManager>>();
     audio_manager.is_recording()
 }
+
+/// Subscribe the calling window to spectrum frames (R8 subscription model).
+/// Idempotent per window label; frames flow only while ≥1 subscriber exists.
+#[tauri::command]
+#[specta::specta]
+pub fn start_spectrum(window: tauri::WebviewWindow) {
+    crate::overlay::spectrum_subscribe(window.label());
+}
+
+/// Unsubscribe the calling window from spectrum frames. When the last
+/// subscriber leaves, spectrum analysis and emission stop entirely.
+#[tauri::command]
+#[specta::specta]
+pub fn stop_spectrum(window: tauri::WebviewWindow) {
+    crate::overlay::spectrum_unsubscribe(window.label());
+}

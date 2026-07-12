@@ -11,4 +11,4 @@ pub use recorder::{
 };
 pub use resampler::FrameResampler;
 pub use utils::{read_wav_samples, save_wav_file, verify_wav_file};
-pub use visualizer::AudioVisualiser;
+pub use visualizer::{AudioVisualiser, SpectrumFrame};
