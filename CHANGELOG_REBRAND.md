@@ -21,23 +21,28 @@ Estado consolidado al **2026-07-11**. Toda afirmación de este documento está r
 
 ## 3. Correcciones
 
-| Hallazgo | Commit | Cómo se verificó |
-|---|---|---|
-| **R1 (P1)** — el dictado podía quedar colgado de forma permanente si el micrófono dejaba de entregar audio | `0e4108f` | Tests unitarios nuevos del recorder; suite Rust completa en verde |
-| **S7 (P1)** — un build del fork habría aceptado actualizaciones del proyecto original | `e02c6a9` | Configuración sin endpoint ni clave del upstream; arranque real verificado |
-| **S3 (P2)** — el texto dictado quedaba escrito en el log por defecto | `37c9fc2` | El log por defecto registra solo la longitud; el contenido solo aparece en nivel trace |
-| **R5 (P2)** — dictar con método portapapeles destruía el contenido no-texto copiado | `c7b1df3` | Restaura texto e imágenes del portapapeles |
-| **R6/R7 (P2)** — clientes HTTP (LLM y descargas de modelos) sin timeout | `4315030` | Timeouts de conexión y lectura configurados; build OK |
-| **F2 (P2)** — fuga de listeners de eventos en el overlay de grabación | `2e7a4bc` | Cleanup registrado en el efecto; lint y build OK |
-| **S11 (P3)** — encabezados HTTP anunciaban la marca del upstream | `e02c6a9` | Búsqueda de referencias en el árbol de código |
-| **F23 (P3)** — enlaces de About/actualizador apuntaban al proyecto original | `e02c6a9` + `a948b2c` | Búsqueda de URLs; atribución al proyecto original conservada en About (22 idiomas) |
-| **F14 (P3)** — versión de respaldo falsa ("0.1.2") si fallaba la lectura de versión | `3a1e1c8` | Fallback vacío; sin datos inventados |
-| **R13 (P3)** — comandos IPC que fallarían al ser invocados | `c661c45` | Eliminados junto con C1 (no tenían llamadores) |
-| Marca visible remanente (título de ventana, tooltip de bandeja, CLI, icono interno) | `2a2e6a3` | Barrido de la palabra en todo el árbol + arranque real |
+| Hallazgo                                                                                                   | Commit                | Cómo se verificó                                                                       |
+| ---------------------------------------------------------------------------------------------------------- | --------------------- | -------------------------------------------------------------------------------------- |
+| **R1 (P1)** — el dictado podía quedar colgado de forma permanente si el micrófono dejaba de entregar audio | `0e4108f`             | Tests unitarios nuevos del recorder; suite Rust completa en verde                      |
+| **S7 (P1)** — un build del fork habría aceptado actualizaciones del proyecto original                      | `e02c6a9`             | Configuración sin endpoint ni clave del upstream; arranque real verificado             |
+| **S3 (P2)** — el texto dictado quedaba escrito en el log por defecto                                       | `37c9fc2`             | El log por defecto registra solo la longitud; el contenido solo aparece en nivel trace |
+| **R5 (P2)** — dictar con método portapapeles destruía el contenido no-texto copiado                        | `c7b1df3`             | Restaura texto e imágenes del portapapeles                                             |
+| **R6/R7 (P2)** — clientes HTTP (LLM y descargas de modelos) sin timeout                                    | `4315030`             | Timeouts de conexión y lectura configurados; build OK                                  |
+| **F2 (P2)** — fuga de listeners de eventos en el overlay de grabación                                      | `2e7a4bc`             | Cleanup registrado en el efecto; lint y build OK                                       |
+| **S11 (P3)** — encabezados HTTP anunciaban la marca del upstream                                           | `e02c6a9`             | Búsqueda de referencias en el árbol de código                                          |
+| **F23 (P3)** — enlaces de About/actualizador apuntaban al proyecto original                                | `e02c6a9` + `a948b2c` | Búsqueda de URLs; atribución al proyecto original conservada en About (22 idiomas)     |
+| **F14 (P3)** — versión de respaldo falsa ("0.1.2") si fallaba la lectura de versión                        | `3a1e1c8`             | Fallback vacío; sin datos inventados                                                   |
+| **R13 (P3)** — comandos IPC que fallarían al ser invocados                                                 | `c661c45`             | Eliminados junto con C1 (no tenían llamadores)                                         |
+| Marca visible remanente (título de ventana, tooltip de bandeja, CLI, icono interno)                        | `2a2e6a3`             | Barrido de la palabra en todo el árbol + arranque real                                 |
 
 ## 4. Funciones nuevas o liberadas
 
 - **Filtro de muletillas personalizable, ahora con interfaz** (`34c3715`). El motor de transcripción ya sabía filtrar muletillas con lista personalizada (`custom_filler_words`, con tests), pero la opción no tenía UI ni comando: solo se podía editar a mano el archivo de configuración. Ahora vive en Ajustes → Avanzado con tres estados siempre visibles (lista por defecto del idioma / lista propia / filtro desactivado), chips editables, soporte de frases multi-palabra ("o sea") y un **preset es-419** de 10 muletillas frecuentes que se combina sin duplicar ni borrar entradas del usuario. Textos en los 22 idiomas. Incluye test nuevo de frases multi-palabra; suite Rust 120/120.
+- **Esfera de audio en el overlay** (`e78ded4`). Estilo de overlay nuevo «Esfera»: visualización 3D reactiva a 32 bandas de espectro (70–8000 Hz) bajo modelo de suscripción — con cero suscriptores no se computa ni emite nada. Respeta `prefers-reduced-motion`, degrada densidad ante carga y jamás roba el foco. three.js local (sin red).
+- **Errores visibles** (`cc5ecf3`, `e1be4f0`). Canal único de alertas con registro reciente, toast localizado y **notificación nativa** cuando la ventana está oculta; banner «Errores recientes» al reabrir; estados de error con causa y Reintentar en modelos, onboarding e historial (F1, F3, F4, F7).
+- **Diccionario Vivo por proyecto** (`63da2be`, `6d6ef19`). ABRAX aprende los términos de tu repositorio (identificadores, ramas, archivos; respeta .gitignore) y corrige el dictado hacia ellos; reemplazos exactos definidos por el usuario; todo local (el índice vive en tu disco).
+- **Compilador de Prompts, modo plantilla** (`c6a4ef8`). Estructura el dictado crudo en CONTEXTO/TAREA/REQUISITOS/FORMATO con linter de ambigüedades es-419 — sin ningún LLM, instantáneo y offline; botón varita en el Historial.
+- **Escucha — ABRAX lee tu código** (rama `feat/escucha`, **fusionada el 12/07** en `b6427e6`). Sección nueva: lectura en voz alta con TTS del sistema (crate `tts`, MIT — cero descargas, 100% local), preprocesador markdown/código es-419 (símbolos verbalizados, identificadores partidos, encabezados anunciados), voces y velocidades independientes para prosa y código, resaltado de la línea en lectura, «Leer portapapeles» y Esc para detener. La pausa opera al final de la oración en curso (documentado en el propio panel, 22 idiomas). 19 tests nuevos; diseño de voz neural en `docs/ESCUCHA_FASE2.md` (solo documento).
 
 ## 5. Limpieza
 
@@ -47,17 +52,14 @@ Estado consolidado al **2026-07-11**. Toda afirmación de este documento está r
 - **Componentes de logo del upstream** eliminados tras el reemplazo (−115 líneas; `a948b2c`, `2a2e6a3`).
 - **Iconos móviles (Android/iOS) del upstream retirados** (`a948b2c`): no se compila para móvil y se regeneran desde el kit propio si llegaran a necesitarse.
 - Warning de compilación `unused_assignments` eliminado (`3a1e1c8`); normalización de fin de línea con `.gitattributes` (`380595d`).
+- **Tail de higiene** (`74bbea7`): clippy a cero (12 avisos), evento interno sin oyentes `settings-changed` eliminado (C2, 7 emisores), color hardcodeado del reproductor de audio migrado al token de marca (F22), `baseUrl` deprecado fuera de tsconfig, y el workflow de CI ya no depende de una variable de entorno implícita para la identidad de firma.
 
 ## 6. Pendiente declarado
 
 - Fuentes de descarga de modelos: **11 de 16 migradas a Hugging Face** con URL anclada por commit y sha256 verificado por descarga real (los 3 Whisper GGML en el repo oficial de ggerganov; el resto en mirrors byte-idénticos). Las 5 restantes (Moonshine base/tiny, GigaAM, Canary ×2) no existen fuera del hosting del upstream: se migran a un espejo propio (archivos ya verificados y preservados localmente) — fecha objetivo 22/07.
-- Superficie de error visible cuando la ventana está oculta (F1) — scopeado, en cola.
-- Estados de carga/vacío/error con reintento en modelos y onboarding (F3/F4) — scopeado, en cola.
-- Visualizador de audio del overlay — en diseño; se activará solo bajo demanda (nunca emisión continua).
-- Limpieza del evento interno sin oyentes `settings-changed` (C2) — trivial, agendada.
-- Higiene final pre-publicación: `clippy --fix`, renormalización LF y migración del `baseUrl` deprecado de tsconfig.
-- Color hardcodeado en el reproductor de audio del historial (F22) — agendado con el rediseño de UI.
-- Adaptación de los workflows de CI para builds propios.
+- Adaptación de los workflows de CI para builds propios (falta el build macOS sin firma e instrucciones Gatekeeper).
+- Rebranding del README y documentación de privacidad (PRIVACY.md, incluida la nota del índice local del Diccionario).
+- Suite al día de hoy: **160 tests en verde (+1 smoke de audio que se corre aparte)** · clippy sin avisos · 22 idiomas en paridad.
 
 ## 7. Atribución
 
@@ -65,14 +67,9 @@ ABRAX es un fork de **Handy**, creado por **CJ Pais** y publicado bajo licencia 
 
 ---
 
-## [ESCUCHA] Rama `feat/escucha` — 12/07/2026 (pendiente de fusión)
+## [ESCUCHA] Rama `feat/escucha` — 12/07/2026 (FUSIONADA en `b6427e6`)
 
-Sesión paralela en worktree propio (base `afcdcb9`). ABRAX lee tu código:
-sección **Escucha** con TTS del sistema (crate `tts`, MIT — cero descargas,
-100% local), preprocesador markdown/código es-419 (símbolos verbalizados,
-identificadores partidos, encabezados anunciados), voces y velocidades
-independientes para prosa y código, resaltado de línea en lectura, "Leer
-portapapeles" y Esc para detener. 19 tests nuevos (suite 138/138 verde en la
-rama) · i18n ×22 en paridad · diseño de voz neural Piper en
-`docs/ESCUCHA_FASE2.md` (solo documento). Detalle completo en
-`INFORME_ESCUCHA.md`. Fusión: protocolo §F del brief de sesión.
+Sesión paralela en worktree propio (base `afcdcb9`), fusionada a
+`rebrand/product` el 12/07 con compuerta completa en verde (160 tests + 1
+smoke de audio aparte). Detalle de la feature en la sección 4 de este
+changelog; crónica técnica en `INFORME_ESCUCHA.md`.
