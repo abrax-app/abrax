@@ -1,6 +1,6 @@
-# Contributing Translations to Handy
+# Contributing Translations to Abrax
 
-Thank you for helping translate Handy! This guide explains how to add or improve translations.
+Thank you for helping translate Abrax! This guide explains how to add or improve translations. Abrax is Spanish-first (es-419), and all 22 supported languages ship in full parity — `bun run check:translations` enforces it.
 
 ## Quick Start
 
@@ -120,7 +120,7 @@ Found a typo or better translation?
 
 ### Don't:
 
-- Translate brand names (Handy, transcribe.cpp, ggml, OpenAI)
+- Translate brand names (Abrax, Handy, transcribe.cpp, ggml, OpenAI)
 - Change or remove `{{variables}}`
 - Modify JSON keys
 - Add extra spaces or formatting
@@ -171,4 +171,4 @@ We'd love help with:
 
 ---
 
-Thank you for making Handy accessible to more people around the world!
+Thank you for making Abrax accessible to more people around the world!
