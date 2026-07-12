@@ -74,6 +74,11 @@ transcribe-cpp = { version = "0.1.2", default-features = false }
 handy-keys = "0.3.0"
 ferrous-opencc = "0.2.3"
 clap = { version = "4", features = ["derive"] }
+# [ESCUCHA] Motor de lectura en voz alta sobre el TTS del sistema operativo
+# (WinRT en Windows, AVSpeech en macOS, speech-dispatcher en Linux).
+tts = "0.26"
+# [ESCUCHA] Segmentación markdown del preprocesador de lectura.
+pulldown-cmark = { version = "0.13", default-features = false }
 specta = "=2.0.0-rc.22"
 specta-typescript = "0.0.9"
 tauri-specta = { version = "=2.0.0-rc.21", features = ["derive", "typescript"] }

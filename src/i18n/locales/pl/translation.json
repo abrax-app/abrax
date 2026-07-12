@@ -21,7 +21,8 @@
     "postProcessing": "Postproces",
     "history": "Historia",
     "debug": "Debugowanie",
-    "about": "O programie"
+    "about": "O programie",
+    "escucha": "Czytanie"
   },
   "onboarding": {
     "subtitle": "Aby rozpocząć, wybierz model transkrypcji",
@@ -716,5 +717,31 @@
   },
   "logo": {
     "tagline": "« Di la <accent>palabra</accent>. »"
+  },
+  "escucha": {
+    "title": "Czytanie na głos",
+    "openFile": "Otwórz plik…",
+    "readClipboard": "Czytaj schowek",
+    "play": "Czytaj",
+    "pause": "Pauza",
+    "pauseHint": "Pauza na końcu bieżącego zdania",
+    "resume": "Wznów",
+    "stop": "Zatrzymaj",
+    "speed": "Szybkość",
+    "voiceProse": "Głos prozy",
+    "voiceCode": "Głos kodu",
+    "noVoices": "Nie znaleziono głosów systemowych",
+    "empty": "Otwórz plik lub odczytaj schowek, aby zacząć.",
+    "engineUnavailable": "Silnik mowy systemu jest niedostępny.",
+    "errorRead": "Nie udało się odczytać treści.",
+    "errorSpeak": "Nie udało się odtworzyć czytania.",
+    "escHint": "Esc zatrzymuje czytanie.",
+    "clipboard": "Schowek",
+    "clipboardEmpty": "Schowek nie zawiera tekstu.",
+    "fileFilter": "Tekst, Markdown lub kod",
+    "sentences": "{{total}} zdań",
+    "verbosity": "Symbole",
+    "verbosityNatural": "Naturalnie (mniej szumu)",
+    "verbosityLiteral": "Dosłownie (wszystkie symbole)"
   }
 }

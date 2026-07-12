@@ -21,7 +21,8 @@
     "postProcessing": "Post Process",
     "history": "History",
     "debug": "Debug",
-    "about": "About"
+    "about": "About",
+    "escucha": "Listen"
   },
   "onboarding": {
     "subtitle": "To get started, choose a transcription model",
@@ -716,5 +717,31 @@
   },
   "logo": {
     "tagline": "« Di la <accent>palabra</accent>. »"
+  },
+  "escucha": {
+    "title": "Listen",
+    "openFile": "Open file…",
+    "readClipboard": "Read clipboard",
+    "play": "Read",
+    "pause": "Pause",
+    "pauseHint": "Pauses at the end of the current sentence",
+    "resume": "Resume",
+    "stop": "Stop",
+    "speed": "Speed",
+    "voiceProse": "Prose voice",
+    "voiceCode": "Code voice",
+    "noVoices": "No system voices found",
+    "empty": "Open a file or read the clipboard to get started.",
+    "engineUnavailable": "The system speech engine is not available.",
+    "errorRead": "Could not read the content.",
+    "errorSpeak": "Could not play the reading.",
+    "escHint": "Esc stops the reading.",
+    "clipboard": "Clipboard",
+    "clipboardEmpty": "The clipboard has no text.",
+    "fileFilter": "Text, Markdown or code",
+    "sentences": "{{total}} sentences",
+    "verbosity": "Symbols",
+    "verbosityNatural": "Natural (less noise)",
+    "verbosityLiteral": "Literal (every symbol)"
   }
 }

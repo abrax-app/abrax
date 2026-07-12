@@ -21,7 +21,8 @@
     "postProcessing": "Son İşlem",
     "history": "Geçmiş",
     "debug": "Hata Ayıklama",
-    "about": "Hakkında"
+    "about": "Hakkında",
+    "escucha": "Sesli Okuma"
   },
   "onboarding": {
     "subtitle": "Başlamak için bir transkripsiyon modeli seçin",
@@ -716,5 +717,31 @@
   },
   "logo": {
     "tagline": "« Di la <accent>palabra</accent>. »"
+  },
+  "escucha": {
+    "title": "Sesli Okuma",
+    "openFile": "Dosya aç…",
+    "readClipboard": "Panoyu oku",
+    "play": "Oku",
+    "pause": "Duraklat",
+    "pauseHint": "Geçerli cümlenin sonunda duraklatır",
+    "resume": "Devam et",
+    "stop": "Durdur",
+    "speed": "Hız",
+    "voiceProse": "Düzyazı sesi",
+    "voiceCode": "Kod sesi",
+    "noVoices": "Sistem sesi bulunamadı",
+    "empty": "Başlamak için bir dosya açın veya panoyu okuyun.",
+    "engineUnavailable": "Sistemin konuşma motoru kullanılamıyor.",
+    "errorRead": "İçerik okunamadı.",
+    "errorSpeak": "Okuma oynatılamadı.",
+    "escHint": "Esc okumayı durdurur.",
+    "clipboard": "Pano",
+    "clipboardEmpty": "Panoda metin yok.",
+    "fileFilter": "Metin, Markdown veya kod",
+    "sentences": "{{total}} cümle",
+    "verbosity": "Semboller",
+    "verbosityNatural": "Doğal (daha az gürültü)",
+    "verbosityLiteral": "Birebir (tüm semboller)"
   }
 }

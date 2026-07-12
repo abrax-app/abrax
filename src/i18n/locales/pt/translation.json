@@ -21,7 +21,8 @@
     "postProcessing": "Pós-Processamento",
     "history": "Histórico",
     "debug": "Depuração",
-    "about": "Sobre"
+    "about": "Sobre",
+    "escucha": "Escuta"
   },
   "onboarding": {
     "subtitle": "Para começar, escolha um modelo de transcrição",
@@ -716,5 +717,31 @@
   },
   "logo": {
     "tagline": "« Di la <accent>palabra</accent>. »"
+  },
+  "escucha": {
+    "title": "Escuta",
+    "openFile": "Abrir arquivo…",
+    "readClipboard": "Ler área de transferência",
+    "play": "Ler",
+    "pause": "Pausar",
+    "pauseHint": "Pausa no fim da frase atual",
+    "resume": "Continuar",
+    "stop": "Parar",
+    "speed": "Velocidade",
+    "voiceProse": "Voz de prosa",
+    "voiceCode": "Voz de código",
+    "noVoices": "Nenhuma voz do sistema encontrada",
+    "empty": "Abra um arquivo ou leia a área de transferência para começar.",
+    "engineUnavailable": "O mecanismo de voz do sistema não está disponível.",
+    "errorRead": "Não foi possível ler o conteúdo.",
+    "errorSpeak": "Não foi possível reproduzir a leitura.",
+    "escHint": "Esc interrompe a leitura.",
+    "clipboard": "Área de transferência",
+    "clipboardEmpty": "A área de transferência não tem texto.",
+    "fileFilter": "Texto, Markdown ou código",
+    "sentences": "{{total}} frases",
+    "verbosity": "Símbolos",
+    "verbosityNatural": "Natural (menos ruído)",
+    "verbosityLiteral": "Literal (todos os símbolos)"
   }
 }

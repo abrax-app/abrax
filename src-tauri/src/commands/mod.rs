@@ -1,4 +1,6 @@
 pub mod audio;
+// [ESCUCHA]
+pub mod escucha;
 pub mod history;
 pub mod models;
 pub mod transcription;

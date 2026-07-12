@@ -21,7 +21,8 @@
     "postProcessing": "Následné zpracování",
     "history": "Historie",
     "debug": "Ladění",
-    "about": "O aplikaci"
+    "about": "O aplikaci",
+    "escucha": "Předčítání"
   },
   "onboarding": {
     "subtitle": "Pro začátek vyberte model pro přepis",
@@ -716,5 +717,31 @@
   },
   "logo": {
     "tagline": "« Di la <accent>palabra</accent>. »"
+  },
+  "escucha": {
+    "title": "Předčítání",
+    "openFile": "Otevřít soubor…",
+    "readClipboard": "Přečíst schránku",
+    "play": "Číst",
+    "pause": "Pauza",
+    "pauseHint": "Pauza na konci aktuální věty",
+    "resume": "Pokračovat",
+    "stop": "Zastavit",
+    "speed": "Rychlost",
+    "voiceProse": "Hlas prózy",
+    "voiceCode": "Hlas kódu",
+    "noVoices": "Nebyly nalezeny žádné systémové hlasy",
+    "empty": "Otevřete soubor nebo přečtěte schránku a začněte.",
+    "engineUnavailable": "Systémový hlasový modul není k dispozici.",
+    "errorRead": "Obsah se nepodařilo přečíst.",
+    "errorSpeak": "Čtení se nepodařilo přehrát.",
+    "escHint": "Esc zastaví čtení.",
+    "clipboard": "Schránka",
+    "clipboardEmpty": "Schránka neobsahuje text.",
+    "fileFilter": "Text, Markdown nebo kód",
+    "sentences": "{{total}} vět",
+    "verbosity": "Symboly",
+    "verbosityNatural": "Přirozeně (méně šumu)",
+    "verbosityLiteral": "Doslovně (všechny symboly)"
   }
 }

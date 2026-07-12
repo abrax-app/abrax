@@ -21,7 +21,8 @@
     "postProcessing": "Naverwerking",
     "history": "Geschiedenis",
     "debug": "Probleemoplossing",
-    "about": "Over Abrax"
+    "about": "Over Abrax",
+    "escucha": "Voorlezen"
   },
   "onboarding": {
     "subtitle": "Kies een transcriptiemodel om aan de slag te gaan",
@@ -716,5 +717,31 @@
   },
   "logo": {
     "tagline": "« Di la <accent>palabra</accent>. »"
+  },
+  "escucha": {
+    "title": "Voorlezen",
+    "openFile": "Bestand openen…",
+    "readClipboard": "Klembord voorlezen",
+    "play": "Lezen",
+    "pause": "Pauze",
+    "pauseHint": "Pauzeert aan het einde van de huidige zin",
+    "resume": "Hervatten",
+    "stop": "Stoppen",
+    "speed": "Snelheid",
+    "voiceProse": "Proza-stem",
+    "voiceCode": "Code-stem",
+    "noVoices": "Geen systeemstemmen gevonden",
+    "empty": "Open een bestand of lees het klembord om te beginnen.",
+    "engineUnavailable": "De spraakengine van het systeem is niet beschikbaar.",
+    "errorRead": "Kan de inhoud niet lezen.",
+    "errorSpeak": "Kan het voorlezen niet afspelen.",
+    "escHint": "Esc stopt het voorlezen.",
+    "clipboard": "Klembord",
+    "clipboardEmpty": "Het klembord bevat geen tekst.",
+    "fileFilter": "Tekst, Markdown of code",
+    "sentences": "{{total}} zinnen",
+    "verbosity": "Symbolen",
+    "verbosityNatural": "Natuurlijk (minder ruis)",
+    "verbosityLiteral": "Letterlijk (alle symbolen)"
   }
 }

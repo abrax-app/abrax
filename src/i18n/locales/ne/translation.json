@@ -21,7 +21,8 @@
     "postProcessing": "पोस्ट प्रोसेस",
     "history": "हिस्ट्री",
     "debug": "डिबग",
-    "about": "बारेमा"
+    "about": "बारेमा",
+    "escucha": "सुन्नुहोस्"
   },
   "onboarding": {
     "subtitle": "सुरु गर्न, एउटा ट्रान्सक्रिप्सन मोडेल छान्नुहोस्",
@@ -716,5 +717,31 @@
   },
   "logo": {
     "tagline": "« Di la <accent>palabra</accent>. »"
+  },
+  "escucha": {
+    "title": "सुन्नुहोस्",
+    "openFile": "फाइल खोल्नुहोस्…",
+    "readClipboard": "क्लिपबोर्ड पढ्नुहोस्",
+    "play": "पढ्नुहोस्",
+    "pause": "रोक्नुहोस्",
+    "pauseHint": "हालको वाक्यको अन्त्यमा रोकिन्छ",
+    "resume": "जारी राख्नुहोस्",
+    "stop": "बन्द गर्नुहोस्",
+    "speed": "गति",
+    "voiceProse": "गद्य आवाज",
+    "voiceCode": "कोड आवाज",
+    "noVoices": "प्रणाली आवाजहरू फेला परेनन्",
+    "empty": "सुरु गर्न फाइल खोल्नुहोस् वा क्लिपबोर्ड पढ्नुहोस्।",
+    "engineUnavailable": "प्रणालीको वाक इन्जिन उपलब्ध छैन।",
+    "errorRead": "सामग्री पढ्न सकिएन।",
+    "errorSpeak": "पढाइ चलाउन सकिएन।",
+    "escHint": "Esc ले पढाइ रोक्छ।",
+    "clipboard": "क्लिपबोर्ड",
+    "clipboardEmpty": "क्लिपबोर्डमा पाठ छैन।",
+    "fileFilter": "पाठ, Markdown वा कोड",
+    "sentences": "{{total}} वाक्यहरू",
+    "verbosity": "प्रतीकहरू",
+    "verbosityNatural": "प्राकृतिक (कम आवाज)",
+    "verbosityLiteral": "अक्षरशः (सबै प्रतीक)"
   }
 }

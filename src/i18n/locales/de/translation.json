@@ -21,7 +21,8 @@
     "postProcessing": "Nachbearbeitung",
     "history": "Verlauf",
     "debug": "Debug",
-    "about": "Info"
+    "about": "Info",
+    "escucha": "Vorlesen"
   },
   "onboarding": {
     "subtitle": "Wähle ein Transkriptionsmodell, um loszulegen",
@@ -716,5 +717,31 @@
   },
   "logo": {
     "tagline": "« Di la <accent>palabra</accent>. »"
+  },
+  "escucha": {
+    "title": "Vorlesen",
+    "openFile": "Datei öffnen…",
+    "readClipboard": "Zwischenablage vorlesen",
+    "play": "Lesen",
+    "pause": "Pause",
+    "pauseHint": "Pausiert am Ende des aktuellen Satzes",
+    "resume": "Fortsetzen",
+    "stop": "Stopp",
+    "speed": "Tempo",
+    "voiceProse": "Prosa-Stimme",
+    "voiceCode": "Code-Stimme",
+    "noVoices": "Keine Systemstimmen gefunden",
+    "empty": "Öffne eine Datei oder lies die Zwischenablage, um zu starten.",
+    "engineUnavailable": "Die Sprachausgabe des Systems ist nicht verfügbar.",
+    "errorRead": "Der Inhalt konnte nicht gelesen werden.",
+    "errorSpeak": "Die Wiedergabe ist fehlgeschlagen.",
+    "escHint": "Esc stoppt das Vorlesen.",
+    "clipboard": "Zwischenablage",
+    "clipboardEmpty": "Die Zwischenablage enthält keinen Text.",
+    "fileFilter": "Text, Markdown oder Code",
+    "sentences": "{{total}} Sätze",
+    "verbosity": "Symbole",
+    "verbosityNatural": "Natürlich (weniger Rauschen)",
+    "verbosityLiteral": "Wörtlich (alle Symbole)"
   }
 }

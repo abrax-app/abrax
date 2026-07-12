@@ -21,7 +21,8 @@
     "postProcessing": "後處理",
     "history": "歷史紀錄",
     "debug": "偵錯",
-    "about": "關於"
+    "about": "關於",
+    "escucha": "朗讀"
   },
   "onboarding": {
     "subtitle": "首先，請選擇一種模型",
@@ -716,5 +717,31 @@
   },
   "logo": {
     "tagline": "« Di la <accent>palabra</accent>. »"
+  },
+  "escucha": {
+    "title": "朗讀",
+    "openFile": "開啟檔案…",
+    "readClipboard": "朗讀剪貼簿",
+    "play": "朗讀",
+    "pause": "暫停",
+    "pauseHint": "在目前句子結束時暫停",
+    "resume": "繼續",
+    "stop": "停止",
+    "speed": "語速",
+    "voiceProse": "文字語音",
+    "voiceCode": "程式碼語音",
+    "noVoices": "找不到系統語音",
+    "empty": "開啟檔案或朗讀剪貼簿即可開始。",
+    "engineUnavailable": "系統語音引擎無法使用。",
+    "errorRead": "無法讀取內容。",
+    "errorSpeak": "無法播放朗讀。",
+    "escHint": "按 Esc 停止朗讀。",
+    "clipboard": "剪貼簿",
+    "clipboardEmpty": "剪貼簿中沒有文字。",
+    "fileFilter": "文字、Markdown 或程式碼",
+    "sentences": "{{total}} 個句子",
+    "verbosity": "符號",
+    "verbosityNatural": "自然（較少雜訊）",
+    "verbosityLiteral": "逐字（所有符號）"
   }
 }

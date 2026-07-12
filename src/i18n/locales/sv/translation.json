@@ -21,7 +21,8 @@
     "postProcessing": "Efterbearbetning",
     "history": "Historik",
     "debug": "Felsökning",
-    "about": "Om"
+    "about": "Om",
+    "escucha": "Uppläsning"
   },
   "onboarding": {
     "subtitle": "För att komma igång, välj en transkriptionsmodell",
@@ -716,5 +717,31 @@
   },
   "logo": {
     "tagline": "« Di la <accent>palabra</accent>. »"
+  },
+  "escucha": {
+    "title": "Uppläsning",
+    "openFile": "Öppna fil…",
+    "readClipboard": "Läs urklipp",
+    "play": "Läs",
+    "pause": "Paus",
+    "pauseHint": "Pausar i slutet av den aktuella meningen",
+    "resume": "Fortsätt",
+    "stop": "Stoppa",
+    "speed": "Hastighet",
+    "voiceProse": "Prosaröst",
+    "voiceCode": "Kodröst",
+    "noVoices": "Inga systemröster hittades",
+    "empty": "Öppna en fil eller läs urklipp för att börja.",
+    "engineUnavailable": "Systemets talmotor är inte tillgänglig.",
+    "errorRead": "Kunde inte läsa innehållet.",
+    "errorSpeak": "Kunde inte spela upp läsningen.",
+    "escHint": "Esc stoppar uppläsningen.",
+    "clipboard": "Urklipp",
+    "clipboardEmpty": "Urklipp innehåller ingen text.",
+    "fileFilter": "Text, Markdown eller kod",
+    "sentences": "{{total}} meningar",
+    "verbosity": "Symboler",
+    "verbosityNatural": "Naturlig (mindre brus)",
+    "verbosityLiteral": "Bokstavlig (alla symboler)"
   }
 }
