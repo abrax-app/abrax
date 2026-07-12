@@ -5,19 +5,19 @@
 
 ## Desconexión del upstream — estado
 
-| Punto | Estado | Detalle |
-|---|---|---|
-| productName / identifier | ✅ Hecho | `Abrax` / `cl.abrax.app` en `src-tauri/tauri.conf.json` |
-| Binario | ✅ Hecho | `abrax` (`src-tauri/Cargo.toml` `name`/`default-run`) |
-| Carpeta de datos | ✅ Hecho | Derivada del identifier → `%APPDATA%/cl.abrax.app` (macOS `~/Library/Application Support/cl.abrax.app`). Convive con una instalación de Handy sin pisarla |
-| Updater endpoint + pubkey | ✅ Desconectado | Pubkey NUEVO propio + `update_checks_enabled=false` por defecto. Ya no apunta a `cjpais/Handy` |
-| signCommand (Azure de cjpais) | ✅ Quitado | Ver "Firma" abajo |
-| Headers LLM (Referer/UA/X-Title) | ✅ Hecho | `Abrax` / `abrax.app` en `src-tauri/src/llm_client.rs` |
-| URLs UI (About, Updater) | ✅ Hecho | Placeholder `github.com/wmarquezz/abrax` (confirmar owner real antes de publicar) |
-| Nombre del producto en i18n | ✅ Hecho | 330 ocurrencias → `Abrax` en 22 locales; paridad verificada |
-| **Fuentes de modelos** | ⏳ **PENDIENTE** | 17 URLs `blob.handy.computer` en `src-tauri/src/managers/model.rs` (líneas 493–1025). Ver abajo |
-| Nombre de lib Rust | ⏳ Deuda menor | `handy_app_lib` (interno, invisible al usuario). Renombrar a `abrax_app_lib` post-hackathon toca `main.rs` + fuerza recompilación total |
-| Release notes / test fixtures | ⏳ Menor | `src/content/release-notes/0.9.0.md` (link a cjpais/issues) y fixture `settings.rs:1199` |
+| Punto                            | Estado           | Detalle                                                                                                                                                   |
+| -------------------------------- | ---------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| productName / identifier         | ✅ Hecho         | `Abrax` / `cl.abrax.app` en `src-tauri/tauri.conf.json`                                                                                                   |
+| Binario                          | ✅ Hecho         | `abrax` (`src-tauri/Cargo.toml` `name`/`default-run`)                                                                                                     |
+| Carpeta de datos                 | ✅ Hecho         | Derivada del identifier → `%APPDATA%/cl.abrax.app` (macOS `~/Library/Application Support/cl.abrax.app`). Convive con una instalación de Handy sin pisarla |
+| Updater endpoint + pubkey        | ✅ Desconectado  | Pubkey NUEVO propio + `update_checks_enabled=false` por defecto. Ya no apunta a `cjpais/Handy`                                                            |
+| signCommand (Azure de cjpais)    | ✅ Quitado       | Ver "Firma" abajo                                                                                                                                         |
+| Headers LLM (Referer/UA/X-Title) | ✅ Hecho         | `Abrax` / `abrax.app` en `src-tauri/src/llm_client.rs`                                                                                                    |
+| URLs UI (About, Updater)         | ✅ Hecho         | Placeholder `github.com/wmarquezz/abrax` (confirmar owner real antes de publicar)                                                                         |
+| Nombre del producto en i18n      | ✅ Hecho         | 330 ocurrencias → `Abrax` en 22 locales; paridad verificada                                                                                               |
+| **Fuentes de modelos**           | ⏳ **PENDIENTE** | 17 URLs `blob.handy.computer` en `src-tauri/src/managers/model.rs` (líneas 493–1025). Ver abajo                                                           |
+| Nombre de lib Rust               | ⏳ Deuda menor   | `handy_app_lib` (interno, invisible al usuario). Renombrar a `abrax_app_lib` en una versión futura toca `main.rs` + fuerza recompilación total            |
+| Release notes / test fixtures    | ⏳ Menor         | `src/content/release-notes/0.9.0.md` (link a cjpais/issues) y fixture `settings.rs:1199`                                                                  |
 
 ### Fuentes de modelos (tarea dedicada, NO cambiar a ciegas)
 
@@ -61,7 +61,7 @@ Para reactivar el auto-update al publicar:
 - **Windows:** el `signCommand` de Azure Trusted Signing de cjpais fue **eliminado**.
   Local: `bun run tauri build --no-bundle` o NSIS sin firma. Producción: configurar
   firma propia (Azure Trusted Signing o certificado EV) y documentar el secreto.
-- **macOS (P0 hackathon — los jueces usan Mac):** sin certificado Apple Developer.
+- **macOS (prioridad alta):** sin certificado Apple Developer.
   Opciones: firma ad-hoc (`codesign -s -`) + instrucciones de Gatekeeper
   (`xattr -dr com.apple.quarantine /Applications/Abrax.app`), o notarización real
   con cuenta Apple. Verificar antes si el fix de compilación macOS 26 está en el
@@ -70,29 +70,32 @@ Para reactivar el auto-update al publicar:
 ## Builds por plataforma
 
 ### Windows
+
 - Arquitecturas: x86_64 (verificado en dev), aarch64 (CI)
 - Firma: pendiente (ver arriba)
 - Instalador/portable: NSIS (`nsis/installer.nsi`) + MSI; portable via marcador `portable`
 - Artefactos: `abrax.exe`, `Abrax_0.9.1_x64-setup.exe`
 
 ### macOS
+
 - Arquitecturas: aarch64 + x86_64
 - Firma / Notarización: pendiente (ver arriba)
 - Artefactos: `Abrax.app`, `Abrax_0.9.1_*.dmg`
 
 ### Linux
+
 - Formatos: deb, rpm, AppImage
 - Dependencias: gtk-layer-shell, openblas
 - Wayland/X11: overlay desactivado por defecto en Linux (documentado por upstream)
 
 ## Secretos requeridos
 
-| Secreto | Plataforma | Dónde configurar | No incluir en |
-|---|---|---|---|
-| `TAURI_SIGNING_PRIVATE_KEY` | Todas (updater) | CI secret | Repo |
-| `TAURI_SIGNING_PRIVATE_KEY_PASSWORD` | Todas (updater) | CI secret | Repo |
-| Certificado de firma Windows | Windows | CI secret | Repo |
-| Credenciales Apple (notarización) | macOS | CI secret | Repo |
+| Secreto                              | Plataforma      | Dónde configurar | No incluir en |
+| ------------------------------------ | --------------- | ---------------- | ------------- |
+| `TAURI_SIGNING_PRIVATE_KEY`          | Todas (updater) | CI secret        | Repo          |
+| `TAURI_SIGNING_PRIVATE_KEY_PASSWORD` | Todas (updater) | CI secret        | Repo          |
+| Certificado de firma Windows         | Windows         | CI secret        | Repo          |
+| Credenciales Apple (notarización)    | macOS           | CI secret        | Repo          |
 
 ## Checksums
 

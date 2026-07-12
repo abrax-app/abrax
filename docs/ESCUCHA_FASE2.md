@@ -33,11 +33,11 @@ descargas paralelo. Se reutiliza todo lo que ya está probado en
 
 ### Voces (es-419 primero)
 
-| Voz | Repo HF | Tamaño aprox. | Uso |
-|---|---|---|---|
-| `es_MX-claude-high` (o equivalente comunitario) | `rhasspy/piper-voices` | ~60 MB | Prosa |
-| `es_ES-davefx-medium` | `rhasspy/piper-voices` | ~40 MB | Prosa alternativa |
-| `es_ES-sharvard-medium` | `rhasspy/piper-voices` | ~40 MB | Código (cadencia neutra) |
+| Voz                                             | Repo HF                | Tamaño aprox. | Uso                      |
+| ----------------------------------------------- | ---------------------- | ------------- | ------------------------ |
+| `es_MX-claude-high` (o equivalente comunitario) | `rhasspy/piper-voices` | ~60 MB        | Prosa                    |
+| `es_ES-davefx-medium`                           | `rhasspy/piper-voices` | ~40 MB        | Prosa alternativa        |
+| `es_ES-sharvard-medium`                         | `rhasspy/piper-voices` | ~40 MB        | Código (cadencia neutra) |
 
 Cada voz Piper son 2 archivos: `voz.onnx` + `voz.onnx.json` (config). Ambos con
 sha256 fijado en el catálogo (mismo patrón que `catalog/`).

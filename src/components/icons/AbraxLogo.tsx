@@ -2,10 +2,9 @@ import React from "react";
 import { Trans } from "react-i18next";
 
 // Lockup ABRAX (isotipo + wordmark) del kit de marca aprobado (paleta v1
-// cian→violeta→magenta; fuente: kit/logo/abrax-lockup.svg y
-// presentacion-logo.html de la raíz de orquestación). Las letras y el núcleo
-// usan currentColor para adaptarse a tema claro/oscuro; el glifo y la X
-// conservan el degradado de marca.
+// cian→violeta→magenta). Las letras y el núcleo usan currentColor para
+// adaptarse a tema claro/oscuro; el glifo y la X conservan el degradado
+// de marca.
 //
 // Variantes: "horizontal" (isotipo a la izquierda del wordmark, 450×120) y
 // "stacked" (isotipo sobre el wordmark, 300×232 — pensada para el sidebar).
@@ -127,8 +126,7 @@ const AbraxLogo = ({
   variant?: "horizontal" | "stacked";
   withTagline?: boolean;
 }) => {
-  const idPrefix =
-    variant === "stacked" ? "abrax-lockup-s" : "abrax-lockup-h";
+  const idPrefix = variant === "stacked" ? "abrax-lockup-s" : "abrax-lockup-h";
 
   const svg =
     variant === "stacked" ? (

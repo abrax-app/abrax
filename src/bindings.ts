@@ -936,8 +936,8 @@ async escuchaReadClipboard() : Promise<Result<string, string>> {
 },
 /**
  * Persiste la configuración de Escucha de una vez. Comando propio (en vez de
- * un change_* por campo en shortcut/mod.rs) para no tocar ese archivo
- * caliente compartido con la sesión paralela.
+ * un change_* por campo en shortcut/mod.rs) para mantener acotada la
+ * superficie de ese archivo compartido.
  */
 async escuchaUpdateSettings(vozProsa: string | null, vozCodigo: string | null, rateProsa: number, rateCodigo: number, verbosidad: VerbosidadSimbolos) : Promise<Result<null, string>> {
     try {

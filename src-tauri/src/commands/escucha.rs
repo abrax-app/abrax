@@ -86,8 +86,8 @@ pub fn escucha_read_clipboard(app: AppHandle) -> Result<String, String> {
 }
 
 /// Persiste la configuración de Escucha de una vez. Comando propio (en vez de
-/// un change_* por campo en shortcut/mod.rs) para no tocar ese archivo
-/// caliente compartido con la sesión paralela.
+/// un change_* por campo en shortcut/mod.rs) para mantener acotada la
+/// superficie de ese archivo compartido.
 #[tauri::command]
 #[specta::specta]
 #[allow(clippy::too_many_arguments)]

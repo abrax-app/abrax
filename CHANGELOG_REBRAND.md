@@ -1,6 +1,6 @@
 # Changelog del rebranding — ABRAX
 
-Estado consolidado al **2026-07-11**. Toda afirmación de este documento está respaldada por el historial de git de este repositorio.
+Estado consolidado al **2026-07-12**. Toda afirmación de este documento está respaldada por el historial de git de este repositorio.
 
 ## 1. Resumen ejecutivo
 
@@ -64,12 +64,3 @@ Estado consolidado al **2026-07-11**. Toda afirmación de este documento está r
 ## 7. Atribución
 
 ABRAX es un fork de **Handy**, creado por **CJ Pais** y publicado bajo licencia **MIT**. Gran parte del mérito de que esta app exista —el pipeline de dictado, el soporte multiplataforma, la base de i18n— es del proyecto original y de sus contribuidores. Conservamos `LICENSE`, `ATTRIBUTION.md` y `UPSTREAM.md`, y el About de la app reconoce explícitamente al proyecto original. ABRAX no está afiliado a Handy ni a su autor.
-
----
-
-## [ESCUCHA] Rama `feat/escucha` — 12/07/2026 (FUSIONADA en `b6427e6`)
-
-Sesión paralela en worktree propio (base `afcdcb9`), fusionada a
-`rebrand/product` el 12/07 con compuerta completa en verde (160 tests + 1
-smoke de audio aparte). Detalle de la feature en la sección 4 de este
-changelog; crónica técnica en `INFORME_ESCUCHA.md`.

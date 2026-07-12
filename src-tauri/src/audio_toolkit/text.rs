@@ -726,9 +726,9 @@ mod tests {
 
     #[test]
     fn test_filter_custom_filler_multiword_phrase() {
-        // El preset es-419 incluye frases con espacio ("o sea"). Desde F5.2 la
-        // frase también matchea FUSIONADA ("osea"/"ósea", como la producen los
-        // ASR) — recibo del 11/07 en el historial de Winston.
+        // El preset es-419 incluye frases con espacio ("o sea"). La frase
+        // también debe matchear FUSIONADA ("osea"/"ósea", como la producen
+        // los ASR reales).
         let custom = Some(vec!["o sea".to_string(), "eh".to_string()]);
         let text = "Eso o sea funciona eh y osea también cae";
         let result = filter_transcription_output(text, "es", &custom);
