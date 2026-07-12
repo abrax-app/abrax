@@ -1638,18 +1638,33 @@ fn post_process_transcription_text(
     settings: &AppSettings,
     custom_words_already_prompted: bool,
 ) -> String {
+    // 1. Reemplazos exactos del Diccionario Vivo (F5.1): intención explícita
+    //    del usuario, van primero para que el fuzzy no toque sus tokens.
+    let replacement_pairs: Vec<(String, String)> = settings
+        .custom_replacements
+        .iter()
+        .map(|r| (r.from.clone(), r.to.clone()))
+        .collect();
+    let replaced = crate::audio_toolkit::apply_custom_replacements(&raw, &replacement_pairs);
+
+    // 2. Corrección difusa de custom words (salvo que ya viajaran como prompt).
     let corrected = if !settings.custom_words.is_empty() && !custom_words_already_prompted {
         apply_custom_words(
-            &raw,
+            &replaced,
             &settings.custom_words,
             settings.word_correction_threshold,
         )
     } else {
-        raw
+        replaced
     };
 
+    // 3. Diccionario del proyecto (F5.3/F5.4): join multi-token exacto +
+    //    fuzzy protegido por stoplist. No-op si está apagado.
+    let with_dictionary = crate::dictionary::apply_active(&corrected, settings);
+
+    // 4. Muletillas, tartamudeos y espacios.
     filter_transcription_output(
-        &corrected,
+        &with_dictionary,
         &settings.app_language,
         &settings.custom_filler_words,
     )

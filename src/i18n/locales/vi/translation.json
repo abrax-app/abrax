@@ -253,7 +253,8 @@
         "output": "Đầu ra",
         "transcription": "Chuyển đổi",
         "history": "Lịch sử",
-        "experimental": "Thử nghiệm"
+        "experimental": "Thử nghiệm",
+        "dictionary": "Từ điển sống"
       },
       "experimentalToggle": {
         "label": "Tính năng thử nghiệm",
@@ -392,6 +393,36 @@
       "voiceActivityDetection": {
         "title": "Voice Activity Detection",
         "description": "Filter silence from recordings. Streaming-capable models use a longer VAD tail; disabling VAD records raw audio."
+      },
+      "dictionary": {
+        "title": "Từ điển dự án",
+        "description": "Mô hình giọng nói không biết biệt ngữ trong mã của bạn. Abrax học nó bằng cách lập chỉ mục dự án đang hoạt động: định danh, nhánh git và tên tệp sẽ sửa bản đọc chính tả.",
+        "pickProject": "Chọn dự án",
+        "changeProject": "Đổi dự án",
+        "pickTitle": "Chọn thư mục dự án",
+        "reindex": "Lập chỉ mục lại",
+        "enable": "Học từ dự án này",
+        "enableDescription": "Khi bật, các thuật ngữ đã lập chỉ mục sẽ sửa bản đọc chính tả. Tắt để tạm dừng mà không mất chỉ mục.",
+        "termCount": "{{count}} thuật ngữ đã lập chỉ mục",
+        "noIndex": "Chưa lập chỉ mục",
+        "lastIndexed": "đã lập chỉ mục {{date}}",
+        "indexed": "Đã lập chỉ mục dự án: {{count}} thuật ngữ",
+        "indexError": "Lập chỉ mục thất bại: {{error}}",
+        "privacy": "Chỉ mục nằm trên đĩa của bạn. Không có gì từ mã của bạn rời khỏi máy tính này.",
+        "source": {
+          "code": "từ kho mã",
+          "branch": "nhánh git",
+          "path": "tên tệp"
+        }
+      },
+      "customReplacements": {
+        "title": "Thay thế chính xác",
+        "description": "Khi mô hình luôn nghe nhầm một từ, hãy sửa nó một cách xác định: khớp token chính xác, phân biệt hoa thường.",
+        "fromPlaceholder": "Nghe thấy",
+        "toPlaceholder": "Thay bằng",
+        "add": "Thêm",
+        "remove": "Xóa {{word}}",
+        "duplicate": "Đã tồn tại thay thế cho \"{{word}}\""
       }
     },
     "postProcessing": {

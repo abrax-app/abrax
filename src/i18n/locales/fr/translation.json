@@ -253,7 +253,8 @@
         "output": "Sortie",
         "transcription": "Transcription",
         "history": "Historique",
-        "experimental": "Expérimental"
+        "experimental": "Expérimental",
+        "dictionary": "Dictionnaire vivant"
       },
       "experimentalToggle": {
         "label": "Fonctionnalités Expérimentales",
@@ -392,6 +393,36 @@
       "voiceActivityDetection": {
         "title": "Voice Activity Detection",
         "description": "Filter silence from recordings. Streaming-capable models use a longer VAD tail; disabling VAD records raw audio."
+      },
+      "dictionary": {
+        "title": "Dictionnaire du projet",
+        "description": "Les modèles vocaux ne connaissent pas le jargon de votre code. Abrax l'apprend en indexant votre projet actif : identifiants, branches git et noms de fichiers corrigent votre dictée.",
+        "pickProject": "Choisir un projet",
+        "changeProject": "Changer de projet",
+        "pickTitle": "Choisissez le dossier du projet",
+        "reindex": "Réindexer",
+        "enable": "Apprendre de ce projet",
+        "enableDescription": "Activé, les termes indexés corrigent votre dictée. Désactivez pour suspendre sans perdre l'index.",
+        "termCount": "{{count}} termes indexés",
+        "noIndex": "Pas encore indexé",
+        "lastIndexed": "indexé le {{date}}",
+        "indexed": "Projet indexé : {{count}} termes",
+        "indexError": "Échec de l'indexation : {{error}}",
+        "privacy": "L'index reste sur votre disque. Rien de votre code ne quitte cet ordinateur.",
+        "source": {
+          "code": "du dépôt",
+          "branch": "branche git",
+          "path": "nom de fichier"
+        }
+      },
+      "customReplacements": {
+        "title": "Remplacements exacts",
+        "description": "Quand le modèle entend toujours mal un mot, corrigez-le de façon déterministe : correspondance exacte par jeton, sensible à la casse.",
+        "fromPlaceholder": "Entendu",
+        "toPlaceholder": "Remplacer par",
+        "add": "Ajouter",
+        "remove": "Supprimer {{word}}",
+        "duplicate": "Un remplacement pour « {{word}} » existe déjà"
       }
     },
     "postProcessing": {

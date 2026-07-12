@@ -253,7 +253,8 @@
         "output": "Utmatning",
         "transcription": "Transkription",
         "history": "Historik",
-        "experimental": "Experimentellt"
+        "experimental": "Experimentellt",
+        "dictionary": "Levande ordbok"
       },
       "experimentalToggle": {
         "label": "Experimentella funktioner",
@@ -392,6 +393,36 @@
       "voiceActivityDetection": {
         "title": "Voice Activity Detection",
         "description": "Filter silence from recordings. Streaming-capable models use a longer VAD tail; disabling VAD records raw audio."
+      },
+      "dictionary": {
+        "title": "Projektordbok",
+        "description": "Talmodeller känner inte till din kods jargong. Abrax lär sig den genom att indexera ditt aktiva projekt: identifierare, git-grenar och filnamn korrigerar din diktering.",
+        "pickProject": "Välj projekt",
+        "changeProject": "Byt projekt",
+        "pickTitle": "Välj projektmappen",
+        "reindex": "Indexera om",
+        "enable": "Lär av det här projektet",
+        "enableDescription": "När på korrigerar indexerade termer din diktering. Stäng av för att pausa utan att förlora indexet.",
+        "termCount": "{{count}} indexerade termer",
+        "noIndex": "Inte indexerad ännu",
+        "lastIndexed": "indexerad {{date}}",
+        "indexed": "Projekt indexerat: {{count}} termer",
+        "indexError": "Indexeringen misslyckades: {{error}}",
+        "privacy": "Indexet finns på din disk. Inget från din kod lämnar den här datorn.",
+        "source": {
+          "code": "från repot",
+          "branch": "git-gren",
+          "path": "filnamn"
+        }
+      },
+      "customReplacements": {
+        "title": "Exakta ersättningar",
+        "description": "När modellen alltid hör fel på ett ord, rätta det deterministiskt: exakt, skiftlägeskänslig token-matchning.",
+        "fromPlaceholder": "Hört",
+        "toPlaceholder": "Ersätt med",
+        "add": "Lägg till",
+        "remove": "Ta bort {{word}}",
+        "duplicate": "En ersättning för \"{{word}}\" finns redan"
       }
     },
     "postProcessing": {

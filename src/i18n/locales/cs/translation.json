@@ -253,7 +253,8 @@
         "output": "Výstup",
         "transcription": "Přepis",
         "history": "Historie",
-        "experimental": "Experimentální"
+        "experimental": "Experimentální",
+        "dictionary": "Živý slovník"
       },
       "experimentalToggle": {
         "label": "Experimentální funkce",
@@ -392,6 +393,36 @@
       "voiceActivityDetection": {
         "title": "Voice Activity Detection",
         "description": "Filter silence from recordings. Streaming-capable models use a longer VAD tail; disabling VAD records raw audio."
+      },
+      "dictionary": {
+        "title": "Slovník projektu",
+        "description": "Hlasové modely neznají žargon vašeho kódu. Abrax se ho učí indexováním aktivního projektu: identifikátory, větve gitu a názvy souborů opravují diktát.",
+        "pickProject": "Vybrat projekt",
+        "changeProject": "Změnit projekt",
+        "pickTitle": "Vyberte složku projektu",
+        "reindex": "Přeindexovat",
+        "enable": "Učit se z tohoto projektu",
+        "enableDescription": "Když je zapnuto, indexované termíny opravují diktát. Vypnutím pozastavíte bez ztráty indexu.",
+        "termCount": "{{count}} indexovaných termínů",
+        "noIndex": "Zatím neindexováno",
+        "lastIndexed": "indexováno {{date}}",
+        "indexed": "Projekt indexován: {{count}} termínů",
+        "indexError": "Indexování selhalo: {{error}}",
+        "privacy": "Index je na vašem disku. Nic z vašeho kódu neopouští tento počítač.",
+        "source": {
+          "code": "z repozitáře",
+          "branch": "větev git",
+          "path": "název souboru"
+        }
+      },
+      "customReplacements": {
+        "title": "Přesné náhrady",
+        "description": "Když model slovo vždy slyší špatně, opravte ho deterministicky: přesná shoda tokenu, rozlišuje velikost písmen.",
+        "fromPlaceholder": "Slyšeno",
+        "toPlaceholder": "Nahradit za",
+        "add": "Přidat",
+        "remove": "Odebrat {{word}}",
+        "duplicate": "Náhrada pro \"{{word}}\" již existuje"
       }
     },
     "postProcessing": {

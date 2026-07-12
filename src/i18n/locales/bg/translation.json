@@ -253,7 +253,8 @@
         "output": "Изход",
         "transcription": "Транскрипция",
         "history": "История",
-        "experimental": "Експериментални"
+        "experimental": "Експериментални",
+        "dictionary": "Жив речник"
       },
       "experimentalToggle": {
         "label": "Експериментални функции",
@@ -392,6 +393,36 @@
       "voiceActivityDetection": {
         "title": "Voice Activity Detection",
         "description": "Filter silence from recordings. Streaming-capable models use a longer VAD tail; disabling VAD records raw audio."
+      },
+      "dictionary": {
+        "title": "Речник на проекта",
+        "description": "Гласовите модели не познават жаргона на кода ти. Abrax го научава, като индексира активния проект: идентификатори, git клонове и имена на файлове поправят диктовката.",
+        "pickProject": "Избери проект",
+        "changeProject": "Смени проекта",
+        "pickTitle": "Избери папката на проекта",
+        "reindex": "Преиндексирай",
+        "enable": "Учи се от този проект",
+        "enableDescription": "Когато е включено, индексираните термини поправят диктовката. Изключи, за да паузираш без загуба на индекса.",
+        "termCount": "{{count}} индексирани термина",
+        "noIndex": "Все още не е индексирано",
+        "lastIndexed": "индексирано на {{date}}",
+        "indexed": "Проектът е индексиран: {{count}} термина",
+        "indexError": "Индексирането се провали: {{error}}",
+        "privacy": "Индексът живее на твоя диск. Нищо от кода ти не напуска този компютър.",
+        "source": {
+          "code": "от репото",
+          "branch": "git клон",
+          "path": "име на файл"
+        }
+      },
+      "customReplacements": {
+        "title": "Точни замени",
+        "description": "Когато моделът винаги чува грешно дадена дума, поправи я детерминистично: точно съвпадение на токена, чувствително към регистъра.",
+        "fromPlaceholder": "Чуто",
+        "toPlaceholder": "Замени с",
+        "add": "Добави",
+        "remove": "Премахни {{word}}",
+        "duplicate": "Вече има замяна за \"{{word}}\""
       }
     },
     "postProcessing": {

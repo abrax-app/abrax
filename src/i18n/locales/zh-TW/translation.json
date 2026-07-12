@@ -253,7 +253,8 @@
         "output": "輸出",
         "transcription": "轉錄",
         "history": "歷史",
-        "experimental": "實驗性"
+        "experimental": "實驗性",
+        "dictionary": "活字典"
       },
       "experimentalToggle": {
         "label": "實驗性功能",
@@ -392,6 +393,36 @@
       "voiceActivityDetection": {
         "title": "Voice Activity Detection",
         "description": "Filter silence from recordings. Streaming-capable models use a longer VAD tail; disabling VAD records raw audio."
+      },
+      "dictionary": {
+        "title": "專案詞典",
+        "description": "語音模型不懂你程式碼裡的行話。Abrax 透過索引你的作用中專案來學習：識別符、git 分支和檔案名稱會糾正你的聽寫。",
+        "pickProject": "選擇專案",
+        "changeProject": "更換專案",
+        "pickTitle": "選擇專案資料夾",
+        "reindex": "重新索引",
+        "enable": "從此專案學習",
+        "enableDescription": "開啟後，已索引的詞條會糾正你的聽寫。關閉可暫停且不遺失索引。",
+        "termCount": "已索引 {{count}} 個詞條",
+        "noIndex": "尚未索引",
+        "lastIndexed": "索引於 {{date}}",
+        "indexed": "專案已索引：{{count}} 個詞條",
+        "indexError": "索引失敗：{{error}}",
+        "privacy": "索引保存在你的磁碟上。你的程式碼不會離開這台電腦。",
+        "source": {
+          "code": "來自儲存庫",
+          "branch": "git 分支",
+          "path": "檔案名稱"
+        }
+      },
+      "customReplacements": {
+        "title": "精確替換",
+        "description": "當模型總是聽錯某個詞時，用確定性方式修正：區分大小寫的精確詞元比對。",
+        "fromPlaceholder": "聽到的",
+        "toPlaceholder": "替換為",
+        "add": "新增",
+        "remove": "移除 {{word}}",
+        "duplicate": "「{{word}}」的替換已存在"
       }
     },
     "postProcessing": {

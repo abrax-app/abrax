@@ -253,7 +253,8 @@
         "output": "Output",
         "transcription": "Trascrizione",
         "history": "Cronologia",
-        "experimental": "Sperimentale"
+        "experimental": "Sperimentale",
+        "dictionary": "Dizionario vivo"
       },
       "experimentalToggle": {
         "label": "Funzionalità Sperimentali",
@@ -392,6 +393,36 @@
       "voiceActivityDetection": {
         "title": "Rilevamento dell'attività vocale",
         "description": "Filtra il silenzio dalle registrazioni. I modelli che supportano lo streaming utilizzano una coda VAD più lunga; disabilitando la VAD si registra l'audio grezzo."
+      },
+      "dictionary": {
+        "title": "Dizionario del progetto",
+        "description": "I modelli vocali non conoscono il gergo del tuo codice. Abrax lo impara indicizzando il progetto attivo: identificatori, branch git e nomi di file correggono la dettatura.",
+        "pickProject": "Scegli progetto",
+        "changeProject": "Cambia progetto",
+        "pickTitle": "Scegli la cartella del progetto",
+        "reindex": "Reindicizza",
+        "enable": "Impara da questo progetto",
+        "enableDescription": "Se attivo, i termini indicizzati correggono la dettatura. Disattiva per sospendere senza perdere l'indice.",
+        "termCount": "{{count}} termini indicizzati",
+        "noIndex": "Non ancora indicizzato",
+        "lastIndexed": "indicizzato il {{date}}",
+        "indexed": "Progetto indicizzato: {{count}} termini",
+        "indexError": "Indicizzazione non riuscita: {{error}}",
+        "privacy": "L'indice vive sul tuo disco. Nulla del tuo codice lascia questo computer.",
+        "source": {
+          "code": "dal repo",
+          "branch": "branch git",
+          "path": "nome file"
+        }
+      },
+      "customReplacements": {
+        "title": "Sostituzioni esatte",
+        "description": "Quando il modello sente sempre male una parola, correggila in modo deterministico: corrispondenza esatta per token, sensibile alle maiuscole.",
+        "fromPlaceholder": "Sentito",
+        "toPlaceholder": "Sostituisci con",
+        "add": "Aggiungi",
+        "remove": "Rimuovi {{word}}",
+        "duplicate": "Esiste già una sostituzione per \"{{word}}\""
       }
     },
     "postProcessing": {

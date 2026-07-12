@@ -253,7 +253,8 @@
         "output": "输出",
         "transcription": "转录",
         "history": "历史",
-        "experimental": "实验性"
+        "experimental": "实验性",
+        "dictionary": "活字典"
       },
       "experimentalToggle": {
         "label": "实验性功能",
@@ -392,6 +393,36 @@
       "voiceActivityDetection": {
         "title": "Voice Activity Detection",
         "description": "Filter silence from recordings. Streaming-capable models use a longer VAD tail; disabling VAD records raw audio."
+      },
+      "dictionary": {
+        "title": "项目词典",
+        "description": "语音模型不懂你代码里的行话。Abrax 通过索引你的活动项目来学习：标识符、git 分支和文件名会纠正你的听写。",
+        "pickProject": "选择项目",
+        "changeProject": "更换项目",
+        "pickTitle": "选择项目文件夹",
+        "reindex": "重新索引",
+        "enable": "从此项目学习",
+        "enableDescription": "开启后，已索引的词条会纠正你的听写。关闭可暂停且不丢失索引。",
+        "termCount": "已索引 {{count}} 个词条",
+        "noIndex": "尚未索引",
+        "lastIndexed": "索引于 {{date}}",
+        "indexed": "项目已索引：{{count}} 个词条",
+        "indexError": "索引失败：{{error}}",
+        "privacy": "索引保存在你的磁盘上。你的代码不会离开这台电脑。",
+        "source": {
+          "code": "来自仓库",
+          "branch": "git 分支",
+          "path": "文件名"
+        }
+      },
+      "customReplacements": {
+        "title": "精确替换",
+        "description": "当模型总是听错某个词时，用确定性方式修正：区分大小写的精确词元匹配。",
+        "fromPlaceholder": "听到的",
+        "toPlaceholder": "替换为",
+        "add": "添加",
+        "remove": "移除 {{word}}",
+        "duplicate": "\"{{word}}\" 的替换已存在"
       }
     },
     "postProcessing": {

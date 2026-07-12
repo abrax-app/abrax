@@ -253,7 +253,8 @@
         "output": "פלט",
         "transcription": "תמלול",
         "history": "היסטוריה",
-        "experimental": "ניסיוני"
+        "experimental": "ניסיוני",
+        "dictionary": "מילון חי"
       },
       "experimentalToggle": {
         "label": "תכונות ניסיוניות",
@@ -392,6 +393,36 @@
       "voiceActivityDetection": {
         "title": "Voice Activity Detection",
         "description": "Filter silence from recordings. Streaming-capable models use a longer VAD tail; disabling VAD records raw audio."
+      },
+      "dictionary": {
+        "title": "מילון הפרויקט",
+        "description": "מודלי דיבור לא מכירים את הז'רגון של הקוד שלך. Abrax לומד אותו על ידי אינדוקס הפרויקט הפעיל: מזהים, ענפי git ושמות קבצים מתקנים את ההכתבה.",
+        "pickProject": "בחר פרויקט",
+        "changeProject": "החלף פרויקט",
+        "pickTitle": "בחר את תיקיית הפרויקט",
+        "reindex": "אינדוקס מחדש",
+        "enable": "למד מהפרויקט הזה",
+        "enableDescription": "כשמופעל, מונחים מאונדקסים מתקנים את ההכתבה. כבה כדי להשהות מבלי לאבד את האינדקס.",
+        "termCount": "{{count}} מונחים מאונדקסים",
+        "noIndex": "טרם אונדקס",
+        "lastIndexed": "אונדקס ב-{{date}}",
+        "indexed": "הפרויקט אונדקס: {{count}} מונחים",
+        "indexError": "האינדוקס נכשל: {{error}}",
+        "privacy": "האינדקס נשמר בדיסק שלך. שום דבר מהקוד שלך לא עוזב את המחשב הזה.",
+        "source": {
+          "code": "מהריפו",
+          "branch": "ענף git",
+          "path": "שם קובץ"
+        }
+      },
+      "customReplacements": {
+        "title": "החלפות מדויקות",
+        "description": "כשהמודל תמיד שומע מילה לא נכון, תקן אותה דטרמיניסטית: התאמת אסימון מדויקת ורגישה לרישיות.",
+        "fromPlaceholder": "נשמע",
+        "toPlaceholder": "החלף ב",
+        "add": "הוסף",
+        "remove": "הסר את {{word}}",
+        "duplicate": "כבר קיימת החלפה עבור \"{{word}}\""
       }
     },
     "postProcessing": {

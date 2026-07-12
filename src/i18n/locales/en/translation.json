@@ -253,7 +253,8 @@
         "output": "Output",
         "transcription": "Transcription",
         "history": "History",
-        "experimental": "Experimental"
+        "experimental": "Experimental",
+        "dictionary": "Living dictionary"
       },
       "experimentalToggle": {
         "label": "Experimental Features",
@@ -392,6 +393,36 @@
       "voiceActivityDetection": {
         "title": "Voice Activity Detection",
         "description": "Filter silence from recordings. Streaming-capable models use a longer VAD tail; disabling VAD records raw audio."
+      },
+      "dictionary": {
+        "title": "Project dictionary",
+        "description": "Speech models don't know your code's jargon. Abrax learns it by indexing your active project: identifiers, git branches and file names correct your dictation — \"use auth store\" becomes useAuthStore.",
+        "pickProject": "Choose project",
+        "changeProject": "Change project",
+        "pickTitle": "Choose the project folder",
+        "reindex": "Reindex",
+        "enable": "Learn from this project",
+        "enableDescription": "When on, indexed terms correct your dictation. Turn off to pause without losing the index.",
+        "termCount": "{{count}} indexed terms",
+        "noIndex": "Not indexed yet",
+        "lastIndexed": "indexed {{date}}",
+        "indexed": "Project indexed: {{count}} terms",
+        "indexError": "Indexing failed: {{error}}",
+        "privacy": "The index lives on your disk. Nothing from your code leaves this computer.",
+        "source": {
+          "code": "from the repo",
+          "branch": "git branch",
+          "path": "file name"
+        }
+      },
+      "customReplacements": {
+        "title": "Exact replacements",
+        "description": "When the model always mishears a word, fix it deterministically: an exact, case-sensitive token match — \"Ruth\" → \"rut\" never touches \"ruta\".",
+        "fromPlaceholder": "Heard",
+        "toPlaceholder": "Replace with",
+        "add": "Add",
+        "remove": "Remove {{word}}",
+        "duplicate": "A replacement for \"{{word}}\" already exists"
       }
     },
     "postProcessing": {

@@ -232,7 +232,8 @@
         "output": "الإخراج",
         "transcription": "التفريغ الصوتي",
         "history": "السجل",
-        "experimental": "تجريبي"
+        "experimental": "تجريبي",
+        "dictionary": "القاموس الحي"
       },
       "experimentalToggle": {
         "label": "الميزات التجريبية",
@@ -371,6 +372,36 @@
       "voiceActivityDetection": {
         "title": "Voice Activity Detection",
         "description": "Filter silence from recordings. Streaming-capable models use a longer VAD tail; disabling VAD records raw audio."
+      },
+      "dictionary": {
+        "title": "قاموس المشروع",
+        "description": "نماذج الصوت لا تعرف مصطلحات كودك. يتعلمها Abrax بفهرسة مشروعك النشط: المعرّفات وفروع git وأسماء الملفات تصحح إملاءك.",
+        "pickProject": "اختر مشروعًا",
+        "changeProject": "تغيير المشروع",
+        "pickTitle": "اختر مجلد المشروع",
+        "reindex": "إعادة الفهرسة",
+        "enable": "التعلم من هذا المشروع",
+        "enableDescription": "عند التفعيل، تصحح المصطلحات المفهرسة إملاءك. عطّله للإيقاف المؤقت دون فقدان الفهرس.",
+        "termCount": "{{count}} مصطلحًا مفهرسًا",
+        "noIndex": "لم تتم الفهرسة بعد",
+        "lastIndexed": "فُهرس في {{date}}",
+        "indexed": "تمت فهرسة المشروع: {{count}} مصطلحًا",
+        "indexError": "فشلت الفهرسة: {{error}}",
+        "privacy": "الفهرس يبقى على قرصك. لا شيء من كودك يغادر هذا الجهاز.",
+        "source": {
+          "code": "من المستودع",
+          "branch": "فرع git",
+          "path": "اسم ملف"
+        }
+      },
+      "customReplacements": {
+        "title": "استبدالات دقيقة",
+        "description": "عندما يخطئ النموذج دائمًا في سماع كلمة، صححها بشكل حتمي: تطابق دقيق للرمز وحساس لحالة الأحرف.",
+        "fromPlaceholder": "المسموع",
+        "toPlaceholder": "استبدل بـ",
+        "add": "إضافة",
+        "remove": "إزالة {{word}}",
+        "duplicate": "يوجد بالفعل استبدال لـ \"{{word}}\""
       }
     },
     "postProcessing": {

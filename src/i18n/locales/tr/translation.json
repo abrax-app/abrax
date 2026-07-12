@@ -253,7 +253,8 @@
         "output": "Çıktı",
         "transcription": "Transkripsiyon",
         "history": "Geçmiş",
-        "experimental": "Deneysel"
+        "experimental": "Deneysel",
+        "dictionary": "Canlı sözlük"
       },
       "experimentalToggle": {
         "label": "Deneysel Özellikler",
@@ -392,6 +393,36 @@
       "voiceActivityDetection": {
         "title": "Voice Activity Detection",
         "description": "Filter silence from recordings. Streaming-capable models use a longer VAD tail; disabling VAD records raw audio."
+      },
+      "dictionary": {
+        "title": "Proje sözlüğü",
+        "description": "Konuşma modelleri kodunun jargonunu bilmez. Abrax bunu etkin projeni dizinleyerek öğrenir: tanımlayıcılar, git dalları ve dosya adları dikteni düzeltir.",
+        "pickProject": "Proje seç",
+        "changeProject": "Projeyi değiştir",
+        "pickTitle": "Proje klasörünü seç",
+        "reindex": "Yeniden dizinle",
+        "enable": "Bu projeden öğren",
+        "enableDescription": "Açıkken dizinlenen terimler dikteni düzeltir. Dizini kaybetmeden duraklatmak için kapat.",
+        "termCount": "{{count}} dizinlenmiş terim",
+        "noIndex": "Henüz dizinlenmedi",
+        "lastIndexed": "{{date}} tarihinde dizinlendi",
+        "indexed": "Proje dizinlendi: {{count}} terim",
+        "indexError": "Dizinleme başarısız: {{error}}",
+        "privacy": "Dizin diskinde durur. Kodundan hiçbir şey bu bilgisayardan çıkmaz.",
+        "source": {
+          "code": "depodan",
+          "branch": "git dalı",
+          "path": "dosya adı"
+        }
+      },
+      "customReplacements": {
+        "title": "Tam değiştirmeler",
+        "description": "Model bir kelimeyi hep yanlış duyuyorsa deterministik olarak düzelt: büyük/küçük harfe duyarlı tam eşleşme.",
+        "fromPlaceholder": "Duyulan",
+        "toPlaceholder": "Şununla değiştir",
+        "add": "Ekle",
+        "remove": "{{word}} kaldır",
+        "duplicate": "\"{{word}}\" için zaten bir değiştirme var"
       }
     },
     "postProcessing": {

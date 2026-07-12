@@ -253,7 +253,8 @@
         "output": "출력",
         "transcription": "전사",
         "history": "히스토리",
-        "experimental": "실험적"
+        "experimental": "실험적",
+        "dictionary": "리빙 사전"
       },
       "experimentalToggle": {
         "label": "실험적 기능",
@@ -392,6 +393,36 @@
       "voiceActivityDetection": {
         "title": "Voice Activity Detection",
         "description": "Filter silence from recordings. Streaming-capable models use a longer VAD tail; disabling VAD records raw audio."
+      },
+      "dictionary": {
+        "title": "프로젝트 사전",
+        "description": "음성 모델은 코드의 전문 용어를 모릅니다. Abrax는 활성 프로젝트를 인덱싱해 학습합니다: 식별자, git 브랜치, 파일 이름이 받아쓰기를 교정합니다.",
+        "pickProject": "프로젝트 선택",
+        "changeProject": "프로젝트 변경",
+        "pickTitle": "프로젝트 폴더 선택",
+        "reindex": "다시 인덱싱",
+        "enable": "이 프로젝트에서 학습",
+        "enableDescription": "켜져 있으면 인덱싱된 용어가 받아쓰기를 교정합니다. 끄면 인덱스를 잃지 않고 일시 중지됩니다.",
+        "termCount": "인덱싱된 용어 {{count}}개",
+        "noIndex": "아직 인덱싱되지 않음",
+        "lastIndexed": "{{date}}에 인덱싱됨",
+        "indexed": "프로젝트 인덱싱 완료: 용어 {{count}}개",
+        "indexError": "인덱싱 실패: {{error}}",
+        "privacy": "인덱스는 디스크에 저장됩니다. 코드의 어떤 것도 이 컴퓨터를 떠나지 않습니다.",
+        "source": {
+          "code": "저장소에서",
+          "branch": "git 브랜치",
+          "path": "파일 이름"
+        }
+      },
+      "customReplacements": {
+        "title": "정확한 치환",
+        "description": "모델이 항상 잘못 알아듣는 단어를 결정적으로 교정합니다: 대소문자를 구분하는 정확한 토큰 일치.",
+        "fromPlaceholder": "들린 단어",
+        "toPlaceholder": "바꿀 단어",
+        "add": "추가",
+        "remove": "{{word}} 제거",
+        "duplicate": "\"{{word}}\"에 대한 치환이 이미 있습니다"
       }
     },
     "postProcessing": {

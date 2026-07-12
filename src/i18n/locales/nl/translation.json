@@ -253,7 +253,8 @@
         "output": "Uitvoer",
         "transcription": "Transcriptie",
         "history": "Geschiedenis",
-        "experimental": "Experimenteel"
+        "experimental": "Experimenteel",
+        "dictionary": "Levend woordenboek"
       },
       "experimentalToggle": {
         "label": "Experimentele functies",
@@ -392,6 +393,36 @@
       "voiceActivityDetection": {
         "title": "Spraakactiviteitsdetectie (VAD)",
         "description": "Filter stilte uit opnames. Streaming-modellen gebruiken een langere VAD-uitloop; het uitschakelen van VAD neemt de ruwe audio op."
+      },
+      "dictionary": {
+        "title": "Projectwoordenboek",
+        "description": "Spraakmodellen kennen het jargon van je code niet. Abrax leert het door je actieve project te indexeren: identifiers, git-branches en bestandsnamen corrigeren je dictaat.",
+        "pickProject": "Project kiezen",
+        "changeProject": "Project wijzigen",
+        "pickTitle": "Kies de projectmap",
+        "reindex": "Herindexeren",
+        "enable": "Leren van dit project",
+        "enableDescription": "Indien aan, corrigeren geïndexeerde termen je dictaat. Zet uit om te pauzeren zonder de index te verliezen.",
+        "termCount": "{{count}} geïndexeerde termen",
+        "noIndex": "Nog niet geïndexeerd",
+        "lastIndexed": "geïndexeerd op {{date}}",
+        "indexed": "Project geïndexeerd: {{count}} termen",
+        "indexError": "Indexeren mislukt: {{error}}",
+        "privacy": "De index staat op je schijf. Niets van je code verlaat deze computer.",
+        "source": {
+          "code": "uit de repo",
+          "branch": "git-branch",
+          "path": "bestandsnaam"
+        }
+      },
+      "customReplacements": {
+        "title": "Exacte vervangingen",
+        "description": "Als het model een woord altijd verkeerd verstaat, corrigeer het deterministisch: exacte, hoofdlettergevoelige token-match.",
+        "fromPlaceholder": "Gehoord",
+        "toPlaceholder": "Vervangen door",
+        "add": "Toevoegen",
+        "remove": "{{word}} verwijderen",
+        "duplicate": "Er bestaat al een vervanging voor \"{{word}}\""
       }
     },
     "postProcessing": {

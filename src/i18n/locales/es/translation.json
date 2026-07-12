@@ -253,7 +253,8 @@
         "output": "Salida",
         "transcription": "Transcripción",
         "history": "Historial",
-        "experimental": "Experimental"
+        "experimental": "Experimental",
+        "dictionary": "Diccionario vivo"
       },
       "experimentalToggle": {
         "label": "Funciones Experimentales",
@@ -392,6 +393,36 @@
       "voiceActivityDetection": {
         "title": "Voice Activity Detection",
         "description": "Filter silence from recordings. Streaming-capable models use a longer VAD tail; disabling VAD records raw audio."
+      },
+      "dictionary": {
+        "title": "Diccionario del proyecto",
+        "description": "Los modelos de voz no conocen la jerga de tu código. Abrax la aprende indexando tu proyecto activo: identificadores, ramas git y nombres de archivo corrigen tu dictado — \"use auth store\" se vuelve useAuthStore.",
+        "pickProject": "Elegir proyecto",
+        "changeProject": "Cambiar proyecto",
+        "pickTitle": "Elige la carpeta del proyecto",
+        "reindex": "Reindexar",
+        "enable": "Aprender de este proyecto",
+        "enableDescription": "Encendido, los términos indexados corrigen tu dictado. Apágalo para pausar sin perder el índice.",
+        "termCount": "{{count}} términos indexados",
+        "noIndex": "Aún sin indexar",
+        "lastIndexed": "indexado el {{date}}",
+        "indexed": "Proyecto indexado: {{count}} términos",
+        "indexError": "La indexación falló: {{error}}",
+        "privacy": "El índice vive en tu disco. Nada de tu código sale de este equipo.",
+        "source": {
+          "code": "del repo",
+          "branch": "rama git",
+          "path": "nombre de archivo"
+        }
+      },
+      "customReplacements": {
+        "title": "Reemplazos exactos",
+        "description": "Cuando el modelo siempre escucha mal una palabra, corrígela de forma determinista: coincidencia exacta por token, sensible a mayúsculas — \"Ruth\" → \"rut\" jamás toca \"ruta\".",
+        "fromPlaceholder": "Escuchado",
+        "toPlaceholder": "Reemplazar por",
+        "add": "Agregar",
+        "remove": "Quitar {{word}}",
+        "duplicate": "Ya existe un reemplazo para \"{{word}}\""
       }
     },
     "postProcessing": {

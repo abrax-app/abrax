@@ -253,7 +253,8 @@
         "output": "Вывод",
         "transcription": "Транскрипция",
         "history": "История",
-        "experimental": "Экспериментальное"
+        "experimental": "Экспериментальное",
+        "dictionary": "Живой словарь"
       },
       "experimentalToggle": {
         "label": "Экспериментальные функции",
@@ -392,6 +393,36 @@
       "voiceActivityDetection": {
         "title": "Voice Activity Detection",
         "description": "Filter silence from recordings. Streaming-capable models use a longer VAD tail; disabling VAD records raw audio."
+      },
+      "dictionary": {
+        "title": "Словарь проекта",
+        "description": "Голосовые модели не знают жаргон вашего кода. Abrax учит его, индексируя активный проект: идентификаторы, ветки git и имена файлов исправляют диктовку.",
+        "pickProject": "Выбрать проект",
+        "changeProject": "Сменить проект",
+        "pickTitle": "Выберите папку проекта",
+        "reindex": "Переиндексировать",
+        "enable": "Учиться на этом проекте",
+        "enableDescription": "Когда включено, индексированные термины исправляют диктовку. Выключите, чтобы приостановить без потери индекса.",
+        "termCount": "Проиндексировано терминов: {{count}}",
+        "noIndex": "Ещё не проиндексировано",
+        "lastIndexed": "проиндексировано {{date}}",
+        "indexed": "Проект проиндексирован: {{count}} терминов",
+        "indexError": "Ошибка индексации: {{error}}",
+        "privacy": "Индекс хранится на вашем диске. Ничего из вашего кода не покидает этот компьютер.",
+        "source": {
+          "code": "из репозитория",
+          "branch": "ветка git",
+          "path": "имя файла"
+        }
+      },
+      "customReplacements": {
+        "title": "Точные замены",
+        "description": "Если модель всегда слышит слово неправильно, исправьте это детерминированно: точное совпадение токена с учётом регистра.",
+        "fromPlaceholder": "Услышано",
+        "toPlaceholder": "Заменить на",
+        "add": "Добавить",
+        "remove": "Удалить {{word}}",
+        "duplicate": "Замена для \"{{word}}\" уже существует"
       }
     },
     "postProcessing": {

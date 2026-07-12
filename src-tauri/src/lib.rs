@@ -7,6 +7,7 @@ mod catalog;
 pub mod cli;
 mod clipboard;
 mod commands;
+mod dictionary;
 mod helpers;
 mod input;
 mod llm_client;
@@ -624,6 +625,10 @@ pub fn run(cli_args: CliArgs) {
             helpers::clamshell::is_laptop,
             user_alerts::get_recent_alerts,
             user_alerts::clear_recent_alerts,
+            dictionary::index_project,
+            dictionary::get_dictionary_stats,
+            dictionary::set_dictionary_enabled,
+            dictionary::update_custom_replacements,
         ])
         .events(collect_events![
             managers::history::HistoryUpdatePayload,
@@ -762,6 +767,9 @@ pub fn run(cli_args: CliArgs) {
                 app_handle.manage(transcription_manager);
                 managers::transcription::init_transcribe_backend();
                 managers::transcription::apply_accelerator_settings(&app_handle);
+                // El post-proceso corre en este proceso: cargar el Diccionario
+                // Vivo también aquí, o --transcribe-file lo ignoraría.
+                dictionary::refresh_active(&app_handle);
 
                 let handle = app_handle.clone();
                 let args = cli_args.clone();
@@ -828,6 +836,10 @@ pub fn run(cli_args: CliArgs) {
             app.manage(TranscriptionCoordinator::new(app_handle.clone()));
 
             initialize_core_logic(&app_handle);
+
+            // Diccionario Vivo: cargar el índice del proyecto activo (no-op
+            // si está apagado o no hay índice en el datadir).
+            dictionary::refresh_active(&app_handle);
 
             // Pre-warm GPU/accelerator enumeration on a background thread. The first
             // get_available_accelerators call enumerates ORT execution providers and
