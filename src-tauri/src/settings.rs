@@ -118,6 +118,22 @@ pub enum OverlayPosition {
     Bottom,
 }
 
+/// Un reemplazo exacto del Diccionario Vivo: token transcrito → texto final.
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq, Type)]
+pub struct CustomReplacement {
+    pub from: String,
+    pub to: String,
+}
+
+/// Proyecto activo del Diccionario Vivo (un solo proyecto en el MVP).
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Type)]
+pub struct DictionaryProject {
+    pub path: String,
+    pub enabled: bool,
+    /// Última indexación, epoch en milisegundos.
+    pub last_indexed_ms: Option<f64>,
+}
+
 /// Which recording overlay to display. `Minimal` and `Live` share one base
 /// (the pill); `Live` grows into the panel that shows live transcription text.
 /// `Esfera` renders the audio-reactive sphere on a square stage. `None` hides
@@ -395,6 +411,16 @@ pub struct AppSettings {
     pub log_level: LogLevel,
     #[serde(default)]
     pub custom_words: Vec<String>,
+    /// Reemplazos exactos por token (F5.1): "Ruth"→"rut" solo dispara con el
+    /// token exacto "Ruth" (case-sensitive) — colisión con "ruta" imposible
+    /// por diseño. Es la vía inmune del Diccionario Vivo.
+    #[serde(default)]
+    pub custom_replacements: Vec<CustomReplacement>,
+    /// Proyecto activo del Diccionario Vivo (F5.3): ABRAX aprende la jerga
+    /// del código indexándolo localmente. El índice vive en el datadir;
+    /// nada sale del equipo.
+    #[serde(default)]
+    pub dictionary_project: Option<DictionaryProject>,
     #[serde(default)]
     pub model_unload_timeout: ModelUnloadTimeout,
     #[serde(default = "default_word_correction_threshold")]
@@ -865,6 +891,8 @@ pub fn get_default_settings() -> AppSettings {
         debug_mode: false,
         log_level: default_log_level(),
         custom_words: Vec::new(),
+        custom_replacements: Vec::new(),
+        dictionary_project: None,
         model_unload_timeout: ModelUnloadTimeout::default(),
         word_correction_threshold: default_word_correction_threshold(),
         history_limit: default_history_limit(),

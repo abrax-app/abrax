@@ -1,6 +1,7 @@
 use natural::phonetics::soundex;
 use once_cell::sync::Lazy;
 use regex::Regex;
+use std::collections::HashMap;
 use strsim::levenshtein;
 
 /// Builds an n-gram string by cleaning and concatenating words
@@ -15,11 +16,149 @@ fn build_ngram(words: &[&str]) -> String {
         .concat()
 }
 
-fn build_match_key(word: &str) -> String {
+/// Pliega tildes latinas a su vocal base (F5.2): "cachái" y "cachai" deben
+/// compararse iguales. La ñ se conserva — es letra distinta en español, no
+/// una vocal acentuada.
+fn fold_accent(c: char) -> char {
+    match c {
+        'á' | 'à' | 'ä' | 'â' => 'a',
+        'é' | 'è' | 'ë' | 'ê' => 'e',
+        'í' | 'ì' | 'ï' | 'î' => 'i',
+        'ó' | 'ò' | 'ö' | 'ô' => 'o',
+        'ú' | 'ù' | 'ü' | 'û' => 'u',
+        _ => c,
+    }
+}
+
+/// Clave de comparación normalizada (F5.2): solo alfanuméricos, minúsculas y
+/// sin tildes. Muletillas y diccionario comparan siempre sobre esta clave.
+pub fn build_match_key(word: &str) -> String {
     word.chars()
         .filter(|c| c.is_alphanumeric())
         .flat_map(|c| c.to_lowercase())
+        .map(fold_accent)
         .collect()
+}
+
+/// Núcleo de un token sin su puntuación adyacente (prefijo/sufijo).
+fn token_core(word: &str) -> &str {
+    let (prefix, suffix) = extract_punctuation(word);
+    &word[prefix.len()..word.len() - suffix.len()]
+}
+
+/// Reemplazos exactos por token (F5.1) — la vía inmune a colisiones del
+/// Diccionario Vivo. Matching por token EXACTO y case-sensitive sobre el
+/// núcleo del token (la puntuación adyacente se conserva): "Ruth" → "rut"
+/// dispara solo con el token "Ruth"; "ruta" es otro token y jamás se toca.
+pub fn apply_custom_replacements(text: &str, replacements: &[(String, String)]) -> String {
+    if replacements.is_empty() {
+        return text.to_string();
+    }
+
+    text.split_whitespace()
+        .map(|word| {
+            let core = token_core(word);
+            for (from, to) in replacements {
+                if core == from {
+                    let (prefix, suffix) = extract_punctuation(word);
+                    return format!("{prefix}{to}{suffix}");
+                }
+            }
+            word.to_string()
+        })
+        .collect::<Vec<_>>()
+        .join(" ")
+}
+
+/// Join multi-token (F5.4) — el killer Spanglish del Diccionario Vivo.
+///
+/// Ventanas de 2–4 tokens transcritos que, concatenados y normalizados sin
+/// separadores, coinciden con la clave de un término indexado, se reemplazan
+/// por el término EXACTO del repo (sus separadores/case se respetan):
+/// "use auth store" → `useAuthStore` · "hotfix token expiry" →
+/// `hotfix/token-expiry`. El lookup llega ya normalizado (clave fusionada →
+/// término original). La puntuación al interior de la ventana rompe la frase
+/// (no se cruza una coma), y una clave fusionada corta (<6) nunca dispara.
+pub fn apply_multi_token_join(text: &str, joined_lookup: &HashMap<String, String>) -> String {
+    if joined_lookup.is_empty() {
+        return text.to_string();
+    }
+
+    let words: Vec<&str> = text.split_whitespace().collect();
+    let mut result: Vec<String> = Vec::with_capacity(words.len());
+    let mut i = 0;
+
+    while i < words.len() {
+        let mut matched = false;
+
+        for n in (2..=4usize).rev() {
+            if i + n > words.len() {
+                continue;
+            }
+            // Una coma/punto en un token intermedio marca límite de frase.
+            if (0..n - 1).any(|j| !extract_punctuation(words[i + j]).1.is_empty()) {
+                continue;
+            }
+            let joined: String = words[i..i + n].iter().map(|w| build_match_key(w)).collect();
+            if joined.len() < 6 {
+                continue;
+            }
+            if let Some(term) = joined_lookup.get(&joined) {
+                let (prefix, _) = extract_punctuation(words[i]);
+                let (_, suffix) = extract_punctuation(words[i + n - 1]);
+                result.push(format!("{prefix}{term}{suffix}"));
+                i += n;
+                matched = true;
+                break;
+            }
+        }
+
+        if !matched {
+            result.push(words[i].to_string());
+            i += 1;
+        }
+    }
+
+    result.join(" ")
+}
+
+/// Corrección difusa de tokens individuales contra los términos indexados del
+/// proyecto (F5.3): misma métrica que custom_words (Levenshtein normalizada +
+/// impulso Soundex, mismo umbral), con dos diferencias deliberadas:
+/// - `is_protected` (stoplist es/en) veta candidatos que son palabras comunes:
+///   "ruta" es español válido y JAMÁS se corrige a "rut", aunque la métrica dé.
+/// - El reemplazo es el término EXACTO del repo (sin adaptar el case): el
+///   valor está en producir `useAuthStore`, no "Useauthstore".
+pub fn apply_dictionary_fuzzy(
+    text: &str,
+    terms: &[String],
+    threshold: f64,
+    is_protected: &dyn Fn(&str) -> bool,
+) -> String {
+    if terms.is_empty() {
+        return text.to_string();
+    }
+
+    let term_keys: Vec<CustomWordMatchKey> = terms
+        .iter()
+        .enumerate()
+        .flat_map(|(index, term)| build_custom_word_match_keys(term, index))
+        .collect();
+
+    text.split_whitespace()
+        .map(|word| {
+            let key = build_match_key(word);
+            if key.len() < 3 || is_protected(&key) {
+                return word.to_string();
+            }
+            if let Some((term, _score)) = find_best_match(&key, terms, &term_keys, threshold) {
+                let (prefix, suffix) = extract_punctuation(word);
+                return format!("{prefix}{term}{suffix}");
+            }
+            word.to_string()
+        })
+        .collect::<Vec<_>>()
+        .join(" ")
 }
 
 struct CustomWordMatchKey {
@@ -201,28 +340,24 @@ fn preserve_case_pattern(original: &str, replacement: &str) -> String {
     }
 }
 
-/// Extracts punctuation prefix and suffix from a word
+/// Extracts punctuation prefix and suffix from a word.
+///
+/// Byte-safe con puntuación multibyte ("¿", "…", "—"): la versión anterior
+/// usaba conteos de caracteres como índices de bytes y panickeaba con "¿El".
 fn extract_punctuation(word: &str) -> (&str, &str) {
-    let prefix_end = word.chars().take_while(|c| !c.is_alphanumeric()).count();
+    let prefix_end = word
+        .char_indices()
+        .find(|(_, c)| c.is_alphanumeric())
+        .map(|(i, _)| i)
+        .unwrap_or(word.len());
     let suffix_start = word
         .char_indices()
         .rev()
-        .take_while(|(_, c)| !c.is_alphanumeric())
-        .count();
+        .find(|(_, c)| c.is_alphanumeric())
+        .map(|(i, c)| i + c.len_utf8())
+        .unwrap_or(prefix_end);
 
-    let prefix = if prefix_end > 0 {
-        &word[..prefix_end]
-    } else {
-        ""
-    };
-
-    let suffix = if suffix_start > 0 {
-        &word[word.len() - suffix_start..]
-    } else {
-        ""
-    };
-
-    (prefix, suffix)
+    (&word[..prefix_end], &word[suffix_start..])
 }
 
 /// Returns filler words appropriate for the given language code.
@@ -301,10 +436,49 @@ fn collapse_stutters(text: &str) -> String {
     result.join(" ")
 }
 
+/// Una muletilla preparada para el matching normalizado (F5.2): la secuencia
+/// de claves por token y, para frases multi-token, la variante fusionada que
+/// producen los ASR ("o sea" → "osea"/"ósea").
+struct FillerChip {
+    token_keys: Vec<String>,
+    fused_key: Option<String>,
+}
+
+fn build_filler_chips(words: &[&str]) -> Vec<FillerChip> {
+    let mut chips: Vec<FillerChip> = words
+        .iter()
+        .filter_map(|chip| {
+            let token_keys: Vec<String> = chip
+                .split_whitespace()
+                .map(build_match_key)
+                .filter(|k| !k.is_empty())
+                .collect();
+            if token_keys.is_empty() {
+                return None;
+            }
+            let fused_key = if token_keys.len() > 1 {
+                Some(token_keys.concat())
+            } else {
+                None
+            };
+            Some(FillerChip {
+                token_keys,
+                fused_key,
+            })
+        })
+        .collect();
+    // Las frases más largas se prueban primero (matching codicioso).
+    chips.sort_by_key(|chip| std::cmp::Reverse(chip.token_keys.len()));
+    chips
+}
+
 /// Filters transcription output by removing filler words and stutter artifacts.
 ///
 /// This function cleans up raw transcription text by:
-/// 1. Removing filler words based on the app language (or custom list)
+/// 1. Removing filler words based on the app language (or custom list),
+///    comparando claves normalizadas (minúsculas, sin tildes, sin puntuación
+///    adyacente — F5.2): "Osea," al inicio de frase cae con el chip "o sea",
+///    y "cachai" sin tilde matchea el chip "cachái".
 /// 2. Collapsing repeated word stutters (e.g., "wh wh wh" -> "wh")
 /// 3. Cleaning up excess whitespace
 ///
@@ -321,30 +495,51 @@ pub fn filter_transcription_output(
     lang: &str,
     custom_filler_words: &Option<Vec<String>>,
 ) -> String {
-    let mut filtered = text.to_string();
-
-    // Build filler patterns from custom list or language defaults
-    let patterns: Vec<Regex> = match custom_filler_words {
-        Some(words) => words
-            .iter()
-            .filter_map(|word| Regex::new(&format!(r"(?i)\b{}\b[,.]?", regex::escape(word))).ok())
-            .collect(),
-        None => get_filler_words_for_language(lang)
-            .iter()
-            .map(|word| Regex::new(&format!(r"(?i)\b{}\b[,.]?", regex::escape(word))).unwrap())
-            .collect(),
+    let chips = match custom_filler_words {
+        Some(words) => build_filler_chips(&words.iter().map(|s| s.as_str()).collect::<Vec<_>>()),
+        None => build_filler_chips(get_filler_words_for_language(lang)),
     };
 
-    // Remove filler words
-    for pattern in &patterns {
-        filtered = pattern.replace_all(&filtered, "").to_string();
+    let words: Vec<&str> = text.split_whitespace().collect();
+    let mut kept: Vec<&str> = Vec::with_capacity(words.len());
+    let mut i = 0;
+
+    'outer: while i < words.len() {
+        let word_key = build_match_key(words[i]);
+
+        for chip in &chips {
+            let n = chip.token_keys.len();
+            // Frase multi-token literal ("o sea"): los tokens intermedios no
+            // pueden cargar puntuación de cierre (límite de frase).
+            if n > 1
+                && i + n <= words.len()
+                && (0..n - 1).all(|j| extract_punctuation(words[i + j]).1.is_empty())
+                && (0..n).all(|j| build_match_key(words[i + j]) == chip.token_keys[j])
+            {
+                i += n;
+                continue 'outer;
+            }
+            // Token único, o la frase fusionada por el ASR ("osea"/"ósea").
+            if !word_key.is_empty()
+                && (chip.token_keys.len() == 1 && chip.token_keys[0] == word_key
+                    || chip.fused_key.as_deref() == Some(word_key.as_str()))
+            {
+                i += 1;
+                continue 'outer;
+            }
+        }
+
+        kept.push(words[i]);
+        i += 1;
     }
 
-    // Collapse repeated 1-2 letter words (stutter artifacts like "wh wh wh wh")
-    filtered = collapse_stutters(&filtered);
+    let filtered = kept.join(" ");
 
-    // Clean up multiple spaces to single space
-    filtered = MULTI_SPACE_PATTERN.replace_all(&filtered, " ").to_string();
+    // Collapse repeated 1-2 letter words (stutter artifacts like "wh wh wh wh")
+    let filtered = collapse_stutters(&filtered);
+
+    // Clean up multiple spaces to single space (defensa por si llega texto raro)
+    let filtered = MULTI_SPACE_PATTERN.replace_all(&filtered, " ").to_string();
 
     // Trim leading/trailing whitespace
     filtered.trim().to_string()
@@ -526,12 +721,153 @@ mod tests {
 
     #[test]
     fn test_filter_custom_filler_multiword_phrase() {
-        // El preset es-419 incluye frases con espacio ("o sea"); el regex las
-        // trata como literal y solo corta la frase completa entre límites de palabra.
+        // El preset es-419 incluye frases con espacio ("o sea"). Desde F5.2 la
+        // frase también matchea FUSIONADA ("osea"/"ósea", como la producen los
+        // ASR) — recibo del 11/07 en el historial de Winston.
         let custom = Some(vec!["o sea".to_string(), "eh".to_string()]);
-        let text = "Eso o sea funciona eh y osea no se toca";
+        let text = "Eso o sea funciona eh y osea también cae";
         let result = filter_transcription_output(text, "es", &custom);
-        assert_eq!(result, "Eso funciona y osea no se toca");
+        assert_eq!(result, "Eso funciona y también cae");
+    }
+
+    #[test]
+    fn test_filter_fused_phrase_with_accent_and_punctuation() {
+        // "Osea," al inicio de frase: mayúscula + tilde + coma adyacente — la
+        // clave normalizada la alcanza igual (F5.2).
+        let custom = Some(vec!["o sea".to_string()]);
+        let result = filter_transcription_output("Ósea, esto funciona", "es", &custom);
+        assert_eq!(result, "esto funciona");
+        let result = filter_transcription_output("Osea, esto funciona", "es", &custom);
+        assert_eq!(result, "esto funciona");
+    }
+
+    #[test]
+    fn test_filter_accent_folding_matches_chip() {
+        // "cachai" sin tilde debe caer con el chip "cachái" (y viceversa).
+        let custom = Some(vec!["cachái".to_string()]);
+        let result = filter_transcription_output("bueno cachai eso es", "es", &custom);
+        assert_eq!(result, "bueno eso es");
+        let result = filter_transcription_output("bueno cachái eso es", "es", &custom);
+        assert_eq!(result, "bueno eso es");
+    }
+
+    #[test]
+    fn test_filter_multiword_not_across_punctuation() {
+        // "o. sea" — el punto cierra la frase: no es la muletilla "o sea".
+        let custom = Some(vec!["o sea".to_string()]);
+        let result = filter_transcription_output("esto o. sea claro", "es", &custom);
+        assert_eq!(result, "esto o. sea claro");
+    }
+
+    // ───────────────────────── F5.1: reemplazos exactos ─────────────────────────
+
+    fn replacements(pairs: &[(&str, &str)]) -> Vec<(String, String)> {
+        pairs
+            .iter()
+            .map(|(f, t)| (f.to_string(), t.to_string()))
+            .collect()
+    }
+
+    #[test]
+    fn test_replacement_exact_token_applies_and_ruta_intact() {
+        // El caso estrella del 11/07: "rut"→ASR escribe "Ruth". El reemplazo
+        // exacto lo corrige, y "ruta" — otro token — es intocable por diseño.
+        let reps = replacements(&[("Ruth", "rut")]);
+        let result = apply_custom_replacements("valida el Ruth de la empresa", &reps);
+        assert_eq!(result, "valida el rut de la empresa");
+        let result = apply_custom_replacements("muéstrame la ruta del archivo", &reps);
+        assert_eq!(result, "muéstrame la ruta del archivo");
+    }
+
+    #[test]
+    fn test_replacement_is_case_sensitive() {
+        let reps = replacements(&[("Ruth", "rut")]);
+        assert_eq!(
+            apply_custom_replacements("dijo ruth en voz baja", &reps),
+            "dijo ruth en voz baja"
+        );
+    }
+
+    #[test]
+    fn test_replacement_preserves_adjacent_punctuation() {
+        let reps = replacements(&[("Ruth", "rut"), ("yapo", "ya po")]);
+        assert_eq!(
+            apply_custom_replacements("¿El Ruth, cierto? yapo.", &reps),
+            "¿El rut, cierto? ya po."
+        );
+    }
+
+    // ───────────────────────── F5.4: join multi-token ─────────────────────────
+
+    fn join_lookup(terms: &[&str]) -> HashMap<String, String> {
+        terms
+            .iter()
+            .map(|t| (build_match_key(t), t.to_string()))
+            .collect()
+    }
+
+    #[test]
+    fn test_multi_token_join_camel_case() {
+        let lookup = join_lookup(&["useAuthStore"]);
+        assert_eq!(
+            apply_multi_token_join("importa use auth store aquí", &lookup),
+            "importa useAuthStore aquí"
+        );
+    }
+
+    #[test]
+    fn test_multi_token_join_branch_with_separators() {
+        // El término conserva sus separadores originales (rama git).
+        let lookup = join_lookup(&["hotfix/token-expiry"]);
+        assert_eq!(
+            apply_multi_token_join("cámbiate a hotfix token expiry ahora", &lookup),
+            "cámbiate a hotfix/token-expiry ahora"
+        );
+    }
+
+    #[test]
+    fn test_multi_token_join_no_false_positive() {
+        // "el uso del store" no contiene ninguna ventana que fusione a un
+        // término del diccionario: no se toca.
+        let lookup = join_lookup(&["useAuthStore", "hotfix/token-expiry"]);
+        assert_eq!(
+            apply_multi_token_join("el uso del store es correcto", &lookup),
+            "el uso del store es correcto"
+        );
+    }
+
+    #[test]
+    fn test_multi_token_join_keeps_trailing_punctuation() {
+        let lookup = join_lookup(&["useAuthStore"]);
+        assert_eq!(
+            apply_multi_token_join("llama a use auth store.", &lookup),
+            "llama a useAuthStore."
+        );
+    }
+
+    #[test]
+    fn test_multi_token_join_not_across_punctuation() {
+        // La coma dentro de la ventana rompe la frase: no hay join.
+        let lookup = join_lookup(&["useAuthStore"]);
+        assert_eq!(
+            apply_multi_token_join("use auth, store aparte", &lookup),
+            "use auth, store aparte"
+        );
+    }
+
+    // ───────────────────── F5.3: corrección difusa protegida ─────────────────────
+
+    #[test]
+    fn test_dictionary_fuzzy_corrects_but_respects_stoplist() {
+        let terms = vec!["Parakeet".to_string(), "rut".to_string()];
+        let protected = |key: &str| key == "ruta" || key == "uso";
+        // "parakit" se acerca fonéticamente a "Parakeet" → término exacto del repo.
+        let result = apply_dictionary_fuzzy("configura el parakit ahora", &terms, 0.3, &protected);
+        assert_eq!(result, "configura el Parakeet ahora");
+        // "ruta" está protegida por la stoplist: jamás se corrige a "rut",
+        // aunque la métrica (Levenshtein 1 + Soundex igual) diría que sí.
+        let result = apply_dictionary_fuzzy("muéstrame la ruta", &terms, 0.3, &protected);
+        assert_eq!(result, "muéstrame la ruta");
     }
 
     #[test]
