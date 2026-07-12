@@ -195,6 +195,11 @@ fn build_custom_word_match_keys(word: &str, word_index: usize) -> Vec<CustomWord
 /// Uses Levenshtein distance and Soundex phonetic matching to find
 /// the best match above the given threshold.
 ///
+/// Limitación conocida (nota de diseño F5-fase2): Soundex es fonética
+/// INGLESA — con español es-419 produce agrupaciones pobres (ll/y, rr, j/g).
+/// Al abrir la fase 2 del Diccionario: evaluar una alternativa fonética
+/// española o desactivar el impulso ×0.3 para términos del índice.
+///
 /// # Arguments
 /// * `candidate` - The cleaned/lowercased candidate string to match
 /// * `custom_words` - Original custom words (for returning the replacement)
