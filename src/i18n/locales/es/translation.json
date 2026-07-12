@@ -742,6 +742,50 @@
       "hide": "Ocultar a la bandeja"
     }
   },
+  "retro": {
+    "menu": "Menú de Abrax",
+    "titleMain": "ABRAX · MODO RETRO",
+    "titleSettings": "ABRAX · AJUSTES RÁPIDOS",
+    "titleHistory": "ABRAX · HISTORIAL",
+    "fold": "Plegar",
+    "close": "Cerrar",
+    "marquee": "ABRAX ··· DI LA PALABRA ··· MODO RETRO ··· 100% LOCAL ··· ESPAÑOL DE PRIMERA CLASE ···",
+    "lamp": {
+      "model": "Modelo",
+      "local": "LOCAL",
+      "filler": "MULETILLAS",
+      "dict": "DICC",
+      "ptt": "PTT",
+      "vad": "VAD",
+      "translate": "TRADUCIR",
+      "sphere": "ESFERA"
+    },
+    "dictate": "Dictar",
+    "stop": "Detener",
+    "settings": "Ajustes rápidos",
+    "history": "Historial",
+    "compiler": "Compilador de prompts",
+    "sections": "SECCIONES ▾",
+    "slider": {
+      "buffer": "BUFFER",
+      "volume": "VOL",
+      "threshold": "UMBRAL"
+    },
+    "emptyHistory": "Aún no hay dictados — mantén el atajo y habla.",
+    "copyHint": "Doble clic para copiar",
+    "copy": "COPIAR",
+    "save": "★ GUARDAR",
+    "delete": "BORRAR",
+    "compile": "✦ COMPILAR",
+    "count": "{{n}} dictados · LOCAL",
+    "copied": "Copiado al portapapeles",
+    "menuSections": "SECCIONES",
+    "menuWindows": "VENTANAS",
+    "toOrbital": "↺ Volver a Orbital",
+    "toClassic": "Volver a Clásico",
+    "theme": "Tema",
+    "footer": "MODO RETRO — un skin de ABRAX · misma ventana transparente"
+  },
   "logo": {
     "tagline": "« Di la <accent>palabra</accent>. »"
   },

@@ -742,6 +742,50 @@
       "hide": "Dölj till systemfältet"
     }
   },
+  "retro": {
+    "menu": "Abrax-meny",
+    "titleMain": "ABRAX · RETROLÄGE",
+    "titleSettings": "ABRAX · SNABBINSTÄLLNINGAR",
+    "titleHistory": "ABRAX · HISTORIK",
+    "fold": "Fäll ihop",
+    "close": "Stäng",
+    "marquee": "ABRAX ··· SÄG ORDET ··· RETROLÄGE ··· 100% LOKALT ··· SPANSKA FÖRST ···",
+    "lamp": {
+      "model": "Modell",
+      "local": "LOKAL",
+      "filler": "FYLLORD",
+      "dict": "ORDB",
+      "ptt": "PTT",
+      "vad": "VAD",
+      "translate": "ÖVERSÄTT",
+      "sphere": "SFÄR"
+    },
+    "dictate": "Diktera",
+    "stop": "Stopp",
+    "settings": "Snabbinställningar",
+    "history": "Historik",
+    "compiler": "Promptkompilator",
+    "sections": "SEKTIONER ▾",
+    "slider": {
+      "buffer": "BUFFERT",
+      "volume": "VOL",
+      "threshold": "TRÖSKEL"
+    },
+    "emptyHistory": "Inga dikteringar än — håll in kortkommandot och tala.",
+    "copyHint": "Dubbelklicka för att kopiera",
+    "copy": "KOPIERA",
+    "save": "★ SPARA",
+    "delete": "RADERA",
+    "compile": "✦ KOMPILERA",
+    "count": "{{n}} dikteringar · LOKALT",
+    "copied": "Kopierat till urklipp",
+    "menuSections": "SEKTIONER",
+    "menuWindows": "FÖNSTER",
+    "toOrbital": "↺ Tillbaka till Orbital",
+    "toClassic": "Tillbaka till Klassiskt",
+    "theme": "Tema",
+    "footer": "RETROLÄGE — ett ABRAX-skin · samma transparenta fönster"
+  },
   "logo": {
     "tagline": "« Di la <accent>palabra</accent>. »"
   },

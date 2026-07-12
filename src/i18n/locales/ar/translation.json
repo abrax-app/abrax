@@ -742,6 +742,50 @@
       "hide": "إخفاء إلى علبة النظام"
     }
   },
+  "retro": {
+    "menu": "قائمة Abrax",
+    "titleMain": "ABRAX · وضع ريترو",
+    "titleSettings": "ABRAX · إعدادات سريعة",
+    "titleHistory": "ABRAX · السجل",
+    "fold": "طيّ",
+    "close": "إغلاق",
+    "marquee": "ABRAX ··· قل الكلمة ··· وضع ريترو ··· محلي 100% ··· الإسبانية أولاً ···",
+    "lamp": {
+      "model": "النموذج",
+      "local": "محلي",
+      "filler": "حشو",
+      "dict": "قاموس",
+      "ptt": "PTT",
+      "vad": "VAD",
+      "translate": "ترجمة",
+      "sphere": "كرة"
+    },
+    "dictate": "إملاء",
+    "stop": "إيقاف",
+    "settings": "إعدادات سريعة",
+    "history": "السجل",
+    "compiler": "مُجمِّع الموجّهات",
+    "sections": "الأقسام ▾",
+    "slider": {
+      "buffer": "مخزن",
+      "volume": "صوت",
+      "threshold": "العتبة"
+    },
+    "emptyHistory": "لا إملاءات بعد — اضغط مطوّلًا على الاختصار وتحدّث.",
+    "copyHint": "انقر نقرًا مزدوجًا للنسخ",
+    "copy": "نسخ",
+    "save": "★ حفظ",
+    "delete": "حذف",
+    "compile": "✦ تجميع",
+    "count": "{{n}} إملاءات · محلي",
+    "copied": "تم النسخ إلى الحافظة",
+    "menuSections": "الأقسام",
+    "menuWindows": "النوافذ",
+    "toOrbital": "↺ العودة إلى Orbital",
+    "toClassic": "العودة إلى الكلاسيكي",
+    "theme": "السمة",
+    "footer": "وضع ريترو — واجهة ABRAX · النافذة الشفافة نفسها"
+  },
   "logo": {
     "tagline": "« Di la <accent>palabra</accent>. »"
   },

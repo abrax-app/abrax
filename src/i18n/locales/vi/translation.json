@@ -742,6 +742,50 @@
       "hide": "Ẩn vào khay hệ thống"
     }
   },
+  "retro": {
+    "menu": "Menu Abrax",
+    "titleMain": "ABRAX · CHẾ ĐỘ RETRO",
+    "titleSettings": "ABRAX · CÀI ĐẶT NHANH",
+    "titleHistory": "ABRAX · LỊCH SỬ",
+    "fold": "Thu gọn",
+    "close": "Đóng",
+    "marquee": "ABRAX ··· HÃY NÓI ··· CHẾ ĐỘ RETRO ··· 100% CỤC BỘ ··· ƯU TIÊN TIẾNG TÂY BAN NHA ···",
+    "lamp": {
+      "model": "Mô hình",
+      "local": "CỤC BỘ",
+      "filler": "TỪ ĐỆM",
+      "dict": "TỪ ĐIỂN",
+      "ptt": "PTT",
+      "vad": "VAD",
+      "translate": "DỊCH",
+      "sphere": "QUẢ CẦU"
+    },
+    "dictate": "Đọc chép",
+    "stop": "Dừng",
+    "settings": "Cài đặt nhanh",
+    "history": "Lịch sử",
+    "compiler": "Trình biên dịch prompt",
+    "sections": "PHẦN ▾",
+    "slider": {
+      "buffer": "BUFFER",
+      "volume": "VOL",
+      "threshold": "NGƯỠNG"
+    },
+    "emptyHistory": "Chưa có bản đọc nào — giữ phím tắt và nói.",
+    "copyHint": "Nhấp đúp để sao chép",
+    "copy": "SAO CHÉP",
+    "save": "★ LƯU",
+    "delete": "XÓA",
+    "compile": "✦ BIÊN DỊCH",
+    "count": "{{n}} bản đọc · CỤC BỘ",
+    "copied": "Đã sao chép vào bộ nhớ tạm",
+    "menuSections": "PHẦN",
+    "menuWindows": "CỬA SỔ",
+    "toOrbital": "↺ Quay lại Orbital",
+    "toClassic": "Quay lại Cổ điển",
+    "theme": "Giao diện",
+    "footer": "CHẾ ĐỘ RETRO — một skin ABRAX · vẫn cửa sổ trong suốt"
+  },
   "logo": {
     "tagline": "« Di la <accent>palabra</accent>. »"
   },

@@ -1,0 +1,460 @@
+/* Retro shell — skin inspirado en reproductores clásicos (chrome biselado +
+   ventanas apilables + LEDs). LÍNEA ROJA: NO es clon de ningún skin ajeno; el
+   trade dress es propio y la paleta sale de los tokens de ABRAX/Imperial. Un
+   cambio de `ui_theme` retiñe todo el chrome sin tocar este archivo. */
+
+#retro-stage {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  font-family: ui-monospace, "Cascadia Code", "JetBrains Mono", Menlo, Consolas,
+    monospace;
+  /* Tokens locales derivados de la paleta activa (retiñen con ui_theme). */
+  --r-tinta: var(--esfera-fondo, #05060f);
+  --r-led: var(--esfera-stop-a, #2fd9ff);
+  --r-accent: var(--esfera-stop-b, #8b5cf6);
+  --r-hot: var(--esfera-stop-c, #f23dc4);
+  --r-text: var(--esfera-blanco, #eaf0ff);
+  --r-chrome: color-mix(in srgb, var(--r-tinta) 78%, var(--r-accent) 22%);
+  --r-chrome2: color-mix(in srgb, var(--r-tinta) 62%, var(--r-accent) 30%);
+  --r-bevel-hi: color-mix(in srgb, var(--r-accent) 55%, #aab 45%);
+  --r-bevel-lo: color-mix(in srgb, var(--r-tinta) 70%, #000 30%);
+  --r-hueco: color-mix(in srgb, var(--r-tinta) 88%, #000 12%);
+}
+
+/* Fondo apenas velado: las ventanas retro flotan sobre el escritorio. */
+.retro-backdrop {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(
+      900px 520px at 78% 8%,
+      color-mix(in srgb, var(--r-accent) 10%, transparent) 0%,
+      transparent 55%
+    ),
+    radial-gradient(
+      700px 520px at 10% 96%,
+      color-mix(in srgb, var(--r-hot) 10%, transparent) 0%,
+      transparent 52%
+    ),
+    color-mix(in srgb, var(--r-tinta) 46%, transparent);
+}
+
+/* ── chrome de ventana ── */
+.rvent {
+  position: absolute;
+  width: 440px;
+  background: linear-gradient(180deg, var(--r-chrome2), var(--r-chrome));
+  border: 2px solid;
+  border-color: var(--r-bevel-hi) var(--r-bevel-lo) var(--r-bevel-lo)
+    var(--r-bevel-hi);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.55);
+  color: var(--r-text);
+}
+.rvent-hist {
+  width: 400px;
+}
+.rvent-seccion {
+  width: 470px;
+}
+.rvent.plegada > *:not(.rbarra) {
+  display: none;
+}
+
+.rbarra {
+  height: 22px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 0 4px;
+  background: repeating-linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--r-accent) 40%, var(--r-tinta)) 0 3px,
+    var(--r-tinta) 3px 6px
+  );
+  border-bottom: 1px solid var(--r-bevel-lo);
+  cursor: grab;
+  touch-action: none;
+}
+.rbarra:active {
+  cursor: grabbing;
+}
+.rbarra b {
+  flex: 1;
+  text-align: center;
+  font-size: 9px;
+  letter-spacing: 0.28em;
+  color: color-mix(in srgb, var(--r-text) 82%, var(--r-led));
+  text-shadow: 0 1px 0 #000;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.rbtn {
+  width: 15px;
+  height: 15px;
+  flex: none;
+  display: grid;
+  place-items: center;
+  color: var(--r-tinta);
+  background: linear-gradient(
+    180deg,
+    var(--r-bevel-hi),
+    color-mix(in srgb, var(--r-accent) 60%, #000)
+  );
+  border: 1px solid;
+  border-color: color-mix(in srgb, var(--r-bevel-hi) 80%, #fff) var(--r-bevel-lo)
+    var(--r-bevel-lo) color-mix(in srgb, var(--r-bevel-hi) 80%, #fff);
+  cursor: pointer;
+  padding: 0;
+}
+.rbtn:active {
+  border-color: var(--r-bevel-lo) color-mix(in srgb, var(--r-bevel-hi) 80%, #fff)
+    color-mix(in srgb, var(--r-bevel-hi) 80%, #fff) var(--r-bevel-lo);
+}
+.riso {
+  background: none;
+  border: none;
+  color: var(--r-text);
+}
+.riso-static {
+  margin: 0 2px;
+  color: color-mix(in srgb, var(--r-text) 80%, var(--r-led));
+}
+
+/* pantallitas hundidas */
+.rhueco {
+  background: var(--r-hueco);
+  border: 2px solid;
+  border-color: var(--r-bevel-lo) var(--r-bevel-hi) var(--r-bevel-hi)
+    var(--r-bevel-lo);
+}
+
+.rvent-main .rcuerpo {
+  display: grid;
+  grid-template-columns: 150px 1fr;
+  gap: 8px;
+  padding: 10px;
+}
+.rreloj {
+  height: 46px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--r-led);
+  letter-spacing: 2px;
+  text-shadow: 0 0 8px color-mix(in srgb, var(--r-led) 60%, transparent);
+}
+.rrec {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--r-tinta) 40%, #555);
+}
+.rreloj.on .rrec {
+  background: var(--r-hot);
+  box-shadow: 0 0 8px var(--r-hot);
+  animation: rparp 1s steps(1) infinite;
+}
+@keyframes rparp {
+  50% {
+    opacity: 0.25;
+  }
+}
+.rspectro {
+  width: 100%;
+  height: 46px;
+  display: block;
+}
+.rmarquee {
+  grid-column: 1 / -1;
+  height: 20px;
+  overflow: hidden;
+  position: relative;
+}
+.rmarquee span {
+  position: absolute;
+  white-space: nowrap;
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  color: var(--r-led);
+  text-shadow: 0 0 6px color-mix(in srgb, var(--r-led) 45%, transparent);
+  top: 3px;
+  animation: rdesfile 16s linear infinite;
+}
+@keyframes rdesfile {
+  from {
+    transform: translateX(440px);
+  }
+  to {
+    transform: translateX(-100%);
+  }
+}
+
+.rlamparas,
+.rfila-onoff {
+  grid-column: 1 / -1;
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  flex-wrap: wrap;
+  font-size: 8.5px;
+  letter-spacing: 0.14em;
+}
+.rlamp {
+  padding: 3px 7px;
+  border: 1px solid;
+  border-color: var(--r-bevel-lo) var(--r-bevel-hi) var(--r-bevel-hi)
+    var(--r-bevel-lo);
+  background: color-mix(in srgb, var(--r-tinta) 82%, #000);
+  color: color-mix(in srgb, var(--r-text) 45%, var(--r-tinta));
+  cursor: default;
+  font: inherit;
+  font-size: 8.5px;
+  letter-spacing: 0.14em;
+}
+button.rlamp {
+  cursor: pointer;
+}
+.rlamp.on {
+  color: var(--r-led);
+  text-shadow: 0 0 6px color-mix(in srgb, var(--r-led) 55%, transparent);
+}
+.rlamp.mg.on {
+  color: var(--r-hot);
+  text-shadow: 0 0 6px color-mix(in srgb, var(--r-hot) 55%, transparent);
+}
+
+.rtransporte {
+  grid-column: 1 / -1;
+  display: flex;
+  gap: 5px;
+  align-items: center;
+  padding-top: 2px;
+}
+.rtbtn {
+  min-width: 34px;
+  height: 24px;
+  display: grid;
+  place-items: center;
+  color: var(--r-tinta);
+  cursor: pointer;
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--r-bevel-hi) 85%, #fff 15%),
+    color-mix(in srgb, var(--r-accent) 55%, #000)
+  );
+  border: 2px solid;
+  border-color: color-mix(in srgb, var(--r-bevel-hi) 70%, #fff) var(--r-bevel-lo)
+    var(--r-bevel-lo) color-mix(in srgb, var(--r-bevel-hi) 70%, #fff);
+}
+.rtbtn:active {
+  border-color: var(--r-bevel-lo) color-mix(in srgb, var(--r-bevel-hi) 70%, #fff)
+    color-mix(in srgb, var(--r-bevel-hi) 70%, #fff) var(--r-bevel-lo);
+}
+.rrec-btn {
+  color: color-mix(in srgb, var(--r-hot) 70%, #000);
+}
+
+/* ── ventana ajustes ── */
+.rvent-ajustes .rcuerpo {
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.req {
+  display: flex;
+  gap: 12px;
+  justify-content: space-around;
+  padding: 8px 10px;
+}
+.rbanda {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  font-size: 7.5px;
+  letter-spacing: 0.1em;
+  color: color-mix(in srgb, var(--r-text) 60%, var(--r-tinta));
+}
+.rbanda input[type="range"] {
+  writing-mode: vertical-lr;
+  direction: rtl;
+  width: 8px;
+  height: 74px;
+}
+#retro-stage input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  background: var(--r-hueco);
+  border: 1px solid;
+  border-color: var(--r-bevel-lo) var(--r-bevel-hi) var(--r-bevel-hi)
+    var(--r-bevel-lo);
+}
+#retro-stage input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 16px;
+  height: 12px;
+  background: linear-gradient(180deg, var(--r-bevel-hi), var(--r-accent));
+  border: 1px solid var(--r-bevel-lo);
+  cursor: pointer;
+}
+.rmini {
+  font-size: 8px;
+  letter-spacing: 0.1em;
+  padding: 4px 8px;
+  color: var(--r-tinta);
+  cursor: pointer;
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--r-bevel-hi) 85%, #fff 15%),
+    color-mix(in srgb, var(--r-accent) 55%, #000)
+  );
+  border: 2px solid;
+  border-color: color-mix(in srgb, var(--r-bevel-hi) 70%, #fff) var(--r-bevel-lo)
+    var(--r-bevel-lo) color-mix(in srgb, var(--r-bevel-hi) 70%, #fff);
+}
+.rmini:active {
+  border-color: var(--r-bevel-lo) color-mix(in srgb, var(--r-bevel-hi) 70%, #fff)
+    color-mix(in srgb, var(--r-bevel-hi) 70%, #fff) var(--r-bevel-lo);
+}
+.rmini:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+/* ── ventana historial ── */
+.rlista {
+  margin: 8px;
+  height: 216px;
+  overflow-y: auto;
+  font-size: 11px;
+  line-height: 1.9;
+  padding: 4px 6px;
+}
+.rlista::-webkit-scrollbar {
+  width: 14px;
+}
+.rlista::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, var(--r-bevel-hi), var(--r-accent));
+  border: 2px solid var(--r-tinta);
+}
+.rlista::-webkit-scrollbar-track {
+  background: color-mix(in srgb, var(--r-tinta) 82%, #000);
+}
+.rpista {
+  display: flex;
+  gap: 8px;
+  color: color-mix(in srgb, var(--r-led) 85%, #fff);
+  cursor: pointer;
+  padding: 0 4px;
+  white-space: nowrap;
+  overflow: hidden;
+}
+.rpista .rnum {
+  color: color-mix(in srgb, var(--r-text) 45%, var(--r-tinta));
+}
+.rpista .rtxt {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.rpista.sel {
+  background: color-mix(in srgb, var(--r-accent) 40%, var(--r-tinta));
+  color: #fff;
+}
+.rvacio {
+  color: color-mix(in srgb, var(--r-text) 50%, var(--r-tinta));
+  font-size: 10.5px;
+  padding: 8px 4px;
+}
+.rbotonera {
+  display: flex;
+  gap: 5px;
+  padding: 0 8px 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.rcontador {
+  flex: 1;
+  text-align: right;
+  font-size: 9px;
+  color: color-mix(in srgb, var(--r-text) 45%, var(--r-tinta));
+  letter-spacing: 0.1em;
+}
+
+/* ── ventana sección (hospeda la sección real) ── */
+.rseccion-body {
+  max-height: min(72vh, 560px);
+  overflow-y: auto;
+  padding: 10px;
+}
+
+/* ── menú clásico ── */
+.rmenu {
+  position: fixed;
+  z-index: 999;
+  min-width: 200px;
+  background: var(--r-chrome);
+  border: 2px solid;
+  border-color: var(--r-bevel-hi) var(--r-bevel-lo) var(--r-bevel-lo)
+    var(--r-bevel-hi);
+  font-size: 11px;
+  padding: 3px;
+  box-shadow: 6px 8px 0 rgba(0, 0, 0, 0.45);
+}
+.rmenu-it {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 5px 12px;
+  cursor: pointer;
+  letter-spacing: 0.06em;
+  background: none;
+  border: none;
+  color: var(--r-text);
+  font: inherit;
+}
+.rmenu-it:hover {
+  background: color-mix(in srgb, var(--r-accent) 45%, var(--r-tinta));
+  color: #fff;
+}
+.rmenu hr {
+  border: none;
+  border-top: 1px solid var(--r-bevel-lo);
+  border-bottom: 1px solid var(--r-bevel-hi);
+  margin: 3px 2px;
+}
+.rmenu-tit {
+  padding: 4px 12px;
+  font-size: 8px;
+  letter-spacing: 0.3em;
+  color: color-mix(in srgb, var(--r-text) 45%, var(--r-tinta));
+}
+
+.retro-hint {
+  position: fixed;
+  right: 16px;
+  bottom: 12px;
+  z-index: 1;
+  font-size: 9px;
+  letter-spacing: 0.14em;
+  color: color-mix(in srgb, var(--r-text) 40%, var(--r-tinta));
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rmarquee span {
+    animation: none;
+  }
+  .rreloj.on .rrec {
+    animation: none;
+  }
+}

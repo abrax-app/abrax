@@ -742,6 +742,50 @@
       "hide": "隱藏到系統匣"
     }
   },
+  "retro": {
+    "menu": "Abrax 選單",
+    "titleMain": "ABRAX · 復古模式",
+    "titleSettings": "ABRAX · 快速設定",
+    "titleHistory": "ABRAX · 歷史記錄",
+    "fold": "收合",
+    "close": "關閉",
+    "marquee": "ABRAX ··· 開口說話 ··· 復古模式 ··· 100% 本機 ··· 西班牙語優先 ···",
+    "lamp": {
+      "model": "模型",
+      "local": "本機",
+      "filler": "贅字",
+      "dict": "字典",
+      "ptt": "PTT",
+      "vad": "VAD",
+      "translate": "翻譯",
+      "sphere": "球體"
+    },
+    "dictate": "聽寫",
+    "stop": "停止",
+    "settings": "快速設定",
+    "history": "歷史記錄",
+    "compiler": "提示詞編譯器",
+    "sections": "區段 ▾",
+    "slider": {
+      "buffer": "緩衝",
+      "volume": "音量",
+      "threshold": "閾值"
+    },
+    "emptyHistory": "尚無聽寫內容 — 按住快速鍵並開口說話。",
+    "copyHint": "雙擊即可複製",
+    "copy": "複製",
+    "save": "★ 儲存",
+    "delete": "刪除",
+    "compile": "✦ 編譯",
+    "count": "{{n}} 則聽寫 · 本機",
+    "copied": "已複製到剪貼簿",
+    "menuSections": "區段",
+    "menuWindows": "視窗",
+    "toOrbital": "↺ 返回 Orbital",
+    "toClassic": "返回經典",
+    "theme": "主題",
+    "footer": "復古模式 — 一款 ABRAX 外觀 · 相同的透明視窗"
+  },
   "logo": {
     "tagline": "« Di la <accent>palabra</accent>. »"
   },

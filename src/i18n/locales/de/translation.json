@@ -742,6 +742,50 @@
       "hide": "In den Tray ausblenden"
     }
   },
+  "retro": {
+    "menu": "Abrax-Menü",
+    "titleMain": "ABRAX · RETRO-MODUS",
+    "titleSettings": "ABRAX · SCHNELLEINSTELLUNGEN",
+    "titleHistory": "ABRAX · VERLAUF",
+    "fold": "Einklappen",
+    "close": "Schließen",
+    "marquee": "ABRAX ··· SAG DAS WORT ··· RETRO-MODUS ··· 100% LOKAL ··· SPANISCH ZUERST ···",
+    "lamp": {
+      "model": "Modell",
+      "local": "LOKAL",
+      "filler": "FÜLLWÖRTER",
+      "dict": "WÖRTB",
+      "ptt": "PTT",
+      "vad": "VAD",
+      "translate": "ÜBERSETZEN",
+      "sphere": "SPHÄRE"
+    },
+    "dictate": "Diktieren",
+    "stop": "Stopp",
+    "settings": "Schnelleinstellungen",
+    "history": "Verlauf",
+    "compiler": "Prompt-Compiler",
+    "sections": "BEREICHE ▾",
+    "slider": {
+      "buffer": "PUFFER",
+      "volume": "VOL",
+      "threshold": "SCHWELLE"
+    },
+    "emptyHistory": "Noch keine Diktate — Kürzel halten und sprechen.",
+    "copyHint": "Doppelklick zum Kopieren",
+    "copy": "KOPIEREN",
+    "save": "★ SPEICHERN",
+    "delete": "LÖSCHEN",
+    "compile": "✦ KOMPILIEREN",
+    "count": "{{n}} Diktate · LOKAL",
+    "copied": "In Zwischenablage kopiert",
+    "menuSections": "BEREICHE",
+    "menuWindows": "FENSTER",
+    "toOrbital": "↺ Zurück zu Orbital",
+    "toClassic": "Zurück zu Klassisch",
+    "theme": "Design",
+    "footer": "RETRO-MODUS — ein ABRAX-Skin · gleiches transparentes Fenster"
+  },
   "logo": {
     "tagline": "« Di la <accent>palabra</accent>. »"
   },

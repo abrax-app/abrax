@@ -13,6 +13,7 @@ import Footer from "./components/footer";
 import Onboarding, { AccessibilityOnboarding } from "./components/onboarding";
 import { Sidebar, SidebarSection, SECTIONS_CONFIG } from "./components/Sidebar";
 import { OrbitalShell } from "./components/orbital/OrbitalShell";
+import { RetroShell } from "./components/retro/RetroShell";
 import { WhatsNewGate } from "./components/whats-new";
 import { useSettings } from "./hooks/useSettings";
 import { useSettingsStore } from "./stores/settingsStore";
@@ -244,6 +245,13 @@ function App() {
           activeSection={currentSection}
           onSectionChange={setCurrentSection}
         />
+      </div>
+    );
+  } else if (settings?.ui_shell === "retro") {
+    // Shell retro: ventanas apilables que hospedan las mismas secciones.
+    content = (
+      <div dir={direction}>
+        <RetroShell />
       </div>
     );
   } else {

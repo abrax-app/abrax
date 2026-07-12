@@ -742,6 +742,50 @@
       "hide": "Ukryj w zasobniku"
     }
   },
+  "retro": {
+    "menu": "Menu Abrax",
+    "titleMain": "ABRAX · TRYB RETRO",
+    "titleSettings": "ABRAX · SZYBKIE USTAWIENIA",
+    "titleHistory": "ABRAX · HISTORIA",
+    "fold": "Zwiń",
+    "close": "Zamknij",
+    "marquee": "ABRAX ··· POWIEDZ SŁOWO ··· TRYB RETRO ··· 100% LOKALNIE ··· NAJPIERW HISZPAŃSKI ···",
+    "lamp": {
+      "model": "Model",
+      "local": "LOKALNIE",
+      "filler": "PRZERYWNIKI",
+      "dict": "SŁOWN.",
+      "ptt": "PTT",
+      "vad": "VAD",
+      "translate": "TŁUMACZ",
+      "sphere": "SFERA"
+    },
+    "dictate": "Dyktuj",
+    "stop": "Zatrzymaj",
+    "settings": "Szybkie ustawienia",
+    "history": "Historia",
+    "compiler": "Kompilator promptów",
+    "sections": "SEKCJE ▾",
+    "slider": {
+      "buffer": "BUFOR",
+      "volume": "GŁOŚN.",
+      "threshold": "PRÓG"
+    },
+    "emptyHistory": "Brak dyktowań — przytrzymaj skrót i mów.",
+    "copyHint": "Kliknij dwukrotnie, aby skopiować",
+    "copy": "KOPIUJ",
+    "save": "★ ZAPISZ",
+    "delete": "USUŃ",
+    "compile": "✦ KOMPILUJ",
+    "count": "{{n}} dyktowań · LOKALNIE",
+    "copied": "Skopiowano do schowka",
+    "menuSections": "SEKCJE",
+    "menuWindows": "OKNA",
+    "toOrbital": "↺ Powrót do Orbital",
+    "toClassic": "Powrót do Klasycznego",
+    "theme": "Motyw",
+    "footer": "TRYB RETRO — skórka ABRAX · to samo przezroczyste okno"
+  },
   "logo": {
     "tagline": "« Di la <accent>palabra</accent>. »"
   },

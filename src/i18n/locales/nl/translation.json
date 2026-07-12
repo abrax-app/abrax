@@ -742,6 +742,50 @@
       "hide": "Verbergen in systeemvak"
     }
   },
+  "retro": {
+    "menu": "Abrax-menu",
+    "titleMain": "ABRAX · RETROMODUS",
+    "titleSettings": "ABRAX · SNELLE INSTELLINGEN",
+    "titleHistory": "ABRAX · GESCHIEDENIS",
+    "fold": "Inklappen",
+    "close": "Sluiten",
+    "marquee": "ABRAX ··· ZEG HET WOORD ··· RETROMODUS ··· 100% LOKAAL ··· SPAANS VOOROP ···",
+    "lamp": {
+      "model": "Model",
+      "local": "LOKAAL",
+      "filler": "VULWOORDEN",
+      "dict": "DICT",
+      "ptt": "PTT",
+      "vad": "VAD",
+      "translate": "VERTAAL",
+      "sphere": "BOL"
+    },
+    "dictate": "Dicteren",
+    "stop": "Stoppen",
+    "settings": "Snelle instellingen",
+    "history": "Geschiedenis",
+    "compiler": "Prompt-compiler",
+    "sections": "SECTIES ▾",
+    "slider": {
+      "buffer": "BUFFER",
+      "volume": "VOL",
+      "threshold": "DREMPEL"
+    },
+    "emptyHistory": "Nog geen dictaten — houd de sneltoets ingedrukt en spreek.",
+    "copyHint": "Dubbelklik om te kopiëren",
+    "copy": "KOPIEER",
+    "save": "★ OPSLAAN",
+    "delete": "VERWIJDER",
+    "compile": "✦ COMPILEER",
+    "count": "{{n}} dictaten · LOKAAL",
+    "copied": "Gekopieerd naar klembord",
+    "menuSections": "SECTIES",
+    "menuWindows": "VENSTERS",
+    "toOrbital": "↺ Terug naar Orbital",
+    "toClassic": "Terug naar Klassiek",
+    "theme": "Thema",
+    "footer": "RETROMODUS — een ABRAX-skin · hetzelfde transparante venster"
+  },
   "logo": {
     "tagline": "« Di la <accent>palabra</accent>. »"
   },

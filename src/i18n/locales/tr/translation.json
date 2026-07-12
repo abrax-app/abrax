@@ -742,6 +742,50 @@
       "hide": "Sistem tepsisine gizle"
     }
   },
+  "retro": {
+    "menu": "Abrax menüsü",
+    "titleMain": "ABRAX · RETRO MOD",
+    "titleSettings": "ABRAX · HIZLI AYARLAR",
+    "titleHistory": "ABRAX · GEÇMİŞ",
+    "fold": "Katla",
+    "close": "Kapat",
+    "marquee": "ABRAX ··· SÖYLE YETER ··· RETRO MOD ··· 100% YEREL ··· ÖNCE İSPANYOLCA ···",
+    "lamp": {
+      "model": "Model",
+      "local": "YEREL",
+      "filler": "DOLGU",
+      "dict": "SÖZLÜK",
+      "ptt": "PTT",
+      "vad": "VAD",
+      "translate": "ÇEVİR",
+      "sphere": "KÜRE"
+    },
+    "dictate": "Dikte",
+    "stop": "Durdur",
+    "settings": "Hızlı ayarlar",
+    "history": "Geçmiş",
+    "compiler": "İstem derleyici",
+    "sections": "BÖLÜMLER ▾",
+    "slider": {
+      "buffer": "BUFFER",
+      "volume": "SES",
+      "threshold": "EŞİK"
+    },
+    "emptyHistory": "Henüz dikte yok — kısayolu basılı tut ve konuş.",
+    "copyHint": "Kopyalamak için çift tıkla",
+    "copy": "KOPYALA",
+    "save": "★ KAYDET",
+    "delete": "SİL",
+    "compile": "✦ DERLE",
+    "count": "{{n}} dikte · YEREL",
+    "copied": "Panoya kopyalandı",
+    "menuSections": "BÖLÜMLER",
+    "menuWindows": "PENCERELER",
+    "toOrbital": "↺ Orbital'e dön",
+    "toClassic": "Klasik'e dön",
+    "theme": "Tema",
+    "footer": "RETRO MOD — bir ABRAX kaplaması · aynı şeffaf pencere"
+  },
   "logo": {
     "tagline": "« Di la <accent>palabra</accent>. »"
   },

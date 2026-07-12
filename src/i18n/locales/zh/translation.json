@@ -742,6 +742,50 @@
       "hide": "隐藏到托盘"
     }
   },
+  "retro": {
+    "menu": "Abrax 菜单",
+    "titleMain": "ABRAX · 复古模式",
+    "titleSettings": "ABRAX · 快捷设置",
+    "titleHistory": "ABRAX · 历史记录",
+    "fold": "折叠",
+    "close": "关闭",
+    "marquee": "ABRAX ··· 开口即录 ··· 复古模式 ··· 100% 本地 ··· 西班牙语优先 ···",
+    "lamp": {
+      "model": "模型",
+      "local": "本地",
+      "filler": "语气词",
+      "dict": "词典",
+      "ptt": "PTT",
+      "vad": "VAD",
+      "translate": "翻译",
+      "sphere": "光球"
+    },
+    "dictate": "听写",
+    "stop": "停止",
+    "settings": "快捷设置",
+    "history": "历史记录",
+    "compiler": "提示词编译器",
+    "sections": "板块 ▾",
+    "slider": {
+      "buffer": "缓冲",
+      "volume": "音量",
+      "threshold": "阈值"
+    },
+    "emptyHistory": "还没有听写 — 按住快捷键说话。",
+    "copyHint": "双击复制",
+    "copy": "复制",
+    "save": "★ 保存",
+    "delete": "删除",
+    "compile": "✦ 编译",
+    "count": "{{n}} 条听写 · 本地",
+    "copied": "已复制到剪贴板",
+    "menuSections": "板块",
+    "menuWindows": "窗口",
+    "toOrbital": "↺ 返回轨道模式",
+    "toClassic": "返回经典模式",
+    "theme": "主题",
+    "footer": "复古模式 — 一款 ABRAX 皮肤 · 同样的透明窗口"
+  },
   "logo": {
     "tagline": "« Di la <accent>palabra</accent>. »"
   },

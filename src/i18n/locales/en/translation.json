@@ -742,6 +742,50 @@
       "hide": "Hide to tray"
     }
   },
+  "retro": {
+    "menu": "Abrax menu",
+    "titleMain": "ABRAX · RETRO MODE",
+    "titleSettings": "ABRAX · QUICK SETTINGS",
+    "titleHistory": "ABRAX · HISTORY",
+    "fold": "Fold",
+    "close": "Close",
+    "marquee": "ABRAX ··· SAY THE WORD ··· RETRO MODE ··· 100% LOCAL ··· SPANISH-FIRST ···",
+    "lamp": {
+      "model": "Model",
+      "local": "LOCAL",
+      "filler": "FILLERS",
+      "dict": "DICT",
+      "ptt": "PTT",
+      "vad": "VAD",
+      "translate": "TRANSLATE",
+      "sphere": "SPHERE"
+    },
+    "dictate": "Dictate",
+    "stop": "Stop",
+    "settings": "Quick settings",
+    "history": "History",
+    "compiler": "Prompt compiler",
+    "sections": "SECTIONS ▾",
+    "slider": {
+      "buffer": "BUFFER",
+      "volume": "VOL",
+      "threshold": "THRESHOLD"
+    },
+    "emptyHistory": "No dictations yet — hold the shortcut and speak.",
+    "copyHint": "Double-click to copy",
+    "copy": "COPY",
+    "save": "★ SAVE",
+    "delete": "DELETE",
+    "compile": "✦ COMPILE",
+    "count": "{{n}} dictations · LOCAL",
+    "copied": "Copied to clipboard",
+    "menuSections": "SECTIONS",
+    "menuWindows": "WINDOWS",
+    "toOrbital": "↺ Back to Orbital",
+    "toClassic": "Back to Classic",
+    "theme": "Theme",
+    "footer": "RETRO MODE — an ABRAX skin · same transparent window"
+  },
   "logo": {
     "tagline": "« Di la <accent>palabra</accent>. »"
   },

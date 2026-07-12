@@ -742,6 +742,50 @@
       "hide": "Скрыть в трей"
     }
   },
+  "retro": {
+    "menu": "Меню Abrax",
+    "titleMain": "ABRAX · РЕТРО-РЕЖИМ",
+    "titleSettings": "ABRAX · БЫСТРЫЕ НАСТРОЙКИ",
+    "titleHistory": "ABRAX · ИСТОРИЯ",
+    "fold": "Свернуть",
+    "close": "Закрыть",
+    "marquee": "ABRAX ··· СКАЖИ СЛОВО ··· РЕТРО-РЕЖИМ ··· 100% ЛОКАЛЬНО ··· СНАЧАЛА ИСПАНСКИЙ ···",
+    "lamp": {
+      "model": "Модель",
+      "local": "ЛОКАЛ",
+      "filler": "ПАРАЗИТЫ",
+      "dict": "СЛОВ",
+      "ptt": "PTT",
+      "vad": "VAD",
+      "translate": "ПЕРЕВОД",
+      "sphere": "СФЕРА"
+    },
+    "dictate": "Диктовать",
+    "stop": "Стоп",
+    "settings": "Быстрые настройки",
+    "history": "История",
+    "compiler": "Компилятор промптов",
+    "sections": "РАЗДЕЛЫ ▾",
+    "slider": {
+      "buffer": "БУФЕР",
+      "volume": "ГРОМК",
+      "threshold": "ПОРОГ"
+    },
+    "emptyHistory": "Пока нет диктовок — зажмите сочетание клавиш и говорите.",
+    "copyHint": "Двойной клик для копирования",
+    "copy": "КОПИРОВАТЬ",
+    "save": "★ СОХРАНИТЬ",
+    "delete": "УДАЛИТЬ",
+    "compile": "✦ КОМПИЛИРОВАТЬ",
+    "count": "{{n}} диктовок · ЛОКАЛЬНО",
+    "copied": "Скопировано в буфер обмена",
+    "menuSections": "РАЗДЕЛЫ",
+    "menuWindows": "ОКНА",
+    "toOrbital": "↺ Назад к Orbital",
+    "toClassic": "Назад к Классике",
+    "theme": "Тема",
+    "footer": "РЕТРО-РЕЖИМ — скин ABRAX · то же прозрачное окно"
+  },
   "logo": {
     "tagline": "« Di la <accent>palabra</accent>. »"
   },

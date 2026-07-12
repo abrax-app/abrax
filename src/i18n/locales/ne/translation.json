@@ -742,6 +742,50 @@
       "hide": "ट्रेमा लुकाउनुहोस्"
     }
   },
+  "retro": {
+    "menu": "Abrax मेनु",
+    "titleMain": "ABRAX · रेट्रो मोड",
+    "titleSettings": "ABRAX · द्रुत सेटिङ",
+    "titleHistory": "ABRAX · इतिहास",
+    "fold": "खुम्च्याउनुहोस्",
+    "close": "बन्द गर्नुहोस्",
+    "marquee": "ABRAX ··· शब्द बोल्नुहोस् ··· रेट्रो मोड ··· 100% लोकल ··· स्पेनिस-प्रथम ···",
+    "lamp": {
+      "model": "मोडेल",
+      "local": "लोकल",
+      "filler": "फिलर",
+      "dict": "शब्दकोश",
+      "ptt": "PTT",
+      "vad": "VAD",
+      "translate": "अनुवाद",
+      "sphere": "गोला"
+    },
+    "dictate": "श्रुतलेख",
+    "stop": "रोक्नुहोस्",
+    "settings": "द्रुत सेटिङ",
+    "history": "इतिहास",
+    "compiler": "प्रम्प्ट कम्पाइलर",
+    "sections": "खण्डहरू ▾",
+    "slider": {
+      "buffer": "बफर",
+      "volume": "आवाज",
+      "threshold": "सीमा"
+    },
+    "emptyHistory": "अझै कुनै श्रुतलेख छैन — सर्टकट थिचेर बोल्नुहोस्।",
+    "copyHint": "प्रतिलिपि गर्न डबल-क्लिक गर्नुहोस्",
+    "copy": "प्रतिलिपि",
+    "save": "★ सेभ",
+    "delete": "मेटाउनुहोस्",
+    "compile": "✦ कम्पाइल",
+    "count": "{{n}} श्रुतलेख · लोकल",
+    "copied": "क्लिपबोर्डमा प्रतिलिपि गरियो",
+    "menuSections": "खण्डहरू",
+    "menuWindows": "विन्डोहरू",
+    "toOrbital": "↺ Orbital मा फर्कनुहोस्",
+    "toClassic": "क्लासिकमा फर्कनुहोस्",
+    "theme": "थिम",
+    "footer": "रेट्रो मोड — एउटा ABRAX स्किन · उही पारदर्शी विन्डो"
+  },
   "logo": {
     "tagline": "« Di la <accent>palabra</accent>. »"
   },

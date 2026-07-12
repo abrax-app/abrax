@@ -742,6 +742,50 @@
       "hide": "トレイに格納"
     }
   },
+  "retro": {
+    "menu": "Abrax メニュー",
+    "titleMain": "ABRAX · レトロモード",
+    "titleSettings": "ABRAX · クイック設定",
+    "titleHistory": "ABRAX · 履歴",
+    "fold": "折りたたむ",
+    "close": "閉じる",
+    "marquee": "ABRAX ··· ひと言どうぞ ··· レトロモード ··· 100% ローカル ··· スペイン語ファースト ···",
+    "lamp": {
+      "model": "モデル",
+      "local": "LOCAL",
+      "filler": "フィラー",
+      "dict": "辞書",
+      "ptt": "PTT",
+      "vad": "VAD",
+      "translate": "翻訳",
+      "sphere": "スフィア"
+    },
+    "dictate": "音声入力",
+    "stop": "停止",
+    "settings": "クイック設定",
+    "history": "履歴",
+    "compiler": "プロンプトコンパイラ",
+    "sections": "セクション ▾",
+    "slider": {
+      "buffer": "バッファ",
+      "volume": "音量",
+      "threshold": "閾値"
+    },
+    "emptyHistory": "まだ音声入力がありません — ショートカットを押しながら話してください。",
+    "copyHint": "ダブルクリックでコピー",
+    "copy": "コピー",
+    "save": "★ 保存",
+    "delete": "削除",
+    "compile": "✦ コンパイル",
+    "count": "{{n}} 件の音声入力 · LOCAL",
+    "copied": "クリップボードにコピーしました",
+    "menuSections": "セクション",
+    "menuWindows": "ウィンドウ",
+    "toOrbital": "↺ オービタルに戻る",
+    "toClassic": "クラシックに戻る",
+    "theme": "テーマ",
+    "footer": "レトロモード — ABRAX のスキン · 同じ透明ウィンドウ"
+  },
   "logo": {
     "tagline": "« Di la <accent>palabra</accent>. »"
   },

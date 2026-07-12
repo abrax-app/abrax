@@ -742,6 +742,50 @@
       "hide": "Skrýt do oznamovací oblasti"
     }
   },
+  "retro": {
+    "menu": "Nabídka Abrax",
+    "titleMain": "ABRAX · RETRO REŽIM",
+    "titleSettings": "ABRAX · RYCHLÉ NASTAVENÍ",
+    "titleHistory": "ABRAX · HISTORIE",
+    "fold": "Složit",
+    "close": "Zavřít",
+    "marquee": "ABRAX ··· ŘEKNI SLOVO ··· RETRO REŽIM ··· 100% LOKÁLNÍ ··· ŠPANĚLŠTINA NA PRVNÍM MÍSTĚ ···",
+    "lamp": {
+      "model": "Model",
+      "local": "LOKÁLNÍ",
+      "filler": "VÝPLNĚ",
+      "dict": "SLOVNÍK",
+      "ptt": "PTT",
+      "vad": "VAD",
+      "translate": "PŘEKLAD",
+      "sphere": "KOULE"
+    },
+    "dictate": "Diktovat",
+    "stop": "Zastavit",
+    "settings": "Rychlé nastavení",
+    "history": "Historie",
+    "compiler": "Kompilátor promptů",
+    "sections": "SEKCE ▾",
+    "slider": {
+      "buffer": "BUFFER",
+      "volume": "HLAS.",
+      "threshold": "PRÁH"
+    },
+    "emptyHistory": "Zatím žádné diktáty — podržte zkratku a mluvte.",
+    "copyHint": "Dvojklikem zkopírujete",
+    "copy": "KOPÍROVAT",
+    "save": "★ ULOŽIT",
+    "delete": "SMAZAT",
+    "compile": "✦ KOMPILOVAT",
+    "count": "{{n}} diktátů · LOKÁLNÍ",
+    "copied": "Zkopírováno do schránky",
+    "menuSections": "SEKCE",
+    "menuWindows": "OKNA",
+    "toOrbital": "↺ Zpět na Orbital",
+    "toClassic": "Zpět na Klasický",
+    "theme": "Motiv",
+    "footer": "RETRO REŽIM — skin ABRAX · stejné průhledné okno"
+  },
   "logo": {
     "tagline": "« Di la <accent>palabra</accent>. »"
   },

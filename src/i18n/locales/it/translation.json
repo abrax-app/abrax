@@ -742,6 +742,50 @@
       "hide": "Nascondi nell'area di notifica"
     }
   },
+  "retro": {
+    "menu": "Menu di Abrax",
+    "titleMain": "ABRAX · MODALITÀ RETRO",
+    "titleSettings": "ABRAX · IMPOSTAZIONI RAPIDE",
+    "titleHistory": "ABRAX · CRONOLOGIA",
+    "fold": "Riduci",
+    "close": "Chiudi",
+    "marquee": "ABRAX ··· DI' LA PAROLA ··· MODALITÀ RETRO ··· 100% LOCALE ··· SPAGNOLO AL PRIMO POSTO ···",
+    "lamp": {
+      "model": "Modello",
+      "local": "LOCALE",
+      "filler": "INTERCALARI",
+      "dict": "DIZ",
+      "ptt": "PTT",
+      "vad": "VAD",
+      "translate": "TRADUCI",
+      "sphere": "SFERA"
+    },
+    "dictate": "Detta",
+    "stop": "Ferma",
+    "settings": "Impostazioni rapide",
+    "history": "Cronologia",
+    "compiler": "Compilatore di prompt",
+    "sections": "SEZIONI ▾",
+    "slider": {
+      "buffer": "BUFFER",
+      "volume": "VOL",
+      "threshold": "SOGLIA"
+    },
+    "emptyHistory": "Ancora nessuna dettatura — tieni premuta la scorciatoia e parla.",
+    "copyHint": "Doppio clic per copiare",
+    "copy": "COPIA",
+    "save": "★ SALVA",
+    "delete": "ELIMINA",
+    "compile": "✦ COMPILA",
+    "count": "{{n}} dettature · LOCALE",
+    "copied": "Copiato negli appunti",
+    "menuSections": "SEZIONI",
+    "menuWindows": "FINESTRE",
+    "toOrbital": "↺ Torna a Orbital",
+    "toClassic": "Torna a Classico",
+    "theme": "Tema",
+    "footer": "MODALITÀ RETRO — uno skin di ABRAX · stessa finestra trasparente"
+  },
   "logo": {
     "tagline": "« Di la <accent>palabra</accent>. »"
   },

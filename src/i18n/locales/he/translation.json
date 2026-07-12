@@ -742,6 +742,50 @@
       "hide": "הסתר למגש"
     }
   },
+  "retro": {
+    "menu": "תפריט Abrax",
+    "titleMain": "ABRAX · מצב רטרו",
+    "titleSettings": "ABRAX · הגדרות מהירות",
+    "titleHistory": "ABRAX · היסטוריה",
+    "fold": "קפל",
+    "close": "סגור",
+    "marquee": "ABRAX ··· אמור את המילה ··· מצב רטרו ··· 100% מקומי ··· ספרדית תחילה ···",
+    "lamp": {
+      "model": "דגם",
+      "local": "מקומי",
+      "filler": "מילוי",
+      "dict": "מילון",
+      "ptt": "PTT",
+      "vad": "VAD",
+      "translate": "תרגום",
+      "sphere": "ספרה"
+    },
+    "dictate": "הכתב",
+    "stop": "עצור",
+    "settings": "הגדרות מהירות",
+    "history": "היסטוריה",
+    "compiler": "מהדר פרומפטים",
+    "sections": "מקטעים ▾",
+    "slider": {
+      "buffer": "חוצץ",
+      "volume": "עוצמה",
+      "threshold": "סף"
+    },
+    "emptyHistory": "עדיין אין הכתבות — החזק את קיצור הדרך ודבר.",
+    "copyHint": "לחיצה כפולה להעתקה",
+    "copy": "העתק",
+    "save": "★ שמור",
+    "delete": "מחק",
+    "compile": "✦ הדר",
+    "count": "{{n}} הכתבות · מקומי",
+    "copied": "הועתק ללוח",
+    "menuSections": "מקטעים",
+    "menuWindows": "חלונות",
+    "toOrbital": "↺ חזרה ל-Orbital",
+    "toClassic": "חזרה לקלאסי",
+    "theme": "ערכת נושא",
+    "footer": "מצב רטרו — סקין של ABRAX · אותו חלון שקוף"
+  },
   "logo": {
     "tagline": "« Di la <accent>palabra</accent>. »"
   },

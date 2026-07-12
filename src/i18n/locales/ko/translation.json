@@ -742,6 +742,50 @@
       "hide": "트레이로 숨기기"
     }
   },
+  "retro": {
+    "menu": "Abrax 메뉴",
+    "titleMain": "ABRAX · 레트로 모드",
+    "titleSettings": "ABRAX · 빠른 설정",
+    "titleHistory": "ABRAX · 기록",
+    "fold": "접기",
+    "close": "닫기",
+    "marquee": "ABRAX ··· 말만 하세요 ··· 레트로 모드 ··· 100% 로컬 ··· 스페인어 우선 ···",
+    "lamp": {
+      "model": "모델",
+      "local": "로컬",
+      "filler": "군말",
+      "dict": "사전",
+      "ptt": "PTT",
+      "vad": "VAD",
+      "translate": "번역",
+      "sphere": "구체"
+    },
+    "dictate": "받아쓰기",
+    "stop": "정지",
+    "settings": "빠른 설정",
+    "history": "기록",
+    "compiler": "프롬프트 컴파일러",
+    "sections": "섹션 ▾",
+    "slider": {
+      "buffer": "버퍼",
+      "volume": "음량",
+      "threshold": "임계값"
+    },
+    "emptyHistory": "아직 받아쓴 내용이 없습니다 — 단축키를 누른 채 말하세요.",
+    "copyHint": "더블클릭하여 복사",
+    "copy": "복사",
+    "save": "★ 저장",
+    "delete": "삭제",
+    "compile": "✦ 컴파일",
+    "count": "받아쓰기 {{n}}개 · 로컬",
+    "copied": "클립보드에 복사됨",
+    "menuSections": "섹션",
+    "menuWindows": "창",
+    "toOrbital": "↺ 오비탈로 돌아가기",
+    "toClassic": "클래식으로 돌아가기",
+    "theme": "테마",
+    "footer": "레트로 모드 — ABRAX 스킨 · 동일한 투명 창"
+  },
   "logo": {
     "tagline": "« Di la <accent>palabra</accent>. »"
   },
