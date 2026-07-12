@@ -1,6 +1,6 @@
 [package]
 name = "abrax"
-version = "0.9.1"
+version = "0.1.0"
 description = "Abrax — dictado por voz local para vibe coders"
 authors = ["Equipo Abrax"]
 edition = "2021"
