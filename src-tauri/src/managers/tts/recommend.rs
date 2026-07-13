@@ -10,7 +10,9 @@ use super::hardware::HardwareInfo;
 /// Motor **ideal** (sin considerar si está aprovisionado). Kokoro es la mejor
 /// voz local; `_hw` se conserva por si futuras heurísticas lo necesitan.
 pub fn recommend_engine(_hw: &HardwareInfo) -> EngineId {
-    EngineId::Kokoro
+    let rec = EngineId::Kokoro;
+    debug_assert!(rec.is_local(), "la recomendación nunca debe ser un motor no-local");
+    rec
 }
 
 /// Resuelve el motor **activo** combinando la recomendación con la
@@ -59,6 +61,18 @@ mod tests {
     #[test]
     fn recommendation_is_always_local() {
         assert!(recommend_engine(&hw(GpuVendor::None, GpuType::Cpu, None)).is_local());
+    }
+
+    #[test]
+    fn never_recommends_or_falls_back_to_online() {
+        let h = hw(GpuVendor::Nvidia, GpuType::Discrete, Some(12000));
+        assert_ne!(recommend_engine(&h), EngineId::Online);
+        // Al degradar (recomendado no disponible) jamás se cae al motor online,
+        // aunque sea lo único "disponible": el fallback es Piper → sistema.
+        assert_ne!(
+            resolve_engine(EngineId::Kokoro, |e| e == EngineId::Online),
+            EngineId::Online
+        );
     }
 
     #[test]

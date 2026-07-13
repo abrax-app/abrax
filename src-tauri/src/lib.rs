@@ -665,6 +665,7 @@ pub fn run(cli_args: CliArgs) {
             commands::tts::install_piper_runtime,
             commands::tts::install_piper_voice,
             commands::tts::install_kokoro_runtime,
+            commands::tts::install_online_runtime,
         ])
         .events(collect_events![
             managers::history::HistoryUpdatePayload,

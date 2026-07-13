@@ -816,6 +816,8 @@
     "verbosityLiteral": "Nguyên văn (mọi ký hiệu)"
   },
   "tts": {
+    "descOnline": "Giọng nơ-ron của Microsoft (Azure). Không cục bộ: gửi văn bản qua internet.",
+    "onlineWarning": "cần internet · văn bản rời khỏi thiết bị",
     "preparingVoice": "Đang chuẩn bị {{engine}}… lần đầu mất vài giây.",
     "engineSystem": "Giọng hệ thống",
     "title": "Công cụ giọng nói",

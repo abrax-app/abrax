@@ -816,6 +816,8 @@
     "verbosityLiteral": "Birebir (tüm semboller)"
   },
   "tts": {
+    "descOnline": "Microsoft nöral sesleri (Azure). Yerel değil: metni internet üzerinden gönderir.",
+    "onlineWarning": "internet gerektirir · metin cihazdan ayrılır",
     "preparingVoice": "{{engine}} hazırlanıyor… ilk seferde birkaç saniye sürer.",
     "engineSystem": "Sistem sesleri",
     "title": "Ses motoru",

@@ -10,7 +10,7 @@ use tauri::{AppHandle, State};
 use crate::managers::tts::engine::{EngineId, EngineStatus};
 use crate::managers::tts::hardware::HardwareInfo;
 use crate::managers::tts::manager::TtsManager;
-use crate::managers::tts::{kokoro, piper};
+use crate::managers::tts::{kokoro, online, piper};
 
 #[tauri::command]
 #[specta::specta]
@@ -77,4 +77,11 @@ pub async fn install_piper_voice(app: AppHandle, voice_id: String) -> Result<(),
 #[specta::specta]
 pub async fn install_kokoro_runtime(app: AppHandle) -> Result<(), String> {
     kokoro::install_runtime(&app).await
+}
+
+/// Aprovisiona el runtime de la voz ONLINE (venv + edge-tts). ⚠️ Motor de nube.
+#[tauri::command]
+#[specta::specta]
+pub async fn install_online_runtime(app: AppHandle) -> Result<(), String> {
+    online::install_runtime(&app).await
 }

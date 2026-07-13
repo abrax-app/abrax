@@ -816,6 +816,8 @@
     "verbosityLiteral": "Literal (todos os símbolos)"
   },
   "tts": {
+    "descOnline": "Vozes neurais da Microsoft (Azure). Não local: envia o texto pela internet.",
+    "onlineWarning": "requer internet · o texto sai do dispositivo",
     "preparingVoice": "Preparando {{engine}}… a primeira vez leva alguns segundos.",
     "engineSystem": "Vozes do sistema",
     "title": "Motor de voz",

@@ -816,6 +816,8 @@
     "verbosityLiteral": "그대로 (모든 기호)"
   },
   "tts": {
+    "descOnline": "Microsoft 뉴럴 음성(Azure). 로컬 아님: 텍스트를 인터넷으로 전송합니다.",
+    "onlineWarning": "인터넷 필요 · 텍스트가 기기를 벗어납니다",
     "preparingVoice": "{{engine}} 준비 중… 처음에는 몇 초 걸립니다.",
     "engineSystem": "시스템 음성",
     "title": "음성 엔진",

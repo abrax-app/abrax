@@ -1071,6 +1071,17 @@ async installKokoroRuntime() : Promise<Result<null, string>> {
     if(e instanceof Error) throw e;
     else return { status: "error", error: e  as any };
 }
+},
+/**
+ * Aprovisiona el runtime de la voz ONLINE (venv + edge-tts). ⚠️ Motor de nube.
+ */
+async installOnlineRuntime() : Promise<Result<null, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("install_online_runtime") };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
 }
 }
 
@@ -1219,7 +1230,12 @@ export type EngineId =
 /**
  * Kokoro-82M (ONNX). Premium en CPU.
  */
-"kokoro"
+"kokoro" | 
+/**
+ * Voces online de Microsoft (edge-tts). ⚠️ **NO local**: envía el texto a
+ * la nube. Opción etiquetada, nunca recomendada ni usada como fallback.
+ */
+"online"
 /**
  * Requisitos de un motor para orientar la UI y la recomendación.
  */
@@ -1231,7 +1247,11 @@ needs_gpu: boolean;
 /**
  * Necesita descargar modelo/runtime en el primer uso.
  */
-needs_download: boolean }
+needs_download: boolean; 
+/**
+ * ⚠️ Requiere conexión a internet — el texto sale del equipo (solo `Online`).
+ */
+needs_internet: boolean }
 /**
  * Estado de un motor para el selector "Elegir otro motor".
  */

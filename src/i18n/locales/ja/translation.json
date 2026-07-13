@@ -816,6 +816,8 @@
     "verbosityLiteral": "リテラル（すべての記号）"
   },
   "tts": {
+    "descOnline": "Microsoft のニューラル音声（Azure）。ローカルではありません: テキストをインターネット経由で送信します。",
+    "onlineWarning": "インターネットが必要 · テキストが端末から送信されます",
     "preparingVoice": "{{engine}} を準備しています… 初回は数秒かかります。",
     "engineSystem": "システムの音声",
     "title": "音声エンジン",

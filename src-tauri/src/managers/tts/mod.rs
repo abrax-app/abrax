@@ -16,6 +16,7 @@ pub mod engine;
 pub mod hardware;
 pub mod kokoro;
 pub mod manager;
+pub mod online;
 pub mod piper;
 pub mod playback;
 pub mod pyserver;

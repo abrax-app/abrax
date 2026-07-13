@@ -26,23 +26,34 @@ pub enum EngineId {
     Piper,
     /// Kokoro-82M (ONNX). Premium en CPU.
     Kokoro,
+    /// Voces online de Microsoft (edge-tts). ⚠️ **NO local**: envía el texto a
+    /// la nube. Opción etiquetada, nunca recomendada ni usada como fallback.
+    Online,
 }
 
 impl EngineId {
-    /// Todos los motores, en orden de "tier" descendente para mostrar.
-    pub const ALL: [EngineId; 3] = [EngineId::Kokoro, EngineId::Piper, EngineId::System];
+    /// Todos los motores, en orden de presentación (los locales primero, la
+    /// opción online al final como excepción).
+    pub const ALL: [EngineId; 4] = [
+        EngineId::Kokoro,
+        EngineId::Piper,
+        EngineId::System,
+        EngineId::Online,
+    ];
 
     pub fn display_name(&self) -> &'static str {
         match self {
             EngineId::System => "Voces del sistema",
             EngineId::Piper => "Piper",
             EngineId::Kokoro => "Kokoro",
+            EngineId::Online => "Voz online (Microsoft)",
         }
     }
 
-    /// Invariante duro: **todos los motores son locales, ninguno usa la nube.**
+    /// ¿Corre 100% en el equipo? `Online` es la única excepción (usa la nube).
+    /// La recomendación y el fallback jamás devuelven un motor no-local.
     pub fn is_local(&self) -> bool {
-        matches!(self, EngineId::System | EngineId::Piper | EngineId::Kokoro)
+        !matches!(self, EngineId::Online)
     }
 }
 
@@ -53,6 +64,8 @@ pub struct EngineRequirements {
     pub needs_gpu: bool,
     /// Necesita descargar modelo/runtime en el primer uso.
     pub needs_download: bool,
+    /// ⚠️ Requiere conexión a internet — el texto sale del equipo (solo `Online`).
+    pub needs_internet: bool,
 }
 
 /// Estado de un motor para el selector "Elegir otro motor".

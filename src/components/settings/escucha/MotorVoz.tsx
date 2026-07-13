@@ -76,6 +76,7 @@ export const MotorVoz: React.FC = () => {
         system: t("tts.descSystem"),
         piper: t("tts.descPiper"),
         kokoro: t("tts.descKokoro"),
+        online: t("tts.descOnline"),
       })[id] ?? "",
     [t],
   );
@@ -169,30 +170,42 @@ export const MotorVoz: React.FC = () => {
     setCargando(false);
   }, [recargarEstado]);
 
-  // Descarga el runtime Piper (GPL, proceso separado) + su primera voz.
-  const descargarPiper = useCallback(async () => {
-    setOcupado("piper");
-    setProgreso(null);
-    try {
-      const rt = await commands.installPiperRuntime();
-      if (rt.status === "error") throw new Error(rt.error);
-      const cat = await commands.listPiperVoices();
-      const primera = cat.status === "ok" ? cat.data[0] : undefined;
-      if (primera) {
-        const v = await commands.installPiperVoice(primera.id);
-        if (v.status === "error") throw new Error(v.error);
-      }
-      toast.success(t("tts.installed"));
-      await recargarEstado();
-    } catch (e) {
-      toast.error(t("tts.errorDownload"), {
-        description: e instanceof Error ? e.message : String(e),
-      });
-    } finally {
-      setOcupado(null);
+  // Descarga/aprovisiona el runtime del motor pedido (Piper: runtime + 1.ª voz;
+  // Kokoro/Online: venv con uv).
+  const descargarMotor = useCallback(
+    async (id: EngineId) => {
+      setOcupado(id);
       setProgreso(null);
-    }
-  }, [t, recargarEstado]);
+      try {
+        if (id === "piper") {
+          const rt = await commands.installPiperRuntime();
+          if (rt.status === "error") throw new Error(rt.error);
+          const cat = await commands.listPiperVoices();
+          const primera = cat.status === "ok" ? cat.data[0] : undefined;
+          if (primera) {
+            const v = await commands.installPiperVoice(primera.id);
+            if (v.status === "error") throw new Error(v.error);
+          }
+        } else if (id === "kokoro") {
+          const r = await commands.installKokoroRuntime();
+          if (r.status === "error") throw new Error(r.error);
+        } else if (id === "online") {
+          const r = await commands.installOnlineRuntime();
+          if (r.status === "error") throw new Error(r.error);
+        }
+        toast.success(t("tts.installed"));
+        await recargarEstado();
+      } catch (e) {
+        toast.error(t("tts.errorDownload"), {
+          description: e instanceof Error ? e.message : String(e),
+        });
+      } finally {
+        setOcupado(null);
+        setProgreso(null);
+      }
+    },
+    [t, recargarEstado],
+  );
 
   const probarVoz = useCallback(async () => {
     await commands.escuchaStop();
@@ -361,6 +374,11 @@ export const MotorVoz: React.FC = () => {
                     )}
                   </p>
                   <p className="text-xs text-text/50">{engineDesc(e.id)}</p>
+                  {e.requirements.needs_internet && (
+                    <p className="text-xs text-amber-500/90">
+                      ⚠ {t("tts.onlineWarning")}
+                    </p>
+                  )}
                   <p
                     className={`text-xs ${e.available ? "text-green-500/80" : "text-text/40"}`}
                   >
@@ -377,9 +395,9 @@ export const MotorVoz: React.FC = () => {
                     <Button onClick={() => usarMotor(e.id)} variant="secondary" size="sm">
                       {t("tts.use")}
                     </Button>
-                  ) : e.id === "piper" && e.requirements.needs_download ? (
+                  ) : e.requirements.needs_download ? (
                     <Button
-                      onClick={descargarPiper}
+                      onClick={() => descargarMotor(e.id)}
                       variant="secondary"
                       size="sm"
                       disabled={enCurso}

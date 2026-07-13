@@ -8,14 +8,22 @@ pub fn requirements_for(id: EngineId) -> EngineRequirements {
         EngineId::System => EngineRequirements {
             needs_gpu: false,
             needs_download: false,
+            needs_internet: false,
         },
         EngineId::Piper => EngineRequirements {
             needs_gpu: false,
             needs_download: true,
+            needs_internet: false,
         },
         EngineId::Kokoro => EngineRequirements {
             needs_gpu: false,
             needs_download: true,
+            needs_internet: false,
+        },
+        EngineId::Online => EngineRequirements {
+            needs_gpu: false,
+            needs_download: true,
+            needs_internet: true,
         },
     }
 }

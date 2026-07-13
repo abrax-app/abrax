@@ -13,7 +13,7 @@ use super::engine::{EngineId, EngineStatus, TtsEngine, TtsOptions};
 use super::hardware::{detect_hardware, HardwareInfo};
 use super::playback::PlaybackService;
 use super::recommend::{recommend_engine, resolve_engine};
-use super::{download, kokoro, piper, pyserver};
+use super::{download, kokoro, online, piper, pyserver};
 use crate::managers::escucha::{EscuchaManager, EstadoEscucha, VozEscucha};
 use crate::settings;
 
@@ -22,6 +22,7 @@ struct Inner {
     playback: Option<Arc<PlaybackService>>,
     piper: Option<piper::PiperEngine>,
     kokoro: Option<pyserver::PyServerEngine>,
+    online: Option<pyserver::PyServerEngine>,
     active: EngineId,
 }
 
@@ -43,6 +44,7 @@ impl TtsManager {
                 playback: None,
                 piper: None,
                 kokoro: None,
+                online: None,
                 active: EngineId::System,
             }),
         };
@@ -81,6 +83,9 @@ impl TtsManager {
                         .unwrap_or(false)
             }
             EngineId::Kokoro => kokoro::is_installed(&self.app),
+            // Online: disponible si el runtime está aprovisionado (la conexión
+            // real se comprueba al sintetizar; si falla, degrada al sistema).
+            EngineId::Online => online::is_installed(&self.app),
         }
     }
 
@@ -144,10 +149,10 @@ impl TtsManager {
     /// Estado por motor para el selector "elegir otro motor".
     pub fn list_engines(&self) -> Vec<EngineStatus> {
         let recommended = self.recommended();
+        // Se listan todos, incluido Online (marcado needs_internet); la
+        // recomendación jamás apunta a un motor no-local.
         EngineId::ALL
             .iter()
-            // Invariante: sólo se listan motores locales (nunca nube).
-            .filter(|id| id.is_local())
             .map(|&id| {
                 let requirements = super::registry::requirements_for(id);
                 EngineStatus {
@@ -205,6 +210,16 @@ impl TtsManager {
                     1.0,
                 ));
             }
+            EngineId::Online if inner.online.is_none() => {
+                let dir = download::runtime_dir(&self.app, online::RUNTIME_NAME)?;
+                inner.online = Some(pyserver::PyServerEngine::new(
+                    &online::CONFIG,
+                    self.app.clone(),
+                    dir,
+                    playback,
+                    1.0,
+                ));
+            }
             _ => {}
         }
         Ok(())
@@ -233,6 +248,14 @@ impl TtsManager {
                     .kokoro
                     .as_mut()
                     .ok_or_else(|| "kokoro no inicializado".to_string())?;
+                Ok(f(eng))
+            }
+            EngineId::Online => {
+                self.ensure_pyserver(&mut inner, EngineId::Online)?;
+                let eng = inner
+                    .online
+                    .as_mut()
+                    .ok_or_else(|| "online no inicializado".to_string())?;
                 Ok(f(eng))
             }
         }
