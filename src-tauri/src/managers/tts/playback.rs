@@ -1,13 +1,17 @@
 //! Reproducción de audio para los motores neuronales (Piper/Kokoro/Chatterbox).
 //!
 //! El motor del sistema (SAPI/AVSpeech) reproduce por el SO; los neuronales
-//! producen PCM y lo suenan por aquí: un `rodio::OutputStream` vive confinado en
-//! un hilo dedicado (`OutputStream` no es `Send`), y se le mandan buffers de
-//! muestras ya **normalizadas a −3 dBFS** (Piper saturaba al 100% en el spike).
+//! producen PCM y lo suenan por aquí. Un hilo dedicado abre un `OutputStream`
+//! (no es `Send`) **fresco en cada reproducción** — así siempre usa el
+//! dispositivo predeterminado ACTUAL y no se queda pegado a uno que se volvió
+//! inválido ("device no longer available"). Las muestras llegan ya
+//! **normalizadas a −3 dBFS** (Piper saturaba al 100% en el spike).
 
 use std::path::Path;
+use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::mpsc::{self, Sender};
 use std::sync::{Arc, Mutex};
+use std::time::Duration;
 
 /// Objetivo de normalización de pico. −3 dBFS deja margen anti-clipping.
 pub const TARGET_DBFS: f32 = -3.0;
@@ -21,39 +25,30 @@ enum PlayCmd {
     Shutdown,
 }
 
-/// Servicio de reproducción con un `OutputStream` confinado a su hilo.
+/// Servicio de reproducción: un hilo dedicado abre un dispositivo fresco por
+/// reproducción y mantiene vivo el stream hasta que el audio termina o se detiene.
 pub struct PlaybackService {
     tx: Mutex<Sender<PlayCmd>>,
-    /// Sink actual (interrumpible). `Sink` sí es `Send+Sync`, así que stop/estado
-    /// se consultan desde el handle sin pasar por el canal.
+    /// ¿Hay audio sonando? Consultable desde el handle sin bloquear el hilo.
+    playing: Arc<AtomicBool>,
+    /// Sink en curso (`Send+Sync`), para que `stop()` corte desde el handle.
     current: Arc<Mutex<Option<rodio::Sink>>>,
 }
 
 impl PlaybackService {
-    /// Crea el servicio abriendo el dispositivo de salida `device_name`
-    /// (`None`/"Default" = el predeterminado). Propaga el error de apertura.
+    /// Crea el servicio. `device_name` (`None`/"Default" = el predeterminado) se
+    /// resuelve **en cada reproducción**, no una sola vez. No abre el dispositivo
+    /// aquí: cualquier fallo de salida se registra en el primer `play`.
     pub fn new(device_name: Option<String>) -> Result<Arc<Self>, String> {
         let (tx, rx) = mpsc::channel::<PlayCmd>();
+        let playing = Arc::new(AtomicBool::new(false));
         let current: Arc<Mutex<Option<rodio::Sink>>> = Arc::new(Mutex::new(None));
-        let current_thread = current.clone();
-        let (ready_tx, ready_rx) = mpsc::channel::<Result<(), String>>();
+        let playing_t = playing.clone();
+        let current_t = current.clone();
 
         std::thread::Builder::new()
             .name("tts-playback".into())
             .spawn(move || {
-                // OutputStream no es Send: se crea DENTRO del hilo y se mantiene
-                // vivo hasta Shutdown (si se dropea, el audio se corta).
-                let stream = match build_stream(device_name) {
-                    Ok(s) => {
-                        let _ = ready_tx.send(Ok(()));
-                        s
-                    }
-                    Err(e) => {
-                        let _ = ready_tx.send(Err(e));
-                        return;
-                    }
-                };
-                let mixer = stream.mixer();
                 while let Ok(cmd) = rx.recv() {
                     match cmd {
                         PlayCmd::Play {
@@ -61,19 +56,44 @@ impl PlaybackService {
                             sample_rate,
                             volume,
                         } => {
-                            // Interrumpe lo que estuviera sonando.
-                            if let Some(sink) =
-                                current_thread.lock().ok().and_then(|mut g| g.take())
-                            {
-                                sink.stop();
+                            // Interrumpe cualquier residuo.
+                            if let Some(s) = current_t.lock().ok().and_then(|mut g| g.take()) {
+                                s.stop();
                             }
-                            let src = rodio::buffer::SamplesBuffer::new(1, sample_rate, samples);
-                            let sink = rodio::Sink::connect_new(mixer);
+                            // Dispositivo FRESCO cada vez (evita el stream stale
+                            // "device no longer available" y sigue el predeterminado
+                            // actual). El stream vive hasta que termina la muestra.
+                            let stream = match build_stream(device_name.clone()) {
+                                Ok(s) => s,
+                                Err(e) => {
+                                    log::warn!("[tts] no se pudo abrir la salida de audio: {e}");
+                                    continue;
+                                }
+                            };
+                            let sink = rodio::Sink::connect_new(stream.mixer());
                             sink.set_volume(volume);
-                            sink.append(src);
-                            if let Ok(mut g) = current_thread.lock() {
+                            sink.append(rodio::buffer::SamplesBuffer::new(1, sample_rate, samples));
+                            playing_t.store(true, Ordering::SeqCst);
+                            if let Ok(mut g) = current_t.lock() {
                                 *g = Some(sink);
                             }
+                            // Sondea hasta que el sink se vacíe o `stop()` lo corte;
+                            // no bloquea el `stop()` del handle (que actúa directo).
+                            loop {
+                                std::thread::sleep(Duration::from_millis(50));
+                                let done = match current_t.lock() {
+                                    Ok(g) => g.as_ref().map(|s| s.empty()).unwrap_or(true),
+                                    Err(_) => true,
+                                };
+                                if done || !playing_t.load(Ordering::SeqCst) {
+                                    break;
+                                }
+                            }
+                            if let Some(s) = current_t.lock().ok().and_then(|mut g| g.take()) {
+                                s.stop();
+                            }
+                            playing_t.store(false, Ordering::SeqCst);
+                            // `stream` se dropea aquí → apertura fresca en el próximo Play.
                         }
                         PlayCmd::Shutdown => break,
                     }
@@ -81,16 +101,14 @@ impl PlaybackService {
             })
             .map_err(|e| e.to_string())?;
 
-        ready_rx
-            .recv()
-            .map_err(|e| format!("hilo de reproducción no arrancó: {e}"))??;
         Ok(Arc::new(Self {
             tx: Mutex::new(tx),
+            playing,
             current,
         }))
     }
 
-    /// Encola muestras mono f32 para reproducir (interrumpe lo anterior).
+    /// Encola muestras mono f32 para reproducir.
     pub fn play(&self, samples: Vec<f32>, sample_rate: u32, volume: f32) -> Result<(), String> {
         self.tx
             .lock()
@@ -103,24 +121,23 @@ impl PlaybackService {
             .map_err(|e| e.to_string())
     }
 
-    /// Detiene la reproducción actual.
+    /// Detiene la reproducción actual (actúa directo; el hilo lo nota en ≤50 ms).
     pub fn stop(&self) {
-        if let Some(sink) = self.current.lock().ok().and_then(|mut g| g.take()) {
-            sink.stop();
+        self.playing.store(false, Ordering::SeqCst);
+        if let Some(s) = self.current.lock().ok().and_then(|mut g| g.take()) {
+            s.stop();
         }
     }
 
     /// ¿Hay audio sonando ahora?
     pub fn is_playing(&self) -> bool {
-        self.current
-            .lock()
-            .map(|g| g.as_ref().map(|s| !s.empty()).unwrap_or(false))
-            .unwrap_or(false)
+        self.playing.load(Ordering::SeqCst)
     }
 }
 
 impl Drop for PlaybackService {
     fn drop(&mut self) {
+        self.playing.store(false, Ordering::SeqCst);
         if let Ok(tx) = self.tx.lock() {
             let _ = tx.send(PlayCmd::Shutdown);
         }
