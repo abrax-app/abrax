@@ -333,7 +333,7 @@ const NODOS = [
   {id:"ajustes",     label:"AJUSTES",     glifo:"tuerca",
    hint:"Ajustes|Atajo, idioma, micrófono y comportamiento. Cambia el atajo con un clic.|"},
   {id:"acerca",      label:"ACERCA DE",   glifo:"info",
-   hint:"Acerca de ABRAX|Open source (MIT), sobre Handy con crédito íntegro. Hecho por una dupla padre-hijo en La Serena, Chile.|"},
+   hint:"Acerca de ABRAX|Open source (MIT), sobre Handy con crédito íntegro.|"},
 ];
 
 function construirOrbita(){
@@ -498,8 +498,8 @@ Implementar validarRut(rut: string): boolean.
       <div class="fila"><div class="crece">Idioma del modelo</div><span class="chip"><b>Español</b> ▾</span></div>
       <div class="fila"><div class="crece">Micrófono</div><span class="chip">Default ▾</span></div>
       <div class="fila"><div class="crece">Presionar para hablar<small>suelta = transcribe y pega</small></div><span class="tgl on"></span></div>
-      <div class="fila"><div class="crece">Sonidos de marca<small>inicio/fin — producidos por Antonio</small></div>
-        <span class="tgl on" data-hint="Sonidos de ABRAX|Diseñados por el cofundador de 14 años de la dupla.|"></span></div>
+      <div class="fila"><div class="crece">Sonidos de marca<small>inicio/fin — sonidos propios de ABRAX</small></div>
+        <span class="tgl on" data-hint="Sonidos de ABRAX|Diseñados a medida para la marca.|"></span></div>
     </div>`},
   acerca:{t:"ACERCA DE", html:`
     <div class="caja" style="text-align:center; padding:24px 14px">
@@ -507,7 +507,7 @@ Implementar validarRut(rut: string): boolean.
       <div style="margin-top:8px; letter-spacing:.28em; font-size:11px">« DI LA PALABRA. »</div>
       <div style="margin-top:12px; color:var(--suave); font-size:11px">v0.9.1-abrax · open source · MIT</div>
     </div>
-    <div class="caja"><h3>CRÉDITO</h3>Construido sobre <b style="color:#fff">Handy</b> (cjpais, MIT) — crédito íntegro, porque open source es dar crédito. Rebrand, correcciones y funciones nuevas por la dupla Winston + Antonio 🇨🇱 con Claude.</div>`},
+    <div class="caja"><h3>CRÉDITO</h3>Construido sobre <b style="color:#fff">Handy</b> (cjpais, MIT) — crédito íntegro, porque open source es dar crédito. Rebrand, correcciones y funciones nuevas con Claude.</div>`},
 };
 function abrirPanel(id, k){
   const s = SECCIONES[id];
