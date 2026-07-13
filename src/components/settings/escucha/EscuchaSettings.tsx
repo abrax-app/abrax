@@ -23,6 +23,7 @@ import { useSettings } from "../../../hooks/useSettings";
 import { Alert } from "../../ui/Alert";
 import { Button } from "../../ui/Button";
 import { Select } from "../../ui/Select";
+import { MotorVoz } from "./MotorVoz";
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
@@ -314,6 +315,10 @@ export const EscuchaSettings: React.FC = () => {
             <span>{t("escucha.readClipboard")}</span>
           </Button>
         </div>
+      </div>
+
+      <div className="px-4">
+        <MotorVoz />
       </div>
 
       {!motorDisponible && (
