@@ -10,7 +10,7 @@ use tauri::{AppHandle, State};
 use crate::managers::tts::engine::{EngineId, EngineStatus};
 use crate::managers::tts::hardware::HardwareInfo;
 use crate::managers::tts::manager::TtsManager;
-use crate::managers::tts::{chatterbox, kokoro, piper};
+use crate::managers::tts::{kokoro, piper};
 
 #[tauri::command]
 #[specta::specta]
@@ -70,13 +70,6 @@ pub async fn install_piper_runtime(app: AppHandle) -> Result<(), String> {
 #[specta::specta]
 pub async fn install_piper_voice(app: AppHandle, voice_id: String) -> Result<(), String> {
     piper::install_voice(&app, &voice_id).await
-}
-
-/// Aprovisiona el runtime Chatterbox (venv + torch) en el primer uso. Pesado.
-#[tauri::command]
-#[specta::specta]
-pub async fn install_chatterbox_runtime(app: AppHandle) -> Result<(), String> {
-    chatterbox::install_runtime(&app).await
 }
 
 /// Aprovisiona el runtime Kokoro (venv + kokoro-onnx + pesos con checksum).

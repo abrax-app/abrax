@@ -43,7 +43,7 @@ pub fn voices_dir(app: &AppHandle) -> Result<PathBuf, String> {
     Ok(dir)
 }
 
-/// Carpeta de runtimes (piper, kokoro, chatterbox): `<datadir>/tts/runtime/<name>`.
+/// Carpeta de runtimes (piper, kokoro): `<datadir>/tts/runtime/<name>`.
 pub fn runtime_dir(app: &AppHandle, name: &str) -> Result<PathBuf, String> {
     let dir = tts_dir(app)?.join("runtime").join(name);
     Ok(dir)

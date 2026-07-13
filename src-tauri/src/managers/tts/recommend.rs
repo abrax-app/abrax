@@ -1,39 +1,16 @@
-//! Árbol de decisión de la sección 4 del prompt: hardware → motor recomendado.
-//! **Regla clave: NINGUNA rama recomienda la nube.** Todo motor devuelto es
-//! local. La disponibilidad real (¿descargado? ¿falla?) y el fallback a Voces
-//! del sistema se resuelven aparte en `resolve_engine`.
+//! Recomendación de motor. **Regla clave: ninguna rama recomienda la nube.**
+//! Todos los motores son locales y CPU, así que la GPU ya no influye: se
+//! recomienda Kokoro (premium local, mejor calidad + reparto de voces), y la
+//! disponibilidad real (¿aprovisionado?) degrada a Piper y luego al sistema en
+//! `resolve_engine`.
 
 use super::engine::EngineId;
-use super::hardware::{GpuType, GpuVendor, HardwareInfo};
+use super::hardware::HardwareInfo;
 
-/// VRAM mínima orientativa (best-effort) para ofrecer Chatterbox en NVIDIA.
-/// El prompt dice "≥ ~6 GB". Si la VRAM es ilegible (`None`) se decide por
-/// vendor + tipo (no se inventa un número).
-pub const CHATTERBOX_MIN_VRAM_MB: u32 = 6000;
-
-/// Devuelve el motor **ideal** para este hardware (sin considerar si está
-/// descargado). Ver la tabla de la sección 4:
-/// - NVIDIA discreta ≥ ~6 GB → Chatterbox
-/// - Apple Silicon (M1+)      → Chatterbox (MPS)
-/// - Solo CPU / GPU no compatible → Piper
-pub fn recommend_engine(hw: &HardwareInfo) -> EngineId {
-    // Apple Silicon corre Chatterbox en Metal (MPS), sin importar la VRAM.
-    if hw.gpu_vendor == GpuVendor::Apple {
-        return EngineId::Chatterbox;
-    }
-
-    // NVIDIA discreta: Chatterbox si hay VRAM suficiente, o si es ilegible
-    // (`None`) decidimos por vendor+tipo (best-effort, sin inventar cifras).
-    if hw.gpu_vendor == GpuVendor::Nvidia && hw.gpu_type == GpuType::Discrete {
-        return match hw.vram_mb {
-            Some(mb) if mb < CHATTERBOX_MIN_VRAM_MB => EngineId::Piper,
-            _ => EngineId::Chatterbox,
-        };
-    }
-
-    // Todo lo demás (solo CPU, AMD/Intel, integrada, desconocida): Piper es el
-    // estándar neuronal local. Chatterbox solo corre en CUDA/MPS.
-    EngineId::Piper
+/// Motor **ideal** (sin considerar si está aprovisionado). Kokoro es la mejor
+/// voz local; `_hw` se conserva por si futuras heurísticas lo necesitan.
+pub fn recommend_engine(_hw: &HardwareInfo) -> EngineId {
+    EngineId::Kokoro
 }
 
 /// Resuelve el motor **activo** combinando la recomendación con la
@@ -66,99 +43,37 @@ mod tests {
     }
 
     #[test]
-    fn nvidia_discrete_with_enough_vram_recommends_chatterbox() {
-        let h = hw(GpuVendor::Nvidia, GpuType::Discrete, Some(12000));
-        assert_eq!(recommend_engine(&h), EngineId::Chatterbox);
-    }
-
-    #[test]
-    fn nvidia_discrete_unknown_vram_recommends_chatterbox() {
-        // VRAM ilegible → best-effort por vendor+tipo, NO se inventa número.
-        let h = hw(GpuVendor::Nvidia, GpuType::Discrete, None);
-        assert_eq!(recommend_engine(&h), EngineId::Chatterbox);
-    }
-
-    #[test]
-    fn nvidia_discrete_low_vram_falls_to_piper() {
-        let h = hw(GpuVendor::Nvidia, GpuType::Discrete, Some(4000));
-        assert_eq!(recommend_engine(&h), EngineId::Piper);
-    }
-
-    #[test]
-    fn nvidia_integrated_recommends_piper() {
-        // GPU NVIDIA pero integrada (raro): no es el caso Chatterbox del árbol.
-        let h = hw(GpuVendor::Nvidia, GpuType::Integrated, None);
-        assert_eq!(recommend_engine(&h), EngineId::Piper);
-    }
-
-    #[test]
-    fn apple_silicon_recommends_chatterbox() {
-        // Apple reporta integrada en wgpu, pero corre Chatterbox por MPS.
-        let h = hw(GpuVendor::Apple, GpuType::Integrated, None);
-        assert_eq!(recommend_engine(&h), EngineId::Chatterbox);
-    }
-
-    #[test]
-    fn intel_integrated_recommends_piper() {
-        let h = hw(GpuVendor::Intel, GpuType::Integrated, None);
-        assert_eq!(recommend_engine(&h), EngineId::Piper);
-    }
-
-    #[test]
-    fn amd_discrete_recommends_piper() {
-        // AMD no tiene CUDA/MPS → Piper (no Chatterbox).
-        let h = hw(GpuVendor::Amd, GpuType::Discrete, Some(16000));
-        assert_eq!(recommend_engine(&h), EngineId::Piper);
-    }
-
-    #[test]
-    fn cpu_only_recommends_piper() {
-        let h = hw(GpuVendor::None, GpuType::Unknown, None);
-        assert_eq!(recommend_engine(&h), EngineId::Piper);
-    }
-
-    #[test]
-    fn no_branch_recommends_cloud() {
-        // Barrido de todas las combinaciones: el motor recomendado SIEMPRE es local.
+    fn recommends_kokoro_regardless_of_hardware() {
         for vendor in [
             GpuVendor::Nvidia,
             GpuVendor::Apple,
             GpuVendor::Amd,
             GpuVendor::Intel,
-            GpuVendor::Unknown,
             GpuVendor::None,
         ] {
-            for gpu_type in [
-                GpuType::Discrete,
-                GpuType::Integrated,
-                GpuType::Virtual,
-                GpuType::Cpu,
-                GpuType::Unknown,
-            ] {
-                for vram in [None, Some(0), Some(4000), Some(8000), Some(24000)] {
-                    let rec = recommend_engine(&hw(vendor, gpu_type, vram));
-                    assert!(rec.is_local(), "recomendó un motor no-local: {rec:?}");
-                }
-            }
+            let rec = recommend_engine(&hw(vendor, GpuType::Discrete, Some(12000)));
+            assert_eq!(rec, EngineId::Kokoro);
         }
     }
 
     #[test]
+    fn recommendation_is_always_local() {
+        assert!(recommend_engine(&hw(GpuVendor::None, GpuType::Cpu, None)).is_local());
+    }
+
+    #[test]
     fn resolve_falls_back_to_system_when_nothing_available() {
-        // Recomendado = Chatterbox, nada disponible → System (nunca silencio/nube).
-        let active = resolve_engine(EngineId::Chatterbox, |_| false);
-        assert_eq!(active, EngineId::System);
+        assert_eq!(resolve_engine(EngineId::Kokoro, |_| false), EngineId::System);
     }
 
     #[test]
     fn resolve_falls_back_to_piper_when_recommended_unavailable() {
-        let active = resolve_engine(EngineId::Chatterbox, |e| e == EngineId::Piper);
+        let active = resolve_engine(EngineId::Kokoro, |e| e == EngineId::Piper);
         assert_eq!(active, EngineId::Piper);
     }
 
     #[test]
     fn resolve_keeps_recommended_when_available() {
-        let active = resolve_engine(EngineId::Chatterbox, |_| true);
-        assert_eq!(active, EngineId::Chatterbox);
+        assert_eq!(resolve_engine(EngineId::Kokoro, |_| true), EngineId::Kokoro);
     }
 }

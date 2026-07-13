@@ -846,7 +846,6 @@
     "errorSetEngine": "Couldn't switch engine.",
     "descSystem": "Operating-system voices. Always available, no downloads.",
     "descPiper": "Lightweight neural Spanish voice, runs on CPU.",
-    "descKokoro": "High-quality neural voice on CPU.",
-    "descChatterbox": "Studio-quality with a GPU (NVIDIA or Apple Silicon)."
+    "descKokoro": "High-quality neural voice on CPU."
   }
 }

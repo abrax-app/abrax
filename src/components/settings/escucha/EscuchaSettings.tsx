@@ -96,17 +96,20 @@ export const EscuchaSettings: React.FC = () => {
 
   const contenedorRef = useRef<HTMLDivElement>(null);
 
-  // Cargar voces del sistema al montar (ordenadas: español primero).
+  // Cargar las voces del motor activo — y RECARGARLAS al cambiar de motor, para
+  // que el reparto (es/en, M/F) del nuevo motor aparezca de una. Si la voz
+  // elegida ya no existe en el nuevo motor, se cae a una válida (español primero).
   useEffect(() => {
     let cancelado = false;
     commands.escuchaListVoices().then((r) => {
       if (cancelado) return;
       if (r.status === "ok") {
         setVoces(r.data);
+        const valido = (id: string | null) => !!id && r.data.some((v) => v.id === id);
         const primeraEs = r.data.find((v) => v.es_espanol) ?? r.data[0];
         if (primeraEs) {
-          setVozProsa((prev) => prev ?? primeraEs.id);
-          setVozCodigo((prev) => prev ?? primeraEs.id);
+          setVozProsa((prev) => (valido(prev) ? prev : primeraEs.id));
+          setVozCodigo((prev) => (valido(prev) ? prev : primeraEs.id));
         }
         setMotorDisponible(r.data.length > 0);
       } else {
@@ -116,7 +119,7 @@ export const EscuchaSettings: React.FC = () => {
     return () => {
       cancelado = true;
     };
-  }, []);
+  }, [settings?.tts_selected_engine]);
 
   const detenerMotor = useCallback(() => {
     tokenRef.current += 1;

@@ -18,7 +18,7 @@ ejecutable. Abrax aplica exactamente eso:
 - Los runtimes que contienen GPL se **descargan/aprovisionan en el primer uso**
   en `<datadir>/tts/runtime/…`, **fuera del repositorio y del instalador**, y se
   ejecutan como **procesos separados** con los que Abrax habla por CLI/stdin
-  (Piper) o por HTTP en 127.0.0.1 (Chatterbox/Kokoro).
+  (Piper) o por HTTP en 127.0.0.1 (Kokoro).
 - Resultado: **cero GPL en el repositorio MIT, cero GPL en el instalador.**
 
 ## Componentes por motor
@@ -41,14 +41,6 @@ ejecutable. Abrax aplica exactamente eso:
 | Fonemizador español de `kokoro-onnx` (`espeakng-loader` / `phonemizer-fork`) | **GPL-3.0** | Dentro del venv (proceso servidor separado). Nunca en el repo. |
 | Pesos `kokoro-v1.0.onnx` + `voices-v1.0.bin` | **Apache-2.0** | Descargados con sha256 desde el release de `kokoro-onnx`. |
 
-### Chatterbox (motor premium, GPU NVIDIA/Apple)
-
-| Componente | Licencia | Cómo se distribuye |
-|---|---|---|
-| `chatterbox-tts` (Resemble AI) | **MIT** | En el venv aprovisionado con `uv`, fuera del repo. |
-| PyTorch (`torch`, `torchaudio`) | **BSD-3-Clause** | En el venv. |
-| Modelo Chatterbox | licencia del modelo (ver su tarjeta) | Descargado por el propio paquete en la 1.ª síntesis, cacheado localmente. |
-
 ### Voces del sistema (fallback)
 
 Voces del sistema operativo (SAPI en Windows, AVSpeech en macOS,
@@ -57,9 +49,9 @@ Abrax redistribuya.
 
 ## Scripts de servidor (código de Abrax, MIT)
 
-`resources/tts/chatterbox_server.py` y `resources/tts/kokoro_server.py` son
-código propio (MIT), embebidos en el binario y escritos al `runtime_dir` al
-arrancar. Solo orquestan el runtime aprovisionado; no contienen código GPL.
+`resources/tts/kokoro_server.py` es código propio (MIT), embebido en el binario
+y escrito al `runtime_dir` al arrancar. Solo orquesta el runtime aprovisionado;
+no contiene código GPL.
 
 ## Verificación de integridad
 

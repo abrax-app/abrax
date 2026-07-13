@@ -846,7 +846,6 @@
     "errorSetEngine": "엔진을 변경하지 못했습니다.",
     "descSystem": "운영 체제 음성입니다. 항상 사용 가능하며 다운로드가 필요 없습니다.",
     "descPiper": "가볍고 CPU에서 실행되는 한국어 신경망 음성입니다.",
-    "descKokoro": "CPU에서 실행되는 고품질 신경망 음성입니다.",
-    "descChatterbox": "GPU로 구현하는 스튜디오 품질 (NVIDIA 또는 Apple Silicon)."
+    "descKokoro": "CPU에서 실행되는 고품질 신경망 음성입니다."
   }
 }

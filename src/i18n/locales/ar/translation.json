@@ -846,7 +846,6 @@
     "errorSetEngine": "تعذّر تغيير المحرك.",
     "descSystem": "أصوات نظام التشغيل. متاحة دائمًا، دون أي تنزيل.",
     "descPiper": "صوت عصبي بالعربية، خفيف، يعمل على CPU.",
-    "descKokoro": "صوت عصبي عالي الجودة على CPU.",
-    "descChatterbox": "جودة استوديو مع GPU (NVIDIA أو Apple Silicon)."
+    "descKokoro": "صوت عصبي عالي الجودة على CPU."
   }
 }

@@ -1,10 +1,10 @@
 //! Motor genérico "servidor Python local": ABRAX arranca un servidor de síntesis
 //! (nuestro script MIT, embebido en el binario) usando un runtime Python
-//! **provisionado aparte en el primer uso** (torch/kokoro-onnx, que arrastran
-//! espeak-ng GPL). El runtime NUNCA se embebe ni redistribuye en el repo MIT
-//! ("mere aggregation"): se aprovisiona con `uv` en `<datadir>/tts/runtime/<x>`.
-//! Chatterbox y Kokoro son configuraciones de este motor. El audio va y viene
-//! por 127.0.0.1 — nunca sale del equipo.
+//! **provisionado aparte en el primer uso** (kokoro-onnx, que arrastra espeak-ng
+//! GPL). El runtime NUNCA se embebe ni redistribuye en el repo MIT ("mere
+//! aggregation"): se aprovisiona con `uv` en `<datadir>/tts/runtime/<x>`. Kokoro
+//! es una configuración de este motor. El audio va y viene por 127.0.0.1 — nunca
+//! sale del equipo.
 
 use std::io::{BufRead, Write};
 use std::net::TcpListener;
@@ -22,7 +22,7 @@ use crate::managers::escucha::VozEscucha;
 
 /// Una voz que expone el motor (parte del "reparto" es/en, masculino/femenino).
 pub struct VoiceSpec {
-    /// Id que entiende el servidor (p.ej. `em_alex` en Kokoro, `es` en Chatterbox).
+    /// Id que entiende el servidor (p.ej. `em_alex` en Kokoro).
     pub id: &'static str,
     /// Nombre visible en el selector.
     pub display: &'static str,
@@ -139,8 +139,8 @@ impl PyServerEngine {
         let script = self.write_server_script()?;
         let port = free_port().ok_or_else(|| TtsError::Io("sin puerto local libre".into()))?;
 
-        // Aviso a la UI: el modelo se está cargando (la 1.ª vez tarda decenas de
-        // segundos, sobre todo Chatterbox en GPU). Se libera con `tts-engine-ready`.
+        // Aviso a la UI: el modelo se está cargando (la 1.ª vez tarda unos
+        // segundos). Se libera con `tts-engine-ready`.
         let _ = self.app.emit("tts-engine-loading", self.cfg.id);
 
         let mut child = Command::new(&python)

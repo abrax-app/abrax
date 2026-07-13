@@ -846,7 +846,6 @@
     "errorSetEngine": "לא ניתן היה להחליף את המנוע.",
     "descSystem": "קולות מערכת ההפעלה. תמיד זמין, ללא הורדות.",
     "descPiper": "קול נוירוני בעברית, קליל, רץ על CPU.",
-    "descKokoro": "קול נוירוני באיכות גבוהה על CPU.",
-    "descChatterbox": "איכות אולפן עם GPU (NVIDIA או Apple Silicon)."
+    "descKokoro": "קול נוירוני באיכות גבוהה על CPU."
   }
 }

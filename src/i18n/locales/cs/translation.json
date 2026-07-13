@@ -846,7 +846,6 @@
     "errorSetEngine": "Modul se nepodařilo změnit.",
     "descSystem": "Hlasy operačního systému. Vždy dostupné, bez stahování.",
     "descPiper": "Neuronální hlas v češtině, nenáročný, běží na CPU.",
-    "descKokoro": "Vysoce kvalitní neuronální hlas na CPU.",
-    "descChatterbox": "Studiová kvalita s GPU (NVIDIA nebo Apple Silicon)."
+    "descKokoro": "Vysoce kvalitní neuronální hlas na CPU."
   }
 }

@@ -846,7 +846,6 @@
     "errorSetEngine": "Det gick inte att byta motor.",
     "descSystem": "Operativsystemets röster. Alltid tillgängliga, inga nedladdningar.",
     "descPiper": "Neural röst på svenska, lätt, körs på CPU.",
-    "descKokoro": "Neural röst av hög kvalitet på CPU.",
-    "descChatterbox": "Studiokvalitet med GPU (NVIDIA eller Apple Silicon)."
+    "descKokoro": "Neural röst av hög kvalitet på CPU."
   }
 }

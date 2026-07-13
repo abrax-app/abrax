@@ -846,7 +846,6 @@
     "errorSetEngine": "Die Engine konnte nicht gewechselt werden.",
     "descSystem": "Stimmen des Betriebssystems. Immer verfügbar, ohne Downloads.",
     "descPiper": "Neuronale Stimme auf Deutsch, leichtgewichtig, läuft auf der CPU.",
-    "descKokoro": "Hochwertige neuronale Stimme, läuft auf der CPU.",
-    "descChatterbox": "Studioqualität mit GPU (NVIDIA oder Apple Silicon)."
+    "descKokoro": "Hochwertige neuronale Stimme, läuft auf der CPU."
   }
 }

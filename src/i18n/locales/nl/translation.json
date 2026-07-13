@@ -846,7 +846,6 @@
     "errorSetEngine": "Kon niet van engine wisselen.",
     "descSystem": "Stemmen van het besturingssysteem. Altijd beschikbaar, geen downloads.",
     "descPiper": "Neurale stem in het Nederlands, licht, draait op CPU.",
-    "descKokoro": "Hoogwaardige neurale stem op CPU.",
-    "descChatterbox": "Studiokwaliteit met GPU (NVIDIA of Apple Silicon)."
+    "descKokoro": "Hoogwaardige neurale stem op CPU."
   }
 }

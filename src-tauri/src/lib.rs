@@ -664,7 +664,6 @@ pub fn run(cli_args: CliArgs) {
             commands::tts::list_piper_voices,
             commands::tts::install_piper_runtime,
             commands::tts::install_piper_voice,
-            commands::tts::install_chatterbox_runtime,
             commands::tts::install_kokoro_runtime,
         ])
         .events(collect_events![

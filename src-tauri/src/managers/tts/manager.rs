@@ -1,5 +1,5 @@
 //! `TtsManager`: registro multi-motor + enrutado. Envuelve el `EscuchaManager`
-//! (motor del sistema) y añade los motores neuronales (Piper/Kokoro/Chatterbox).
+//! (motor del sistema) y añade los motores neuronales (Piper y Kokoro).
 //! Resuelve el motor **activo** desde settings + hardware (recomendación) y
 //! enruta `speak`/`list_voices`/`stop`/`status` a ese motor — **sin duplicar los
 //! comandos de Escucha**. Los motores neuronales se construyen de forma perezosa
@@ -13,7 +13,7 @@ use super::engine::{EngineId, EngineStatus, TtsEngine, TtsOptions};
 use super::hardware::{detect_hardware, HardwareInfo};
 use super::playback::PlaybackService;
 use super::recommend::{recommend_engine, resolve_engine};
-use super::{chatterbox, download, kokoro, piper, pyserver};
+use super::{download, kokoro, piper, pyserver};
 use crate::managers::escucha::{EscuchaManager, EstadoEscucha, VozEscucha};
 use crate::settings;
 
@@ -21,7 +21,6 @@ use crate::settings;
 struct Inner {
     playback: Option<Arc<PlaybackService>>,
     piper: Option<piper::PiperEngine>,
-    chatterbox: Option<pyserver::PyServerEngine>,
     kokoro: Option<pyserver::PyServerEngine>,
     active: EngineId,
 }
@@ -43,7 +42,6 @@ impl TtsManager {
             inner: Mutex::new(Inner {
                 playback: None,
                 piper: None,
-                chatterbox: None,
                 kokoro: None,
                 active: EngineId::System,
             }),
@@ -63,9 +61,8 @@ impl TtsManager {
             .unwrap_or_else(|_| detect_hardware())
     }
 
-    /// ¿Está disponible este motor AHORA? (hardware compatible + runtime/modelo).
+    /// ¿Está disponible este motor AHORA? (runtime/modelo presente).
     pub fn is_engine_available(&self, id: EngineId) -> bool {
-        let hw = self.hardware_snapshot();
         match id {
             EngineId::System => self
                 .escucha
@@ -82,9 +79,6 @@ impl TtsManager {
                             })
                         })
                         .unwrap_or(false)
-            }
-            EngineId::Chatterbox => {
-                pyserver::PyServerEngine::gpu_compatible(&hw) && chatterbox::is_installed(&self.app)
             }
             EngineId::Kokoro => kokoro::is_installed(&self.app),
         }
@@ -197,20 +191,10 @@ impl TtsManager {
         Ok(())
     }
 
-    /// Construye perezosamente un motor basado en servidor Python (Chatterbox/Kokoro).
+    /// Construye perezosamente un motor basado en servidor Python (Kokoro).
     fn ensure_pyserver(&self, inner: &mut Inner, id: EngineId) -> Result<(), String> {
         let playback = self.ensure_playback(inner)?;
         match id {
-            EngineId::Chatterbox if inner.chatterbox.is_none() => {
-                let dir = download::runtime_dir(&self.app, chatterbox::RUNTIME_NAME)?;
-                inner.chatterbox = Some(pyserver::PyServerEngine::new(
-                    &chatterbox::CONFIG,
-                    self.app.clone(),
-                    dir,
-                    playback,
-                    1.0,
-                ));
-            }
             EngineId::Kokoro if inner.kokoro.is_none() => {
                 let dir = download::runtime_dir(&self.app, kokoro::RUNTIME_NAME)?;
                 inner.kokoro = Some(pyserver::PyServerEngine::new(
@@ -241,14 +225,6 @@ impl TtsManager {
                     .piper
                     .as_mut()
                     .ok_or_else(|| "piper no inicializado".to_string())?;
-                Ok(f(eng))
-            }
-            EngineId::Chatterbox => {
-                self.ensure_pyserver(&mut inner, EngineId::Chatterbox)?;
-                let eng = inner
-                    .chatterbox
-                    .as_mut()
-                    .ok_or_else(|| "chatterbox no inicializado".to_string())?;
                 Ok(f(eng))
             }
             EngineId::Kokoro => {

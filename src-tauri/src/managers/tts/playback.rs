@@ -1,4 +1,4 @@
-//! Reproducción de audio para los motores neuronales (Piper/Kokoro/Chatterbox).
+//! Reproducción de audio para los motores neuronales (Piper y Kokoro).
 //!
 //! El motor del sistema (SAPI/AVSpeech) reproduce por el SO; los neuronales
 //! producen PCM y lo suenan por aquí. Un hilo dedicado abre un `OutputStream`

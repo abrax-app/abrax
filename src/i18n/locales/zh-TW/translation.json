@@ -846,7 +846,6 @@
     "errorSetEngine": "無法切換引擎。",
     "descSystem": "作業系統內建語音。隨時可用，無需下載。",
     "descPiper": "輕量中文神經網路語音，可在 CPU 上運行。",
-    "descKokoro": "在 CPU 上運行的高品質神經網路語音。",
-    "descChatterbox": "錄音室等級品質，需要 GPU（NVIDIA 或 Apple Silicon）。"
+    "descKokoro": "在 CPU 上運行的高品質神經網路語音。"
   }
 }

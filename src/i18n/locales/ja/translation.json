@@ -846,7 +846,6 @@
     "errorSetEngine": "エンジンを切り替えられませんでした。",
     "descSystem": "OS のシステム音声。常に利用でき、ダウンロード不要です。",
     "descPiper": "軽量な日本語のニューラル音声。CPU で動作します。",
-    "descKokoro": "CPU で動作する高品質なニューラル音声。",
-    "descChatterbox": "GPU（NVIDIA または Apple Silicon）でスタジオ品質の音声。"
+    "descKokoro": "CPU で動作する高品質なニューラル音声。"
   }
 }

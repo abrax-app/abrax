@@ -1062,17 +1062,6 @@ async installPiperVoice(voiceId: string) : Promise<Result<null, string>> {
 }
 },
 /**
- * Aprovisiona el runtime Chatterbox (venv + torch) en el primer uso. Pesado.
- */
-async installChatterboxRuntime() : Promise<Result<null, string>> {
-    try {
-    return { status: "ok", data: await TAURI_INVOKE("install_chatterbox_runtime") };
-} catch (e) {
-    if(e instanceof Error) throw e;
-    else return { status: "error", error: e  as any };
-}
-},
-/**
  * Aprovisiona el runtime Kokoro (venv + kokoro-onnx + pesos con checksum).
  */
 async installKokoroRuntime() : Promise<Result<null, string>> {
@@ -1230,11 +1219,7 @@ export type EngineId =
 /**
  * Kokoro-82M (ONNX). Premium en CPU.
  */
-"kokoro" | 
-/**
- * Chatterbox (Resemble AI, PyTorch). Premium con GPU NVIDIA/Apple.
- */
-"chatterbox"
+"kokoro"
 /**
  * Requisitos de un motor para orientar la UI y la recomendación.
  */

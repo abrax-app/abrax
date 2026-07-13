@@ -846,7 +846,6 @@
     "errorSetEngine": "Motor değiştirilemedi.",
     "descSystem": "İşletim sisteminin sesleri. Her zaman kullanılabilir, indirme gerekmez.",
     "descPiper": "Türkçe nöral ses, hafif, CPU'da çalışır.",
-    "descKokoro": "CPU'da yüksek kaliteli nöral ses.",
-    "descChatterbox": "GPU ile stüdyo kalitesi (NVIDIA veya Apple Silicon)."
+    "descKokoro": "CPU'da yüksek kaliteli nöral ses."
   }
 }

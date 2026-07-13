@@ -846,7 +846,6 @@
     "errorSetEngine": "Nie udało się zmienić silnika.",
     "descSystem": "Głosy systemu operacyjnego. Zawsze dostępne, bez pobierania.",
     "descPiper": "Neuronowy głos po polsku, lekki, działa na CPU.",
-    "descKokoro": "Wysokiej jakości głos neuronowy na CPU.",
-    "descChatterbox": "Jakość studyjna z GPU (NVIDIA lub Apple Silicon)."
+    "descKokoro": "Wysokiej jakości głos neuronowy na CPU."
   }
 }

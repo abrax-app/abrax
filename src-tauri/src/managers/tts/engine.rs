@@ -26,34 +26,23 @@ pub enum EngineId {
     Piper,
     /// Kokoro-82M (ONNX). Premium en CPU.
     Kokoro,
-    /// Chatterbox (Resemble AI, PyTorch). Premium con GPU NVIDIA/Apple.
-    Chatterbox,
 }
 
 impl EngineId {
     /// Todos los motores, en orden de "tier" descendente para mostrar.
-    pub const ALL: [EngineId; 4] = [
-        EngineId::Chatterbox,
-        EngineId::Kokoro,
-        EngineId::Piper,
-        EngineId::System,
-    ];
+    pub const ALL: [EngineId; 3] = [EngineId::Kokoro, EngineId::Piper, EngineId::System];
 
     pub fn display_name(&self) -> &'static str {
         match self {
             EngineId::System => "Voces del sistema",
             EngineId::Piper => "Piper",
             EngineId::Kokoro => "Kokoro",
-            EngineId::Chatterbox => "Chatterbox",
         }
     }
 
     /// Invariante duro: **todos los motores son locales, ninguno usa la nube.**
     pub fn is_local(&self) -> bool {
-        matches!(
-            self,
-            EngineId::System | EngineId::Piper | EngineId::Kokoro | EngineId::Chatterbox
-        )
+        matches!(self, EngineId::System | EngineId::Piper | EngineId::Kokoro)
     }
 }
 

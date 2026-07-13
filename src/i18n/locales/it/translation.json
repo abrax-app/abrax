@@ -846,7 +846,6 @@
     "errorSetEngine": "Impossibile cambiare il motore.",
     "descSystem": "Voci del sistema operativo. Sempre disponibili, senza download.",
     "descPiper": "Voce neurale in italiano, leggera, gira su CPU.",
-    "descKokoro": "Voce neurale di alta qualità su CPU.",
-    "descChatterbox": "Qualità da studio con GPU (NVIDIA o Apple Silicon)."
+    "descKokoro": "Voce neurale di alta qualità su CPU."
   }
 }

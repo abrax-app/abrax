@@ -846,7 +846,6 @@
     "errorSetEngine": "无法切换引擎。",
     "descSystem": "操作系统自带语音。始终可用，无需下载。",
     "descPiper": "轻量级西班牙语神经语音，可在 CPU 上运行。",
-    "descKokoro": "高质量神经语音，在 CPU 上运行。",
-    "descChatterbox": "借助 GPU（NVIDIA 或 Apple Silicon）实现录音棚级音质。"
+    "descKokoro": "高质量神经语音，在 CPU 上运行。"
   }
 }

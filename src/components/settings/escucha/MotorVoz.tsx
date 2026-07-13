@@ -76,7 +76,6 @@ export const MotorVoz: React.FC = () => {
         system: t("tts.descSystem"),
         piper: t("tts.descPiper"),
         kokoro: t("tts.descKokoro"),
-        chatterbox: t("tts.descChatterbox"),
       })[id] ?? "",
     [t],
   );
@@ -85,16 +84,14 @@ export const MotorVoz: React.FC = () => {
     const r = await commands.escuchaListVoices();
     if (r.status === "ok") {
       setVoces(r.data);
-      setVozPrueba(
-        (prev) =>
-          prev ??
-          settings?.tts_voice ??
-          r.data.find((v) => v.es_espanol)?.id ??
-          r.data[0]?.id ??
-          null,
-      );
+      // Al cambiar de motor las voces cambian: conserva la selección solo si
+      // sigue siendo válida; si no, elige una del nuevo reparto (español primero).
+      setVozPrueba((prev) => {
+        if (prev && r.data.some((v) => v.id === prev)) return prev;
+        return r.data.find((v) => v.es_espanol)?.id ?? r.data[0]?.id ?? null;
+      });
     }
-  }, [settings?.tts_voice]);
+  }, []);
 
   const recargarEstado = useCallback(async () => {
     const [rec, act, list] = await Promise.all([
@@ -132,8 +129,8 @@ export const MotorVoz: React.FC = () => {
     };
   }, []);
 
-  // Carga del modelo/servidor de un motor neuronal (la 1.ª vez tarda; Chatterbox
-  // en GPU ~40 s). Se muestra un aviso y se libera con `tts-engine-ready`.
+  // Carga del modelo/servidor de un motor neuronal (la 1.ª vez tarda unos
+  // segundos). Se muestra un aviso y se libera con `tts-engine-ready`.
   useEffect(() => {
     const unL = listen<EngineId>("tts-engine-loading", (e) => setPreparando(e.payload));
     const unR = listen<EngineId>("tts-engine-ready", () => setPreparando(null));

@@ -846,7 +846,6 @@
     "errorSetEngine": "Không thể chuyển công cụ.",
     "descSystem": "Giọng nói của hệ điều hành. Luôn có sẵn, không cần tải xuống.",
     "descPiper": "Giọng nói nơ-ron tiếng Tây Ban Nha, nhẹ, chạy trên CPU.",
-    "descKokoro": "Giọng nói nơ-ron chất lượng cao trên CPU.",
-    "descChatterbox": "Chất lượng phòng thu với GPU (NVIDIA hoặc Apple Silicon)."
+    "descKokoro": "Giọng nói nơ-ron chất lượng cao trên CPU."
   }
 }

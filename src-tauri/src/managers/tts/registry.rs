@@ -17,9 +17,5 @@ pub fn requirements_for(id: EngineId) -> EngineRequirements {
             needs_gpu: false,
             needs_download: true,
         },
-        EngineId::Chatterbox => EngineRequirements {
-            needs_gpu: true,
-            needs_download: true,
-        },
     }
 }
