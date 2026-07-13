@@ -99,6 +99,7 @@ wgpu = { version = "30.0.0", default-features = false, features = [
   "metal",
 ] }
 pollster = "1.0.1"
+zip = { version = "2", default-features = false, features = ["deflate"] }
 
 [target.'cfg(unix)'.dependencies]
 signal-hook = "0.3"

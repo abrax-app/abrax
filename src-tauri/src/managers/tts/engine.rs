@@ -123,15 +123,13 @@ impl std::error::Error for TtsError {}
 /// Contrato común de un motor TTS local. `Send` porque el registro vive en un
 /// hilo de trabajo dedicado (patrón actor, como Escucha).
 pub trait TtsEngine: Send {
+    /// Identidad del motor (para diagnóstico/enrutado). El nombre visible y los
+    /// requisitos se derivan de `EngineId`/`registry`, no del trait.
     fn id(&self) -> EngineId;
-
-    fn display_name(&self) -> &str;
 
     /// ¿Puede usarse en este equipo AHORA? (hardware compatible **y** runtime/
     /// modelo ya presente). El fallback en runtime depende de esto.
     fn is_available(&self, hw: &HardwareInfo) -> bool;
-
-    fn requirements(&self) -> EngineRequirements;
 
     /// Sintetiza `text` con la voz `voice` (id específico del motor; `None` = la
     /// voz por defecto del motor) y lo **reproduce**. Cada motor posee su salida

@@ -184,9 +184,17 @@ fn initialize_core_logic(app_handle: &AppHandle) {
     app_handle.manage(transcription_manager.clone());
     app_handle.manage(history_manager.clone());
     app_handle.manage(tray::CurrentTrayIconState::new());
-    // [ESCUCHA] El motor TTS vive en su propio hilo y se inicializa perezosamente
-    // en el primer uso, así que crearlo aquí no cuesta nada en el arranque.
-    app_handle.manage(Arc::new(managers::escucha::EscuchaManager::new()));
+    // [ESCUCHA] El motor TTS del sistema vive en su propio hilo y se inicializa
+    // perezosamente en el primer uso, así que crearlo aquí no cuesta nada.
+    let escucha_manager = Arc::new(managers::escucha::EscuchaManager::new());
+    app_handle.manage(escucha_manager.clone());
+    // [TTS] Motor de voz adaptativo: envuelve Escucha (sistema) + motores
+    // neuronales (Piper/…, construidos perezosamente). Detecta el hardware al
+    // crearse y resuelve el motor activo desde settings.
+    app_handle.manage(Arc::new(managers::tts::manager::TtsManager::new(
+        app_handle.clone(),
+        escucha_manager,
+    )));
 
     // Note: Shortcuts are NOT initialized here.
     // The frontend is responsible for calling the `initialize_shortcuts` command
@@ -646,6 +654,16 @@ pub fn run(cli_args: CliArgs) {
             commands::escucha::escucha_read_file,
             commands::escucha::escucha_read_clipboard,
             commands::escucha::escucha_update_settings,
+            // [TTS] Motor de voz adaptativo (detección + motores + descarga)
+            commands::tts::detect_hardware,
+            commands::tts::redetect_hardware,
+            commands::tts::list_engines,
+            commands::tts::get_recommended_engine,
+            commands::tts::get_active_engine,
+            commands::tts::set_engine,
+            commands::tts::list_piper_voices,
+            commands::tts::install_piper_runtime,
+            commands::tts::install_piper_voice,
         ])
         .events(collect_events![
             managers::history::HistoryUpdatePayload,

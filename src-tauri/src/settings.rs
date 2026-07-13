@@ -549,6 +549,17 @@ pub struct AppSettings {
     #[serde(default)]
     pub escucha_verbosidad_simbolos: crate::managers::escucha::preproceso::VerbosidadSimbolos,
     // [ESCUCHA] -----------------------------------------------------------------
+    // [TTS] --- Motor de voz adaptativo -----------------------------------------
+    /// Motor TTS elegido; None = decidir por `tts_auto_detect` (recomendación por hardware).
+    #[serde(default)]
+    pub tts_selected_engine: Option<crate::managers::tts::engine::EngineId>,
+    /// Autodetectar el mejor motor LOCAL disponible cuando no hay elección explícita.
+    #[serde(default = "default_tts_auto_detect")]
+    pub tts_auto_detect: bool,
+    /// Id de la voz del motor activo (None = la app elige la primera disponible).
+    #[serde(default)]
+    pub tts_voice: Option<String>,
+    // [TTS] ---------------------------------------------------------------------
 }
 
 fn default_model() -> String {
@@ -832,6 +843,11 @@ fn default_escucha_rate_codigo() -> f32 {
     0.9
 }
 
+// [TTS]
+fn default_tts_auto_detect() -> bool {
+    true
+}
+
 fn ensure_post_process_defaults(settings: &mut AppSettings) -> bool {
     let mut changed = false;
     for provider in default_post_process_providers() {
@@ -1010,6 +1026,10 @@ pub fn get_default_settings() -> AppSettings {
         escucha_rate_prosa: default_escucha_rate_prosa(),
         escucha_rate_codigo: default_escucha_rate_codigo(),
         escucha_verbosidad_simbolos: Default::default(),
+        // [TTS]
+        tts_selected_engine: None,
+        tts_auto_detect: default_tts_auto_detect(),
+        tts_voice: None,
     }
 }
 
@@ -1428,6 +1448,26 @@ mod tests {
             .insert("ui_shell".into(), serde_json::json!("holographic"));
         assert!(serde_json::from_value::<AppSettings>(stored.clone()).is_err());
         assert_eq!(salvage_settings(&stored).ui_shell, default_ui_shell());
+    }
+
+    #[test]
+    fn tts_engine_defaults_and_salvages() {
+        // Store vacío → defaults TTS (auto-detección, sin motor/voz fijados).
+        let settings: AppSettings = serde_json::from_value(serde_json::json!({}))
+            .expect("tts fields need serde defaults");
+        assert_eq!(settings.tts_selected_engine, None);
+        assert!(settings.tts_auto_detect);
+        assert_eq!(settings.tts_voice, None);
+
+        // Variante de motor desconocida (build futuro) → salvage la descarta a
+        // None sin resetear el resto de settings.
+        let mut stored = default_settings_json();
+        stored.as_object_mut().unwrap().insert(
+            "tts_selected_engine".into(),
+            serde_json::json!("hologram_voice"),
+        );
+        assert!(serde_json::from_value::<AppSettings>(stored.clone()).is_err());
+        assert_eq!(salvage_settings(&stored).tts_selected_engine, None);
     }
 
     #[test]

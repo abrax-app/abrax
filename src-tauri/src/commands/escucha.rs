@@ -7,24 +7,27 @@
 use crate::managers::escucha::preproceso::{
     preprocesar, ModoLectura, OracionHablable, VerbosidadSimbolos,
 };
-use crate::managers::escucha::{EscuchaManager, EstadoEscucha, VozEscucha};
+use crate::managers::escucha::{EstadoEscucha, VozEscucha};
+use crate::managers::tts::manager::TtsManager;
 use std::sync::Arc;
 use tauri::{AppHandle, State};
 
+// speak/list_voices/stop/status se ENRUTAN al motor activo vía `TtsManager`
+// (sistema, Piper, …) sin duplicar comandos: el manager decide el motor y, para
+// el del sistema, delega en el `EscuchaManager` que envuelve.
+
 #[tauri::command]
 #[specta::specta]
-pub fn escucha_list_voices(
-    manager: State<'_, Arc<EscuchaManager>>,
-) -> Result<Vec<VozEscucha>, String> {
+pub fn escucha_list_voices(manager: State<'_, Arc<TtsManager>>) -> Result<Vec<VozEscucha>, String> {
     manager.list_voices()
 }
 
-/// `rate` es un multiplicador de velocidad (1.0 = normal); ver
-/// `managers::escucha::map_rate` para el mapeo al rango nativo del backend.
+/// `rate` es un multiplicador de velocidad (1.0 = normal). Cada motor lo mapea a
+/// su rango (el del sistema vía `escucha::map_rate`; Piper vía `length_scale`).
 #[tauri::command]
 #[specta::specta]
 pub fn escucha_speak(
-    manager: State<'_, Arc<EscuchaManager>>,
+    manager: State<'_, Arc<TtsManager>>,
     texto: String,
     voz_id: Option<String>,
     rate: Option<f32>,
@@ -34,13 +37,13 @@ pub fn escucha_speak(
 
 #[tauri::command]
 #[specta::specta]
-pub fn escucha_stop(manager: State<'_, Arc<EscuchaManager>>) -> Result<(), String> {
+pub fn escucha_stop(manager: State<'_, Arc<TtsManager>>) -> Result<(), String> {
     manager.stop()
 }
 
 #[tauri::command]
 #[specta::specta]
-pub fn escucha_status(manager: State<'_, Arc<EscuchaManager>>) -> Result<EstadoEscucha, String> {
+pub fn escucha_status(manager: State<'_, Arc<TtsManager>>) -> Result<EstadoEscucha, String> {
     manager.status()
 }
 
