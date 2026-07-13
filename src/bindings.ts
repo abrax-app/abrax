@@ -1060,6 +1060,28 @@ async installPiperVoice(voiceId: string) : Promise<Result<null, string>> {
     if(e instanceof Error) throw e;
     else return { status: "error", error: e  as any };
 }
+},
+/**
+ * Aprovisiona el runtime Chatterbox (venv + torch) en el primer uso. Pesado.
+ */
+async installChatterboxRuntime() : Promise<Result<null, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("install_chatterbox_runtime") };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+/**
+ * Aprovisiona el runtime Kokoro (venv + kokoro-onnx + pesos con checksum).
+ */
+async installKokoroRuntime() : Promise<Result<null, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("install_kokoro_runtime") };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
 }
 }
 

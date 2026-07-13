@@ -157,7 +157,21 @@ fn build_stream(device_name: Option<String>) -> Result<rodio::OutputStream, Stri
 
 /// Lee un WAV (PCM entero o float; estéreo → mono) a muestras f32 + sample_rate.
 pub fn read_wav_mono_f32(path: &Path) -> Result<(Vec<f32>, u32), String> {
-    let mut reader = hound::WavReader::open(path).map_err(|e| e.to_string())?;
+    let reader = hound::WavReader::open(path).map_err(|e| e.to_string())?;
+    read_wav_mono_f32_inner(reader)
+}
+
+/// Igual, pero desde bytes en memoria (los servidores neuronales devuelven WAV
+/// por HTTP).
+pub fn read_wav_mono_f32_from_bytes(bytes: &[u8]) -> Result<(Vec<f32>, u32), String> {
+    let reader =
+        hound::WavReader::new(std::io::Cursor::new(bytes)).map_err(|e| e.to_string())?;
+    read_wav_mono_f32_inner(reader)
+}
+
+fn read_wav_mono_f32_inner<R: std::io::Read>(
+    mut reader: hound::WavReader<R>,
+) -> Result<(Vec<f32>, u32), String> {
     let spec = reader.spec();
     let channels = spec.channels.max(1) as usize;
     let interleaved: Vec<f32> = match spec.sample_format {

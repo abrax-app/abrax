@@ -13,7 +13,7 @@ use super::engine::{EngineId, EngineStatus, TtsEngine, TtsOptions};
 use super::hardware::{detect_hardware, HardwareInfo};
 use super::playback::PlaybackService;
 use super::recommend::{recommend_engine, resolve_engine};
-use super::{download, piper};
+use super::{chatterbox, download, kokoro, piper, pyserver};
 use crate::managers::escucha::{EscuchaManager, EstadoEscucha, VozEscucha};
 use crate::settings;
 
@@ -21,6 +21,8 @@ use crate::settings;
 struct Inner {
     playback: Option<Arc<PlaybackService>>,
     piper: Option<piper::PiperEngine>,
+    chatterbox: Option<pyserver::PyServerEngine>,
+    kokoro: Option<pyserver::PyServerEngine>,
     active: EngineId,
 }
 
@@ -41,6 +43,8 @@ impl TtsManager {
             inner: Mutex::new(Inner {
                 playback: None,
                 piper: None,
+                chatterbox: None,
+                kokoro: None,
                 active: EngineId::System,
             }),
         };
@@ -79,11 +83,10 @@ impl TtsManager {
                         })
                         .unwrap_or(false)
             }
-            // Kokoro y Chatterbox se implementan en commits posteriores.
-            EngineId::Kokoro | EngineId::Chatterbox => {
-                let _ = &hw;
-                false
+            EngineId::Chatterbox => {
+                pyserver::PyServerEngine::gpu_compatible(&hw) && chatterbox::is_installed(&self.app)
             }
+            EngineId::Kokoro => kokoro::is_installed(&self.app),
         }
     }
 
@@ -194,6 +197,29 @@ impl TtsManager {
         Ok(())
     }
 
+    /// Construye perezosamente un motor basado en servidor Python (Chatterbox/Kokoro).
+    fn ensure_pyserver(&self, inner: &mut Inner, id: EngineId) -> Result<(), String> {
+        let playback = self.ensure_playback(inner)?;
+        match id {
+            EngineId::Chatterbox if inner.chatterbox.is_none() => {
+                let dir = download::runtime_dir(&self.app, chatterbox::RUNTIME_NAME)?;
+                inner.chatterbox = Some(pyserver::PyServerEngine::new(
+                    &chatterbox::CONFIG,
+                    dir,
+                    playback,
+                    1.0,
+                ));
+            }
+            EngineId::Kokoro if inner.kokoro.is_none() => {
+                let dir = download::runtime_dir(&self.app, kokoro::RUNTIME_NAME)?;
+                inner.kokoro =
+                    Some(pyserver::PyServerEngine::new(&kokoro::CONFIG, dir, playback, 1.0));
+            }
+            _ => {}
+        }
+        Ok(())
+    }
+
     /// Ejecuta `f` sobre el motor ACTIVO, construyéndolo perezosamente si es neuronal.
     fn with_active<R>(&self, f: impl FnOnce(&mut dyn TtsEngine) -> R) -> Result<R, String> {
         let mut inner = self.inner.lock().map_err(|_| "tts inner envenenado".to_string())?;
@@ -211,10 +237,21 @@ impl TtsManager {
                     .ok_or_else(|| "piper no inicializado".to_string())?;
                 Ok(f(eng))
             }
-            EngineId::Kokoro | EngineId::Chatterbox => {
-                // Aún no implementados: degradar al sistema (nunca silencio/nube).
-                let mut eng = super::system::SystemEngine::new(self.escucha.clone());
-                Ok(f(&mut eng))
+            EngineId::Chatterbox => {
+                self.ensure_pyserver(&mut inner, EngineId::Chatterbox)?;
+                let eng = inner
+                    .chatterbox
+                    .as_mut()
+                    .ok_or_else(|| "chatterbox no inicializado".to_string())?;
+                Ok(f(eng))
+            }
+            EngineId::Kokoro => {
+                self.ensure_pyserver(&mut inner, EngineId::Kokoro)?;
+                let eng = inner
+                    .kokoro
+                    .as_mut()
+                    .ok_or_else(|| "kokoro no inicializado".to_string())?;
+                Ok(f(eng))
             }
         }
     }

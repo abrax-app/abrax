@@ -11,12 +11,15 @@
 //! Reglas de oro: **todo es local, siempre hay un fallback que funciona, ninguna
 //! rama cae a la nube.**
 
+pub mod chatterbox;
 pub mod download;
 pub mod engine;
 pub mod hardware;
+pub mod kokoro;
 pub mod manager;
 pub mod piper;
 pub mod playback;
+pub mod pyserver;
 pub mod recommend;
 pub mod registry;
 pub mod system;
