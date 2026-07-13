@@ -13,10 +13,23 @@ use std::process::{Child, Command, Stdio};
 use std::sync::mpsc;
 use std::time::Duration;
 
+use tauri::{AppHandle, Emitter};
+
 use super::engine::{EngineId, TtsEngine, TtsError, TtsOptions};
 use super::hardware::{GpuVendor, HardwareInfo};
 use super::playback::{self, PlaybackService, TARGET_DBFS};
 use crate::managers::escucha::VozEscucha;
+
+/// Una voz que expone el motor (parte del "reparto" es/en, masculino/femenino).
+pub struct VoiceSpec {
+    /// Id que entiende el servidor (p.ej. `em_alex` en Kokoro, `es` en Chatterbox).
+    pub id: &'static str,
+    /// Nombre visible en el selector.
+    pub display: &'static str,
+    /// Código de idioma para la síntesis (`es` / `en`).
+    pub lang: &'static str,
+    pub es_espanol: bool,
+}
 
 /// Configuración estática de un motor basado en servidor Python.
 pub struct PyServerConfig {
@@ -27,12 +40,13 @@ pub struct PyServerConfig {
     pub needs_gpu: bool,
     /// Argumento de dispositivo que se pasa al servidor.
     pub device_arg: &'static str,
-    /// Voz por defecto (id que entiende el servidor), o vacío.
-    pub default_voice: &'static str,
+    /// Voces disponibles (la primera es la de por defecto).
+    pub voices: &'static [VoiceSpec],
 }
 
 pub struct PyServerEngine {
     cfg: &'static PyServerConfig,
+    app: AppHandle,
     runtime_dir: PathBuf,
     playback: std::sync::Arc<PlaybackService>,
     volume: f32,
@@ -43,12 +57,14 @@ pub struct PyServerEngine {
 impl PyServerEngine {
     pub fn new(
         cfg: &'static PyServerConfig,
+        app: AppHandle,
         runtime_dir: PathBuf,
         playback: std::sync::Arc<PlaybackService>,
         volume: f32,
     ) -> Self {
         Self {
             cfg,
+            app,
             runtime_dir,
             playback,
             volume,
@@ -123,6 +139,10 @@ impl PyServerEngine {
         let script = self.write_server_script()?;
         let port = free_port().ok_or_else(|| TtsError::Io("sin puerto local libre".into()))?;
 
+        // Aviso a la UI: el modelo se está cargando (la 1.ª vez tarda decenas de
+        // segundos, sobre todo Chatterbox en GPU). Se libera con `tts-engine-ready`.
+        let _ = self.app.emit("tts-engine-loading", self.cfg.id);
+
         let mut child = Command::new(&python)
             .arg(&script)
             .arg("--port")
@@ -151,7 +171,10 @@ impl PyServerEngine {
             }
         });
 
-        match rx.recv_timeout(Duration::from_secs(180)) {
+        let ready = rx.recv_timeout(Duration::from_secs(180));
+        // Libera el indicador de la UI pase lo que pase.
+        let _ = self.app.emit("tts-engine-ready", self.cfg.id);
+        match ready {
             Ok(()) => {
                 self.child = Some(child);
                 self.base_url = format!("http://127.0.0.1:{port}");
@@ -187,14 +210,26 @@ impl TtsEngine for PyServerEngine {
 
     fn speak(&mut self, text: &str, voice: Option<&str>, _opts: &TtsOptions) -> Result<(), TtsError> {
         self.ensure_server()?;
-        let voz = voice.unwrap_or(self.cfg.default_voice);
+        // Voz pedida si es válida; si no, la primera del reparto. El idioma sale
+        // de la voz (es/en) para que el servidor fonemice correctamente.
+        let voz = voice
+            .filter(|v| self.cfg.voices.iter().any(|s| s.id == *v))
+            .or_else(|| self.cfg.voices.first().map(|s| s.id))
+            .unwrap_or("");
+        let lang = self
+            .cfg
+            .voices
+            .iter()
+            .find(|s| s.id == voz)
+            .map(|s| s.lang)
+            .unwrap_or("es");
         let client = reqwest::blocking::Client::builder()
             .timeout(Duration::from_secs(120))
             .build()
             .map_err(|e| TtsError::Io(e.to_string()))?;
         let resp = client
             .post(format!("{}/synthesize", self.base_url))
-            .json(&serde_json::json!({ "text": text, "language_id": "es", "voice": voz }))
+            .json(&serde_json::json!({ "text": text, "language_id": lang, "voice": voz }))
             .send()
             .map_err(|e| TtsError::Synthesis(e.to_string()))?;
         if !resp.status().is_success() {
@@ -223,13 +258,17 @@ impl TtsEngine for PyServerEngine {
     }
 
     fn list_voices(&self) -> Result<Vec<VozEscucha>, TtsError> {
-        // Voz única por defecto (los servidores exponen su voz es-419).
-        Ok(vec![VozEscucha {
-            id: self.cfg.default_voice.to_string(),
-            nombre: format!("{} (es-419)", self.cfg.id.display_name()),
-            idioma: "es".to_string(),
-            es_espanol: true,
-        }])
+        Ok(self
+            .cfg
+            .voices
+            .iter()
+            .map(|s| VozEscucha {
+                id: s.id.to_string(),
+                nombre: s.display.to_string(),
+                idioma: s.lang.to_string(),
+                es_espanol: s.es_espanol,
+            })
+            .collect())
     }
 }
 

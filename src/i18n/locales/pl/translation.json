@@ -816,6 +816,7 @@
     "verbosityLiteral": "Dosłownie (wszystkie symbole)"
   },
   "tts": {
+    "preparingVoice": "Przygotowywanie {{engine}}… za pierwszym razem trwa kilka sekund.",
     "engineSystem": "Głosy systemowe",
     "title": "Silnik głosu",
     "localBadge": "100% lokalnie",

@@ -816,6 +816,7 @@
     "verbosityLiteral": "逐字（所有符号）"
   },
   "tts": {
+    "preparingVoice": "正在准备 {{engine}}… 首次需要几秒钟。",
     "engineSystem": "系统语音",
     "title": "语音引擎",
     "localBadge": "100% 本地",

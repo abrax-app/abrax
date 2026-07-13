@@ -816,6 +816,7 @@
     "verbosityLiteral": "Doslovně (všechny symboly)"
   },
   "tts": {
+    "preparingVoice": "Připravuje se {{engine}}… poprvé to trvá pár sekund.",
     "engineSystem": "Systémové hlasy",
     "title": "Hlasový modul",
     "localBadge": "100% lokální",

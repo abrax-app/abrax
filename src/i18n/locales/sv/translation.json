@@ -816,6 +816,7 @@
     "verbosityLiteral": "Bokstavlig (alla symboler)"
   },
   "tts": {
+    "preparingVoice": "Förbereder {{engine}}… första gången tar det några sekunder.",
     "engineSystem": "Systemröster",
     "title": "Röstmotor",
     "localBadge": "100% lokal",

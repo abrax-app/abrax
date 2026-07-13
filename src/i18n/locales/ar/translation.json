@@ -816,6 +816,7 @@
     "verbosityLiteral": "حرفي (كل الرموز)"
   },
   "tts": {
+    "preparingVoice": "جارٍ تحضير {{engine}}… تستغرق أول مرة بضع ثوانٍ.",
     "engineSystem": "أصوات النظام",
     "title": "محرك الصوت",
     "localBadge": "محلي 100%",

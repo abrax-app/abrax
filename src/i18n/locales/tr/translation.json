@@ -816,6 +816,7 @@
     "verbosityLiteral": "Birebir (tüm semboller)"
   },
   "tts": {
+    "preparingVoice": "{{engine}} hazırlanıyor… ilk seferde birkaç saniye sürer.",
     "engineSystem": "Sistem sesleri",
     "title": "Ses motoru",
     "localBadge": "%100 yerel",

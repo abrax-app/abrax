@@ -34,9 +34,13 @@ class Engine:
         self.kokoro = Kokoro("kokoro-v1.0.onnx", "voices-v1.0.bin")
         self.sr = 24000
 
-    def synthesize(self, text: str, voice: str = "em_alex") -> np.ndarray:
+    # Idioma de Abrax (es/en) → código de kokoro-onnx.
+    LANG_MAP = {"es": "es", "en": "en-us"}
+
+    def synthesize(self, text: str, voice: str = "em_alex", lang: str = "es") -> np.ndarray:
+        kok_lang = self.LANG_MAP.get(lang, lang)
         samples, sr = self.kokoro.create(
-            text, voice=voice or "em_alex", speed=1.0, lang="es"
+            text, voice=voice or "em_alex", speed=1.0, lang=kok_lang
         )
         self.sr = int(sr)
         return np.asarray(samples, dtype=np.float32)
@@ -80,13 +84,21 @@ def make_handler(engine: Engine):
                 return
             try:
                 length = int(self.headers.get("Content-Length", "0"))
-                payload = json.loads(self.rfile.read(length) or b"{}")
+                raw = self.rfile.read(length) or b"{}"
+                # Robusto a la codificación del cliente: UTF-8 y, si no, latin-1
+                # (evita UnicodeDecodeError con acentos/ñ si algo no mandó UTF-8).
+                try:
+                    body = raw.decode("utf-8")
+                except UnicodeDecodeError:
+                    body = raw.decode("latin-1")
+                payload = json.loads(body)
                 text = (payload.get("text") or "").strip()
                 if not text:
                     self._json(400, {"error": "texto vacío"})
                     return
                 voice = payload.get("voice") or "em_alex"
-                samples = engine.synthesize(text, voice)
+                lang = payload.get("language_id", "es")
+                samples = engine.synthesize(text, voice, lang)
                 data = to_wav_bytes(samples, engine.sr)
                 self.send_response(200)
                 self.send_header("Content-Type", "audio/wav")

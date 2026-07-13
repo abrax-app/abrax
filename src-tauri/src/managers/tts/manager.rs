@@ -205,6 +205,7 @@ impl TtsManager {
                 let dir = download::runtime_dir(&self.app, chatterbox::RUNTIME_NAME)?;
                 inner.chatterbox = Some(pyserver::PyServerEngine::new(
                     &chatterbox::CONFIG,
+                    self.app.clone(),
                     dir,
                     playback,
                     1.0,
@@ -212,8 +213,13 @@ impl TtsManager {
             }
             EngineId::Kokoro if inner.kokoro.is_none() => {
                 let dir = download::runtime_dir(&self.app, kokoro::RUNTIME_NAME)?;
-                inner.kokoro =
-                    Some(pyserver::PyServerEngine::new(&kokoro::CONFIG, dir, playback, 1.0));
+                inner.kokoro = Some(pyserver::PyServerEngine::new(
+                    &kokoro::CONFIG,
+                    self.app.clone(),
+                    dir,
+                    playback,
+                    1.0,
+                ));
             }
             _ => {}
         }

@@ -59,6 +59,8 @@ export const MotorVoz: React.FC = () => {
   const [cargando, setCargando] = useState(true);
   const [ocupado, setOcupado] = useState<EngineId | null>(null);
   const [progreso, setProgreso] = useState<Progreso | null>(null);
+  // Motor cuyo servidor/modelo se está cargando por primera vez (indicador).
+  const [preparando, setPreparando] = useState<EngineId | null>(null);
 
   const engineDisplay = useCallback(
     (id: EngineId): string =>
@@ -127,6 +129,17 @@ export const MotorVoz: React.FC = () => {
     );
     return () => {
       void un.then((f) => f());
+    };
+  }, []);
+
+  // Carga del modelo/servidor de un motor neuronal (la 1.ª vez tarda; Chatterbox
+  // en GPU ~40 s). Se muestra un aviso y se libera con `tts-engine-ready`.
+  useEffect(() => {
+    const unL = listen<EngineId>("tts-engine-loading", (e) => setPreparando(e.payload));
+    const unR = listen<EngineId>("tts-engine-ready", () => setPreparando(null));
+    return () => {
+      void unL.then((f) => f());
+      void unR.then((f) => f());
     };
   }, []);
 
@@ -223,6 +236,20 @@ export const MotorVoz: React.FC = () => {
           {t("tts.localBadge")}
         </span>
       </div>
+
+      {preparando && (
+        <div
+          className="flex items-center gap-2 rounded-md bg-logo-primary/10 border border-logo-primary/30 px-3 py-2 text-sm"
+          role="status"
+          aria-live="polite"
+        >
+          <RefreshCw
+            className="w-4 h-4 animate-spin text-logo-primary shrink-0"
+            aria-hidden="true"
+          />
+          <span>{t("tts.preparingVoice", { engine: engineDisplay(preparando) })}</span>
+        </div>
+      )}
 
       {cargando && !hardware ? (
         <p className="text-xs text-text/50">{t("tts.detecting")}</p>

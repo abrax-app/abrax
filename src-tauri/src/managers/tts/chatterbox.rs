@@ -7,7 +7,7 @@ use tauri::AppHandle;
 
 use super::download;
 use super::engine::EngineId;
-use super::pyserver::{self, PyServerConfig};
+use super::pyserver::{self, PyServerConfig, VoiceSpec};
 
 pub const RUNTIME_NAME: &str = "chatterbox";
 
@@ -16,7 +16,22 @@ pub static CONFIG: PyServerConfig = PyServerConfig {
     server_source: include_str!("../../../resources/tts/chatterbox_server.py"),
     needs_gpu: true,
     device_arg: "auto",
-    default_voice: "es",
+    // Chatterbox multilingüe: la "voz" es el idioma; el modelo usa su voz por
+    // defecto por idioma (clonación con audio de referencia = futuro).
+    voices: &[
+        VoiceSpec {
+            id: "es",
+            display: "Español",
+            lang: "es",
+            es_espanol: true,
+        },
+        VoiceSpec {
+            id: "en",
+            display: "English",
+            lang: "en",
+            es_espanol: false,
+        },
+    ],
 };
 
 /// ¿Está el runtime Chatterbox aprovisionado (venv con torch+chatterbox)?

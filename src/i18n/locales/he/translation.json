@@ -816,6 +816,7 @@
     "verbosityLiteral": "מילולי (כל הסמלים)"
   },
   "tts": {
+    "preparingVoice": "מכין את {{engine}}… בפעם הראשונה זה לוקח כמה שניות.",
     "engineSystem": "קולות המערכת",
     "title": "מנוע קול",
     "localBadge": "‏100% מקומי",

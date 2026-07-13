@@ -9,7 +9,7 @@ use tauri::AppHandle;
 
 use super::download;
 use super::engine::EngineId;
-use super::pyserver::{self, PyServerConfig};
+use super::pyserver::{self, PyServerConfig, VoiceSpec};
 
 pub const RUNTIME_NAME: &str = "kokoro";
 
@@ -18,7 +18,33 @@ pub static CONFIG: PyServerConfig = PyServerConfig {
     server_source: include_str!("../../../resources/tts/kokoro_server.py"),
     needs_gpu: false,
     device_arg: "cpu",
-    default_voice: "em_alex",
+    // Reparto es/en × masculino/femenino (todas en voices-v1.0.bin ya descargado).
+    voices: &[
+        VoiceSpec {
+            id: "em_alex",
+            display: "Español · masculino (Alex)",
+            lang: "es",
+            es_espanol: true,
+        },
+        VoiceSpec {
+            id: "ef_dora",
+            display: "Español · femenino (Dora)",
+            lang: "es",
+            es_espanol: true,
+        },
+        VoiceSpec {
+            id: "am_michael",
+            display: "English · male (Michael)",
+            lang: "en",
+            es_espanol: false,
+        },
+        VoiceSpec {
+            id: "af_bella",
+            display: "English · female (Bella)",
+            lang: "en",
+            es_espanol: false,
+        },
+    ],
 };
 
 // Pesos Kokoro (Apache-2.0), release de kokoro-onnx; sha256 verificado.

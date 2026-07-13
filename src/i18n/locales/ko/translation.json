@@ -816,6 +816,7 @@
     "verbosityLiteral": "그대로 (모든 기호)"
   },
   "tts": {
+    "preparingVoice": "{{engine}} 준비 중… 처음에는 몇 초 걸립니다.",
     "engineSystem": "시스템 음성",
     "title": "음성 엔진",
     "localBadge": "100% 로컬",

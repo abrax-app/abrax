@@ -816,6 +816,7 @@
     "verbosityLiteral": "Letterlijk (alle symbolen)"
   },
   "tts": {
+    "preparingVoice": "{{engine}} wordt voorbereid… de eerste keer duurt een paar seconden.",
     "engineSystem": "Systeemstemmen",
     "title": "Spraakengine",
     "localBadge": "100% lokaal",

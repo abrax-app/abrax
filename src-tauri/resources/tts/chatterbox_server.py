@@ -129,7 +129,13 @@ def make_handler(engine: Engine):
                 return
             try:
                 length = int(self.headers.get("Content-Length", "0"))
-                payload = json.loads(self.rfile.read(length) or b"{}")
+                raw = self.rfile.read(length) or b"{}"
+                # Robusto a la codificación del cliente: UTF-8 y, si no, latin-1.
+                try:
+                    body = raw.decode("utf-8")
+                except UnicodeDecodeError:
+                    body = raw.decode("latin-1")
+                payload = json.loads(body)
                 text = (payload.get("text") or "").strip()
                 if not text:
                     self._json(400, {"error": "texto vacío"})
