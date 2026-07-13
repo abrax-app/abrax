@@ -86,6 +86,19 @@ tauri-plugin-dialog = "2.6"
 hf-hub = { git = "https://github.com/cjpais/hf-hub", branch = "cancellable-downloads", features = [
   "tokio",
 ] }
+# [TTS] Detección de GPU cross-platform para recomendar el motor de voz: se usa
+# solo `Instance::enumerate_adapters` → `AdapterInfo` (vendor por PCI ID + tipo
+# discreta/integrada). No creamos device ni renderizamos nada.
+#
+# Sin backend DX12 a propósito: `wgpu-hal 30`+`gpu-allocator` chocan por versión
+# de `windows`/`windows-core` (0.62 vs. nuestro pin 0.61) SOLO en el path DX12.
+# Para enumerar adaptadores en Windows basta Vulkan (ya presente para whisper);
+# Vulkan reporta vendor (PCI id) y tipo discreta/integrada igual que DX12.
+wgpu = { version = "30.0.0", default-features = false, features = [
+  "vulkan",
+  "metal",
+] }
+pollster = "1.0.1"
 
 [target.'cfg(unix)'.dependencies]
 signal-hook = "0.3"
@@ -111,6 +124,11 @@ windows = { version = "0.61.3", features = [
   "Win32_System_Variant",
   "Win32_Foundation",
   "Win32_UI_WindowsAndMessaging",
+  # [TTS] Lectura de VRAM dedicada por adaptador (DXGI) para la detección de
+  # hardware: wgpu no expone la VRAM total, así que en Windows se consulta
+  # `IDXGIAdapter1::GetDesc1().DedicatedVideoMemory` como best-effort.
+  "Win32_Graphics_Dxgi",
+  "Win32_Graphics_Dxgi_Common",
 ] }
 winreg = "0.55"
 
