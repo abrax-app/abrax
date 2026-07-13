@@ -816,6 +816,7 @@
     "verbosityLiteral": "逐字（所有符號）"
   },
   "tts": {
+    "engineSystem": "系統語音",
     "title": "語音引擎",
     "localBadge": "100% 本機",
     "detecting": "正在偵測你的裝置…",

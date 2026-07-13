@@ -816,6 +816,7 @@
     "verbosityLiteral": "Bokstavlig (alla symboler)"
   },
   "tts": {
+    "engineSystem": "Systemröster",
     "title": "Röstmotor",
     "localBadge": "100% lokal",
     "detecting": "Identifierar din dator…",

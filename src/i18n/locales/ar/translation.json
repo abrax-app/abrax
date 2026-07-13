@@ -816,6 +816,7 @@
     "verbosityLiteral": "حرفي (كل الرموز)"
   },
   "tts": {
+    "engineSystem": "أصوات النظام",
     "title": "محرك الصوت",
     "localBadge": "محلي 100%",
     "detecting": "جارٍ اكتشاف جهازك…",

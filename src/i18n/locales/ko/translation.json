@@ -816,6 +816,7 @@
     "verbosityLiteral": "그대로 (모든 기호)"
   },
   "tts": {
+    "engineSystem": "시스템 음성",
     "title": "음성 엔진",
     "localBadge": "100% 로컬",
     "detecting": "기기를 감지하는 중…",

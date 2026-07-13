@@ -816,6 +816,7 @@
     "verbosityLiteral": "Nguyên văn (mọi ký hiệu)"
   },
   "tts": {
+    "engineSystem": "Giọng hệ thống",
     "title": "Công cụ giọng nói",
     "localBadge": "100% cục bộ",
     "detecting": "Đang nhận diện thiết bị của bạn…",

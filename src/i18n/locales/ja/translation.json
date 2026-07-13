@@ -816,6 +816,7 @@
     "verbosityLiteral": "リテラル（すべての記号）"
   },
   "tts": {
+    "engineSystem": "システムの音声",
     "title": "音声エンジン",
     "localBadge": "100% ローカル",
     "detecting": "お使いの環境を検出中…",

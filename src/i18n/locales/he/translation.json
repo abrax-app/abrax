@@ -816,6 +816,7 @@
     "verbosityLiteral": "מילולי (כל הסמלים)"
   },
   "tts": {
+    "engineSystem": "קולות המערכת",
     "title": "מנוע קול",
     "localBadge": "‏100% מקומי",
     "detecting": "מזהה את המחשב שלך…",

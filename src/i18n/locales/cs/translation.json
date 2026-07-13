@@ -816,6 +816,7 @@
     "verbosityLiteral": "Doslovně (všechny symboly)"
   },
   "tts": {
+    "engineSystem": "Systémové hlasy",
     "title": "Hlasový modul",
     "localBadge": "100% lokální",
     "detecting": "Rozpoznáváme tvůj hardware…",

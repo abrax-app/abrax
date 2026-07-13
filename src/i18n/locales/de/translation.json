@@ -816,6 +816,7 @@
     "verbosityLiteral": "Wörtlich (alle Symbole)"
   },
   "tts": {
+    "engineSystem": "Systemstimmen",
     "title": "Sprach-Engine",
     "localBadge": "100% lokal",
     "detecting": "Dein Gerät wird erkannt…",

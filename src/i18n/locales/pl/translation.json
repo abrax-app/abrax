@@ -816,6 +816,7 @@
     "verbosityLiteral": "Dosłownie (wszystkie symbole)"
   },
   "tts": {
+    "engineSystem": "Głosy systemowe",
     "title": "Silnik głosu",
     "localBadge": "100% lokalnie",
     "detecting": "Wykrywanie Twojego sprzętu…",

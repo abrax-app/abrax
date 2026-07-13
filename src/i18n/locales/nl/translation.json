@@ -816,6 +816,7 @@
     "verbosityLiteral": "Letterlijk (alle symbolen)"
   },
   "tts": {
+    "engineSystem": "Systeemstemmen",
     "title": "Spraakengine",
     "localBadge": "100% lokaal",
     "detecting": "Je apparaat detecteren…",

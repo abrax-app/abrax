@@ -816,6 +816,7 @@
     "verbosityLiteral": "逐字（所有符号）"
   },
   "tts": {
+    "engineSystem": "系统语音",
     "title": "语音引擎",
     "localBadge": "100% 本地",
     "detecting": "正在检测你的设备…",
