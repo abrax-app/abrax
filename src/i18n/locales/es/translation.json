@@ -816,6 +816,7 @@
     "verbosityLiteral": "Literal (todos los símbolos)"
   },
   "tts": {
+    "vram": "({{gb}} GB VRAM)",
     "descOnline": "Voces neuronales de Microsoft (Azure). No local: envía el texto por internet.",
     "onlineWarning": "requiere internet · tu voz sale del equipo",
     "preparingVoice": "Preparando {{engine}}… la primera vez tarda unos segundos.",

@@ -816,6 +816,7 @@
     "verbosityLiteral": "מילולי (כל הסמלים)"
   },
   "tts": {
+    "vram": "({{gb}} GB VRAM)",
     "descOnline": "קולות נוירוניים של Microsoft (Azure). לא מקומי: שולח את הטקסט דרך האינטרנט.",
     "onlineWarning": "דורש אינטרנט · הטקסט יוצא מהמכשיר",
     "preparingVoice": "מכין את {{engine}}… בפעם הראשונה זה לוקח כמה שניות.",

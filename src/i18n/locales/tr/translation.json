@@ -816,6 +816,7 @@
     "verbosityLiteral": "Birebir (tüm semboller)"
   },
   "tts": {
+    "vram": "({{gb}} GB VRAM)",
     "descOnline": "Microsoft nöral sesleri (Azure). Yerel değil: metni internet üzerinden gönderir.",
     "onlineWarning": "internet gerektirir · metin cihazdan ayrılır",
     "preparingVoice": "{{engine}} hazırlanıyor… ilk seferde birkaç saniye sürer.",

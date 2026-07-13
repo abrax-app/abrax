@@ -816,6 +816,7 @@
     "verbosityLiteral": "अक्षरशः (सबै प्रतीक)"
   },
   "tts": {
+    "vram": "({{gb}} GB VRAM)",
     "descOnline": "Microsoft का न्यूरल आवाजहरू (Azure)। स्थानीय होइन: पाठ इन्टरनेटबाट पठाउँछ।",
     "onlineWarning": "इन्टरनेट चाहिन्छ · पाठ यन्त्रबाट बाहिर जान्छ",
     "preparingVoice": "{{engine}} तयार गर्दै… पहिलो पटक केही सेकेन्ड लाग्छ।",

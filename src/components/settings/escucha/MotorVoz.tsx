@@ -115,7 +115,6 @@ export const MotorVoz: React.FC = () => {
 
   useEffect(() => {
     void cargar();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Progreso de descarga de assets TTS (runtime/voces).
@@ -271,7 +270,7 @@ export const MotorVoz: React.FC = () => {
             {hardware.vram_mb != null && (
               <span className="text-text/40">
                 {" "}
-                ({Math.round(hardware.vram_mb / 1024)} GB VRAM)
+                {t("tts.vram", { gb: Math.round(hardware.vram_mb / 1024) })}
               </span>
             )}
           </p>

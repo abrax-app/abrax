@@ -816,6 +816,7 @@
     "verbosityLiteral": "Doslovně (všechny symboly)"
   },
   "tts": {
+    "vram": "({{gb}} GB VRAM)",
     "descOnline": "Neuronové hlasy Microsoftu (Azure). Není lokální: posílá text přes internet.",
     "onlineWarning": "vyžaduje internet · text opustí zařízení",
     "preparingVoice": "Připravuje se {{engine}}… poprvé to trvá pár sekund.",

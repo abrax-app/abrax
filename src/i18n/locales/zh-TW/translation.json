@@ -816,6 +816,7 @@
     "verbosityLiteral": "逐字（所有符號）"
   },
   "tts": {
+    "vram": "({{gb}} GB VRAM)",
     "descOnline": "微軟神經語音（Azure）。非本機：透過網際網路傳送文字。",
     "onlineWarning": "需要連網 · 文字會離開本機",
     "preparingVoice": "正在準備 {{engine}}… 首次需要幾秒鐘。",

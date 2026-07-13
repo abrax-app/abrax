@@ -816,6 +816,7 @@
     "verbosityLiteral": "Bokstavlig (alla symboler)"
   },
   "tts": {
+    "vram": "({{gb}} GB VRAM)",
     "descOnline": "Microsofts neurala röster (Azure). Inte lokalt: skickar texten över internet.",
     "onlineWarning": "kräver internet · din text lämnar enheten",
     "preparingVoice": "Förbereder {{engine}}… första gången tar det några sekunder.",
