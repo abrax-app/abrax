@@ -41,6 +41,19 @@ ejecutable. Abrax aplica exactamente eso:
 | Fonemizador español de `kokoro-onnx` (`espeakng-loader` / `phonemizer-fork`) | **GPL-3.0** | Dentro del venv (proceso servidor separado). Nunca en el repo. |
 | Pesos `kokoro-v1.0.onnx` + `voices-v1.0.bin` | **Apache-2.0** | Descargados con sha256 desde el release de `kokoro-onnx`. |
 
+### Voz online (edge-tts) — ⚠️ NO LOCAL, opt-in
+
+**Excepción deliberada** al principio "100% local" (decisión de producto). Este
+motor **envía el texto a los servidores de Microsoft** (edge-tts usa el endpoint
+de lectura en voz alta de Edge). Va **desactivado por defecto** y marcado en la UI
+con «requiere internet · tu voz sale del equipo».
+
+| Componente | Licencia | Cómo se distribuye |
+|---|---|---|
+| `edge-tts` | **GPL-3.0-or-later** | En el venv aprovisionado con `uv`, fuera del repo (proceso separado, "mere aggregation"). Nunca en el repo/instalador. |
+| `miniaudio` (decodifica MP3→PCM) | **MIT-0 / dominio público** | En el venv. |
+| Voces neuronales de Microsoft (Azure) | servicio de Microsoft | Se sintetizan **en la nube**; el audio vuelve por 127.0.0.1. Para producción correspondería Azure TTS con clave. |
+
 ### Voces del sistema (fallback)
 
 Voces del sistema operativo (SAPI en Windows, AVSpeech en macOS,
@@ -49,9 +62,9 @@ Abrax redistribuya.
 
 ## Scripts de servidor (código de Abrax, MIT)
 
-`resources/tts/kokoro_server.py` es código propio (MIT), embebido en el binario
-y escrito al `runtime_dir` al arrancar. Solo orquesta el runtime aprovisionado;
-no contiene código GPL.
+`resources/tts/kokoro_server.py` y `resources/tts/online_server.py` son código
+propio (MIT), embebidos en el binario y escritos al `runtime_dir` al arrancar.
+Solo orquestan el runtime aprovisionado; no contienen código GPL.
 
 ## Verificación de integridad
 
