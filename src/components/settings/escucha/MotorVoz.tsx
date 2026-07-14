@@ -259,16 +259,18 @@ export const MotorVoz: React.FC = () => {
 
   const probarVoz = useCallback(async () => {
     await commands.escuchaStop();
-    const r = await commands.escuchaSpeak(
-      t("tts.sampleText"),
-      vozPrueba,
-      velocidad,
-      tono,
-    );
+    // El texto de prueba coincide con el IDIOMA de la voz elegida: una voz
+    // inglesa leyendo español (o al revés) sonaría mal. Frase de marca fija.
+    const vozSel = voces.find((v) => v.id === vozPrueba);
+    const texto =
+      vozSel && !vozSel.es_espanol
+        ? t("tts.sampleTextEn")
+        : t("tts.sampleTextEs");
+    const r = await commands.escuchaSpeak(texto, vozPrueba, velocidad, tono);
     if (r.status === "error") {
       toast.error(t("escucha.errorSpeak"), { description: r.error });
     }
-  }, [t, vozPrueba, velocidad, tono]);
+  }, [t, voces, vozPrueba, velocidad, tono]);
 
   const estadoTexto = (e: EngineStatus): string => {
     if (e.available) return t("tts.available");
