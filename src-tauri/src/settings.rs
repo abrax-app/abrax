@@ -1450,8 +1450,8 @@ mod tests {
     #[test]
     fn tts_engine_defaults_and_salvages() {
         // Store vacío → defaults TTS (auto-detección, sin motor/voz fijados).
-        let settings: AppSettings = serde_json::from_value(serde_json::json!({}))
-            .expect("tts fields need serde defaults");
+        let settings: AppSettings =
+            serde_json::from_value(serde_json::json!({})).expect("tts fields need serde defaults");
         assert_eq!(settings.tts_selected_engine, None);
         assert!(settings.tts_auto_detect);
         assert_eq!(settings.tts_voice, None);

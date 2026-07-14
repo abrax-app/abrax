@@ -22,8 +22,7 @@ use crate::managers::tts::{kokoro, online, piper};
 
 /// Mensaje cuando se invoca un motor neuronal en el build de entrega (sin feature).
 #[cfg(not(feature = "advanced-tts"))]
-const SIN_AVANZADO: &str =
-    "Voz avanzada no disponible en este build: solo Voces del Sistema.";
+const SIN_AVANZADO: &str = "Voz avanzada no disponible en este build: solo Voces del Sistema.";
 
 #[tauri::command]
 #[specta::specta]

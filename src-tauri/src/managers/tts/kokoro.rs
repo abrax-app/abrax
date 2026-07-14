@@ -79,9 +79,21 @@ pub async fn install_runtime(app: &AppHandle) -> Result<(), String> {
     let py_str = py.to_string_lossy().to_string();
     pyserver::run_uv(&["pip", "install", "--python", &py_str, "kokoro-onnx"]).await?;
     // Pesos (Apache-2.0) con checksum, al lado del servidor (CWD del server).
-    download::download_file(app, "kokoro-model", MODEL_URL, MODEL_SHA, &dir.join("kokoro-v1.0.onnx"))
-        .await?;
-    download::download_file(app, "kokoro-voices", VOICES_URL, VOICES_SHA, &dir.join("voices-v1.0.bin"))
-        .await?;
+    download::download_file(
+        app,
+        "kokoro-model",
+        MODEL_URL,
+        MODEL_SHA,
+        &dir.join("kokoro-v1.0.onnx"),
+    )
+    .await?;
+    download::download_file(
+        app,
+        "kokoro-voices",
+        VOICES_URL,
+        VOICES_SHA,
+        &dir.join("voices-v1.0.bin"),
+    )
+    .await?;
     Ok(())
 }

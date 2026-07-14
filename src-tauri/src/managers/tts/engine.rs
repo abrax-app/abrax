@@ -148,7 +148,8 @@ pub trait TtsEngine: Send {
     /// voz por defecto del motor) y lo **reproduce**. Cada motor posee su salida
     /// (el del sistema por el SO; los neuronales normalizan a −3 dBFS y suenan
     /// por su propio sink). Retorna al encolar/arrancar, no al terminar el audio.
-    fn speak(&mut self, text: &str, voice: Option<&str>, opts: &TtsOptions) -> Result<(), TtsError>;
+    fn speak(&mut self, text: &str, voice: Option<&str>, opts: &TtsOptions)
+        -> Result<(), TtsError>;
 
     /// Detiene cualquier reproducción/síntesis en curso.
     fn stop(&mut self) -> Result<(), TtsError>;

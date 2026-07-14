@@ -148,8 +148,8 @@ pub fn is_runtime_installed(app: &AppHandle) -> bool {
 
 /// Descarga+extrae el runtime GPL en `<datadir>/tts/runtime/piper` (1er uso).
 pub async fn install_runtime(app: &AppHandle) -> Result<(), String> {
-    let asset = runtime_asset()
-        .ok_or_else(|| "no hay runtime Piper para esta plataforma".to_string())?;
+    let asset =
+        runtime_asset().ok_or_else(|| "no hay runtime Piper para esta plataforma".to_string())?;
     if asset.sha256.starts_with("__PENDING") {
         return Err("sha256 del runtime Piper sin fijar para esta plataforma".to_string());
     }
@@ -160,8 +160,8 @@ pub async fn install_runtime(app: &AppHandle) -> Result<(), String> {
 
 /// Descarga una voz Piper (`.onnx` + `.onnx.json`) a `<datadir>/tts/voices`.
 pub async fn install_voice(app: &AppHandle, voice_id: &str) -> Result<(), String> {
-    let voice = voice_by_id(voice_id)
-        .ok_or_else(|| format!("voz Piper desconocida: {voice_id}"))?;
+    let voice =
+        voice_by_id(voice_id).ok_or_else(|| format!("voz Piper desconocida: {voice_id}"))?;
     let dir = download::voices_dir(app)?;
     let onnx = dir.join(format!("{}.onnx", voice.id));
     let json = dir.join(format!("{}.onnx.json", voice.id));
@@ -180,10 +180,7 @@ pub async fn install_voice(app: &AppHandle, voice_id: &str) -> Result<(), String
 /// Busca el binario `piper`(`.exe`) dentro de un dir (el zip trae `piper/piper.exe`).
 fn find_piper_binary(runtime_dir: &Path) -> Option<PathBuf> {
     let name = if cfg!(windows) { "piper.exe" } else { "piper" };
-    let direct = [
-        runtime_dir.join(name),
-        runtime_dir.join("piper").join(name),
-    ];
+    let direct = [runtime_dir.join(name), runtime_dir.join("piper").join(name)];
     for cand in direct {
         if cand.is_file() {
             return Some(cand);
@@ -255,7 +252,10 @@ impl PiperEngine {
     }
 
     fn available_voices(&self) -> Vec<&'static PiperVoice> {
-        VOICES.iter().filter(|v| self.is_voice_present(v.id)).collect()
+        VOICES
+            .iter()
+            .filter(|v| self.is_voice_present(v.id))
+            .collect()
     }
 }
 
@@ -268,12 +268,19 @@ impl TtsEngine for PiperEngine {
         find_piper_binary(&self.runtime_dir).is_some() && !self.available_voices().is_empty()
     }
 
-    fn speak(&mut self, text: &str, voice: Option<&str>, opts: &TtsOptions) -> Result<(), TtsError> {
+    fn speak(
+        &mut self,
+        text: &str,
+        voice: Option<&str>,
+        opts: &TtsOptions,
+    ) -> Result<(), TtsError> {
         let bin = find_piper_binary(&self.runtime_dir)
             .ok_or_else(|| TtsError::NotAvailable("runtime Piper no instalado".into()))?;
         let available = self.available_voices();
         if available.is_empty() {
-            return Err(TtsError::NotAvailable("no hay voces Piper descargadas".into()));
+            return Err(TtsError::NotAvailable(
+                "no hay voces Piper descargadas".into(),
+            ));
         }
         // Voz pedida si está presente; si no, la primera disponible.
         let voice_id = voice
@@ -286,7 +293,11 @@ impl TtsEngine for PiperEngine {
         let out_wav = self.temp_dir.join(format!("piper_{voice_id}.wav"));
 
         // length_scale = inverso de la velocidad (rate>1 = más rápido).
-        let length_scale = if opts.rate > 0.05 { 1.0 / opts.rate } else { 1.0 };
+        let length_scale = if opts.rate > 0.05 {
+            1.0 / opts.rate
+        } else {
+            1.0
+        };
         // El runtime resuelve espeak-ng-data y sus DLLs relativo a su carpeta.
         let work_dir = bin.parent().unwrap_or(self.runtime_dir.as_path());
 

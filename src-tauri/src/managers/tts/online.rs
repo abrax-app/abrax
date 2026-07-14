@@ -190,6 +190,14 @@ pub async fn install_runtime(app: &AppHandle) -> Result<(), String> {
     pyserver::run_uv(&["venv", &venv_str, "--python", "3.12"]).await?;
     let py = pyserver::venv_python(&dir);
     let py_str = py.to_string_lossy().to_string();
-    pyserver::run_uv(&["pip", "install", "--python", &py_str, "edge-tts", "miniaudio"]).await?;
+    pyserver::run_uv(&[
+        "pip",
+        "install",
+        "--python",
+        &py_str,
+        "edge-tts",
+        "miniaudio",
+    ])
+    .await?;
     Ok(())
 }

@@ -204,11 +204,15 @@ impl TtsEngine for PyServerEngine {
     }
 
     fn is_available(&self, hw: &HardwareInfo) -> bool {
-        (!self.cfg.needs_gpu || Self::gpu_compatible(hw))
-            && Self::is_provisioned(&self.runtime_dir)
+        (!self.cfg.needs_gpu || Self::gpu_compatible(hw)) && Self::is_provisioned(&self.runtime_dir)
     }
 
-    fn speak(&mut self, text: &str, voice: Option<&str>, opts: &TtsOptions) -> Result<(), TtsError> {
+    fn speak(
+        &mut self,
+        text: &str,
+        voice: Option<&str>,
+        opts: &TtsOptions,
+    ) -> Result<(), TtsError> {
         self.ensure_server()?;
         // Voz pedida si es válida; si no, la primera del reparto. El idioma sale
         // de la voz (es/en) para que el servidor fonemice correctamente.

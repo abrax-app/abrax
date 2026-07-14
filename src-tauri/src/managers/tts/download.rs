@@ -32,14 +32,16 @@ pub fn tts_dir(app: &AppHandle) -> Result<PathBuf, String> {
     let dir = crate::portable::app_data_dir(app)
         .map_err(|e| format!("no se pudo resolver el datadir: {e}"))?
         .join("tts");
-    std::fs::create_dir_all(&dir).map_err(|e| format!("no se pudo crear {}: {e}", dir.display()))?;
+    std::fs::create_dir_all(&dir)
+        .map_err(|e| format!("no se pudo crear {}: {e}", dir.display()))?;
     Ok(dir)
 }
 
 /// Carpeta de voces neuronales: `<datadir>/tts/voices`.
 pub fn voices_dir(app: &AppHandle) -> Result<PathBuf, String> {
     let dir = tts_dir(app)?.join("voices");
-    std::fs::create_dir_all(&dir).map_err(|e| format!("no se pudo crear {}: {e}", dir.display()))?;
+    std::fs::create_dir_all(&dir)
+        .map_err(|e| format!("no se pudo crear {}: {e}", dir.display()))?;
     Ok(dir)
 }
 
@@ -78,7 +80,9 @@ fn verify_sha256(path: &Path, expected: &str, asset_id: &str) -> Result<(), Stri
         }
         Err(e) => {
             let _ = std::fs::remove_file(path);
-            Err(format!("no se pudo verificar '{asset_id}': {e}. Reintenta."))
+            Err(format!(
+                "no se pudo verificar '{asset_id}': {e}. Reintenta."
+            ))
         }
     }
 }
@@ -106,7 +110,10 @@ pub async fn download_file(
 
     let response = client.get(url).send().await.map_err(|e| e.to_string())?;
     if !response.status().is_success() {
-        return Err(format!("descarga de '{asset_id}' falló: HTTP {}", response.status()));
+        return Err(format!(
+            "descarga de '{asset_id}' falló: HTTP {}",
+            response.status()
+        ));
     }
     let total = response.content_length().unwrap_or(0);
 
@@ -180,7 +187,9 @@ pub async fn download_and_extract_archive(
     } else if url.ends_with(".tar.gz") || url.ends_with(".tgz") {
         extract_tar_gz(&staging, &temp_extract)
     } else {
-        Err(format!("formato de archivo desconocido para '{asset_id}': {url}"))
+        Err(format!(
+            "formato de archivo desconocido para '{asset_id}': {url}"
+        ))
     };
 
     if let Err(e) = extract_result {
@@ -203,7 +212,8 @@ pub async fn download_and_extract_archive(
 fn extract_zip(archive: &Path, dest: &Path) -> Result<(), String> {
     let file = std::fs::File::open(archive).map_err(|e| e.to_string())?;
     let mut zip = zip::ZipArchive::new(file).map_err(|e| format!("zip inválido: {e}"))?;
-    zip.extract(dest).map_err(|e| format!("no se pudo extraer el zip: {e}"))?;
+    zip.extract(dest)
+        .map_err(|e| format!("no se pudo extraer el zip: {e}"))?;
     Ok(())
 }
 

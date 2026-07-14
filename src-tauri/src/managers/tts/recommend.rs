@@ -15,7 +15,10 @@ use super::hardware::HardwareInfo;
 /// voz local; `_hw` se conserva por si futuras heurísticas lo necesitan.
 pub fn recommend_engine(_hw: &HardwareInfo) -> EngineId {
     let rec = EngineId::Kokoro;
-    debug_assert!(rec.is_local(), "la recomendación nunca debe ser un motor no-local");
+    debug_assert!(
+        rec.is_local(),
+        "la recomendación nunca debe ser un motor no-local"
+    );
     rec
 }
 
@@ -81,7 +84,10 @@ mod tests {
 
     #[test]
     fn resolve_falls_back_to_system_when_nothing_available() {
-        assert_eq!(resolve_engine(EngineId::Kokoro, |_| false), EngineId::System);
+        assert_eq!(
+            resolve_engine(EngineId::Kokoro, |_| false),
+            EngineId::System
+        );
     }
 
     #[test]

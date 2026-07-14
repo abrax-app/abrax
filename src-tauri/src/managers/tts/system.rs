@@ -31,7 +31,12 @@ impl TtsEngine for SystemEngine {
             .unwrap_or(false)
     }
 
-    fn speak(&mut self, text: &str, voice: Option<&str>, opts: &TtsOptions) -> Result<(), TtsError> {
+    fn speak(
+        &mut self,
+        text: &str,
+        voice: Option<&str>,
+        opts: &TtsOptions,
+    ) -> Result<(), TtsError> {
         self.escucha
             .speak(
                 text.to_string(),
