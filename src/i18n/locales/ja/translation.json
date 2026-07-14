@@ -816,6 +816,8 @@
     "verbosityLiteral": "リテラル（すべての記号）"
   },
   "tts": {
+    "voiceLangEs": "スペイン語",
+    "voiceLangEn": "英語",
     "vram": "({{gb}} GB VRAM)",
     "descOnline": "Microsoft のニューラル音声（Azure）。ローカルではありません: テキストをインターネット経由で送信します。",
     "onlineWarning": "インターネットが必要 · テキストが端末から送信されます",

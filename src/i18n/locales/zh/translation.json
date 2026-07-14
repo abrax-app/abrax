@@ -816,6 +816,8 @@
     "verbosityLiteral": "逐字（所有符号）"
   },
   "tts": {
+    "voiceLangEs": "西班牙语",
+    "voiceLangEn": "英语",
     "vram": "({{gb}} GB VRAM)",
     "descOnline": "微软神经语音（Azure）。非本地：通过互联网发送文本。",
     "onlineWarning": "需要联网 · 文本会离开本机",

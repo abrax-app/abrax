@@ -24,6 +24,7 @@ import { Alert } from "../../ui/Alert";
 import { Button } from "../../ui/Button";
 import { Select } from "../../ui/Select";
 import { MotorVoz } from "./MotorVoz";
+import { opcionesDeVoces } from "./voces";
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
@@ -278,10 +279,9 @@ export const EscuchaSettings: React.FC = () => {
     });
   }, [oracionActual]);
 
-  const opcionesVoz = voces.map((v) => ({
-    value: v.id,
-    label: `${v.nombre} (${v.idioma})`,
-  }));
+  // Agrupadas por idioma/país cuando el motor es online (lista larga navegable);
+  // planas para los motores locales.
+  const opcionesVoz = opcionesDeVoces(voces, t);
 
   const lineaResaltada = (numero: number) =>
     oracionActual != null &&
@@ -378,6 +378,7 @@ export const EscuchaSettings: React.FC = () => {
               onChange={(v) => setVozProsa(v)}
               isClearable={false}
               placeholder={t("escucha.noVoices")}
+              ariaLabel={t("escucha.voiceProse")}
             />
             <label className="flex items-center gap-2 text-xs text-text/70">
               <span className="w-24 shrink-0">
@@ -402,6 +403,7 @@ export const EscuchaSettings: React.FC = () => {
               onChange={(v) => setVozCodigo(v)}
               isClearable={false}
               placeholder={t("escucha.noVoices")}
+              ariaLabel={t("escucha.voiceCode")}
             />
             <label className="flex items-center gap-2 text-xs text-text/70">
               <span className="w-24 shrink-0">

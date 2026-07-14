@@ -816,6 +816,8 @@
     "verbosityLiteral": "Bokstavlig (alla symboler)"
   },
   "tts": {
+    "voiceLangEs": "Spanska",
+    "voiceLangEn": "Engelska",
     "vram": "({{gb}} GB VRAM)",
     "descOnline": "Microsofts neurala röster (Azure). Inte lokalt: skickar texten över internet.",
     "onlineWarning": "kräver internet · din text lämnar enheten",

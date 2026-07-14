@@ -816,6 +816,8 @@
     "verbosityLiteral": "Nguyên văn (mọi ký hiệu)"
   },
   "tts": {
+    "voiceLangEs": "Tiếng Tây Ban Nha",
+    "voiceLangEn": "Tiếng Anh",
     "vram": "({{gb}} GB VRAM)",
     "descOnline": "Giọng nơ-ron của Microsoft (Azure). Không cục bộ: gửi văn bản qua internet.",
     "onlineWarning": "cần internet · văn bản rời khỏi thiết bị",

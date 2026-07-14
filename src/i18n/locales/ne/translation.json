@@ -816,6 +816,8 @@
     "verbosityLiteral": "अक्षरशः (सबै प्रतीक)"
   },
   "tts": {
+    "voiceLangEs": "स्पेनी",
+    "voiceLangEn": "अंग्रेजी",
     "vram": "({{gb}} GB VRAM)",
     "descOnline": "Microsoft का न्यूरल आवाजहरू (Azure)। स्थानीय होइन: पाठ इन्टरनेटबाट पठाउँछ।",
     "onlineWarning": "इन्टरनेट चाहिन्छ · पाठ यन्त्रबाट बाहिर जान्छ",

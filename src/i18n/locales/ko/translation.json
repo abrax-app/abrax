@@ -816,6 +816,8 @@
     "verbosityLiteral": "그대로 (모든 기호)"
   },
   "tts": {
+    "voiceLangEs": "스페인어",
+    "voiceLangEn": "영어",
     "vram": "({{gb}} GB VRAM)",
     "descOnline": "Microsoft 뉴럴 음성(Azure). 로컬 아님: 텍스트를 인터넷으로 전송합니다.",
     "onlineWarning": "인터넷 필요 · 텍스트가 기기를 벗어납니다",

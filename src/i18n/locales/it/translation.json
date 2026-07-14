@@ -816,6 +816,8 @@
     "verbosityLiteral": "Letterale (tutti i simboli)"
   },
   "tts": {
+    "voiceLangEs": "Spagnolo",
+    "voiceLangEn": "Inglese",
     "vram": "({{gb}} GB VRAM)",
     "descOnline": "Voci neurali di Microsoft (Azure). Non locale: invia il testo via internet.",
     "onlineWarning": "richiede internet · il testo esce dal dispositivo",

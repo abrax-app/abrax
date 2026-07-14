@@ -816,6 +816,8 @@
     "verbosityLiteral": "حرفي (كل الرموز)"
   },
   "tts": {
+    "voiceLangEs": "الإسبانية",
+    "voiceLangEn": "الإنجليزية",
     "vram": "({{gb}} GB VRAM)",
     "descOnline": "أصوات مايكروسوفت العصبية (Azure). ليست محلية: تُرسل النص عبر الإنترنت.",
     "onlineWarning": "يتطلب إنترنت · يغادر النص جهازك",

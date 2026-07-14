@@ -816,6 +816,8 @@
     "verbosityLiteral": "Birebir (tüm semboller)"
   },
   "tts": {
+    "voiceLangEs": "İspanyolca",
+    "voiceLangEn": "İngilizce",
     "vram": "({{gb}} GB VRAM)",
     "descOnline": "Microsoft nöral sesleri (Azure). Yerel değil: metni internet üzerinden gönderir.",
     "onlineWarning": "internet gerektirir · metin cihazdan ayrılır",

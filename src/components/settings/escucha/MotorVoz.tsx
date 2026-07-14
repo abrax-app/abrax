@@ -24,6 +24,7 @@ import {
 import { useSettings } from "../../../hooks/useSettings";
 import { Button } from "../../ui/Button";
 import { Select } from "../../ui/Select";
+import { opcionesDeVoces } from "./voces";
 
 const OS_LABEL: Record<string, string> = {
   windows: "Windows",
@@ -227,10 +228,9 @@ export const MotorVoz: React.FC = () => {
     return t("tts.unavailable");
   };
 
-  const opcionesVoz = voces.map((v) => ({
-    value: v.id,
-    label: `${v.nombre} (${v.idioma})`,
-  }));
+  // Agrupadas por idioma/país cuando el motor es online (lista larga navegable);
+  // planas para los motores locales.
+  const opcionesVoz = opcionesDeVoces(voces, t);
 
   const recName = recommended ? engineDisplay(recommended) : "";
 
@@ -354,6 +354,7 @@ export const MotorVoz: React.FC = () => {
             onChange={(v) => setVozPrueba(v)}
             isClearable={false}
             placeholder={t("escucha.noVoices")}
+            ariaLabel={t("tts.voice")}
           />
         </div>
       )}

@@ -816,6 +816,8 @@
     "verbosityLiteral": "逐字（所有符號）"
   },
   "tts": {
+    "voiceLangEs": "西班牙文",
+    "voiceLangEn": "英文",
     "vram": "({{gb}} GB VRAM)",
     "descOnline": "微軟神經語音（Azure）。非本機：透過網際網路傳送文字。",
     "onlineWarning": "需要連網 · 文字會離開本機",

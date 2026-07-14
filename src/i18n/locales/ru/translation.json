@@ -816,6 +816,8 @@
     "verbosityLiteral": "Буквально (все символы)"
   },
   "tts": {
+    "voiceLangEs": "Испанский",
+    "voiceLangEn": "Английский",
     "vram": "({{gb}} GB VRAM)",
     "descOnline": "Нейронные голоса Microsoft (Azure). Не локально: отправляет текст через интернет.",
     "onlineWarning": "требуется интернет · текст покидает устройство",
