@@ -169,12 +169,18 @@ impl TtsManager {
     }
 
     /// Fija el motor seleccionado (persiste en settings) y recomputa el activo.
+    /// Si el motor activo CAMBIA, corta cualquier audio en curso **antes** de
+    /// reenrutar: así la lectura no queda sonando por el motor viejo mientras el
+    /// bucle avanza sobre el nuevo (evita "dos voces a la vez").
     pub fn set_engine(&self, id: EngineId) -> Result<(), String> {
         let mut s = settings::get_settings(&self.app);
         s.tts_selected_engine = Some(id);
         settings::write_settings(&self.app, s);
-        let active = self.resolve_active();
-        self.active.store(engine_to_u8(active), Ordering::SeqCst);
+        let active = engine_to_u8(self.resolve_active());
+        let prev = self.active.swap(active, Ordering::SeqCst);
+        if prev != active {
+            let _ = self.stop();
+        }
         Ok(())
     }
 
@@ -184,8 +190,12 @@ impl TtsManager {
         if let Ok(mut h) = self.hardware.lock() {
             *h = hw.clone();
         }
-        let active = self.resolve_active();
-        self.active.store(engine_to_u8(active), Ordering::SeqCst);
+        let active = engine_to_u8(self.resolve_active());
+        let prev = self.active.swap(active, Ordering::SeqCst);
+        // Si redetectar cambió el motor activo, corta el audio en curso.
+        if prev != active {
+            let _ = self.stop();
+        }
         hw
     }
 
@@ -411,15 +421,20 @@ impl TtsManager {
             EngineId::System => self.escucha.status(),
             #[cfg(feature = "advanced-tts")]
             other => {
-                let hablando = self
+                let playing = self
                     .playback
                     .lock()
                     .ok()
                     .and_then(|g| g.clone())
                     .map(|p| p.is_playing())
                     .unwrap_or(false);
+                // Incluye el motor del SISTEMA por si `speak` degradó a él
+                // (fallback: el neuronal falló → sys.speak por el SO, que NO usa
+                // el PlaybackService). Sin esto, el sondeo creería que la oración
+                // terminó y avanzaría encimando la voz de fallback.
+                let sys = self.escucha.status().map(|s| s.hablando).unwrap_or(false);
                 Ok(EstadoEscucha {
-                    hablando,
+                    hablando: playing || sys,
                     motor_disponible: self.is_engine_available(other),
                 })
             }

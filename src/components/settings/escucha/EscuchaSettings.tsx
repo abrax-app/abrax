@@ -145,6 +145,18 @@ export const EscuchaSettings: React.FC = () => {
     setIndice(-1);
   }, [detenerMotor]);
 
+  // Cambiar de MOTOR con una lectura en curso la DETIENE (limpio). Cruzar de un
+  // motor a otro a media oración arriesga dos voces a la vez (el del sistema
+  // suena por el SO; los neuronales por otro sink). El backend ya corta el audio
+  // al cambiar de motor; aquí paramos el bucle para que no continúe en el motor
+  // nuevo. (Cambiar voz/velocidad/tono del MISMO motor sí continúa en caliente.)
+  const motorRef = useRef(settings?.tts_selected_engine);
+  useEffect(() => {
+    if (motorRef.current === settings?.tts_selected_engine) return;
+    motorRef.current = settings?.tts_selected_engine;
+    if (leyendoRef.current) detener();
+  }, [settings?.tts_selected_engine, detener]);
+
   // Esc detiene la lectura; al desmontar el panel también se detiene.
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
@@ -154,6 +166,11 @@ export const EscuchaSettings: React.FC = () => {
     return () => {
       document.removeEventListener("keydown", onKeyDown);
       tokenRef.current += 1;
+      // Marca no-leyendo para que el corte de audio en vuelo del bucle (guardado
+      // con leyendoRef) SÍ dispare al desmontar: si un motor neuronal está
+      // sintetizando, su reproducción arrancaría tras este stop y quedaría
+      // huérfana; el guard la cortará al ver leyendoRef=false.
+      leyendoRef.current = false;
       void commands.escuchaStop();
     };
   }, [detener]);
@@ -359,7 +376,7 @@ export const EscuchaSettings: React.FC = () => {
       </div>
 
       <div className="px-4">
-        <MotorVoz />
+        <MotorVoz onInterrumpir={detener} />
       </div>
 
       {!motorDisponible && (

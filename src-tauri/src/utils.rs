@@ -24,6 +24,10 @@ pub fn cancel_current_operation(app: &AppHandle) {
     let audio_manager = app.state::<Arc<AudioRecordingManager>>();
     let recording_was_active = audio_manager.is_recording();
     audio_manager.cancel_recording();
+    // Deshacer el mute-al-grabar si estaba puesto: la ruta de cancelación no
+    // pasa por el stop normal (que sí lo quita), y sin esto la salida — incluida
+    // la lectura del TTS — quedaría silenciada. `remove_mute` es idempotente.
+    audio_manager.remove_mute();
 
     // Abandon any live streaming transcription
     let tm = app.state::<Arc<TranscriptionManager>>();

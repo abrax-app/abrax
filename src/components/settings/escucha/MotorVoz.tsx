@@ -58,7 +58,13 @@ const NIVELES_TONO: { v: number; key: string }[] = [
   { v: 40, key: "tts.pitchHigh" },
 ];
 
-export const MotorVoz: React.FC = () => {
+interface MotorVozProps {
+  /** Interrumpe la lectura en curso del panel (p. ej. antes de "Probar voz",
+   *  para que la muestra no pelee con el bucle de lectura ni lo deje corriendo). */
+  onInterrumpir?: () => void;
+}
+
+export const MotorVoz: React.FC<MotorVozProps> = ({ onInterrumpir }) => {
   const { t } = useTranslation();
   const { settings, refreshSettings } = useSettings();
 
@@ -258,6 +264,9 @@ export const MotorVoz: React.FC = () => {
   }, [velLocal, guardarAjustes]);
 
   const probarVoz = useCallback(async () => {
+    // Corta la lectura del panel ANTES de la muestra: si no, el bucle sigue vivo,
+    // se come la muestra y el documento se sigue leyendo solo.
+    onInterrumpir?.();
     await commands.escuchaStop();
     // El texto de prueba coincide con el IDIOMA de la voz elegida: una voz
     // inglesa leyendo español (o al revés) sonaría mal. Frase de marca fija.
@@ -270,7 +279,7 @@ export const MotorVoz: React.FC = () => {
     if (r.status === "error") {
       toast.error(t("escucha.errorSpeak"), { description: r.error });
     }
-  }, [t, voces, vozPrueba, velocidad, tono]);
+  }, [t, voces, vozPrueba, velocidad, tono, onInterrumpir]);
 
   const estadoTexto = (e: EngineStatus): string => {
     if (e.available) return t("tts.available");
