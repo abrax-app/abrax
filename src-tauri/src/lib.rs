@@ -536,6 +536,7 @@ pub fn run(cli_args: CliArgs) {
             shortcut::change_theme_setting,
             shortcut::change_ui_theme_setting,
             shortcut::change_ui_shell_setting,
+            shortcut::change_esfera_modo_setting,
             signal_handle::trigger_transcription,
             shortcut::change_start_hidden_setting,
             shortcut::change_autostart_setting,
@@ -651,6 +652,7 @@ pub fn run(cli_args: CliArgs) {
             managers::history::HistoryUpdatePayload,
             managers::transcription::StreamTextEvent,
             managers::transcription::StreamPhaseEvent,
+            managers::transcription::TranscriptWordsEvent,
             user_alerts::UserAlertEvent,
         ]);
 

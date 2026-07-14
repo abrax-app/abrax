@@ -22,9 +22,9 @@ use tauri_plugin_autostart::ManagerExt;
 #[cfg(all(target_os = "macos", target_arch = "aarch64"))]
 use crate::settings::APPLE_INTELLIGENCE_DEFAULT_MODEL_ID;
 use crate::settings::{
-    self, get_settings, AppSettings, AutoSubmitKey, ClipboardHandling, KeyboardImplementation,
-    LLMPrompt, OverlayPosition, OverlayStyle, PasteMethod, ShortcutBinding, SoundTheme, Theme,
-    TypingTool, UiShell, UiTheme, APPLE_INTELLIGENCE_PROVIDER_ID,
+    self, get_settings, AppSettings, AutoSubmitKey, ClipboardHandling, EsferaModo,
+    KeyboardImplementation, LLMPrompt, OverlayPosition, OverlayStyle, PasteMethod, ShortcutBinding,
+    SoundTheme, Theme, TypingTool, UiShell, UiTheme, APPLE_INTELLIGENCE_PROVIDER_ID,
 };
 use crate::tray;
 
@@ -556,6 +556,26 @@ pub fn change_ui_shell_setting(app: AppHandle, ui_shell: String) -> Result<(), S
         }
     };
     settings.ui_shell = parsed;
+    settings::write_settings(&app, settings);
+    Ok(())
+}
+
+/// Persists the Esfera overlay behaviour (`audio`/`palabras`). Takes effect on
+/// the next dictation: the overlay reads it when it becomes visible and the
+/// backend reads it when a transcription starts, so no live re-wiring is needed.
+#[tauri::command]
+#[specta::specta]
+pub fn change_esfera_modo_setting(app: AppHandle, esfera_modo: String) -> Result<(), String> {
+    let mut settings = settings::get_settings(&app);
+    let parsed = match esfera_modo.as_str() {
+        "audio" => EsferaModo::Audio,
+        "palabras" => EsferaModo::Palabras,
+        other => {
+            warn!("Invalid esfera modo '{}', defaulting to audio", other);
+            EsferaModo::Audio
+        }
+    };
+    settings.esfera_modo = parsed;
     settings::write_settings(&app, settings);
     Ok(())
 }

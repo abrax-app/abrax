@@ -308,6 +308,14 @@
             "bottom": "Dół",
             "top": "Góra"
           }
+        },
+        "esferaModo": {
+          "title": "Tryb Esfera",
+          "description": "Jak zachowuje się kula Esfera. Dźwięk: kula reaguje na Twój głos. Słowa: dyktowane słowa lecą do kuli, są przez chwilę odczytywane i rozpływają się w jej membranie (najlepiej z modelem strumieniowym, w którym słowa pojawiają się na żywo podczas mówienia).",
+          "options": {
+            "audio": "Reagująca na dźwięk",
+            "palabras": "Żywe słowa"
+          }
         }
       },
       "pasteMethod": {

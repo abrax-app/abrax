@@ -308,6 +308,14 @@
             "bottom": "Nederst",
             "top": "Överst"
           }
+        },
+        "esferaModo": {
+          "title": "Esfera-läge",
+          "description": "Hur Esfera-sfären beter sig. Ljud: sfären reagerar på din röst. Ord: orden du dikterar flyger in i sfären, läses ett ögonblick och löses upp i dess membran (bäst med en streamingmodell, där orden kommer in live medan du talar).",
+          "options": {
+            "audio": "Ljudreaktiv",
+            "palabras": "Levande ord"
+          }
         }
       },
       "pasteMethod": {

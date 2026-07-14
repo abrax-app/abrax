@@ -53,6 +53,17 @@ pub struct StreamTextEvent {
     pub tentative: String,
 }
 
+/// Words that have just been finalized in the transcription, for the Esfera
+/// overlay's "palabras" mode: each one flies to the sphere, is read and dissolves
+/// into the membrane. Emitted only while the user has the words mode active
+/// (`overlay_style == Esfera && esfera_modo == Palabras`), so the sphere never
+/// receives text it will not use. Carries a batch so a segment's words arrive in
+/// one event; the frontend paces their arrival.
+#[derive(Clone, Debug, Serialize, Deserialize, Type, tauri_specta::Event)]
+pub struct TranscriptWordsEvent {
+    pub words: Vec<String>,
+}
+
 /// Phase of the streaming overlay card, emitted to drive its UI state.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize, Type)]
 #[serde(rename_all = "lowercase")]
@@ -154,6 +165,34 @@ impl StreamRouter {
     pub fn is_open(&self) -> bool {
         self.open.load(Ordering::Relaxed)
     }
+}
+
+/// Words in `committed` that are safe to hand to the Esfera overlay given that
+/// `already_emitted` of them have already been sent. The last word is held back
+/// unless `committed` ends on whitespace, because a streaming model can still
+/// append to it (the "flicker-free" prefix grows by appending, so `func` may
+/// become `function` before a space lands). Returns the new words and the new
+/// emitted count. `finalize` releases the held-back last word once the stream is
+/// done growing.
+fn new_committed_words(
+    committed: &str,
+    already_emitted: usize,
+    finalize: bool,
+) -> (Vec<String>, usize) {
+    let words: Vec<&str> = committed.split_whitespace().collect();
+    let safe = if finalize || committed.ends_with(char::is_whitespace) {
+        words.len()
+    } else {
+        words.len().saturating_sub(1)
+    };
+    if safe <= already_emitted {
+        return (Vec::new(), already_emitted);
+    }
+    let fresh = words[already_emitted..safe]
+        .iter()
+        .map(|w| w.to_string())
+        .collect();
+    (fresh, safe)
 }
 
 enum LoadedEngine {
@@ -928,6 +967,12 @@ impl TranscriptionManager {
         // the engine can be moved into return_engine().
         let mut finalize_reply: Option<mpsc::Sender<Option<String>>> = None;
         let mut finalize_result: Option<Option<String>> = None;
+        // Esfera "palabras" mode: feed each committed word to the sphere as it is
+        // transcribed. Read the flag once here (not per feed) so the settings
+        // parse never lands on the hot streaming path.
+        let emit_words = settings.overlay_style == crate::settings::OverlayStyle::Esfera
+            && settings.esfera_modo == crate::settings::EsferaModo::Palabras;
+        let mut emitted_words: usize = 0;
         let stream_started = 'stream: {
             let session = match &mut engine {
                 LoadedEngine::TranscribeCpp(s) => s,
@@ -976,6 +1021,15 @@ impl TranscriptionManager {
                                     let text = stream.text();
                                     perf.record_emit();
                                     self.emit_stream_text(&text.committed, &text.tentative);
+                                    if emit_words && update.committed_changed {
+                                        let (fresh, next) = new_committed_words(
+                                            &text.committed,
+                                            emitted_words,
+                                            false,
+                                        );
+                                        emitted_words = next;
+                                        self.emit_transcript_words(fresh);
+                                    }
                                 }
                                 perf.maybe_log();
                             }
@@ -998,7 +1052,20 @@ impl TranscriptionManager {
                                     update.audio_committed_ms,
                                     update.buffered_ms,
                                 );
-                                Some(stream.text().display())
+                                let final_text = stream.text();
+                                if emit_words {
+                                    // Release the word(s) held back while the
+                                    // stream could still grow them. This is the
+                                    // last read of `emitted_words`, so the new
+                                    // count is not stored back.
+                                    let (fresh, _) = new_committed_words(
+                                        &final_text.committed,
+                                        emitted_words,
+                                        true,
+                                    );
+                                    self.emit_transcript_words(fresh);
+                                }
+                                Some(final_text.display())
                             }
                             Err(e) => {
                                 perf.record_compute(finalize_start.elapsed());
@@ -1122,6 +1189,24 @@ impl TranscriptionManager {
             tentative: tentative.to_string(),
         }
         .emit(&self.app_handle);
+    }
+
+    /// Whether the Esfera overlay is in "palabras" mode right now, i.e. the
+    /// sphere wants each transcribed word. Read once per dictation (not per
+    /// frame) so a JSON settings parse never lands on the hot streaming path.
+    pub fn esfera_words_enabled(&self) -> bool {
+        let settings = get_settings(&self.app_handle);
+        settings.overlay_style == crate::settings::OverlayStyle::Esfera
+            && settings.esfera_modo == crate::settings::EsferaModo::Palabras
+    }
+
+    /// Emit a batch of freshly-transcribed words to the Esfera overlay. No-op on
+    /// an empty batch so callers can pass a diff without guarding.
+    pub fn emit_transcript_words(&self, words: Vec<String>) {
+        if words.is_empty() {
+            return;
+        }
+        let _ = TranscriptWordsEvent { words }.emit(&self.app_handle);
     }
 
     pub fn transcribe(&self, audio: Vec<f32>) -> Result<String> {
@@ -1975,6 +2060,38 @@ mod tests {
 
     fn languages(codes: &[&str]) -> Vec<String> {
         codes.iter().map(|code| (*code).to_string()).collect()
+    }
+
+    #[test]
+    fn new_committed_words_holds_back_growing_last_word() {
+        // No trailing space: the last token may still grow, so it is held back.
+        let (fresh, next) = new_committed_words("crea una func", 0, false);
+        assert_eq!(fresh, vec!["crea".to_string(), "una".to_string()]);
+        assert_eq!(next, 2);
+
+        // The held-back token grew ("func" -> "función"); still no space, still
+        // held back, and nothing already-emitted is re-sent.
+        let (fresh, next) = new_committed_words("crea una función", 2, false);
+        assert!(fresh.is_empty());
+        assert_eq!(next, 2);
+
+        // A trailing space releases it exactly once (no duplicates).
+        let (fresh, next) = new_committed_words("crea una función ", 2, false);
+        assert_eq!(fresh, vec!["función".to_string()]);
+        assert_eq!(next, 3);
+    }
+
+    #[test]
+    fn new_committed_words_finalize_flushes_last_word() {
+        // Finalize releases the trailing word even without a trailing space.
+        let (fresh, next) = new_committed_words("hola mundo", 1, true);
+        assert_eq!(fresh, vec!["mundo".to_string()]);
+        assert_eq!(next, 2);
+
+        // Idempotent once everything has been emitted.
+        let (fresh, next) = new_committed_words("hola mundo", 2, true);
+        assert!(fresh.is_empty());
+        assert_eq!(next, 2);
     }
 
     #[test]

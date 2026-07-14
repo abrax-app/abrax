@@ -52,6 +52,8 @@
   --esfera-glow: #c8f0ff; /* brillo central */
   --esfera-fondo: #05060f; /* núcleo opaco + borde del escenario */
   --esfera-fondo-claro: #0a0c1c; /* centro del radial del escenario */
+  --esfera-palabra-tech: #7fe9ff; /* palabra/chispa de término técnico */
+  --esfera-palabra-suave: #bfe0ff; /* palabra/chispa de término llano */
 
   /* Active palette — defaults to light, follows the OS via the media query
      below, or is forced by `data-theme` (see App.css). */
@@ -126,4 +128,6 @@
   --esfera-glow: #fff6dc;
   --esfera-fondo: #0a0906;
   --esfera-fondo-claro: #171106;
+  --esfera-palabra-tech: #f2c41d; /* oro imperial para términos técnicos */
+  --esfera-palabra-suave: #ffe6b0; /* ámbar claro para términos llanos */
 }

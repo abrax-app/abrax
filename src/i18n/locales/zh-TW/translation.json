@@ -308,6 +308,14 @@
             "bottom": "底部",
             "top": "頂部"
           }
+        },
+        "esferaModo": {
+          "title": "Esfera 模式",
+          "description": "Esfera 球體的行為方式。音訊：球體會回應你的聲音。文字：你口述的詞語飛入球體，短暫顯示後融入其膜中（搭配串流模型效果最佳，說話時詞語會即時抵達）。",
+          "options": {
+            "audio": "音訊回應",
+            "palabras": "靈動文字"
+          }
         }
       },
       "pasteMethod": {

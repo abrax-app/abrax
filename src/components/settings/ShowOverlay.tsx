@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { Dropdown } from "../ui/Dropdown";
 import { SettingContainer } from "../ui/SettingContainer";
 import { useSettings } from "../../hooks/useSettings";
-import type { OverlayPosition, OverlayStyle } from "@/bindings";
+import type { EsferaModo, OverlayPosition, OverlayStyle } from "@/bindings";
 
 interface ShowOverlayProps {
   descriptionMode?: "inline" | "tooltip";
@@ -45,8 +45,21 @@ export const ShowOverlay: React.FC<ShowOverlayProps> = React.memo(
       },
     ];
 
+    const esferaModoOptions = [
+      {
+        value: "audio",
+        label: t("settings.advanced.overlay.esferaModo.options.audio"),
+      },
+      {
+        value: "palabras",
+        label: t("settings.advanced.overlay.esferaModo.options.palabras"),
+      },
+    ];
+
     const selectedStyle = (getSetting("overlay_style") ||
       "live") as OverlayStyle;
+    const selectedEsferaModo = (getSetting("esfera_modo") ||
+      "audio") as EsferaModo;
     // Only "top" and "bottom" are selectable; anything else (empty, or a legacy
     // "none" from before the position was retired) falls back to "bottom".
     const selectedPosition: OverlayPosition =
@@ -84,6 +97,24 @@ export const ShowOverlay: React.FC<ShowOverlayProps> = React.memo(
                 updateSetting("overlay_position", value as OverlayPosition)
               }
               disabled={isUpdating("overlay_position")}
+            />
+          </SettingContainer>
+        )}
+
+        {selectedStyle === "esfera" && (
+          <SettingContainer
+            title={t("settings.advanced.overlay.esferaModo.title")}
+            description={t("settings.advanced.overlay.esferaModo.description")}
+            descriptionMode={descriptionMode}
+            grouped={grouped}
+          >
+            <Dropdown
+              options={esferaModoOptions}
+              selectedValue={selectedEsferaModo}
+              onSelect={(value) =>
+                updateSetting("esfera_modo", value as EsferaModo)
+              }
+              disabled={isUpdating("esfera_modo")}
             />
           </SettingContainer>
         )}

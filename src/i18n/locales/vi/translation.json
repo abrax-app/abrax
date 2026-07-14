@@ -308,6 +308,14 @@
             "bottom": "Dưới",
             "top": "Trên"
           }
+        },
+        "esferaModo": {
+          "title": "Chế độ Esfera",
+          "description": "Cách quả cầu Esfera hoạt động. Âm thanh: quả cầu phản ứng với giọng nói của bạn. Từ ngữ: những từ bạn đọc bay vào quả cầu, hiện lên trong giây lát rồi tan vào lớp màng của nó (tốt nhất với mô hình phát trực tiếp, nơi các từ đến theo thời gian thực khi bạn nói).",
+          "options": {
+            "audio": "Phản hồi âm thanh",
+            "palabras": "Từ ngữ sống động"
+          }
         }
       },
       "pasteMethod": {

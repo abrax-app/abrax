@@ -308,6 +308,14 @@
             "bottom": "In basso",
             "top": "In alto"
           }
+        },
+        "esferaModo": {
+          "title": "Modalità Esfera",
+          "description": "Come si comporta la sfera Esfera. Audio: la sfera reagisce alla tua voce. Parole: le parole che detti volano verso la sfera, vengono lette per un istante e si dissolvono nella sua membrana (ideale con un modello in streaming, dove le parole arrivano in tempo reale mentre parli).",
+          "options": {
+            "audio": "Reattiva all'audio",
+            "palabras": "Parole vive"
+          }
         }
       },
       "pasteMethod": {

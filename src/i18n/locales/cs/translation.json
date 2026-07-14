@@ -308,6 +308,14 @@
             "bottom": "Dole",
             "top": "Nahoře"
           }
+        },
+        "esferaModo": {
+          "title": "Režim Esfera",
+          "description": "Jak se koule Esfera chová. Zvuk: koule reaguje na váš hlas. Slova: nadiktovaná slova letí do koule, na okamžik se přečtou a rozplynou se v její membráně (nejlépe s modelem se streamováním, kde slova přicházejí živě, jak mluvíte).",
+          "options": {
+            "audio": "Reagující na zvuk",
+            "palabras": "Živá slova"
+          }
         }
       },
       "pasteMethod": {

@@ -158,6 +158,7 @@ const settingUpdaters: {
   lazy_stream_close: (value) =>
     commands.changeLazyStreamCloseSetting(value as boolean),
   overlay_style: (value) => commands.changeOverlayStyleSetting(value as string),
+  esfera_modo: (value) => commands.changeEsferaModoSetting(value as string),
   vad_enabled: (value) => commands.changeVadEnabledSetting(value as boolean),
   show_tray_icon: (value) =>
     commands.changeShowTrayIconSetting(value as boolean),

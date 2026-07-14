@@ -308,6 +308,14 @@
             "bottom": "Bas",
             "top": "Haut"
           }
+        },
+        "esferaModo": {
+          "title": "Mode Esfera",
+          "description": "Comment se comporte la sphère Esfera. Audio : la sphère réagit à votre voix. Mots : les mots que vous dictez volent vers la sphère, se lisent un instant et se dissolvent dans sa membrane (idéal avec un modèle en streaming, où les mots arrivent en direct pendant que vous parlez).",
+          "options": {
+            "audio": "Réactif à l'audio",
+            "palabras": "Mots vivants"
+          }
         }
       },
       "pasteMethod": {

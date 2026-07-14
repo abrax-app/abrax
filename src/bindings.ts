@@ -84,6 +84,19 @@ async changeUiShellSetting(uiShell: string) : Promise<Result<null, string>> {
 }
 },
 /**
+ * Persists the Esfera overlay behaviour (`audio`/`palabras`). Takes effect on
+ * the next dictation: the overlay reads it when it becomes visible and the
+ * backend reads it when a transcription starts, so no live re-wiring is needed.
+ */
+async changeEsferaModoSetting(esferaModo: string) : Promise<Result<null, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("change_esfera_modo_setting", { esferaModo }) };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+/**
  * Toggle dictation from the UI (e.g. clicking the orbital home sphere). Mirrors
  * the global-shortcut / CLI `--toggle-transcription` path by reusing the shared
  * coordinator entry point, so it adds no new recording pipeline.
@@ -986,11 +999,13 @@ export const events = __makeEvents__<{
 historyUpdatePayload: HistoryUpdatePayload,
 streamPhaseEvent: StreamPhaseEvent,
 streamTextEvent: StreamTextEvent,
+transcriptWordsEvent: TranscriptWordsEvent,
 userAlertEvent: UserAlertEvent
 }>({
 historyUpdatePayload: "history-update-payload",
 streamPhaseEvent: "stream-phase-event",
 streamTextEvent: "stream-text-event",
+transcriptWordsEvent: "transcript-words-event",
 userAlertEvent: "user-alert-event"
 })
 
@@ -1055,6 +1070,11 @@ dictionary_project?: DictionaryProject | null; model_unload_timeout?: ModelUnloa
  */
 overlay_style?: OverlayStyle; 
 /**
+ * Behaviour of the `Esfera` overlay: audio-reactive only, or also receiving
+ * the dictated words as they are transcribed (see [`EsferaModo`]).
+ */
+esfera_modo?: EsferaModo; 
+/**
  * Id de la voz del sistema para la prosa (None = la app elige la primera es-*).
  */
 escucha_voz_prosa?: string | null; 
@@ -1103,6 +1123,14 @@ export type EngineType =
  * the file, so this one variant covers the whole transcribe-cpp family.
  */
 "TranscribeCpp" | "Parakeet" | "Moonshine" | "MoonshineStreaming" | "SenseVoice" | "GigaAM" | "Canary" | "Cohere"
+/**
+ * Behaviour of the `Esfera` overlay. `Audio` is the original audio-reactive
+ * sphere (unchanged). `Palabras` keeps that pulse but also receives the words
+ * as they are transcribed: each dictated word flies to the membrane, is read
+ * for an instant and dissolves into points that push outward. Only meaningful
+ * while `overlay_style` is `Esfera`; the backend gates word emission on it.
+ */
+export type EsferaModo = "audio" | "palabras"
 export type EstadoEscucha = { hablando: boolean; 
 /**
  * `false` si el motor del SO no pudo inicializarse (sin TTS instalado,
@@ -1231,6 +1259,15 @@ export type TermSource = "code" | "branch" | "path"
  */
 export type Theme = "system" | "light" | "dark"
 export type TranscribeAcceleratorSetting = "auto" | "cpu" | "gpu"
+/**
+ * Words that have just been finalized in the transcription, for the Esfera
+ * overlay's "palabras" mode: each one flies to the sphere, is read and dissolves
+ * into the membrane. Emitted only while the user has the words mode active
+ * (`overlay_style == Esfera && esfera_modo == Palabras`), so the sphere never
+ * receives text it will not use. Carries a batch so a segment's words arrive in
+ * one event; the frontend paces their arrival.
+ */
+export type TranscriptWordsEvent = { words: string[] }
 export type TypingTool = "auto" | "wtype" | "kwtype" | "dotool" | "ydotool" | "xdotool"
 /**
  * Shape of the main window, orthogonal to [`UiTheme`] (palette) and [`Theme`]

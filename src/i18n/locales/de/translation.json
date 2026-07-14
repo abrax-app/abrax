@@ -308,6 +308,14 @@
             "bottom": "Unten",
             "top": "Oben"
           }
+        },
+        "esferaModo": {
+          "title": "Esfera-Modus",
+          "description": "Wie sich die Esfera-Kugel verhält. Audio: Die Kugel reagiert auf deine Stimme. Wörter: Deine diktierten Wörter fliegen in die Kugel, werden einen Moment gelesen und lösen sich in ihrer Membran auf (am besten mit einem Streaming-Modell, bei dem Wörter live beim Sprechen ankommen).",
+          "options": {
+            "audio": "Audioreaktiv",
+            "palabras": "Lebendige Wörter"
+          }
         }
       },
       "pasteMethod": {

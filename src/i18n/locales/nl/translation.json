@@ -308,6 +308,14 @@
             "bottom": "Onderkant",
             "top": "Bovenkant"
           }
+        },
+        "esferaModo": {
+          "title": "Esfera-modus",
+          "description": "Hoe de Esfera-bol zich gedraagt. Audio: de bol reageert op je stem. Woorden: de woorden die je dicteert vliegen naar de bol, worden een moment gelezen en lossen op in het membraan (het best met een streamingmodel, waarbij woorden live binnenkomen terwijl je praat).",
+          "options": {
+            "audio": "Audioreactief",
+            "palabras": "Levende woorden"
+          }
         }
       },
       "pasteMethod": {

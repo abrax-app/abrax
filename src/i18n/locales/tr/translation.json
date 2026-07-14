@@ -308,6 +308,14 @@
             "bottom": "Alt",
             "top": "Üst"
           }
+        },
+        "esferaModo": {
+          "title": "Esfera Modu",
+          "description": "Esfera küresinin nasıl davrandığı. Ses: küre sesinize tepki verir. Kelimeler: dikte ettiğiniz kelimeler küreye uçar, bir an okunur ve zarında erir (kelimelerin siz konuşurken canlı geldiği bir akış modeliyle en iyisidir).",
+          "options": {
+            "audio": "Sese tepkili",
+            "palabras": "Yaşayan kelimeler"
+          }
         }
       },
       "pasteMethod": {

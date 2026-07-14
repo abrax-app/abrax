@@ -682,16 +682,20 @@ impl ShortcutAction for TranscribeAction {
                     // running, finalize it and use its text (all audio was already
                     // fed to the stream); otherwise batch-transcribe the samples.
                     let transcription_time = Instant::now();
-                    let transcription_result = match tm.finalize_stream() {
+                    // `streamed` marks text that came from a live stream, whose
+                    // words the streaming path already fed to the Esfera overlay
+                    // one by one — so the batch word emission below must skip it
+                    // to avoid sending them twice.
+                    let (transcription_result, streamed) = match tm.finalize_stream() {
                         // A finalized stream with usable text wins. An empty result
                         // (no active stream, produced nothing, or a finalize error
                         // after the engine was returned) falls back to a full batch
                         // transcription of the same audio. A finalize timeout is
                         // surfaced instead — the worker may still hold the engine,
                         // so a batch fallback would contend with it.
-                        Ok(Some(text)) if !text.trim().is_empty() => Ok(text),
-                        Ok(_) => tm.transcribe(samples),
-                        Err(err) => Err(err),
+                        Ok(Some(text)) if !text.trim().is_empty() => (Ok(text), true),
+                        Ok(_) => (tm.transcribe(samples), false),
+                        Err(err) => (Err(err), false),
                     };
 
                     // Await WAV save and verify
@@ -735,6 +739,23 @@ impl ShortcutAction for TranscribeAction {
                                 transcription_time.elapsed(),
                                 transcription.chars().count()
                             );
+
+                            // Esfera "palabras" mode with a non-streaming model:
+                            // the whole transcript lands at once, so split it into
+                            // words and hand them to the sphere (the overlay paces
+                            // their arrival). Streamed text already flew in word by
+                            // word, so skip it here to avoid duplicates. Note: with
+                            // a batch model the overlay hides shortly after paste,
+                            // so the visible effect is brief — the words mode is
+                            // designed for streaming models, where words arrive live
+                            // while recording.
+                            if !streamed && tm.esfera_words_enabled() {
+                                let words: Vec<String> = transcription
+                                    .split_whitespace()
+                                    .map(str::to_string)
+                                    .collect();
+                                tm.emit_transcript_words(words);
+                            }
 
                             if post_process {
                                 if use_streaming_overlay {

@@ -308,6 +308,14 @@
             "bottom": "Bottom",
             "top": "Top"
           }
+        },
+        "esferaModo": {
+          "title": "Esfera Mode",
+          "description": "How the Esfera sphere behaves. Audio: the sphere reacts to your voice. Words: your dictated words fly into the sphere, are read for an instant and dissolve into its membrane (best with a streaming model, where words arrive live as you speak).",
+          "options": {
+            "audio": "Audio-reactive",
+            "palabras": "Living words"
+          }
         }
       },
       "pasteMethod": {

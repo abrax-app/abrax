@@ -148,6 +148,18 @@ pub enum OverlayStyle {
     Esfera,
 }
 
+/// Behaviour of the `Esfera` overlay. `Audio` is the original audio-reactive
+/// sphere (unchanged). `Palabras` keeps that pulse but also receives the words
+/// as they are transcribed: each dictated word flies to the membrane, is read
+/// for an instant and dissolves into points that push outward. Only meaningful
+/// while `overlay_style` is `Esfera`; the backend gates word emission on it.
+#[derive(Serialize, Deserialize, Debug, Clone, Copy, PartialEq, Eq, Type)]
+#[serde(rename_all = "lowercase")]
+pub enum EsferaModo {
+    Audio,
+    Palabras,
+}
+
 #[derive(Serialize, Deserialize, Debug, Clone, Copy, PartialEq, Eq, Type, Default)]
 #[serde(rename_all = "snake_case")]
 pub enum ModelUnloadTimeout {
@@ -531,6 +543,10 @@ pub struct AppSettings {
     /// `overlay_position` (position `none` → style `None`).
     #[serde(default = "default_overlay_style")]
     pub overlay_style: OverlayStyle,
+    /// Behaviour of the `Esfera` overlay: audio-reactive only, or also receiving
+    /// the dictated words as they are transcribed (see [`EsferaModo`]).
+    #[serde(default = "default_esfera_modo")]
+    pub esfera_modo: EsferaModo,
     // [ESCUCHA] --- Lectura en voz alta ---------------------------------------
     /// Id de la voz del sistema para la prosa (None = la app elige la primera es-*).
     #[serde(default)]
@@ -613,6 +629,12 @@ fn default_overlay_style() -> OverlayStyle {
     return OverlayStyle::None;
     #[cfg(not(target_os = "linux"))]
     return OverlayStyle::Live;
+}
+
+fn default_esfera_modo() -> EsferaModo {
+    // The words mode is opt-in: the sphere keeps its original audio-reactive
+    // behaviour until the user chooses it.
+    EsferaModo::Audio
 }
 
 fn default_vad_enabled() -> bool {
@@ -1004,6 +1026,7 @@ pub fn get_default_settings() -> AppSettings {
         extra_recording_buffer_ms: 0,
         vad_enabled: default_vad_enabled(),
         overlay_style: default_overlay_style(),
+        esfera_modo: default_esfera_modo(),
         // [ESCUCHA]
         escucha_voz_prosa: None,
         escucha_voz_codigo: None,
@@ -1428,6 +1451,24 @@ mod tests {
             .insert("ui_shell".into(), serde_json::json!("holographic"));
         assert!(serde_json::from_value::<AppSettings>(stored.clone()).is_err());
         assert_eq!(salvage_settings(&stored).ui_shell, default_ui_shell());
+    }
+
+    /// A store written before the words mode existed has no `esfera_modo` key and
+    /// must load as Audio (opt-in); an unknown value must salvage to the default
+    /// instead of resetting the whole store.
+    #[test]
+    fn esfera_modo_defaults_and_salvages() {
+        let settings: AppSettings = serde_json::from_value(serde_json::json!({}))
+            .expect("esfera_modo needs a serde default");
+        assert_eq!(settings.esfera_modo, EsferaModo::Audio);
+
+        let mut stored = default_settings_json();
+        stored
+            .as_object_mut()
+            .unwrap()
+            .insert("esfera_modo".into(), serde_json::json!("holograma"));
+        assert!(serde_json::from_value::<AppSettings>(stored.clone()).is_err());
+        assert_eq!(salvage_settings(&stored).esfera_modo, default_esfera_modo());
     }
 
     #[test]

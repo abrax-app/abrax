@@ -27,6 +27,55 @@ type Level = keyof typeof LEVELS;
 const LEVEL_ORDER: Level[] = ["alta", "media", "baja"];
 const DPR_MAX = 1.75;
 
+// ── Modo «palabras vivas» ────────────────────────────────────────────────
+// Ciclo de vida de cada palabra dictada (mismos tiempos que el prototipo
+// esfera_con_palabras.html): VUELA de r≈2.9 a r≈1.5 (easeOut, WORD_FLY_MS),
+// LEE (WORD_READ_MS), se HUNDE a la superficie (WORD_SINK_MS) y se DISUELVE en
+// un puñado de puntos que empujan hacia afuera con amplitud decreciente hasta
+// fundirse con la membrana.
+const WORD_FLY_MS = 700;
+const WORD_READ_MS = 380;
+const WORD_SINK_MS = 260;
+// Altura del sprite de texto en unidades de mundo. El prototipo (pantalla
+// completa, cámara a 2.9) usa 0.15; el overlay mira desde 3.7 sobre un
+// escenario ~216 px, así que se agranda un punto para que el texto se lea.
+const WORD_HEIGHT = 0.2;
+// Radios del recorrido de la palabra sobre la esfera de radio 1.
+const WORD_R_ENTRY = 2.9;
+const WORD_R_READ = 1.5;
+const WORD_R_SURFACE = 1.0;
+// Tope de sistemas de chispas vivos (rendimiento). Cada palabra deja 10–46
+// puntos; al superar el tope se libera el más viejo (ya fundido con la
+// membrana). Mantiene los FPS estables en dictados largos sin acumular
+// geometría infinita.
+const MAX_LIVE_SPARKS = 300;
+// El núcleo late un poco más cuanto más «llena» está la esfera de palabras.
+const WORD_FILL_FULL = 120;
+
+/** Una palabra en vuelo hacia la superficie de la esfera. */
+interface FlyingWord {
+  sprite: THREE.Sprite;
+  texture: THREE.Texture;
+  dir: THREE.Vector3;
+  entry: THREE.Vector3;
+  read: THREE.Vector3;
+  surface: THREE.Vector3;
+  baseScale: number;
+  born: number;
+  tech: boolean;
+  length: number;
+}
+
+/** Puntos de una palabra ya disuelta, integrándose a la membrana. */
+interface SparkCluster {
+  points: THREE.Points;
+  geometry: THREE.BufferGeometry;
+  home: Float32Array;
+  rnd: Float32Array;
+  count: number;
+  born: number;
+}
+
 /**
  * Paleta de la esfera, leída de los tokens CSS de la raíz (theme.css):
  * stops del degradado de la membrana, núcleos por estado y colores del
@@ -60,6 +109,10 @@ export interface EsferaPalette {
   glow: number;
   /** Núcleo opaco que bloquea los puntos traseros. */
   fondo: number;
+  /** Palabra/chispa de término técnico (camelCase o minúscula larga). */
+  palabraTech: number;
+  /** Palabra/chispa de término llano. */
+  palabraSuave: number;
 }
 
 const PALETTE_TOKENS: Record<keyof EsferaPalette, [string, number]> = {
@@ -73,6 +126,8 @@ const PALETTE_TOKENS: Record<keyof EsferaPalette, [string, number]> = {
   halo: ["--esfera-halo", 0xff78c8],
   glow: ["--esfera-glow", 0xc8f0ff],
   fondo: ["--esfera-fondo", 0x05060f],
+  palabraTech: ["--esfera-palabra-tech", 0x7fe9ff],
+  palabraSuave: ["--esfera-palabra-suave", 0xbfe0ff],
 };
 
 /** `#rgb`/`#rrggbb` → entero 0xRRGGBB; null si el valor no es un hex. */
@@ -325,6 +380,15 @@ export class EsferaEngine {
 
   private resizeObserver: ResizeObserver | null = null;
 
+  // Modo «palabras»: texto en vuelo + puntos de palabras ya disueltas. Ambos
+  // grupos cuelgan de `holder` (como el prototipo): acompañan la inclinación
+  // pero no el giro del planeta, para que el texto quede legible de frente.
+  private grupoPalabras = new THREE.Group();
+  private grupoChispas = new THREE.Group();
+  private palabras: FlyingWord[] = [];
+  private chispas: SparkCluster[] = [];
+  private sparkTexture: THREE.Texture | null = null;
+
   private uniforms = {
     uTime: { value: 0 },
     uRMS: { value: 0 },
@@ -372,6 +436,8 @@ export class EsferaEngine {
     this.camera.position.set(0, 0, 3.7);
 
     this.holder.add(this.spinner);
+    this.holder.add(this.grupoPalabras);
+    this.holder.add(this.grupoChispas);
     this.scene.add(this.holder);
 
     // Núcleo oscuro y opaco: bloquea los puntos traseros para que los anillos
@@ -411,6 +477,13 @@ export class EsferaEngine {
     this.pinkHalo.position.set(0, 0, 0.95);
     this.pinkHalo.scale.setScalar(1.25);
     this.spinner.add(this.pinkHalo);
+
+    // Punto redondo blanco para las chispas de palabras disueltas. Es blanco a
+    // propósito (no el azul del prototipo): así el `color` por chispa —leído de
+    // la paleta— controla el tono, y el modo «palabras» se re-tiñe con el tema
+    // (cian/violeta en ABRAX, oro/ámbar en Imperial) como el resto de la esfera.
+    this.sparkTexture = radialTexture(0xffffff, 1.0);
+    this.textures.push(this.sparkTexture);
 
     this.applyPaletteUniforms();
     // Tinte inicial del núcleo: setState() retorna temprano si el estado no
@@ -632,16 +705,21 @@ export class EsferaEngine {
     this.holder.rotation.x = Math.sin(t * 0.3) * 0.05;
     this.holder.rotation.y = Math.cos(t * 0.23) * 0.06;
 
-    // Núcleo: late con la voz al grabar; pulso sereno al transcribir/procesar.
+    // El núcleo late con la voz al grabar (pulso sereno al transcribir/procesar)
+    // y un poco más cuantas más palabras estén llegando (modo «palabras»).
+    const llenado = Math.min(this.palabras.length / WORD_FILL_FULL, 1);
     const working = this.state !== "recording";
     const beat = working
       ? 0.3 + 0.05 * Math.sin(t * 2.0)
-      : 0.32 + this.rms * 0.45 + this.bass * 0.3;
+      : 0.32 + this.rms * 0.45 + this.bass * 0.3 + llenado * 0.18;
     this.coreGlow.scale.setScalar(beat);
     (this.coreGlow.material as THREE.SpriteMaterial).opacity =
-      0.55 + this.rms * 0.4;
+      0.55 + this.rms * 0.4 + llenado * 0.2;
     (this.pinkHalo.material as THREE.SpriteMaterial).opacity =
-      0.32 + this.rms * 0.25;
+      0.32 + this.rms * 0.25 + llenado * 0.15;
+
+    // Animar las palabras que viven dentro de la esfera (no-op si no hay).
+    this.animarPalabras(now, t);
 
     this.renderer.render(this.scene, this.camera);
 
@@ -668,6 +746,269 @@ export class EsferaEngine {
     this.renderer.render(this.scene, this.camera);
   }
 
+  // ── Modo «palabras vivas» ──────────────────────────────────────────────
+  // Port fiel del prototipo esfera_con_palabras.html: agregarPalabra /
+  // vaciarPalabras (API pública que llama el overlay por cada palabra
+  // transcrita) + disolverEnChispas / animarPalabras (ciclo de vida) +
+  // texturaTexto (sprite de texto). Cuántos términos entran no altera el
+  // shader ni la geometría de la esfera: viven en grupos aparte.
+
+  /**
+   * Un término técnico se dibuja/colorea distinto: camelCase (`useAuthStore`)
+   * o una palabra en minúsculas larga (código escrito de corrido). Igual que el
+   * heurístico del prototipo.
+   */
+  private esTermino(txt: string): boolean {
+    return /[a-z][A-Z]/.test(txt) || (/^[a-z]+$/.test(txt) && txt.length > 7);
+  }
+
+  /** Texto → textura de canvas → `{ textura, aspecto }`, teñida por la paleta. */
+  private texturaTexto(
+    txt: string,
+    tech: boolean,
+  ): { texture: THREE.CanvasTexture; aspect: number } {
+    const pad = 8;
+    const fs = 40;
+    const fill = tech ? this.palette.palabraTech : this.palette.base;
+    const glow = tech ? this.palette.palabraTech : this.palette.palabraSuave;
+    const hex = (c: number) => `#${c.toString(16).padStart(6, "0")}`;
+    const font = `${tech ? 600 : 500} ${fs}px "JetBrains Mono", ui-monospace, monospace`;
+
+    const measure = document.createElement("canvas").getContext("2d")!;
+    measure.font = font;
+    const w = Math.ceil(measure.measureText(txt).width) + pad * 2;
+    const h = fs + pad * 2;
+
+    const cv = document.createElement("canvas");
+    cv.width = w;
+    cv.height = h;
+    const ctx = cv.getContext("2d")!;
+    ctx.font = font;
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.shadowColor = hex(glow);
+    ctx.shadowBlur = tech ? 14 : 8;
+    ctx.fillStyle = hex(fill);
+    ctx.fillText(txt, w / 2, h / 2);
+
+    const texture = new THREE.CanvasTexture(cv);
+    texture.needsUpdate = true;
+    return { texture, aspect: w / h };
+  }
+
+  /** Dirección aleatoria uniforme sobre la esfera (rechazo, como el prototipo). */
+  private direccionAleatoria(): THREE.Vector3 {
+    let rx: number;
+    let ry: number;
+    let rz: number;
+    let d2: number;
+    do {
+      rx = Math.random() * 2 - 1;
+      ry = Math.random() * 2 - 1;
+      rz = Math.random() * 2 - 1;
+      d2 = rx * rx + ry * ry + rz * rz;
+    } while (d2 < 0.05 || d2 > 1);
+    const len = Math.sqrt(d2);
+    return new THREE.Vector3(rx / len, ry / len, rz / len);
+  }
+
+  /**
+   * Inyecta una palabra transcrita: vuela desde fuera hacia la superficie, se
+   * lee un instante y se disuelve en puntos que empujan hacia afuera. Con
+   * movimiento reducido no hay vuelo dramático — aparece disuelta y serena.
+   */
+  agregarPalabra(txt: string) {
+    if (this.disposed) return;
+    const clean = txt.trim();
+    if (!clean) return;
+    const tech = this.esTermino(clean);
+    const dir = this.direccionAleatoria();
+
+    if (this.reduced) {
+      // F11: sin vuelo. La palabra aparece ya integrada a la membrana, en
+      // reposo, y se pinta un frame (no hay rAF en movimiento reducido).
+      this.disolverEnChispas(dir, tech, clean.length, true);
+      this.renderOnce();
+      return;
+    }
+
+    const { texture, aspect } = this.texturaTexto(clean, tech);
+    const mat = new THREE.SpriteMaterial({
+      map: texture,
+      transparent: true,
+      depthWrite: false,
+      // Sin depthTest + renderOrder alto: el núcleo oscuro NO corta el texto
+      // (el bug que se cazó en el prototipo).
+      depthTest: false,
+      blending: THREE.NormalBlending,
+      opacity: 0,
+    });
+    const sprite = new THREE.Sprite(mat);
+    sprite.renderOrder = 10;
+
+    const baseScale = WORD_HEIGHT * aspect;
+    sprite.position.copy(dir.clone().multiplyScalar(WORD_R_ENTRY));
+    sprite.scale.set(baseScale, WORD_HEIGHT, 1);
+    this.grupoPalabras.add(sprite);
+
+    this.palabras.push({
+      sprite,
+      texture,
+      dir,
+      entry: dir.clone().multiplyScalar(WORD_R_ENTRY),
+      read: dir.clone().multiplyScalar(WORD_R_READ),
+      surface: dir.clone().multiplyScalar(WORD_R_SURFACE),
+      baseScale,
+      born: performance.now(),
+      tech,
+      length: clean.length,
+    });
+  }
+
+  /** Limpia todas las palabras y chispas (p.ej. al iniciar un dictado nuevo). */
+  vaciarPalabras() {
+    for (const p of this.palabras) {
+      this.grupoPalabras.remove(p.sprite);
+      p.texture.dispose();
+      p.sprite.material.dispose();
+    }
+    for (const c of this.chispas) {
+      this.grupoChispas.remove(c.points);
+      c.geometry.dispose();
+      (c.points.material as THREE.Material).dispose();
+    }
+    this.palabras.length = 0;
+    this.chispas.length = 0;
+    if (this.reduced) this.renderOnce();
+  }
+
+  /** Nº de palabras vivas (en vuelo + disueltas). Para depurar/instrumentar. */
+  get conteoPalabras(): number {
+    return this.palabras.length + this.chispas.length;
+  }
+
+  /**
+   * Una palabra que toca la superficie se vuelve un puñado de puntos (n ≈
+   * largo·4, 10–46) dispersos en un parche alrededor de su dirección. `resting`
+   * (movimiento reducido) los deja ya fundidos, sin la oscilación de empuje.
+   */
+  private disolverEnChispas(
+    dir: THREE.Vector3,
+    tech: boolean,
+    length: number,
+    resting = false,
+  ) {
+    const n = Math.max(10, Math.min(46, length * 4));
+    const pos = new Float32Array(n * 3);
+    const home = new Float32Array(n * 3);
+    const rnd = new Float32Array(n);
+    for (let i = 0; i < n; i++) {
+      const jitter = new THREE.Vector3(
+        dir.x + (Math.random() - 0.5) * 0.5,
+        dir.y + (Math.random() - 0.5) * 0.5,
+        dir.z + (Math.random() - 0.5) * 0.5,
+      ).normalize();
+      home[i * 3] = jitter.x;
+      home[i * 3 + 1] = jitter.y;
+      home[i * 3 + 2] = jitter.z;
+      pos[i * 3] = jitter.x;
+      pos[i * 3 + 1] = jitter.y;
+      pos[i * 3 + 2] = jitter.z;
+      rnd[i] = Math.random();
+    }
+    const geometry = new THREE.BufferGeometry();
+    geometry.setAttribute("position", new THREE.Float32BufferAttribute(pos, 3));
+    const material = new THREE.PointsMaterial({
+      map: this.sparkTexture,
+      size: 0.09,
+      transparent: true,
+      // En reposo (movimiento reducido) nacen ya fundidas con la membrana.
+      opacity: resting ? 0.5 : 0.95,
+      depthWrite: false,
+      blending: THREE.AdditiveBlending,
+      sizeAttenuation: true,
+      color: tech ? this.palette.palabraTech : this.palette.palabraSuave,
+    });
+    const points = new THREE.Points(geometry, material);
+    this.grupoChispas.add(points);
+    this.chispas.push({
+      points,
+      geometry,
+      home,
+      rnd,
+      count: n,
+      born: performance.now(),
+    });
+
+    // Tope de chispas vivas: libera la más vieja (ya fundida) para no acumular
+    // geometría infinita en sesiones largas.
+    while (this.chispas.length > MAX_LIVE_SPARKS) {
+      const old = this.chispas.shift()!;
+      this.grupoChispas.remove(old.points);
+      old.geometry.dispose();
+      (old.points.material as THREE.Material).dispose();
+    }
+  }
+
+  /** Avanza el ciclo de vida de palabras en vuelo y chispas. Llamado por frame(). */
+  private animarPalabras(now: number, _t: number) {
+    // 1) palabras en vuelo: volar → leer → hundir → disolver.
+    for (let i = this.palabras.length - 1; i >= 0; i--) {
+      const p = this.palabras[i];
+      const mat = p.sprite.material as THREE.SpriteMaterial;
+      const edad = now - p.born;
+      if (edad < WORD_FLY_MS) {
+        const k = edad / WORD_FLY_MS;
+        const e = 1 - Math.pow(1 - k, 3); // easeOut cúbico
+        p.sprite.position.lerpVectors(p.entry, p.read, e);
+        mat.opacity = Math.min(1, e * 1.2);
+        const s = 0.5 + e * 0.5;
+        p.sprite.scale.set(p.baseScale * s, WORD_HEIGHT * s, 1);
+      } else if (edad < WORD_FLY_MS + WORD_READ_MS) {
+        p.sprite.position.copy(p.read);
+        mat.opacity = 1;
+      } else {
+        const k = Math.min(
+          (edad - WORD_FLY_MS - WORD_READ_MS) / WORD_SINK_MS,
+          1,
+        );
+        const e = k * k;
+        p.sprite.position.lerpVectors(p.read, p.surface, e);
+        mat.opacity = 1 - e;
+        const s = 1 - e * 0.5;
+        p.sprite.scale.set(p.baseScale * s, WORD_HEIGHT * s, 1);
+        if (k >= 1) {
+          this.disolverEnChispas(p.dir, p.tech, p.length);
+          this.grupoPalabras.remove(p.sprite);
+          p.texture.dispose();
+          mat.dispose();
+          this.palabras.splice(i, 1);
+        }
+      }
+    }
+    // 2) chispas ya integradas: empuje radial que decae + fundido a la membrana.
+    for (const c of this.chispas) {
+      const edad = (now - c.born) / 1000; // seg
+      const arr = c.geometry.attributes.position.array as Float32Array;
+      for (let i = 0; i < c.count; i++) {
+        const hx = c.home[i * 3];
+        const hy = c.home[i * 3 + 1];
+        const hz = c.home[i * 3 + 2];
+        // "Quiere salir": oscila hacia afuera y vuelve, con amplitud exp(-t).
+        const push =
+          Math.exp(-edad * 0.6) * 0.14 * Math.sin(edad * 6 + c.rnd[i] * 6.28) +
+          Math.exp(-edad * 0.9) * 0.12;
+        const r = 1.0 + push;
+        arr[i * 3] = hx * r;
+        arr[i * 3 + 1] = hy * r;
+        arr[i * 3 + 2] = hz * r;
+      }
+      c.geometry.attributes.position.needsUpdate = true;
+      (c.points.material as THREE.PointsMaterial).opacity =
+        0.35 + 0.6 * Math.exp(-edad * 0.5);
+    }
+  }
+
   /** Libera todos los recursos GPU. El motor no puede reutilizarse después. */
   dispose() {
     if (this.disposed) return;
@@ -680,6 +1021,21 @@ export class EsferaEngine {
       this.points.geometry.dispose();
       this.points = null;
     }
+    // Palabras y chispas del modo «palabras» (sus texturas de texto y
+    // geometrías; la textura de chispa compartida cae con `this.textures`).
+    for (const p of this.palabras) {
+      this.grupoPalabras.remove(p.sprite);
+      p.texture.dispose();
+      p.sprite.material.dispose();
+    }
+    for (const c of this.chispas) {
+      this.grupoChispas.remove(c.points);
+      c.geometry.dispose();
+      (c.points.material as THREE.Material).dispose();
+    }
+    this.palabras.length = 0;
+    this.chispas.length = 0;
+    this.sparkTexture = null;
     this.material.dispose();
     this.darkCore.geometry.dispose();
     (this.darkCore.material as THREE.Material).dispose();

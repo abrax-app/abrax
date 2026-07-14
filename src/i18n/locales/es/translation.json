@@ -308,6 +308,14 @@
             "bottom": "Abajo",
             "top": "Arriba"
           }
+        },
+        "esferaModo": {
+          "title": "Modo de la esfera",
+          "description": "Cómo se comporta la esfera. Audio: reacciona a tu voz. Palabras: las palabras que dictas vuelan a la esfera, se leen un instante y se disuelven en su membrana (ideal con un modelo de streaming, donde las palabras llegan en vivo mientras hablas).",
+          "options": {
+            "audio": "Reactiva al audio",
+            "palabras": "Palabras vivas"
+          }
         }
       },
       "pasteMethod": {
