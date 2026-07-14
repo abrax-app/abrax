@@ -818,6 +818,13 @@
   "tts": {
     "voiceLangEs": "Испанский",
     "voiceLangEn": "Английский",
+    "voiceSettings": "Настройки голоса",
+    "speed": "Скорость",
+    "pitch": "Высота",
+    "pitchLow": "Низкая",
+    "pitchNormal": "Обычная",
+    "pitchHigh": "Высокая",
+    "pitchHint": "Высота применяется только к онлайн-голосу.",
     "vram": "({{gb}} GB VRAM)",
     "descOnline": "Нейронные голоса Microsoft (Azure). Не локально: отправляет текст через интернет.",
     "onlineWarning": "требуется интернет · текст покидает устройство",

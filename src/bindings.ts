@@ -901,11 +901,13 @@ async escuchaListVoices() : Promise<Result<VozEscucha[], string>> {
 },
 /**
  * `rate` es un multiplicador de velocidad (1.0 = normal). Cada motor lo mapea a
- * su rango (el del sistema vía `escucha::map_rate`; Piper vía `length_scale`).
+ * su rango (el del sistema vía `escucha::map_rate`; Piper vía `length_scale`;
+ * online/Kokoro vía el servidor). `pitch` es el tono en Hz — SOLO lo aplica el
+ * motor online (edge-tts); los demás lo ignoran.
  */
-async escuchaSpeak(texto: string, vozId: string | null, rate: number | null) : Promise<Result<null, string>> {
+async escuchaSpeak(texto: string, vozId: string | null, rate: number | null, pitch: number | null) : Promise<Result<null, string>> {
     try {
-    return { status: "ok", data: await TAURI_INVOKE("escucha_speak", { texto, vozId, rate }) };
+    return { status: "ok", data: await TAURI_INVOKE("escucha_speak", { texto, vozId, rate, pitch }) };
 } catch (e) {
     if(e instanceof Error) throw e;
     else return { status: "error", error: e  as any };
@@ -969,9 +971,22 @@ async escuchaReadClipboard() : Promise<Result<string, string>> {
  * un change_* por campo en shortcut/mod.rs) para mantener acotada la
  * superficie de ese archivo compartido.
  */
-async escuchaUpdateSettings(vozProsa: string | null, vozCodigo: string | null, rateProsa: number, rateCodigo: number, verbosidad: VerbosidadSimbolos) : Promise<Result<null, string>> {
+async escuchaUpdateSettings(vozProsa: string | null, vozCodigo: string | null, verbosidad: VerbosidadSimbolos) : Promise<Result<null, string>> {
     try {
-    return { status: "ok", data: await TAURI_INVOKE("escucha_update_settings", { vozProsa, vozCodigo, rateProsa, rateCodigo, verbosidad }) };
+    return { status: "ok", data: await TAURI_INVOKE("escucha_update_settings", { vozProsa, vozCodigo, verbosidad }) };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+/**
+ * Persiste los "Ajustes de voz" del motor: velocidad de lectura (multiplicador,
+ * todos los motores) y tono en Hz (solo online). Se aplican a "Probar voz" y a
+ * la lectura del panel Escucha.
+ */
+async updateTtsAjustes(velocidad: number, tono: number) : Promise<Result<null, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("update_tts_ajustes", { velocidad, tono }) };
 } catch (e) {
     if(e instanceof Error) throw e;
     else return { status: "error", error: e  as any };
@@ -1170,15 +1185,6 @@ escucha_voz_prosa?: string | null;
  */
 escucha_voz_codigo?: string | null; 
 /**
- * Multiplicador de velocidad de la prosa (1.0 = normal).
- */
-escucha_rate_prosa?: number; 
-/**
- * Multiplicador de velocidad del código (por defecto algo más lento:
- * los símbolos verbalizados se siguen mejor).
- */
-escucha_rate_codigo?: number; 
-/**
  * Cuánto símbolo se pronuncia al leer código (Natural calla los cierres).
  */
 escucha_verbosidad_simbolos?: VerbosidadSimbolos; 
@@ -1193,7 +1199,18 @@ tts_auto_detect?: boolean;
 /**
  * Id de la voz del motor activo (None = la app elige la primera disponible).
  */
-tts_voice?: string | null }
+tts_voice?: string | null; 
+/**
+ * Velocidad de lectura como multiplicador (1.0 = normal). 3 niveles en la UI
+ * (Normal 1.0 / Rápida 1.3 / Muy rápida 1.6); aplica a TODOS los motores.
+ */
+tts_velocidad?: number; 
+/**
+ * Tono (pitch) en Hz para el motor ONLINE (edge-tts `pitch`). 0 = normal.
+ * Los demás motores lo ignoran (no exponen control de tono). 3 niveles en la
+ * UI (Grave −40 / Normal 0 / Agudo +40).
+ */
+tts_tono?: number }
 export type AudioDevice = { index: string; name: string; is_default: boolean }
 export type AutoSubmitKey = "enter" | "ctrl_enter" | "cmd_enter"
 export type AvailableAccelerators = { transcribe: string[]; ort: string[]; gpu_devices: GpuDeviceOption[] }

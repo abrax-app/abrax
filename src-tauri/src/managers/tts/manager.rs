@@ -326,9 +326,11 @@ impl TtsManager {
         texto: String,
         voz_id: Option<String>,
         rate: Option<f32>,
+        pitch: Option<i32>,
     ) -> Result<(), String> {
         let opts = TtsOptions {
             rate: rate.unwrap_or(1.0),
+            pitch_hz: pitch.unwrap_or(0),
         };
         let voz = voz_id.clone();
         // Si el motor activo neuronal falla, degrada al sistema y reintenta

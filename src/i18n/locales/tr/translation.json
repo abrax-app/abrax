@@ -818,6 +818,13 @@
   "tts": {
     "voiceLangEs": "İspanyolca",
     "voiceLangEn": "İngilizce",
+    "voiceSettings": "Ses ayarları",
+    "speed": "Hız",
+    "pitch": "Perde",
+    "pitchLow": "Düşük",
+    "pitchNormal": "Normal",
+    "pitchHigh": "Yüksek",
+    "pitchHint": "Perde yalnızca çevrimiçi ses için geçerlidir.",
     "vram": "({{gb}} GB VRAM)",
     "descOnline": "Microsoft nöral sesleri (Azure). Yerel değil: metni internet üzerinden gönderir.",
     "onlineWarning": "internet gerektirir · metin cihazdan ayrılır",

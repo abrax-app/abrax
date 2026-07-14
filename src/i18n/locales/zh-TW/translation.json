@@ -818,6 +818,13 @@
   "tts": {
     "voiceLangEs": "西班牙文",
     "voiceLangEn": "英文",
+    "voiceSettings": "語音設定",
+    "speed": "語速",
+    "pitch": "音調",
+    "pitchLow": "低",
+    "pitchNormal": "正常",
+    "pitchHigh": "高",
+    "pitchHint": "音調僅適用於線上語音。",
     "vram": "({{gb}} GB VRAM)",
     "descOnline": "微軟神經語音（Azure）。非本機：透過網際網路傳送文字。",
     "onlineWarning": "需要連網 · 文字會離開本機",

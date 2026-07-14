@@ -46,6 +46,18 @@ interface Progreso {
   percentage: number;
 }
 
+// Velocidad de lectura (multiplicador). Slider continuo (paso 0.1), aplica a
+// TODOS los motores.
+const VEL_MIN = 0.5;
+const VEL_MAX = 3.0;
+const VEL_STEP = 0.1;
+// Tono (pitch en Hz). 3 niveles, SOLO el motor online (edge-tts) lo aplica.
+const NIVELES_TONO: { v: number; key: string }[] = [
+  { v: -40, key: "tts.pitchLow" },
+  { v: 0, key: "tts.pitchNormal" },
+  { v: 40, key: "tts.pitchHigh" },
+];
+
 export const MotorVoz: React.FC = () => {
   const { t } = useTranslation();
   const { settings, refreshSettings } = useSettings();
@@ -123,7 +135,10 @@ export const MotorVoz: React.FC = () => {
     const un = listen<Progreso & { asset_id: string; percentage: number }>(
       "tts-download-progress",
       (e) =>
-        setProgreso({ assetId: e.payload.asset_id, percentage: e.payload.percentage }),
+        setProgreso({
+          assetId: e.payload.asset_id,
+          percentage: e.payload.percentage,
+        }),
     );
     return () => {
       void un.then((f) => f());
@@ -133,7 +148,9 @@ export const MotorVoz: React.FC = () => {
   // Carga del modelo/servidor de un motor neuronal (la 1.ª vez tarda unos
   // segundos). Se muestra un aviso y se libera con `tts-engine-ready`.
   useEffect(() => {
-    const unL = listen<EngineId>("tts-engine-loading", (e) => setPreparando(e.payload));
+    const unL = listen<EngineId>("tts-engine-loading", (e) =>
+      setPreparando(e.payload),
+    );
     const unR = listen<EngineId>("tts-engine-ready", () => setPreparando(null));
     return () => {
       void unL.then((f) => f());
@@ -207,13 +224,51 @@ export const MotorVoz: React.FC = () => {
     [t, recargarEstado],
   );
 
+  // "Ajustes de voz": velocidad (todos los motores) y tono (solo online).
+  // Persisten en settings; se aplican a "Probar voz" y a la lectura del panel.
+  // La velocidad tiene estado local para que arrastrar el slider sea fluido; se
+  // persiste con debounce (así no spamea el backend ni reinicia la lectura en
+  // cada tick — el reinicio en caliente ocurre al asentarse el valor).
+  const [velLocal, setVelLocal] = useState<number | null>(null);
+  const velocidad = velLocal ?? settings?.tts_velocidad ?? 1.0;
+  const tono = settings?.tts_tono ?? 0;
+
+  const guardarAjustes = useCallback(
+    async (vel: number, ton: number) => {
+      const r = await commands.updateTtsAjustes(vel, ton);
+      if (r.status === "error") {
+        toast.error(t("tts.errorSetEngine"), { description: r.error });
+        return;
+      }
+      await refreshSettings();
+    },
+    [t, refreshSettings],
+  );
+
+  const tonoRef = useRef(tono);
+  useEffect(() => {
+    tonoRef.current = tono;
+  }, [tono]);
+  useEffect(() => {
+    if (velLocal == null) return;
+    const timer = setTimeout(() => {
+      void guardarAjustes(velLocal, tonoRef.current);
+    }, 350);
+    return () => clearTimeout(timer);
+  }, [velLocal, guardarAjustes]);
+
   const probarVoz = useCallback(async () => {
     await commands.escuchaStop();
-    const r = await commands.escuchaSpeak(t("tts.sampleText"), vozPrueba, 1.0);
+    const r = await commands.escuchaSpeak(
+      t("tts.sampleText"),
+      vozPrueba,
+      velocidad,
+      tono,
+    );
     if (r.status === "error") {
       toast.error(t("escucha.errorSpeak"), { description: r.error });
     }
-  }, [t, vozPrueba]);
+  }, [t, vozPrueba, velocidad, tono]);
 
   const estadoTexto = (e: EngineStatus): string => {
     if (e.available) return t("tts.available");
@@ -261,7 +316,9 @@ export const MotorVoz: React.FC = () => {
             className="w-4 h-4 animate-spin text-logo-primary shrink-0"
             aria-hidden="true"
           />
-          <span>{t("tts.preparingVoice", { engine: engineDisplay(preparando) })}</span>
+          <span>
+            {t("tts.preparingVoice", { engine: engineDisplay(preparando) })}
+          </span>
         </div>
       )}
 
@@ -281,7 +338,10 @@ export const MotorVoz: React.FC = () => {
           </p>
           {recommended && (
             <p className="text-sm text-text/70 flex items-center gap-1.5">
-              <Sparkles className="w-3.5 h-3.5 text-logo-primary" aria-hidden="true" />
+              <Sparkles
+                className="w-3.5 h-3.5 text-logo-primary"
+                aria-hidden="true"
+              />
               {t("tts.recommendation", { engine: recName })}
             </p>
           )}
@@ -346,7 +406,9 @@ export const MotorVoz: React.FC = () => {
 
       {voces.length > 0 && (
         <div className="flex items-center gap-2">
-          <span className="text-xs text-text/60 shrink-0">{t("tts.voice")}</span>
+          <span className="text-xs text-text/60 shrink-0">
+            {t("tts.voice")}
+          </span>
           <Select
             className="min-w-56"
             value={vozPrueba}
@@ -358,6 +420,59 @@ export const MotorVoz: React.FC = () => {
           />
         </div>
       )}
+
+      {/* Ajustes de voz: velocidad (todos los motores) y tono (solo online). */}
+      <div className="border-t border-mid-gray/20 pt-3 space-y-2">
+        <p className="text-xs font-medium text-text/70">
+          {t("tts.voiceSettings")}
+        </p>
+        <div className="flex items-center gap-2 flex-wrap">
+          <span className="text-xs text-text/60 w-16 shrink-0">
+            {t("tts.speed")}
+          </span>
+          <input
+            type="range"
+            min={VEL_MIN}
+            max={VEL_MAX}
+            step={VEL_STEP}
+            value={velocidad}
+            onChange={(e) => setVelLocal(parseFloat(e.target.value))}
+            className="flex-grow min-w-40 h-2 rounded-lg appearance-none cursor-pointer"
+            aria-label={t("tts.speed")}
+            aria-valuetext={`${velocidad.toFixed(1)}×`}
+          />
+          <span className="text-xs tabular-nums text-text/70 w-10 text-end shrink-0">
+            {velocidad.toFixed(1)}×
+          </span>
+        </div>
+        {active === "online" && (
+          <div className="space-y-1">
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className="text-xs text-text/60 w-16 shrink-0">
+                {t("tts.pitch")}
+              </span>
+              <div
+                className="flex gap-1"
+                role="group"
+                aria-label={t("tts.pitch")}
+              >
+                {NIVELES_TONO.map((n) => (
+                  <Button
+                    key={n.v}
+                    onClick={() => guardarAjustes(velocidad, n.v)}
+                    variant={tono === n.v ? "primary-soft" : "secondary"}
+                    size="sm"
+                    aria-pressed={tono === n.v}
+                  >
+                    {t(n.key)}
+                  </Button>
+                ))}
+              </div>
+            </div>
+            <p className="text-xs text-text/40">{t("tts.pitchHint")}</p>
+          </div>
+        )}
+      </div>
 
       {expandido && (
         <ul className="border-t border-mid-gray/20 pt-3 space-y-2">
@@ -397,7 +512,11 @@ export const MotorVoz: React.FC = () => {
                       {t("tts.activeShort")}
                     </span>
                   ) : e.available ? (
-                    <Button onClick={() => usarMotor(e.id)} variant="secondary" size="sm">
+                    <Button
+                      onClick={() => usarMotor(e.id)}
+                      variant="secondary"
+                      size="sm"
+                    >
                       {t("tts.use")}
                     </Button>
                   ) : e.requirements.needs_download ? (

@@ -654,6 +654,7 @@ pub fn run(cli_args: CliArgs) {
             commands::escucha::escucha_read_file,
             commands::escucha::escucha_read_clipboard,
             commands::escucha::escucha_update_settings,
+            commands::escucha::update_tts_ajustes,
             // [TTS] Motor de voz adaptativo (detección + motores + descarga)
             commands::tts::detect_hardware,
             commands::tts::redetect_hardware,

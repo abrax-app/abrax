@@ -818,6 +818,13 @@
   "tts": {
     "voiceLangEs": "Španělština",
     "voiceLangEn": "Angličtina",
+    "voiceSettings": "Nastavení hlasu",
+    "speed": "Rychlost",
+    "pitch": "Výška",
+    "pitchLow": "Nízká",
+    "pitchNormal": "Normální",
+    "pitchHigh": "Vysoká",
+    "pitchHint": "Výška se vztahuje pouze na online hlas.",
     "vram": "({{gb}} GB VRAM)",
     "descOnline": "Neuronové hlasy Microsoftu (Azure). Není lokální: posílá text přes internet.",
     "onlineWarning": "vyžaduje internet · text opustí zařízení",

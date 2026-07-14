@@ -818,6 +818,13 @@
   "tts": {
     "voiceLangEs": "Tiếng Tây Ban Nha",
     "voiceLangEn": "Tiếng Anh",
+    "voiceSettings": "Cài đặt giọng nói",
+    "speed": "Tốc độ",
+    "pitch": "Cao độ",
+    "pitchLow": "Thấp",
+    "pitchNormal": "Bình thường",
+    "pitchHigh": "Cao",
+    "pitchHint": "Cao độ chỉ áp dụng cho giọng nói trực tuyến.",
     "vram": "({{gb}} GB VRAM)",
     "descOnline": "Giọng nơ-ron của Microsoft (Azure). Không cục bộ: gửi văn bản qua internet.",
     "onlineWarning": "cần internet · văn bản rời khỏi thiết bị",

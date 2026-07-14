@@ -818,6 +818,13 @@
   "tts": {
     "voiceLangEs": "Spaans",
     "voiceLangEn": "Engels",
+    "voiceSettings": "Steminstellingen",
+    "speed": "Snelheid",
+    "pitch": "Toonhoogte",
+    "pitchLow": "Laag",
+    "pitchNormal": "Normaal",
+    "pitchHigh": "Hoog",
+    "pitchHint": "Toonhoogte geldt alleen voor de online stem.",
     "vram": "({{gb}} GB VRAM)",
     "descOnline": "Neurale stemmen van Microsoft (Azure). Niet lokaal: verstuurt de tekst via internet.",
     "onlineWarning": "vereist internet · je tekst verlaat het apparaat",

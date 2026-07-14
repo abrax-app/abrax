@@ -818,6 +818,13 @@
   "tts": {
     "voiceLangEs": "Spanska",
     "voiceLangEn": "Engelska",
+    "voiceSettings": "Röstinställningar",
+    "speed": "Hastighet",
+    "pitch": "Tonhöjd",
+    "pitchLow": "Låg",
+    "pitchNormal": "Normal",
+    "pitchHigh": "Hög",
+    "pitchHint": "Tonhöjd gäller endast för onlinerösten.",
     "vram": "({{gb}} GB VRAM)",
     "descOnline": "Microsofts neurala röster (Azure). Inte lokalt: skickar texten över internet.",
     "onlineWarning": "kräver internet · din text lämnar enheten",

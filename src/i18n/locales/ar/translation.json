@@ -818,6 +818,13 @@
   "tts": {
     "voiceLangEs": "الإسبانية",
     "voiceLangEn": "الإنجليزية",
+    "voiceSettings": "إعدادات الصوت",
+    "speed": "السرعة",
+    "pitch": "طبقة الصوت",
+    "pitchLow": "منخفضة",
+    "pitchNormal": "عادية",
+    "pitchHigh": "مرتفعة",
+    "pitchHint": "تنطبق طبقة الصوت على الصوت عبر الإنترنت فقط.",
     "vram": "({{gb}} GB VRAM)",
     "descOnline": "أصوات مايكروسوفت العصبية (Azure). ليست محلية: تُرسل النص عبر الإنترنت.",
     "onlineWarning": "يتطلب إنترنت · يغادر النص جهازك",

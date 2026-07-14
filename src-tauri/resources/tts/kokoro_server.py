@@ -37,10 +37,15 @@ class Engine:
     # Idioma de Abrax (es/en) → código de kokoro-onnx.
     LANG_MAP = {"es": "es", "en": "en-us"}
 
-    def synthesize(self, text: str, voice: str = "em_alex", lang: str = "es") -> np.ndarray:
+    def synthesize(
+        self, text: str, voice: str = "em_alex", lang: str = "es", speed: float = 1.0
+    ) -> np.ndarray:
         kok_lang = self.LANG_MAP.get(lang, lang)
+        # `speed` es el multiplicador de velocidad (1.0 = normal). Kokoro no
+        # expone control de tono, así que `pitch` (si llega) se ignora.
+        speed = max(0.5, min(3.0, float(speed)))
         samples, sr = self.kokoro.create(
-            text, voice=voice or "em_alex", speed=1.0, lang=kok_lang
+            text, voice=voice or "em_alex", speed=speed, lang=kok_lang
         )
         self.sr = int(sr)
         return np.asarray(samples, dtype=np.float32)
@@ -98,7 +103,8 @@ def make_handler(engine: Engine):
                     return
                 voice = payload.get("voice") or "em_alex"
                 lang = payload.get("language_id", "es")
-                samples = engine.synthesize(text, voice, lang)
+                speed = payload.get("rate", 1.0)
+                samples = engine.synthesize(text, voice, lang, speed)
                 data = to_wav_bytes(samples, engine.sr)
                 self.send_response(200)
                 self.send_header("Content-Type", "audio/wav")

@@ -12,7 +12,7 @@ decodifica a WAV con miniaudio.
 
 API (solo localhost):
     GET  /health        -> {"status":"ok"}
-    POST /synthesize     {"text": "...", "voice": "es-MX-DaliaNeural"} -> audio/wav
+    POST /synthesize     {"text","voice","rate"(mult 1.0),"pitch"(Hz)} -> audio/wav
 """
 import argparse
 import asyncio
@@ -25,8 +25,19 @@ import edge_tts
 import miniaudio
 
 
-async def _synth_mp3(text: str, voice: str) -> bytes:
-    comm = edge_tts.Communicate(text, voice)
+def _rate_str(rate: float) -> str:
+    """Multiplicador de velocidad (1.0 = normal) -> formato edge-tts (+/-NN%)."""
+    pct = int(round((float(rate) - 1.0) * 100))
+    return f"{pct:+d}%"
+
+
+def _pitch_str(pitch_hz: int) -> str:
+    """Tono en Hz -> formato edge-tts (+/-NNHz). 0 = sin cambio."""
+    return f"{int(pitch_hz):+d}Hz"
+
+
+async def _synth_mp3(text: str, voice: str, rate: str, pitch: str) -> bytes:
+    comm = edge_tts.Communicate(text, voice, rate=rate, pitch=pitch)
     buf = bytearray()
     async for chunk in comm.stream():
         if chunk["type"] == "audio":
@@ -34,8 +45,8 @@ async def _synth_mp3(text: str, voice: str) -> bytes:
     return bytes(buf)
 
 
-def synth_wav(text: str, voice: str) -> bytes:
-    mp3 = asyncio.run(_synth_mp3(text, voice))
+def synth_wav(text: str, voice: str, rate: float = 1.0, pitch_hz: int = 0) -> bytes:
+    mp3 = asyncio.run(_synth_mp3(text, voice, _rate_str(rate), _pitch_str(pitch_hz)))
     dec = miniaudio.decode(
         mp3,
         output_format=miniaudio.SampleFormat.SIGNED16,
@@ -90,7 +101,9 @@ def make_handler():
                     self._json(400, {"error": "texto vacío"})
                     return
                 voice = payload.get("voice") or "es-MX-DaliaNeural"
-                data = synth_wav(text, voice)
+                rate = payload.get("rate", 1.0)
+                pitch = payload.get("pitch", 0)
+                data = synth_wav(text, voice, rate, pitch)
                 self.send_response(200)
                 self.send_header("Content-Type", "audio/wav")
                 self.send_header("Content-Length", str(len(data)))

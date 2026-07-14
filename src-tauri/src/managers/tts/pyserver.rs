@@ -208,7 +208,7 @@ impl TtsEngine for PyServerEngine {
             && Self::is_provisioned(&self.runtime_dir)
     }
 
-    fn speak(&mut self, text: &str, voice: Option<&str>, _opts: &TtsOptions) -> Result<(), TtsError> {
+    fn speak(&mut self, text: &str, voice: Option<&str>, opts: &TtsOptions) -> Result<(), TtsError> {
         self.ensure_server()?;
         // Voz pedida si es válida; si no, la primera del reparto. El idioma sale
         // de la voz (es/en) para que el servidor fonemice correctamente.
@@ -227,9 +227,17 @@ impl TtsEngine for PyServerEngine {
             .timeout(Duration::from_secs(120))
             .build()
             .map_err(|e| TtsError::Io(e.to_string()))?;
+        // `rate` (multiplicador de velocidad) lo usan todos los servidores; `pitch`
+        // (Hz) solo el online (edge-tts) — Kokoro lo ignora.
         let resp = client
             .post(format!("{}/synthesize", self.base_url))
-            .json(&serde_json::json!({ "text": text, "language_id": lang, "voice": voz }))
+            .json(&serde_json::json!({
+                "text": text,
+                "language_id": lang,
+                "voice": voz,
+                "rate": opts.rate,
+                "pitch": opts.pitch_hz,
+            }))
             .send()
             .map_err(|e| TtsError::Synthesis(e.to_string()))?;
         if !resp.status().is_success() {

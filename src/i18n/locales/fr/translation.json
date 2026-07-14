@@ -818,6 +818,13 @@
   "tts": {
     "voiceLangEs": "Espagnol",
     "voiceLangEn": "Anglais",
+    "voiceSettings": "Paramètres de la voix",
+    "speed": "Vitesse",
+    "pitch": "Hauteur",
+    "pitchLow": "Grave",
+    "pitchNormal": "Normale",
+    "pitchHigh": "Aiguë",
+    "pitchHint": "La hauteur s'applique uniquement à la voix en ligne.",
     "vram": "({{gb}} GB VRAM)",
     "descOnline": "Voix neuronales de Microsoft (Azure). Pas local : envoie le texte par internet.",
     "onlineWarning": "nécessite internet · ton texte quitte l'appareil",

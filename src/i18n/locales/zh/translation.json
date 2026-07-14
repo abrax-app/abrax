@@ -818,6 +818,13 @@
   "tts": {
     "voiceLangEs": "西班牙语",
     "voiceLangEn": "英语",
+    "voiceSettings": "语音设置",
+    "speed": "语速",
+    "pitch": "音调",
+    "pitchLow": "低",
+    "pitchNormal": "正常",
+    "pitchHigh": "高",
+    "pitchHint": "音调仅适用于在线语音。",
     "vram": "({{gb}} GB VRAM)",
     "descOnline": "微软神经语音（Azure）。非本地：通过互联网发送文本。",
     "onlineWarning": "需要联网 · 文本会离开本机",

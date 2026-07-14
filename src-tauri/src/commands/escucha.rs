@@ -23,7 +23,9 @@ pub fn escucha_list_voices(manager: State<'_, Arc<TtsManager>>) -> Result<Vec<Vo
 }
 
 /// `rate` es un multiplicador de velocidad (1.0 = normal). Cada motor lo mapea a
-/// su rango (el del sistema vía `escucha::map_rate`; Piper vía `length_scale`).
+/// su rango (el del sistema vía `escucha::map_rate`; Piper vía `length_scale`;
+/// online/Kokoro vía el servidor). `pitch` es el tono en Hz — SOLO lo aplica el
+/// motor online (edge-tts); los demás lo ignoran.
 #[tauri::command]
 #[specta::specta]
 pub fn escucha_speak(
@@ -31,8 +33,9 @@ pub fn escucha_speak(
     texto: String,
     voz_id: Option<String>,
     rate: Option<f32>,
+    pitch: Option<i32>,
 ) -> Result<(), String> {
-    manager.speak(texto, voz_id, rate)
+    manager.speak(texto, voz_id, rate, pitch)
 }
 
 #[tauri::command]
@@ -93,21 +96,29 @@ pub fn escucha_read_clipboard(app: AppHandle) -> Result<String, String> {
 /// superficie de ese archivo compartido.
 #[tauri::command]
 #[specta::specta]
-#[allow(clippy::too_many_arguments)]
 pub fn escucha_update_settings(
     app: AppHandle,
     voz_prosa: Option<String>,
     voz_codigo: Option<String>,
-    rate_prosa: f32,
-    rate_codigo: f32,
     verbosidad: VerbosidadSimbolos,
 ) -> Result<(), String> {
     let mut settings = crate::settings::get_settings(&app);
     settings.escucha_voz_prosa = voz_prosa;
     settings.escucha_voz_codigo = voz_codigo;
-    settings.escucha_rate_prosa = rate_prosa.clamp(0.25, 3.0);
-    settings.escucha_rate_codigo = rate_codigo.clamp(0.25, 3.0);
     settings.escucha_verbosidad_simbolos = verbosidad;
+    crate::settings::write_settings(&app, settings);
+    Ok(())
+}
+
+/// Persiste los "Ajustes de voz" del motor: velocidad de lectura (multiplicador,
+/// todos los motores) y tono en Hz (solo online). Se aplican a "Probar voz" y a
+/// la lectura del panel Escucha.
+#[tauri::command]
+#[specta::specta]
+pub fn update_tts_ajustes(app: AppHandle, velocidad: f32, tono: i32) -> Result<(), String> {
+    let mut settings = crate::settings::get_settings(&app);
+    settings.tts_velocidad = velocidad.clamp(0.5, 3.0);
+    settings.tts_tono = tono.clamp(-100, 100);
     crate::settings::write_settings(&app, settings);
     Ok(())
 }

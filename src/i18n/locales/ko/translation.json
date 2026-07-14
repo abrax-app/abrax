@@ -818,6 +818,13 @@
   "tts": {
     "voiceLangEs": "스페인어",
     "voiceLangEn": "영어",
+    "voiceSettings": "음성 설정",
+    "speed": "속도",
+    "pitch": "음 높이",
+    "pitchLow": "낮음",
+    "pitchNormal": "보통",
+    "pitchHigh": "높음",
+    "pitchHint": "음 높이는 온라인 음성에만 적용됩니다.",
     "vram": "({{gb}} GB VRAM)",
     "descOnline": "Microsoft 뉴럴 음성(Azure). 로컬 아님: 텍스트를 인터넷으로 전송합니다.",
     "onlineWarning": "인터넷 필요 · 텍스트가 기기를 벗어납니다",

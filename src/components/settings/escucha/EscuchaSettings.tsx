@@ -43,9 +43,13 @@ export const EscuchaSettings: React.FC = () => {
   const [motorDisponible, setMotorDisponible] = useState(true);
   const [vozProsa, setVozProsa] = useState<string | null>(null);
   const [vozCodigo, setVozCodigo] = useState<string | null>(null);
-  const [rateProsa, setRateProsa] = useState(1.0);
-  const [rateCodigo, setRateCodigo] = useState(0.9);
   const [verbosidad, setVerbosidad] = useState<VerbosidadSimbolos>("natural");
+
+  // Velocidad (todos los motores) y tono (solo online) vienen de "Ajustes de voz"
+  // (panel Motor de voz, persistidos en settings). Se aplican a cada oración leída
+  // y también al "Probar voz".
+  const velocidad = settings?.tts_velocidad ?? 1.0;
+  const tono = settings?.tts_tono ?? 0;
 
   // Hidratar desde settings persistidos una sola vez (los cambios posteriores
   // salen de este panel, así que el estado local manda después).
@@ -55,8 +59,6 @@ export const EscuchaSettings: React.FC = () => {
     hidratadoRef.current = true;
     if (settings.escucha_voz_prosa) setVozProsa(settings.escucha_voz_prosa);
     if (settings.escucha_voz_codigo) setVozCodigo(settings.escucha_voz_codigo);
-    setRateProsa(settings.escucha_rate_prosa ?? 1.0);
-    setRateCodigo(settings.escucha_rate_codigo ?? 0.9);
     setVerbosidad(settings.escucha_verbosidad_simbolos ?? "natural");
   }, [settings]);
 
@@ -66,17 +68,11 @@ export const EscuchaSettings: React.FC = () => {
     if (!hidratadoRef.current) return;
     const timer = setTimeout(() => {
       void commands
-        .escuchaUpdateSettings(
-          vozProsa,
-          vozCodigo,
-          rateProsa,
-          rateCodigo,
-          verbosidad,
-        )
+        .escuchaUpdateSettings(vozProsa, vozCodigo, verbosidad)
         .then(() => refreshSettings());
     }, 400);
     return () => clearTimeout(timer);
-  }, [vozProsa, vozCodigo, rateProsa, rateCodigo, verbosidad]);
+  }, [vozProsa, vozCodigo, verbosidad]);
 
   const [nombreFuente, setNombreFuente] = useState<string | null>(null);
   const [lineas, setLineas] = useState<string[]>([]);
@@ -88,12 +84,26 @@ export const EscuchaSettings: React.FC = () => {
   // Token de invalidación: cada stop/pausa/lectura nueva lo incrementa y el
   // bucle de lectura en vuelo se da cuenta y termina sin efectos.
   const tokenRef = useRef(0);
-  // El bucle lee la config vigente por ref para que cambiar voz/velocidad
-  // aplique a partir de la siguiente oración sin reiniciar la lectura.
-  const configRef = useRef({ vozProsa, vozCodigo, rateProsa, rateCodigo });
+  // El bucle lee la config vigente por ref para que los ajustes de voz apliquen
+  // a la oración correcta.
+  const configRef = useRef({ vozProsa, vozCodigo, velocidad, tono });
   useEffect(() => {
-    configRef.current = { vozProsa, vozCodigo, rateProsa, rateCodigo };
-  }, [vozProsa, vozCodigo, rateProsa, rateCodigo]);
+    configRef.current = { vozProsa, vozCodigo, velocidad, tono };
+  }, [vozProsa, vozCodigo, velocidad, tono]);
+
+  // Espejos para el efecto de "cambio en caliente" (lee estado sin re-suscribir).
+  const leyendoRef = useRef(false);
+  const indiceRef = useRef(-1);
+  const oracionesRef = useRef<OracionHablable[]>([]);
+  useEffect(() => {
+    leyendoRef.current = leyendo;
+  }, [leyendo]);
+  useEffect(() => {
+    indiceRef.current = indice;
+  }, [indice]);
+  useEffect(() => {
+    oracionesRef.current = oraciones;
+  }, [oraciones]);
 
   const contenedorRef = useRef<HTMLDivElement>(null);
 
@@ -106,7 +116,8 @@ export const EscuchaSettings: React.FC = () => {
       if (cancelado) return;
       if (r.status === "ok") {
         setVoces(r.data);
-        const valido = (id: string | null) => !!id && r.data.some((v) => v.id === id);
+        const valido = (id: string | null) =>
+          !!id && r.data.some((v) => v.id === id);
         const primeraEs = r.data.find((v) => v.es_espanol) ?? r.data[0];
         if (primeraEs) {
           setVozProsa((prev) => (valido(prev) ? prev : primeraEs.id));
@@ -170,7 +181,8 @@ export const EscuchaSettings: React.FC = () => {
         const r = await commands.escuchaSpeak(
           oracion.texto_hablable,
           esCodigo ? cfg.vozCodigo : cfg.vozProsa,
-          esCodigo ? cfg.rateCodigo : cfg.rateProsa,
+          cfg.velocidad,
+          cfg.tono,
         );
         if (r.status === "error") {
           toast.error(t("escucha.errorSpeak"), { description: r.error });
@@ -186,6 +198,19 @@ export const EscuchaSettings: React.FC = () => {
     },
     [t],
   );
+
+  // CAMBIO EN CALIENTE: si cambian voz/velocidad/tono MIENTRAS se lee, reinicia
+  // desde el fragmento (oración) ACTUAL con los nuevos ajustes — no desde el
+  // principio, y sin audio encimado (escucha_speak interrumpe el anterior y
+  // detenerMotor invalida el bucle previo). Sin lectura en curso: no hace nada
+  // (se aplica a la próxima lectura). El reinicio explícito (Detener → Leer) sí
+  // parte desde el fragmento 0.
+  useEffect(() => {
+    if (!leyendoRef.current) return;
+    const desde = indiceRef.current >= 0 ? indiceRef.current : 0;
+    detenerMotor();
+    void leerDesde(desde, oracionesRef.current);
+  }, [vozProsa, vozCodigo, velocidad, tono]);
 
   const cargar = useCallback(
     async (contenido: string, modo: ModoLectura, nombre: string) => {
@@ -380,20 +405,6 @@ export const EscuchaSettings: React.FC = () => {
               placeholder={t("escucha.noVoices")}
               ariaLabel={t("escucha.voiceProse")}
             />
-            <label className="flex items-center gap-2 text-xs text-text/70">
-              <span className="w-24 shrink-0">
-                {t("escucha.speed")} {rateProsa.toFixed(1)}×
-              </span>
-              <input
-                type="range"
-                min={0.5}
-                max={2}
-                step={0.1}
-                value={rateProsa}
-                onChange={(e) => setRateProsa(parseFloat(e.target.value))}
-                className="flex-grow h-2 rounded-lg appearance-none cursor-pointer"
-              />
-            </label>
           </div>
           <div className="space-y-2">
             <p className="text-sm font-medium">{t("escucha.voiceCode")}</p>
@@ -405,20 +416,6 @@ export const EscuchaSettings: React.FC = () => {
               placeholder={t("escucha.noVoices")}
               ariaLabel={t("escucha.voiceCode")}
             />
-            <label className="flex items-center gap-2 text-xs text-text/70">
-              <span className="w-24 shrink-0">
-                {t("escucha.speed")} {rateCodigo.toFixed(1)}×
-              </span>
-              <input
-                type="range"
-                min={0.5}
-                max={2}
-                step={0.1}
-                value={rateCodigo}
-                onChange={(e) => setRateCodigo(parseFloat(e.target.value))}
-                className="flex-grow h-2 rounded-lg appearance-none cursor-pointer"
-              />
-            </label>
           </div>
         </div>
 

@@ -538,13 +538,6 @@ pub struct AppSettings {
     /// Id de la voz del sistema para el código.
     #[serde(default)]
     pub escucha_voz_codigo: Option<String>,
-    /// Multiplicador de velocidad de la prosa (1.0 = normal).
-    #[serde(default = "default_escucha_rate_prosa")]
-    pub escucha_rate_prosa: f32,
-    /// Multiplicador de velocidad del código (por defecto algo más lento:
-    /// los símbolos verbalizados se siguen mejor).
-    #[serde(default = "default_escucha_rate_codigo")]
-    pub escucha_rate_codigo: f32,
     /// Cuánto símbolo se pronuncia al leer código (Natural calla los cierres).
     #[serde(default)]
     pub escucha_verbosidad_simbolos: crate::managers::escucha::preproceso::VerbosidadSimbolos,
@@ -559,6 +552,15 @@ pub struct AppSettings {
     /// Id de la voz del motor activo (None = la app elige la primera disponible).
     #[serde(default)]
     pub tts_voice: Option<String>,
+    /// Velocidad de lectura como multiplicador (1.0 = normal). 3 niveles en la UI
+    /// (Normal 1.0 / Rápida 1.3 / Muy rápida 1.6); aplica a TODOS los motores.
+    #[serde(default = "default_tts_velocidad")]
+    pub tts_velocidad: f32,
+    /// Tono (pitch) en Hz para el motor ONLINE (edge-tts `pitch`). 0 = normal.
+    /// Los demás motores lo ignoran (no exponen control de tono). 3 niveles en la
+    /// UI (Grave −40 / Normal 0 / Agudo +40).
+    #[serde(default)]
+    pub tts_tono: i32,
     // [TTS] ---------------------------------------------------------------------
 }
 
@@ -833,19 +835,14 @@ fn default_typing_tool() -> TypingTool {
     TypingTool::Auto
 }
 
-// [ESCUCHA]
-fn default_escucha_rate_prosa() -> f32 {
-    1.0
-}
-
-// [ESCUCHA]
-fn default_escucha_rate_codigo() -> f32 {
-    0.9
-}
-
 // [TTS]
 fn default_tts_auto_detect() -> bool {
     true
+}
+
+// [TTS]
+fn default_tts_velocidad() -> f32 {
+    1.0
 }
 
 fn ensure_post_process_defaults(settings: &mut AppSettings) -> bool {
@@ -1023,13 +1020,13 @@ pub fn get_default_settings() -> AppSettings {
         // [ESCUCHA]
         escucha_voz_prosa: None,
         escucha_voz_codigo: None,
-        escucha_rate_prosa: default_escucha_rate_prosa(),
-        escucha_rate_codigo: default_escucha_rate_codigo(),
         escucha_verbosidad_simbolos: Default::default(),
         // [TTS]
         tts_selected_engine: None,
         tts_auto_detect: default_tts_auto_detect(),
         tts_voice: None,
+        tts_velocidad: default_tts_velocidad(),
+        tts_tono: 0,
     }
 }
 

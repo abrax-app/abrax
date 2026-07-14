@@ -818,6 +818,13 @@
   "tts": {
     "voiceLangEs": "Spanish",
     "voiceLangEn": "English",
+    "voiceSettings": "Voice settings",
+    "speed": "Speed",
+    "pitch": "Pitch",
+    "pitchLow": "Low",
+    "pitchNormal": "Normal",
+    "pitchHigh": "High",
+    "pitchHint": "Pitch only applies to the online voice.",
     "vram": "({{gb}} GB VRAM)",
     "descOnline": "Microsoft neural voices (Azure). Not local: sends the text over the internet.",
     "onlineWarning": "requires internet · your text leaves the device",

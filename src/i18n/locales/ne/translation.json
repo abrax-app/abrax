@@ -818,6 +818,13 @@
   "tts": {
     "voiceLangEs": "स्पेनी",
     "voiceLangEn": "अंग्रेजी",
+    "voiceSettings": "आवाज सेटिङ",
+    "speed": "गति",
+    "pitch": "पिच",
+    "pitchLow": "न्यून",
+    "pitchNormal": "सामान्य",
+    "pitchHigh": "उच्च",
+    "pitchHint": "पिच अनलाइन आवाजमा मात्र लागू हुन्छ।",
     "vram": "({{gb}} GB VRAM)",
     "descOnline": "Microsoft का न्यूरल आवाजहरू (Azure)। स्थानीय होइन: पाठ इन्टरनेटबाट पठाउँछ।",
     "onlineWarning": "इन्टरनेट चाहिन्छ · पाठ यन्त्रबाट बाहिर जान्छ",

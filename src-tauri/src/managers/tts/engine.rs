@@ -93,11 +93,17 @@ pub struct EngineStatus {
 pub struct TtsOptions {
     /// Multiplicador de velocidad (1.0 = normal). Cada motor lo mapea a su rango.
     pub rate: f32,
+    /// Tono (pitch) en Hz. Solo lo aplica el motor ONLINE (edge-tts); los demás
+    /// motores lo ignoran (no exponen control de tono). 0 = sin cambio.
+    pub pitch_hz: i32,
 }
 
 impl Default for TtsOptions {
     fn default() -> Self {
-        Self { rate: 1.0 }
+        Self {
+            rate: 1.0,
+            pitch_hz: 0,
+        }
     }
 }
 

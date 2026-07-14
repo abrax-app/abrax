@@ -818,6 +818,13 @@
   "tts": {
     "voiceLangEs": "ספרדית",
     "voiceLangEn": "אנגלית",
+    "voiceSettings": "הגדרות קול",
+    "speed": "מהירות",
+    "pitch": "גובה הצליל",
+    "pitchLow": "נמוך",
+    "pitchNormal": "רגיל",
+    "pitchHigh": "גבוה",
+    "pitchHint": "גובה הצליל חל על הקול המקוון בלבד.",
     "vram": "({{gb}} GB VRAM)",
     "descOnline": "קולות נוירוניים של Microsoft (Azure). לא מקומי: שולח את הטקסט דרך האינטרנט.",
     "onlineWarning": "דורש אינטרנט · הטקסט יוצא מהמכשיר",
