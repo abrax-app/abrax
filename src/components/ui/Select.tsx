@@ -14,9 +14,20 @@ export type SelectOption = {
   isDisabled?: boolean;
 };
 
+// Grupo de opciones (para listas largas navegables, p. ej. voces por país). El
+// selector renderiza el encabezado `label` sobre sus `options`. react-select lo
+// soporta de forma nativa.
+export type SelectOptionGroup = {
+  label: string;
+  options: SelectOption[];
+};
+
+// El selector acepta indistintamente una lista plana o agrupada.
+export type SelectOptions = (SelectOption | SelectOptionGroup)[];
+
 type BaseProps = {
   value: string | null;
-  options: SelectOption[];
+  options: SelectOptions;
   placeholder?: string;
   disabled?: boolean;
   isLoading?: boolean;
@@ -25,6 +36,9 @@ type BaseProps = {
   onBlur?: () => void;
   className?: string;
   formatCreateLabel?: (input: string) => string;
+  /** Nombre accesible del control (el combobox de react-select no tiene uno
+   *  propio si la etiqueta visible no está asociada por `htmlFor`). */
+  ariaLabel?: string;
 };
 
 type CreatableProps = {
@@ -117,6 +131,15 @@ const selectStyles: StylesConfig<SelectOption, false> = {
     ...base,
     color: "color-mix(in srgb, var(--color-mid-gray) 65%, transparent)",
   }),
+  groupHeading: (base) => ({
+    ...base,
+    color: "color-mix(in srgb, var(--color-mid-gray) 90%, transparent)",
+    fontSize: "0.7rem",
+    fontWeight: 600,
+    textTransform: "uppercase",
+    letterSpacing: "0.04em",
+    paddingTop: 8,
+  }),
 };
 
 export const Select: React.FC<SelectProps> = React.memo(
@@ -133,10 +156,13 @@ export const Select: React.FC<SelectProps> = React.memo(
     isCreatable,
     formatCreateLabel,
     onCreateOption,
+    ariaLabel,
   }) => {
     const selectValue = React.useMemo(() => {
       if (!value) return null;
-      const existing = options.find((option) => option.value === value);
+      // Las opciones pueden venir agrupadas: aplanar para localizar el valor.
+      const flat = options.flatMap((o) => ("options" in o ? o.options : [o]));
+      const existing = flat.find((option) => option.value === value);
       if (existing) return existing;
       return { value, label: value, isDisabled: false };
     }, [value, options]);
@@ -151,6 +177,7 @@ export const Select: React.FC<SelectProps> = React.memo(
     const sharedProps: Partial<ReactSelectProps<SelectOption, false>> = {
       className,
       classNamePrefix: "app-select",
+      "aria-label": ariaLabel,
       value: selectValue,
       options,
       onChange: handleChange,

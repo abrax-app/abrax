@@ -913,12 +913,20 @@ async escuchaListVoices() : Promise<Result<VozEscucha[], string>> {
 }
 },
 /**
- * `rate` es un multiplicador de velocidad (1.0 = normal); ver
- * `managers::escucha::map_rate` para el mapeo al rango nativo del backend.
+ * `rate` es un multiplicador de velocidad (1.0 = normal). Cada motor lo mapea a
+ * su rango (el del sistema vía `escucha::map_rate`; Piper vía `length_scale`;
+ * online/Kokoro vía el servidor). `pitch` es el tono en Hz — SOLO lo aplica el
+ * motor online (edge-tts); los demás lo ignoran.
+ * 
+ * **Async + `spawn_blocking`**: la síntesis neuronal puede tardar segundos la
+ * 1.ª vez (arranca el servidor y carga el modelo). Si corriera en el hilo
+ * principal, congelaría la UI y bloquearía toda otra IPC (incluido `Detener`).
+ * Al ejecutarla en el pool bloqueante, el hilo principal queda libre y los
+ * comandos de parada/estado responden al instante.
  */
-async escuchaSpeak(texto: string, vozId: string | null, rate: number | null) : Promise<Result<null, string>> {
+async escuchaSpeak(texto: string, vozId: string | null, rate: number | null, pitch: number | null) : Promise<Result<null, string>> {
     try {
-    return { status: "ok", data: await TAURI_INVOKE("escucha_speak", { texto, vozId, rate }) };
+    return { status: "ok", data: await TAURI_INVOKE("escucha_speak", { texto, vozId, rate, pitch }) };
 } catch (e) {
     if(e instanceof Error) throw e;
     else return { status: "error", error: e  as any };
@@ -982,9 +990,129 @@ async escuchaReadClipboard() : Promise<Result<string, string>> {
  * un change_* por campo en shortcut/mod.rs) para mantener acotada la
  * superficie de ese archivo compartido.
  */
-async escuchaUpdateSettings(vozProsa: string | null, vozCodigo: string | null, rateProsa: number, rateCodigo: number, verbosidad: VerbosidadSimbolos) : Promise<Result<null, string>> {
+async escuchaUpdateSettings(vozProsa: string | null, vozCodigo: string | null, verbosidad: VerbosidadSimbolos) : Promise<Result<null, string>> {
     try {
-    return { status: "ok", data: await TAURI_INVOKE("escucha_update_settings", { vozProsa, vozCodigo, rateProsa, rateCodigo, verbosidad }) };
+    return { status: "ok", data: await TAURI_INVOKE("escucha_update_settings", { vozProsa, vozCodigo, verbosidad }) };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+/**
+ * Persiste los "Ajustes de voz" del motor: velocidad de lectura (multiplicador,
+ * todos los motores) y tono en Hz (solo online). Se aplican a "Probar voz" y a
+ * la lectura del panel Escucha.
+ */
+async updateTtsAjustes(velocidad: number, tono: number) : Promise<Result<null, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("update_tts_ajustes", { velocidad, tono }) };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+async detectHardware() : Promise<Result<HardwareInfo, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("detect_hardware") };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+/**
+ * Fuerza una nueva detección de hardware y recomputa el motor activo.
+ */
+async redetectHardware() : Promise<Result<HardwareInfo, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("redetect_hardware") };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+async listEngines() : Promise<Result<EngineStatus[], string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("list_engines") };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+async getRecommendedEngine() : Promise<Result<EngineId, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("get_recommended_engine") };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+async getActiveEngine() : Promise<Result<EngineId, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("get_active_engine") };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+async setEngine(engine: EngineId) : Promise<Result<null, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("set_engine", { engine }) };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+/**
+ * Catálogo de voces Piper con su estado de instalación (para el selector de voz).
+ * Sin `advanced-tts` devuelve una lista vacía (la UI no muestra Piper).
+ */
+async listPiperVoices() : Promise<Result<PiperVoiceInfo[], string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("list_piper_voices") };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+/**
+ * Descarga+extrae el runtime Piper (GPL, proceso separado) en el primer uso.
+ */
+async installPiperRuntime() : Promise<Result<null, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("install_piper_runtime") };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+/**
+ * Descarga una voz Piper (`.onnx` + `.onnx.json`) con verificación sha256.
+ */
+async installPiperVoice(voiceId: string) : Promise<Result<null, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("install_piper_voice", { voiceId }) };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+/**
+ * Aprovisiona el runtime Kokoro (venv + kokoro-onnx + pesos con checksum).
+ */
+async installKokoroRuntime() : Promise<Result<null, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("install_kokoro_runtime") };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+/**
+ * Aprovisiona el runtime de la voz ONLINE (venv + edge-tts). ⚠️ Motor de nube.
+ */
+async installOnlineRuntime() : Promise<Result<null, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("install_online_runtime") };
 } catch (e) {
     if(e instanceof Error) throw e;
     else return { status: "error", error: e  as any };
@@ -1083,18 +1211,32 @@ escucha_voz_prosa?: string | null;
  */
 escucha_voz_codigo?: string | null; 
 /**
- * Multiplicador de velocidad de la prosa (1.0 = normal).
- */
-escucha_rate_prosa?: number; 
-/**
- * Multiplicador de velocidad del código (por defecto algo más lento:
- * los símbolos verbalizados se siguen mejor).
- */
-escucha_rate_codigo?: number; 
-/**
  * Cuánto símbolo se pronuncia al leer código (Natural calla los cierres).
  */
-escucha_verbosidad_simbolos?: VerbosidadSimbolos }
+escucha_verbosidad_simbolos?: VerbosidadSimbolos; 
+/**
+ * Motor TTS elegido; None = decidir por `tts_auto_detect` (recomendación por hardware).
+ */
+tts_selected_engine?: EngineId | null; 
+/**
+ * Autodetectar el mejor motor LOCAL disponible cuando no hay elección explícita.
+ */
+tts_auto_detect?: boolean; 
+/**
+ * Id de la voz del motor activo (None = la app elige la primera disponible).
+ */
+tts_voice?: string | null; 
+/**
+ * Velocidad de lectura como multiplicador (1.0 = normal). 3 niveles en la UI
+ * (Normal 1.0 / Rápida 1.3 / Muy rápida 1.6); aplica a TODOS los motores.
+ */
+tts_velocidad?: number; 
+/**
+ * Tono (pitch) en Hz para el motor ONLINE (edge-tts `pitch`). 0 = normal.
+ * Los demás motores lo ignoran (no exponen control de tono). 3 niveles en la
+ * UI (Grave −40 / Normal 0 / Agudo +40).
+ */
+tts_tono?: number }
 export type AudioDevice = { index: string; name: string; is_default: boolean }
 export type AutoSubmitKey = "enter" | "ctrl_enter" | "cmd_enter"
 export type AvailableAccelerators = { transcribe: string[]; ort: string[]; gpu_devices: GpuDeviceOption[] }
@@ -1116,6 +1258,61 @@ export type DictionaryProject = { path: string; enabled: boolean;
  */
 last_indexed_ms: number | null }
 export type DictionaryStats = { project_path: string; term_count: number; indexed_at_ms: number; sample: DictTerm[] }
+/**
+ * Identidad de un motor TTS. Se persiste en settings (`tts_selected_engine`).
+ * **Ninguna variante es de nube** — invariante del producto.
+ */
+export type EngineId = 
+/**
+ * Voces del SO (SAPI / AVSpeech / speech-dispatcher). Fallback universal.
+ */
+"system" | 
+/**
+ * Piper (VITS ONNX). Estándar neuronal liviano en CPU.
+ */
+"piper" | 
+/**
+ * Kokoro-82M (ONNX). Premium en CPU.
+ */
+"kokoro" | 
+/**
+ * Voces online de Microsoft (edge-tts). ⚠️ **NO local**: envía el texto a
+ * la nube. Opción etiquetada, nunca recomendada ni usada como fallback.
+ */
+"online"
+/**
+ * Requisitos de un motor para orientar la UI y la recomendación.
+ */
+export type EngineRequirements = { 
+/**
+ * Necesita GPU compatible (CUDA NVIDIA o Metal Apple).
+ */
+needs_gpu: boolean; 
+/**
+ * Necesita descargar modelo/runtime en el primer uso.
+ */
+needs_download: boolean; 
+/**
+ * ⚠️ Requiere conexión a internet — el texto sale del equipo (solo `Online`).
+ */
+needs_internet: boolean }
+/**
+ * Estado de un motor para el selector "Elegir otro motor".
+ */
+export type EngineStatus = { id: EngineId; display_name: string; 
+/**
+ * ¿Utilizable AHORA en este equipo? (hardware compatible + runtime/modelo presente).
+ */
+available: boolean; 
+/**
+ * Motivo de NO disponibilidad, ya localizado para la UI
+ * (p.ej. "requiere GPU NVIDIA" o "requiere descargar la voz (60 MB)").
+ */
+reason: string | null; 
+/**
+ * ¿Es el recomendado para este hardware?
+ */
+recommended: boolean; requirements: EngineRequirements }
 export type EngineType = 
 /**
  * Any GGML/GGUF model loaded through transcribe-cpp (Whisper, Parakeet,
@@ -1138,6 +1335,22 @@ export type EstadoEscucha = { hablando: boolean;
  */
 motor_disponible: boolean }
 export type GpuDeviceOption = { id: number; name: string; total_vram_mb: number }
+export type GpuType = "discrete" | "integrated" | "virtual" | "cpu" | "unknown"
+export type GpuVendor = "nvidia" | "apple" | "amd" | "intel" | "unknown" | 
+/**
+ * No se detectó ninguna GPU (ni integrada).
+ */
+"none"
+/**
+ * Instantánea del equipo, best-effort. Nota: `has_internet` NO forma parte de
+ * esto — la elección de motor es 100% local; internet solo se consulta aparte
+ * para saber si se PUEDE descargar un modelo, nunca para elegir motor.
+ */
+export type HardwareInfo = { os: OsKind; gpu_vendor: GpuVendor; gpu_name: string; gpu_type: GpuType; 
+/**
+ * VRAM dedicada en MB. `None` = no se pudo leer (best-effort), nunca inventada.
+ */
+vram_mb: number | null }
 export type HistoryEntry = { id: number; file_name: string; timestamp: number; saved: boolean; title: string; transcription_text: string; post_processed_text: string | null; post_process_prompt: string | null; post_process_requested: boolean }
 export type HistoryUpdatePayload = { action: "added"; entry: HistoryEntry } | { action: "updated"; entry: HistoryEntry } | { action: "deleted"; id: number } | { action: "toggled"; id: number }
 /**
@@ -1203,6 +1416,7 @@ export type ModoLectura =
  */
 export type OracionHablable = { texto_hablable: string; voz: VozTrozo; linea_inicio: number; linea_fin: number }
 export type OrtAcceleratorSetting = "auto" | "cpu" | "cuda" | "directml" | "rocm"
+export type OsKind = "windows" | "mac_os" | "linux" | "other"
 export type OverlayPosition = "top" | "bottom"
 /**
  * Which recording overlay to display. `Minimal` and `Live` share one base
@@ -1215,6 +1429,17 @@ export type OverlayStyle = "none" | "minimal" | "live" | "esfera"
 export type PaginatedHistory = { entries: HistoryEntry[]; has_more: boolean }
 export type PasteMethod = "ctrl_v" | "direct" | "none" | "shift_insert" | "ctrl_shift_v" | "external_script"
 export type PermissionAccess = "allowed" | "denied" | "unknown"
+/**
+ * Info de una voz Piper para la UI (catálogo + estado de descarga). Vive aquí
+ * (módulo siempre compilado) y no en `piper` para que la firma del comando
+ * `list_piper_voices` sea estable con y sin la feature `advanced-tts` (bindings
+ * idénticos). Con la feature OFF, el comando devuelve una lista vacía.
+ */
+export type PiperVoiceInfo = { id: string; display: string; lang: string; size_mb: number; 
+/**
+ * Voz pensada para leer código (cadencia neutra) vs. prosa.
+ */
+for_code: boolean; installed: boolean }
 export type PostProcessProvider = { id: string; label: string; base_url: string; allow_base_url_edit?: boolean; models_endpoint?: string | null; supports_structured_output?: boolean }
 export type RecordingRetentionPeriod = "never" | "preserve_limit" | "days_3" | "weeks_2" | "months_3"
 export type SecretMap = Partial<{ [key in string]: string }>

@@ -7,6 +7,7 @@ use crate::managers::history::HistoryManager;
 use crate::managers::model::ModelManager;
 use crate::managers::transcription::StreamWorkKind;
 use crate::managers::transcription::TranscriptionManager;
+use crate::managers::tts::manager::TtsManager;
 use crate::settings::{get_settings, AppSettings, OverlayStyle, APPLE_INTELLIGENCE_PROVIDER_ID};
 use crate::shortcut;
 use crate::tray::{change_tray_icon, TrayIconState};
@@ -462,6 +463,12 @@ impl ShortcutAction for TranscribeAction {
         // Load model in the background
         let tm = app.state::<Arc<TranscriptionManager>>();
         let rm = app.state::<Arc<AudioRecordingManager>>();
+
+        // Si la sección Escucha está leyendo en voz alta, córtala al empezar a
+        // dictar: el TTS no debe competir con el dictado (dos audios) ni que el
+        // micrófono capte la propia lectura. `stop()` es instantáneo y no-op si
+        // no hay nada sonando.
+        let _ = app.state::<Arc<TtsManager>>().stop();
 
         // Load ASR model and VAD model in parallel
         let kickoff_started = Instant::now();

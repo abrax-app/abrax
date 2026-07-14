@@ -23,6 +23,8 @@ import { useSettings } from "../../../hooks/useSettings";
 import { Alert } from "../../ui/Alert";
 import { Button } from "../../ui/Button";
 import { Select } from "../../ui/Select";
+import { MotorVoz } from "./MotorVoz";
+import { opcionesDeVoces } from "./voces";
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
@@ -41,9 +43,13 @@ export const EscuchaSettings: React.FC = () => {
   const [motorDisponible, setMotorDisponible] = useState(true);
   const [vozProsa, setVozProsa] = useState<string | null>(null);
   const [vozCodigo, setVozCodigo] = useState<string | null>(null);
-  const [rateProsa, setRateProsa] = useState(1.0);
-  const [rateCodigo, setRateCodigo] = useState(0.9);
   const [verbosidad, setVerbosidad] = useState<VerbosidadSimbolos>("natural");
+
+  // Velocidad (todos los motores) y tono (solo online) vienen de "Ajustes de voz"
+  // (panel Motor de voz, persistidos en settings). Se aplican a cada oración leída
+  // y también al "Probar voz".
+  const velocidad = settings?.tts_velocidad ?? 1.0;
+  const tono = settings?.tts_tono ?? 0;
 
   // Hidratar desde settings persistidos una sola vez (los cambios posteriores
   // salen de este panel, así que el estado local manda después).
@@ -53,8 +59,6 @@ export const EscuchaSettings: React.FC = () => {
     hidratadoRef.current = true;
     if (settings.escucha_voz_prosa) setVozProsa(settings.escucha_voz_prosa);
     if (settings.escucha_voz_codigo) setVozCodigo(settings.escucha_voz_codigo);
-    setRateProsa(settings.escucha_rate_prosa ?? 1.0);
-    setRateCodigo(settings.escucha_rate_codigo ?? 0.9);
     setVerbosidad(settings.escucha_verbosidad_simbolos ?? "natural");
   }, [settings]);
 
@@ -64,17 +68,11 @@ export const EscuchaSettings: React.FC = () => {
     if (!hidratadoRef.current) return;
     const timer = setTimeout(() => {
       void commands
-        .escuchaUpdateSettings(
-          vozProsa,
-          vozCodigo,
-          rateProsa,
-          rateCodigo,
-          verbosidad,
-        )
+        .escuchaUpdateSettings(vozProsa, vozCodigo, verbosidad)
         .then(() => refreshSettings());
     }, 400);
     return () => clearTimeout(timer);
-  }, [vozProsa, vozCodigo, rateProsa, rateCodigo, verbosidad]);
+  }, [vozProsa, vozCodigo, verbosidad]);
 
   const [nombreFuente, setNombreFuente] = useState<string | null>(null);
   const [lineas, setLineas] = useState<string[]>([]);
@@ -86,26 +84,44 @@ export const EscuchaSettings: React.FC = () => {
   // Token de invalidación: cada stop/pausa/lectura nueva lo incrementa y el
   // bucle de lectura en vuelo se da cuenta y termina sin efectos.
   const tokenRef = useRef(0);
-  // El bucle lee la config vigente por ref para que cambiar voz/velocidad
-  // aplique a partir de la siguiente oración sin reiniciar la lectura.
-  const configRef = useRef({ vozProsa, vozCodigo, rateProsa, rateCodigo });
+  // El bucle lee la config vigente por ref para que los ajustes de voz apliquen
+  // a la oración correcta.
+  const configRef = useRef({ vozProsa, vozCodigo, velocidad, tono });
   useEffect(() => {
-    configRef.current = { vozProsa, vozCodigo, rateProsa, rateCodigo };
-  }, [vozProsa, vozCodigo, rateProsa, rateCodigo]);
+    configRef.current = { vozProsa, vozCodigo, velocidad, tono };
+  }, [vozProsa, vozCodigo, velocidad, tono]);
+
+  // Espejos para el efecto de "cambio en caliente" (lee estado sin re-suscribir).
+  const leyendoRef = useRef(false);
+  const indiceRef = useRef(-1);
+  const oracionesRef = useRef<OracionHablable[]>([]);
+  useEffect(() => {
+    leyendoRef.current = leyendo;
+  }, [leyendo]);
+  useEffect(() => {
+    indiceRef.current = indice;
+  }, [indice]);
+  useEffect(() => {
+    oracionesRef.current = oraciones;
+  }, [oraciones]);
 
   const contenedorRef = useRef<HTMLDivElement>(null);
 
-  // Cargar voces del sistema al montar (ordenadas: español primero).
+  // Cargar las voces del motor activo — y RECARGARLAS al cambiar de motor, para
+  // que el reparto (es/en, M/F) del nuevo motor aparezca de una. Si la voz
+  // elegida ya no existe en el nuevo motor, se cae a una válida (español primero).
   useEffect(() => {
     let cancelado = false;
     commands.escuchaListVoices().then((r) => {
       if (cancelado) return;
       if (r.status === "ok") {
         setVoces(r.data);
+        const valido = (id: string | null) =>
+          !!id && r.data.some((v) => v.id === id);
         const primeraEs = r.data.find((v) => v.es_espanol) ?? r.data[0];
         if (primeraEs) {
-          setVozProsa((prev) => prev ?? primeraEs.id);
-          setVozCodigo((prev) => prev ?? primeraEs.id);
+          setVozProsa((prev) => (valido(prev) ? prev : primeraEs.id));
+          setVozCodigo((prev) => (valido(prev) ? prev : primeraEs.id));
         }
         setMotorDisponible(r.data.length > 0);
       } else {
@@ -115,7 +131,7 @@ export const EscuchaSettings: React.FC = () => {
     return () => {
       cancelado = true;
     };
-  }, []);
+  }, [settings?.tts_selected_engine]);
 
   const detenerMotor = useCallback(() => {
     tokenRef.current += 1;
@@ -129,6 +145,18 @@ export const EscuchaSettings: React.FC = () => {
     setIndice(-1);
   }, [detenerMotor]);
 
+  // Cambiar de MOTOR con una lectura en curso la DETIENE (limpio). Cruzar de un
+  // motor a otro a media oración arriesga dos voces a la vez (el del sistema
+  // suena por el SO; los neuronales por otro sink). El backend ya corta el audio
+  // al cambiar de motor; aquí paramos el bucle para que no continúe en el motor
+  // nuevo. (Cambiar voz/velocidad/tono del MISMO motor sí continúa en caliente.)
+  const motorRef = useRef(settings?.tts_selected_engine);
+  useEffect(() => {
+    if (motorRef.current === settings?.tts_selected_engine) return;
+    motorRef.current = settings?.tts_selected_engine;
+    if (leyendoRef.current) detener();
+  }, [settings?.tts_selected_engine, detener]);
+
   // Esc detiene la lectura; al desmontar el panel también se detiene.
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
@@ -138,6 +166,11 @@ export const EscuchaSettings: React.FC = () => {
     return () => {
       document.removeEventListener("keydown", onKeyDown);
       tokenRef.current += 1;
+      // Marca no-leyendo para que el corte de audio en vuelo del bucle (guardado
+      // con leyendoRef) SÍ dispare al desmontar: si un motor neuronal está
+      // sintetizando, su reproducción arrancaría tras este stop y quedaría
+      // huérfana; el guard la cortará al ver leyendoRef=false.
+      leyendoRef.current = false;
       void commands.escuchaStop();
     };
   }, [detener]);
@@ -165,11 +198,20 @@ export const EscuchaSettings: React.FC = () => {
         const r = await commands.escuchaSpeak(
           oracion.texto_hablable,
           esCodigo ? cfg.vozCodigo : cfg.vozProsa,
-          esCodigo ? cfg.rateCodigo : cfg.rateProsa,
+          cfg.velocidad,
+          cfg.tono,
         );
         if (r.status === "error") {
           toast.error(t("escucha.errorSpeak"), { description: r.error });
           break;
+        }
+        // Si se pidió DETENER mientras esta oración se sintetizaba (motores
+        // neuronales: sintetizan y recién ahí reproducen), su audio pudo arrancar
+        // DESPUÉS del stop. Córtalo. Guarda `leyendoRef`: en un cambio en caliente
+        // la lectura sigue (leyendo=true) y la nueva ya interrumpe — no cortar.
+        if (tokenRef.current !== token) {
+          if (!leyendoRef.current) void commands.escuchaStop();
+          return;
         }
         await esperarFin(token);
       }
@@ -181,6 +223,19 @@ export const EscuchaSettings: React.FC = () => {
     },
     [t],
   );
+
+  // CAMBIO EN CALIENTE: si cambian voz/velocidad/tono MIENTRAS se lee, reinicia
+  // desde el fragmento (oración) ACTUAL con los nuevos ajustes — no desde el
+  // principio, y sin audio encimado (escucha_speak interrumpe el anterior y
+  // detenerMotor invalida el bucle previo). Sin lectura en curso: no hace nada
+  // (se aplica a la próxima lectura). El reinicio explícito (Detener → Leer) sí
+  // parte desde el fragmento 0.
+  useEffect(() => {
+    if (!leyendoRef.current) return;
+    const desde = indiceRef.current >= 0 ? indiceRef.current : 0;
+    detenerMotor();
+    void leerDesde(desde, oracionesRef.current);
+  }, [vozProsa, vozCodigo, velocidad, tono]);
 
   const cargar = useCallback(
     async (contenido: string, modo: ModoLectura, nombre: string) => {
@@ -199,6 +254,9 @@ export const EscuchaSettings: React.FC = () => {
   );
 
   const abrirArchivo = useCallback(async () => {
+    // Detén la lectura en curso YA, antes de abrir el diálogo (que es modal y
+    // tapa el botón Detener): abrir un archivo nuevo cancela la lectura anterior.
+    detener();
     const ruta = await open({
       multiple: false,
       filters: [
@@ -234,16 +292,18 @@ export const EscuchaSettings: React.FC = () => {
     }
     const nombre = ruta.split(/[\\/]/).pop() ?? ruta;
     await cargar(r.data, modoPorExtension(ruta), nombre);
-  }, [cargar, t]);
+  }, [detener, cargar, t]);
 
   const leerPortapapeles = useCallback(async () => {
+    // Cancela la lectura en curso antes de traer el nuevo contenido.
+    detener();
     const r = await commands.escuchaReadClipboard();
     if (r.status === "error" || r.data.trim().length === 0) {
       toast.error(t("escucha.clipboardEmpty"));
       return;
     }
     await cargar(r.data, "auto", t("escucha.clipboard"));
-  }, [cargar, t]);
+  }, [detener, cargar, t]);
 
   const alternarLectura = useCallback(() => {
     if (leyendo) {
@@ -274,10 +334,9 @@ export const EscuchaSettings: React.FC = () => {
     });
   }, [oracionActual]);
 
-  const opcionesVoz = voces.map((v) => ({
-    value: v.id,
-    label: `${v.nombre} (${v.idioma})`,
-  }));
+  // Agrupadas por idioma/país cuando el motor es online (lista larga navegable);
+  // planas para los motores locales.
+  const opcionesVoz = opcionesDeVoces(voces, t);
 
   const lineaResaltada = (numero: number) =>
     oracionActual != null &&
@@ -314,6 +373,10 @@ export const EscuchaSettings: React.FC = () => {
             <span>{t("escucha.readClipboard")}</span>
           </Button>
         </div>
+      </div>
+
+      <div className="px-4">
+        <MotorVoz onInterrumpir={detener} />
       </div>
 
       {!motorDisponible && (
@@ -370,21 +433,8 @@ export const EscuchaSettings: React.FC = () => {
               onChange={(v) => setVozProsa(v)}
               isClearable={false}
               placeholder={t("escucha.noVoices")}
+              ariaLabel={t("escucha.voiceProse")}
             />
-            <label className="flex items-center gap-2 text-xs text-text/70">
-              <span className="w-24 shrink-0">
-                {t("escucha.speed")} {rateProsa.toFixed(1)}×
-              </span>
-              <input
-                type="range"
-                min={0.5}
-                max={2}
-                step={0.1}
-                value={rateProsa}
-                onChange={(e) => setRateProsa(parseFloat(e.target.value))}
-                className="flex-grow h-2 rounded-lg appearance-none cursor-pointer"
-              />
-            </label>
           </div>
           <div className="space-y-2">
             <p className="text-sm font-medium">{t("escucha.voiceCode")}</p>
@@ -394,21 +444,8 @@ export const EscuchaSettings: React.FC = () => {
               onChange={(v) => setVozCodigo(v)}
               isClearable={false}
               placeholder={t("escucha.noVoices")}
+              ariaLabel={t("escucha.voiceCode")}
             />
-            <label className="flex items-center gap-2 text-xs text-text/70">
-              <span className="w-24 shrink-0">
-                {t("escucha.speed")} {rateCodigo.toFixed(1)}×
-              </span>
-              <input
-                type="range"
-                min={0.5}
-                max={2}
-                step={0.1}
-                value={rateCodigo}
-                onChange={(e) => setRateCodigo(parseFloat(e.target.value))}
-                className="flex-grow h-2 rounded-lg appearance-none cursor-pointer"
-              />
-            </label>
           </div>
         </div>
 
