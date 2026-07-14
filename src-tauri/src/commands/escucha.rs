@@ -26,16 +26,25 @@ pub fn escucha_list_voices(manager: State<'_, Arc<TtsManager>>) -> Result<Vec<Vo
 /// su rango (el del sistema vía `escucha::map_rate`; Piper vía `length_scale`;
 /// online/Kokoro vía el servidor). `pitch` es el tono en Hz — SOLO lo aplica el
 /// motor online (edge-tts); los demás lo ignoran.
+///
+/// **Async + `spawn_blocking`**: la síntesis neuronal puede tardar segundos la
+/// 1.ª vez (arranca el servidor y carga el modelo). Si corriera en el hilo
+/// principal, congelaría la UI y bloquearía toda otra IPC (incluido `Detener`).
+/// Al ejecutarla en el pool bloqueante, el hilo principal queda libre y los
+/// comandos de parada/estado responden al instante.
 #[tauri::command]
 #[specta::specta]
-pub fn escucha_speak(
+pub async fn escucha_speak(
     manager: State<'_, Arc<TtsManager>>,
     texto: String,
     voz_id: Option<String>,
     rate: Option<f32>,
     pitch: Option<i32>,
 ) -> Result<(), String> {
-    manager.speak(texto, voz_id, rate, pitch)
+    let manager = manager.inner().clone();
+    tauri::async_runtime::spawn_blocking(move || manager.speak(texto, voz_id, rate, pitch))
+        .await
+        .map_err(|e| format!("tarea de síntesis abortó: {e}"))?
 }
 
 #[tauri::command]

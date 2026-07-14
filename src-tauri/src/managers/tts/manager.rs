@@ -9,6 +9,7 @@
 //! En el build de entrega solo existe el motor del Sistema: `list_engines`
 //! reporta únicamente Sistema, el activo siempre es Sistema y no se compila wgpu.
 
+use std::sync::atomic::{AtomicU8, Ordering};
 use std::sync::{Arc, Mutex};
 
 use tauri::AppHandle;
@@ -24,17 +25,33 @@ use super::playback::PlaybackService;
 #[cfg(feature = "advanced-tts")]
 use super::{download, kokoro, online, piper, pyserver};
 
-/// Estado perezoso de los motores neuronales + el motor activo vigente.
+/// EngineId ↔ u8 para cachear el motor activo en un átomico (lectura sin lock).
+fn engine_to_u8(id: EngineId) -> u8 {
+    match id {
+        EngineId::System => 0,
+        EngineId::Piper => 1,
+        EngineId::Kokoro => 2,
+        EngineId::Online => 3,
+    }
+}
+fn engine_from_u8(v: u8) -> EngineId {
+    match v {
+        1 => EngineId::Piper,
+        2 => EngineId::Kokoro,
+        3 => EngineId::Online,
+        _ => EngineId::System,
+    }
+}
+
+/// Estado perezoso de los motores neuronales (registro; se toma bajo `inner`).
+#[cfg_attr(not(feature = "advanced-tts"), allow(dead_code))]
 struct Inner {
-    #[cfg(feature = "advanced-tts")]
-    playback: Option<Arc<PlaybackService>>,
     #[cfg(feature = "advanced-tts")]
     piper: Option<piper::PiperEngine>,
     #[cfg(feature = "advanced-tts")]
     kokoro: Option<pyserver::PyServerEngine>,
     #[cfg(feature = "advanced-tts")]
     online: Option<pyserver::PyServerEngine>,
-    active: EngineId,
 }
 
 pub struct TtsManager {
@@ -42,6 +59,15 @@ pub struct TtsManager {
     app: AppHandle,
     escucha: Arc<EscuchaManager>,
     hardware: Mutex<HardwareInfo>,
+    /// Servicio de reproducción neuronal compartido (perezoso), **fuera de
+    /// `inner`**: así `stop`/`status` cortan el audio sin esperar el lock del
+    /// registro de motores, que puede estar retenido varios segundos mientras un
+    /// motor neuronal carga su modelo. Es lo que hace que "Detener" responda al
+    /// instante y no quede audio viejo encimado al cambiar de voz en caliente.
+    #[cfg(feature = "advanced-tts")]
+    playback: Mutex<Option<Arc<PlaybackService>>>,
+    /// Motor activo cacheado sin lock (para `active`/`status`/`stop`).
+    active: AtomicU8,
     inner: Mutex<Inner>,
 }
 
@@ -52,23 +78,21 @@ impl TtsManager {
             app,
             escucha,
             hardware: Mutex::new(hardware),
+            #[cfg(feature = "advanced-tts")]
+            playback: Mutex::new(None),
+            active: AtomicU8::new(engine_to_u8(EngineId::System)),
             inner: Mutex::new(Inner {
-                #[cfg(feature = "advanced-tts")]
-                playback: None,
                 #[cfg(feature = "advanced-tts")]
                 piper: None,
                 #[cfg(feature = "advanced-tts")]
                 kokoro: None,
                 #[cfg(feature = "advanced-tts")]
                 online: None,
-                active: EngineId::System,
             }),
         };
         // Resuelve el motor activo desde settings + hardware al arrancar.
         let active = manager.resolve_active();
-        if let Ok(mut inner) = manager.inner.lock() {
-            inner.active = active;
-        }
+        manager.active.store(engine_to_u8(active), Ordering::SeqCst);
         manager
     }
 
@@ -139,12 +163,9 @@ impl TtsManager {
         resolve_engine(ideal, |id| self.is_engine_available(id))
     }
 
-    /// Motor activo cacheado.
+    /// Motor activo cacheado (lectura sin lock).
     pub fn active(&self) -> EngineId {
-        self.inner
-            .lock()
-            .map(|i| i.active)
-            .unwrap_or(EngineId::System)
+        engine_from_u8(self.active.load(Ordering::SeqCst))
     }
 
     /// Fija el motor seleccionado (persiste en settings) y recomputa el activo.
@@ -153,9 +174,7 @@ impl TtsManager {
         s.tts_selected_engine = Some(id);
         settings::write_settings(&self.app, s);
         let active = self.resolve_active();
-        if let Ok(mut inner) = self.inner.lock() {
-            inner.active = active;
-        }
+        self.active.store(engine_to_u8(active), Ordering::SeqCst);
         Ok(())
     }
 
@@ -166,9 +185,7 @@ impl TtsManager {
             *h = hw.clone();
         }
         let active = self.resolve_active();
-        if let Ok(mut inner) = self.inner.lock() {
-            inner.active = active;
-        }
+        self.active.store(engine_to_u8(active), Ordering::SeqCst);
         hw
     }
 
@@ -213,14 +230,23 @@ impl TtsManager {
         }
     }
 
+    /// Servicio de reproducción compartido, perezoso. Su propio mutex (separado
+    /// de `inner`) para que `stop`/`status` lo alcancen aunque el registro de
+    /// motores esté ocupado cargando un modelo.
     #[cfg(feature = "advanced-tts")]
-    fn ensure_playback(&self, inner: &mut Inner) -> Result<Arc<PlaybackService>, String> {
-        if let Some(p) = &inner.playback {
+    fn ensure_playback(&self) -> Result<Arc<PlaybackService>, String> {
+        let mut guard = self
+            .playback
+            .lock()
+            .map_err(|_| "playback envenenado".to_string())?;
+        if let Some(p) = &*guard {
             return Ok(p.clone());
         }
-        let device = settings::get_settings(&self.app).selected_output_device.clone();
+        let device = settings::get_settings(&self.app)
+            .selected_output_device
+            .clone();
         let p = PlaybackService::new(device)?;
-        inner.playback = Some(p.clone());
+        *guard = Some(p.clone());
         Ok(p)
     }
 
@@ -229,7 +255,7 @@ impl TtsManager {
         if inner.piper.is_some() {
             return Ok(());
         }
-        let playback = self.ensure_playback(inner)?;
+        let playback = self.ensure_playback()?;
         let voices_dir = download::voices_dir(&self.app)?;
         let runtime_dir = download::runtime_dir(&self.app, "piper")?;
         let temp_dir = download::tts_dir(&self.app)?.join("tmp");
@@ -246,7 +272,7 @@ impl TtsManager {
     /// Construye perezosamente un motor basado en servidor Python (Kokoro).
     #[cfg(feature = "advanced-tts")]
     fn ensure_pyserver(&self, inner: &mut Inner, id: EngineId) -> Result<(), String> {
-        let playback = self.ensure_playback(inner)?;
+        let playback = self.ensure_playback()?;
         match id {
             EngineId::Kokoro if inner.kokoro.is_none() => {
                 let dir = download::runtime_dir(&self.app, kokoro::RUNTIME_NAME)?;
@@ -273,11 +299,11 @@ impl TtsManager {
         Ok(())
     }
 
-    /// Ejecuta `f` sobre el motor ACTIVO, construyéndolo perezosamente si es neuronal.
+    /// Ejecuta `f` sobre el motor ACTIVO, construyéndolo perezosamente si es
+    /// neuronal. El lock de `inner` se toma **solo** en las ramas neuronales
+    /// (registro de motores); el motor del sistema no lo necesita.
     fn with_active<R>(&self, f: impl FnOnce(&mut dyn TtsEngine) -> R) -> Result<R, String> {
-        #[cfg_attr(not(feature = "advanced-tts"), allow(unused_mut))]
-        let mut inner = self.inner.lock().map_err(|_| "tts inner envenenado".to_string())?;
-        match inner.active {
+        match self.active() {
             EngineId::System => {
                 // Motor del sistema: adaptador barato sobre el EscuchaManager.
                 let mut eng = super::system::SystemEngine::new(self.escucha.clone());
@@ -285,6 +311,10 @@ impl TtsManager {
             }
             #[cfg(feature = "advanced-tts")]
             EngineId::Piper => {
+                let mut inner = self
+                    .inner
+                    .lock()
+                    .map_err(|_| "tts inner envenenado".to_string())?;
                 self.ensure_piper(&mut inner)?;
                 let eng = inner
                     .piper
@@ -294,6 +324,10 @@ impl TtsManager {
             }
             #[cfg(feature = "advanced-tts")]
             EngineId::Kokoro => {
+                let mut inner = self
+                    .inner
+                    .lock()
+                    .map_err(|_| "tts inner envenenado".to_string())?;
                 self.ensure_pyserver(&mut inner, EngineId::Kokoro)?;
                 let eng = inner
                     .kokoro
@@ -303,6 +337,10 @@ impl TtsManager {
             }
             #[cfg(feature = "advanced-tts")]
             EngineId::Online => {
+                let mut inner = self
+                    .inner
+                    .lock()
+                    .map_err(|_| "tts inner envenenado".to_string())?;
                 self.ensure_pyserver(&mut inner, EngineId::Online)?;
                 let eng = inner
                     .online
@@ -351,16 +389,43 @@ impl TtsManager {
         }
     }
 
+    /// Detiene la reproducción SIN pasar por el lock del registro de motores (que
+    /// puede estar cargando un modelo): corta el servicio neuronal compartido y
+    /// el motor del sistema, sea cual sea el activo. Así "Detener" responde al
+    /// instante y no queda audio viejo encimado al cambiar de voz/motor en
+    /// caliente (la causa de "escucho dos voces a la vez").
     pub fn stop(&self) -> Result<(), String> {
-        self.with_active(|eng| eng.stop())?.map_err(|e| e.to_string())
+        #[cfg(feature = "advanced-tts")]
+        if let Some(p) = self.playback.lock().ok().and_then(|g| g.clone()) {
+            p.stop();
+        }
+        let _ = self.escucha.stop();
+        Ok(())
     }
 
+    /// Estado de reproducción SIN tomar el lock del registro, para que el sondeo
+    /// de la UI (resaltado de la lectura) no se congele mientras un motor
+    /// neuronal carga su modelo.
     pub fn status(&self) -> Result<EstadoEscucha, String> {
-        let hw = self.hardware_snapshot();
-        self.with_active(|eng| EstadoEscucha {
-            hablando: eng.is_speaking(),
-            motor_disponible: eng.is_available(&hw),
-        })
+        match self.active() {
+            EngineId::System => self.escucha.status(),
+            #[cfg(feature = "advanced-tts")]
+            other => {
+                let hablando = self
+                    .playback
+                    .lock()
+                    .ok()
+                    .and_then(|g| g.clone())
+                    .map(|p| p.is_playing())
+                    .unwrap_or(false);
+                Ok(EstadoEscucha {
+                    hablando,
+                    motor_disponible: self.is_engine_available(other),
+                })
+            }
+            #[cfg(not(feature = "advanced-tts"))]
+            _ => self.escucha.status(),
+        }
     }
 
     pub fn list_voices(&self) -> Result<Vec<VozEscucha>, String> {

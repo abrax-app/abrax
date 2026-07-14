@@ -904,6 +904,12 @@ async escuchaListVoices() : Promise<Result<VozEscucha[], string>> {
  * su rango (el del sistema vía `escucha::map_rate`; Piper vía `length_scale`;
  * online/Kokoro vía el servidor). `pitch` es el tono en Hz — SOLO lo aplica el
  * motor online (edge-tts); los demás lo ignoran.
+ * 
+ * **Async + `spawn_blocking`**: la síntesis neuronal puede tardar segundos la
+ * 1.ª vez (arranca el servidor y carga el modelo). Si corriera en el hilo
+ * principal, congelaría la UI y bloquearía toda otra IPC (incluido `Detener`).
+ * Al ejecutarla en el pool bloqueante, el hilo principal queda libre y los
+ * comandos de parada/estado responden al instante.
  */
 async escuchaSpeak(texto: string, vozId: string | null, rate: number | null, pitch: number | null) : Promise<Result<null, string>> {
     try {
