@@ -1030,6 +1030,7 @@ async setEngine(engine: EngineId) : Promise<Result<null, string>> {
 },
 /**
  * Catálogo de voces Piper con su estado de instalación (para el selector de voz).
+ * Sin `advanced-tts` devuelve una lista vacía (la UI no muestra Piper).
  */
 async listPiperVoices() : Promise<Result<PiperVoiceInfo[], string>> {
     try {
@@ -1378,7 +1379,10 @@ export type PaginatedHistory = { entries: HistoryEntry[]; has_more: boolean }
 export type PasteMethod = "ctrl_v" | "direct" | "none" | "shift_insert" | "ctrl_shift_v" | "external_script"
 export type PermissionAccess = "allowed" | "denied" | "unknown"
 /**
- * Info de una voz Piper para la UI (catálogo + estado de descarga).
+ * Info de una voz Piper para la UI (catálogo + estado de descarga). Vive aquí
+ * (módulo siempre compilado) y no en `piper` para que la firma del comando
+ * `list_piper_voices` sea estable con y sin la feature `advanced-tts` (bindings
+ * idénticos). Con la feature OFF, el comando devuelve una lista vacía.
  */
 export type PiperVoiceInfo = { id: string; display: string; lang: string; size_mb: number; 
 /**

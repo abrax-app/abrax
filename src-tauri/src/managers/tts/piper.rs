@@ -12,13 +12,11 @@ use std::sync::Arc;
 
 use tauri::AppHandle;
 
-use serde::Serialize;
-use specta::Type;
-
 use super::download;
 use super::engine::{EngineId, TtsEngine, TtsError, TtsOptions};
 use super::hardware::HardwareInfo;
 use super::playback::{self, PlaybackService, TARGET_DBFS};
+use super::registry::PiperVoiceInfo;
 use crate::managers::escucha::VozEscucha;
 
 /// Una voz Piper = 2 archivos (`.onnx` + `.onnx.json`), cada uno con sha256.
@@ -64,18 +62,6 @@ pub const VOICES: &[PiperVoice] = &[
 
 pub fn voice_by_id(id: &str) -> Option<&'static PiperVoice> {
     VOICES.iter().find(|v| v.id == id)
-}
-
-/// Info de una voz Piper para la UI (catálogo + estado de descarga).
-#[derive(Serialize, Clone, Type)]
-pub struct PiperVoiceInfo {
-    pub id: String,
-    pub display: String,
-    pub lang: String,
-    pub size_mb: u64,
-    /// Voz pensada para leer código (cadencia neutra) vs. prosa.
-    pub for_code: bool,
-    pub installed: bool,
 }
 
 /// Catálogo de voces Piper con su estado de instalación (para el selector de voz).

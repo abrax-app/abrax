@@ -10,6 +10,11 @@
 //! (`IDXGIAdapter1::GetDesc1().DedicatedVideoMemory`), y si no se puede queda en
 //! `None` — jamás se inventa un número. En otros SO también queda `None`.
 
+// Sin `advanced-tts` (build de entrega) no se enlaza wgpu: los IDs de fabricante
+// PCI y el mapeo por PCI solo los usa la detección con wgpu (y su test), así que
+// quedan sin uso en el build de entrega. Es esperado, no código muerto real.
+#![cfg_attr(not(feature = "advanced-tts"), allow(dead_code))]
+
 use serde::{Deserialize, Serialize};
 use specta::Type;
 
@@ -94,6 +99,7 @@ fn detect_os() -> OsKind {
     }
 }
 
+#[cfg(feature = "advanced-tts")]
 fn gpu_type_from_wgpu(device_type: wgpu::DeviceType) -> GpuType {
     match device_type {
         wgpu::DeviceType::DiscreteGpu => GpuType::Discrete,
@@ -105,6 +111,7 @@ fn gpu_type_from_wgpu(device_type: wgpu::DeviceType) -> GpuType {
 }
 
 /// Un adaptador candidato ya normalizado a nuestros tipos.
+#[cfg(feature = "advanced-tts")]
 struct GpuCandidate {
     vendor: GpuVendor,
     gpu_type: GpuType,
@@ -116,6 +123,7 @@ struct GpuCandidate {
 /// Prioridad para elegir "la GPU que importa" cuando hay varias (p.ej. una
 /// laptop con Intel integrada + NVIDIA discreta): gana la discreta, y entre
 /// iguales gana el fabricante con motor neuronal fuerte (NVIDIA/Apple/AMD).
+#[cfg(feature = "advanced-tts")]
 fn candidate_rank(c: &GpuCandidate) -> (u8, u8) {
     let type_rank = match c.gpu_type {
         GpuType::Discrete => 3,
@@ -134,6 +142,7 @@ fn candidate_rank(c: &GpuCandidate) -> (u8, u8) {
 
 /// Enumera adaptadores con `wgpu` y elige el más relevante. Aislado y sin
 /// `unwrap`: si `wgpu` no encuentra nada, devuelve `None`.
+#[cfg(feature = "advanced-tts")]
 fn best_gpu_candidate() -> Option<GpuCandidate> {
     let instance = wgpu::Instance::default();
     let mut best: Option<GpuCandidate> = None;
@@ -161,7 +170,7 @@ fn best_gpu_candidate() -> Option<GpuCandidate> {
 
 /// VRAM dedicada en MB para un adaptador identificado por (vendor, device).
 /// Solo Windows (DXGI); en el resto de SO devuelve `None`.
-#[cfg(target_os = "windows")]
+#[cfg(all(feature = "advanced-tts", target_os = "windows"))]
 fn read_vram_mb(vendor_id: u32, device_id: u32) -> Option<u32> {
     use windows::Win32::Graphics::Dxgi::{CreateDXGIFactory1, IDXGIFactory1};
 
@@ -195,13 +204,27 @@ fn read_vram_mb(vendor_id: u32, device_id: u32) -> Option<u32> {
     }
 }
 
-#[cfg(not(target_os = "windows"))]
+#[cfg(all(feature = "advanced-tts", not(target_os = "windows")))]
 fn read_vram_mb(_vendor_id: u32, _device_id: u32) -> Option<u32> {
     None
 }
 
+/// Build de entrega (sin `advanced-tts`): no se enlaza wgpu. Reporta solo el SO;
+/// la GPU queda "desconocida" — la recomendación no la usa (siempre Sistema).
+#[cfg(not(feature = "advanced-tts"))]
+pub fn detect_hardware() -> HardwareInfo {
+    HardwareInfo {
+        os: detect_os(),
+        gpu_vendor: GpuVendor::None,
+        gpu_name: String::new(),
+        gpu_type: GpuType::Unknown,
+        vram_mb: None,
+    }
+}
+
 /// Detecta el equipo. Nunca hace panic ni `unwrap`: cualquier fallo de `wgpu`
 /// o DXGI degrada a valores "desconocidos"/`None`, jamás inventados.
+#[cfg(feature = "advanced-tts")]
 pub fn detect_hardware() -> HardwareInfo {
     let os = detect_os();
     match best_gpu_candidate() {
@@ -238,6 +261,7 @@ mod tests {
         assert_eq!(vendor_from_pci_id(0xBEEF), GpuVendor::Unknown);
     }
 
+    #[cfg(feature = "advanced-tts")]
     #[test]
     fn candidate_rank_prefers_discrete_then_strong_vendor() {
         let discrete_nvidia = GpuCandidate {

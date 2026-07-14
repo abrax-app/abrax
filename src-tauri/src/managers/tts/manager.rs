@@ -4,6 +4,10 @@
 //! enruta `speak`/`list_voices`/`stop`/`status` a ese motor — **sin duplicar los
 //! comandos de Escucha**. Los motores neuronales se construyen de forma perezosa
 //! (no se toma el dispositivo de audio en el arranque).
+//!
+//! Los motores neuronales viven tras la feature `advanced-tts` (OFF por defecto).
+//! En el build de entrega solo existe el motor del Sistema: `list_engines`
+//! reporta únicamente Sistema, el activo siempre es Sistema y no se compila wgpu.
 
 use std::sync::{Arc, Mutex};
 
@@ -11,22 +15,30 @@ use tauri::AppHandle;
 
 use super::engine::{EngineId, EngineStatus, TtsEngine, TtsOptions};
 use super::hardware::{detect_hardware, HardwareInfo};
-use super::playback::PlaybackService;
-use super::recommend::{recommend_engine, resolve_engine};
-use super::{download, kokoro, online, piper, pyserver};
+use super::recommend::resolve_engine;
 use crate::managers::escucha::{EscuchaManager, EstadoEscucha, VozEscucha};
 use crate::settings;
 
+#[cfg(feature = "advanced-tts")]
+use super::playback::PlaybackService;
+#[cfg(feature = "advanced-tts")]
+use super::{download, kokoro, online, piper, pyserver};
+
 /// Estado perezoso de los motores neuronales + el motor activo vigente.
 struct Inner {
+    #[cfg(feature = "advanced-tts")]
     playback: Option<Arc<PlaybackService>>,
+    #[cfg(feature = "advanced-tts")]
     piper: Option<piper::PiperEngine>,
+    #[cfg(feature = "advanced-tts")]
     kokoro: Option<pyserver::PyServerEngine>,
+    #[cfg(feature = "advanced-tts")]
     online: Option<pyserver::PyServerEngine>,
     active: EngineId,
 }
 
 pub struct TtsManager {
+    #[cfg_attr(not(feature = "advanced-tts"), allow(dead_code))]
     app: AppHandle,
     escucha: Arc<EscuchaManager>,
     hardware: Mutex<HardwareInfo>,
@@ -41,9 +53,13 @@ impl TtsManager {
             escucha,
             hardware: Mutex::new(hardware),
             inner: Mutex::new(Inner {
+                #[cfg(feature = "advanced-tts")]
                 playback: None,
+                #[cfg(feature = "advanced-tts")]
                 piper: None,
+                #[cfg(feature = "advanced-tts")]
                 kokoro: None,
+                #[cfg(feature = "advanced-tts")]
                 online: None,
                 active: EngineId::System,
             }),
@@ -71,6 +87,7 @@ impl TtsManager {
                 .status()
                 .map(|s| s.motor_disponible)
                 .unwrap_or(false),
+            #[cfg(feature = "advanced-tts")]
             EngineId::Piper => {
                 piper::is_runtime_installed(&self.app)
                     && download::voices_dir(&self.app)
@@ -82,16 +99,29 @@ impl TtsManager {
                         })
                         .unwrap_or(false)
             }
+            #[cfg(feature = "advanced-tts")]
             EngineId::Kokoro => kokoro::is_installed(&self.app),
             // Online: disponible si el runtime está aprovisionado (la conexión
             // real se comprueba al sintetizar; si falla, degrada al sistema).
+            #[cfg(feature = "advanced-tts")]
             EngineId::Online => online::is_installed(&self.app),
+            // Sin `advanced-tts`: ningún motor neuronal está disponible.
+            #[cfg(not(feature = "advanced-tts"))]
+            _ => false,
         }
     }
 
     /// Motor recomendado para este hardware (ideal, sin considerar descarga).
+    /// Sin `advanced-tts` la recomendación es siempre el Sistema.
     pub fn recommended(&self) -> EngineId {
-        recommend_engine(&self.hardware_snapshot())
+        #[cfg(feature = "advanced-tts")]
+        {
+            super::recommend::recommend_engine(&self.hardware_snapshot())
+        }
+        #[cfg(not(feature = "advanced-tts"))]
+        {
+            EngineId::System
+        }
     }
 
     /// Resuelve el motor **activo**: la elección del usuario si existe, si no la
@@ -146,28 +176,44 @@ impl TtsManager {
         self.hardware_snapshot()
     }
 
-    /// Estado por motor para el selector "elegir otro motor".
+    /// Estado por motor para el selector "elegir otro motor". Sin `advanced-tts`
+    /// solo se expone el motor del Sistema (la UI colapsa a "solo Sistema").
     pub fn list_engines(&self) -> Vec<EngineStatus> {
-        let recommended = self.recommended();
-        // Se listan todos, incluido Online (marcado needs_internet); la
-        // recomendación jamás apunta a un motor no-local.
-        EngineId::ALL
-            .iter()
-            .map(|&id| {
-                let requirements = super::registry::requirements_for(id);
-                EngineStatus {
-                    id,
-                    display_name: id.display_name().to_string(),
-                    available: self.is_engine_available(id),
-                    // El "por qué" lo compone la UI (i18n) desde requirements.
-                    reason: None,
-                    recommended: id == recommended,
-                    requirements,
-                }
-            })
-            .collect()
+        #[cfg(feature = "advanced-tts")]
+        {
+            let recommended = self.recommended();
+            // Se listan todos, incluido Online (marcado needs_internet); la
+            // recomendación jamás apunta a un motor no-local.
+            EngineId::ALL
+                .iter()
+                .map(|&id| {
+                    let requirements = super::registry::requirements_for(id);
+                    EngineStatus {
+                        id,
+                        display_name: id.display_name().to_string(),
+                        available: self.is_engine_available(id),
+                        // El "por qué" lo compone la UI (i18n) desde requirements.
+                        reason: None,
+                        recommended: id == recommended,
+                        requirements,
+                    }
+                })
+                .collect()
+        }
+        #[cfg(not(feature = "advanced-tts"))]
+        {
+            vec![EngineStatus {
+                id: EngineId::System,
+                display_name: EngineId::System.display_name().to_string(),
+                available: self.is_engine_available(EngineId::System),
+                reason: None,
+                recommended: true,
+                requirements: super::registry::requirements_for(EngineId::System),
+            }]
+        }
     }
 
+    #[cfg(feature = "advanced-tts")]
     fn ensure_playback(&self, inner: &mut Inner) -> Result<Arc<PlaybackService>, String> {
         if let Some(p) = &inner.playback {
             return Ok(p.clone());
@@ -178,6 +224,7 @@ impl TtsManager {
         Ok(p)
     }
 
+    #[cfg(feature = "advanced-tts")]
     fn ensure_piper(&self, inner: &mut Inner) -> Result<(), String> {
         if inner.piper.is_some() {
             return Ok(());
@@ -197,6 +244,7 @@ impl TtsManager {
     }
 
     /// Construye perezosamente un motor basado en servidor Python (Kokoro).
+    #[cfg(feature = "advanced-tts")]
     fn ensure_pyserver(&self, inner: &mut Inner, id: EngineId) -> Result<(), String> {
         let playback = self.ensure_playback(inner)?;
         match id {
@@ -227,6 +275,7 @@ impl TtsManager {
 
     /// Ejecuta `f` sobre el motor ACTIVO, construyéndolo perezosamente si es neuronal.
     fn with_active<R>(&self, f: impl FnOnce(&mut dyn TtsEngine) -> R) -> Result<R, String> {
+        #[cfg_attr(not(feature = "advanced-tts"), allow(unused_mut))]
         let mut inner = self.inner.lock().map_err(|_| "tts inner envenenado".to_string())?;
         match inner.active {
             EngineId::System => {
@@ -234,6 +283,7 @@ impl TtsManager {
                 let mut eng = super::system::SystemEngine::new(self.escucha.clone());
                 Ok(f(&mut eng))
             }
+            #[cfg(feature = "advanced-tts")]
             EngineId::Piper => {
                 self.ensure_piper(&mut inner)?;
                 let eng = inner
@@ -242,6 +292,7 @@ impl TtsManager {
                     .ok_or_else(|| "piper no inicializado".to_string())?;
                 Ok(f(eng))
             }
+            #[cfg(feature = "advanced-tts")]
             EngineId::Kokoro => {
                 self.ensure_pyserver(&mut inner, EngineId::Kokoro)?;
                 let eng = inner
@@ -250,6 +301,7 @@ impl TtsManager {
                     .ok_or_else(|| "kokoro no inicializado".to_string())?;
                 Ok(f(eng))
             }
+            #[cfg(feature = "advanced-tts")]
             EngineId::Online => {
                 self.ensure_pyserver(&mut inner, EngineId::Online)?;
                 let eng = inner
@@ -257,6 +309,12 @@ impl TtsManager {
                     .as_mut()
                     .ok_or_else(|| "online no inicializado".to_string())?;
                 Ok(f(eng))
+            }
+            // Sin `advanced-tts`: cualquier selección persistida degrada al Sistema.
+            #[cfg(not(feature = "advanced-tts"))]
+            _ => {
+                let mut eng = super::system::SystemEngine::new(self.escucha.clone());
+                Ok(f(&mut eng))
             }
         }
     }

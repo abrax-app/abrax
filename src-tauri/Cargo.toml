@@ -19,6 +19,16 @@ incremental = true # Compile your binary in smaller steps.
 name = "handy_app_lib"
 crate-type = ["staticlib", "cdylib", "rlib"]
 
+[features]
+# Motores de voz NEURONALES + detección de GPU (wgpu). OFF por defecto: el build
+# de entrega solo trae las Voces del Sistema (SAPI/AVSpeech/speech-dispatcher),
+# out-of-the-box y liviano (sin wgpu). Con `--features advanced-tts` se compilan
+# Piper/Kokoro/Online + la detección de hardware, para demos/uso avanzado.
+# "Diferir, no borrar": el código neuronal sigue en el árbol, solo no entra al
+# build por defecto. Ver kit/informes/ESTADO_TTS_2026-07-14.md.
+default = []
+advanced-tts = ["dep:wgpu", "dep:pollster"]
+
 [build-dependencies]
 tauri-build = { version = "2", features = [] }
 serde_json = "1"
@@ -94,11 +104,11 @@ hf-hub = { git = "https://github.com/cjpais/hf-hub", branch = "cancellable-downl
 # de `windows`/`windows-core` (0.62 vs. nuestro pin 0.61) SOLO en el path DX12.
 # Para enumerar adaptadores en Windows basta Vulkan (ya presente para whisper);
 # Vulkan reporta vendor (PCI id) y tipo discreta/integrada igual que DX12.
-wgpu = { version = "30.0.0", default-features = false, features = [
+wgpu = { version = "30.0.0", default-features = false, optional = true, features = [
   "vulkan",
   "metal",
 ] }
-pollster = "1.0.1"
+pollster = { version = "1.0.1", optional = true }
 zip = { version = "2", default-features = false, features = ["deflate"] }
 
 [target.'cfg(unix)'.dependencies]

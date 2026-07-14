@@ -4,6 +4,10 @@
 //! disponibilidad real (¿aprovisionado?) degrada a Piper y luego al sistema en
 //! `resolve_engine`.
 
+// Sin `advanced-tts` (build de entrega) `recommend_engine` no se usa (el activo
+// es siempre Sistema); `resolve_engine` sí. Es esperado, no código muerto real.
+#![cfg_attr(not(feature = "advanced-tts"), allow(dead_code))]
+
 use super::engine::EngineId;
 use super::hardware::HardwareInfo;
 

@@ -11,15 +11,26 @@
 //! Reglas de oro: **todo es local, siempre hay un fallback que funciona, ninguna
 //! rama cae a la nube.**
 
-pub mod download;
+// Núcleo siempre compilado: contrato, enrutado, requisitos, motor del Sistema y
+// los TIPOS de hardware (la detección con wgpu vive tras `advanced-tts`).
 pub mod engine;
 pub mod hardware;
-pub mod kokoro;
 pub mod manager;
-pub mod online;
-pub mod piper;
-pub mod playback;
-pub mod pyserver;
 pub mod recommend;
 pub mod registry;
 pub mod system;
+
+// Motores neuronales + descarga/reproducción: solo con `advanced-tts` (OFF por
+// defecto). El build de entrega no los compila. "Diferir, no borrar".
+#[cfg(feature = "advanced-tts")]
+pub mod download;
+#[cfg(feature = "advanced-tts")]
+pub mod kokoro;
+#[cfg(feature = "advanced-tts")]
+pub mod online;
+#[cfg(feature = "advanced-tts")]
+pub mod piper;
+#[cfg(feature = "advanced-tts")]
+pub mod playback;
+#[cfg(feature = "advanced-tts")]
+pub mod pyserver;

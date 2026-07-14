@@ -9,6 +9,11 @@
 //! neuronales sintetizan a WAV, normalizan a −3 dBFS y reproducen por su propio
 //! sink `rodio`. Así el fallback universal encaja sin fingir que produce PCM.
 
+// Sin `advanced-tts` (build de entrega) parte de la API multi-motor queda sin
+// uso (ALL, is_local, variantes de error que solo construyen los neuronales):
+// es esperado, no código muerto real. Con la feature ON todo se usa.
+#![cfg_attr(not(feature = "advanced-tts"), allow(dead_code))]
+
 use serde::{Deserialize, Serialize};
 use specta::Type;
 
