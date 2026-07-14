@@ -188,6 +188,14 @@ export const EscuchaSettings: React.FC = () => {
           toast.error(t("escucha.errorSpeak"), { description: r.error });
           break;
         }
+        // Si se pidió DETENER mientras esta oración se sintetizaba (motores
+        // neuronales: sintetizan y recién ahí reproducen), su audio pudo arrancar
+        // DESPUÉS del stop. Córtalo. Guarda `leyendoRef`: en un cambio en caliente
+        // la lectura sigue (leyendo=true) y la nueva ya interrumpe — no cortar.
+        if (tokenRef.current !== token) {
+          if (!leyendoRef.current) void commands.escuchaStop();
+          return;
+        }
         await esperarFin(token);
       }
       if (tokenRef.current === token) {
@@ -229,6 +237,9 @@ export const EscuchaSettings: React.FC = () => {
   );
 
   const abrirArchivo = useCallback(async () => {
+    // Detén la lectura en curso YA, antes de abrir el diálogo (que es modal y
+    // tapa el botón Detener): abrir un archivo nuevo cancela la lectura anterior.
+    detener();
     const ruta = await open({
       multiple: false,
       filters: [
@@ -264,16 +275,18 @@ export const EscuchaSettings: React.FC = () => {
     }
     const nombre = ruta.split(/[\\/]/).pop() ?? ruta;
     await cargar(r.data, modoPorExtension(ruta), nombre);
-  }, [cargar, t]);
+  }, [detener, cargar, t]);
 
   const leerPortapapeles = useCallback(async () => {
+    // Cancela la lectura en curso antes de traer el nuevo contenido.
+    detener();
     const r = await commands.escuchaReadClipboard();
     if (r.status === "error" || r.data.trim().length === 0) {
       toast.error(t("escucha.clipboardEmpty"));
       return;
     }
     await cargar(r.data, "auto", t("escucha.clipboard"));
-  }, [cargar, t]);
+  }, [detener, cargar, t]);
 
   const alternarLectura = useCallback(() => {
     if (leyendo) {
