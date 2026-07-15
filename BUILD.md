@@ -115,6 +115,30 @@ bun run tauri build
 
 This compiles a release binary and generates platform-specific bundles (deb, rpm, AppImage on Linux; dmg on macOS; msi on Windows).
 
+## Voice engines: the `advanced-tts` feature
+
+By default Abrax builds with only the **System** text-to-speech voices
+(Windows SAPI, macOS AVSpeech, Linux speech-dispatcher). This keeps the
+default build lightweight and fully offline out of the box — no `wgpu`, no
+extra runtimes.
+
+The optional `advanced-tts` Cargo feature adds the local neural engines
+(**Piper**, **Kokoro**) and an opt-in **online** engine (edge-tts), plus
+GPU/hardware detection (via `wgpu`) that recommends the best engine the
+machine can run. Enable it for development or a full-featured demo:
+
+```bash
+bun run tauri dev --features advanced-tts
+bun run tauri build --features advanced-tts
+```
+
+> [!NOTE]
+> Without the feature, the "Motor de voz" panel in **Escucha** shows only the
+> System voices (and `detect_hardware` returns an empty result) — this is the
+> expected default, not a regression. Enabling `advanced-tts` compiles `wgpu`
+> (a heavier first build), and the neural engines fetch their runtimes on
+> first use.
+
 ## Linux Install (from source)
 
 The raw binary (`src-tauri/target/release/abrax`) cannot run standalone — it needs Tauri resource files (tray icons, sounds, VAD model) to be co-located at the expected path.
