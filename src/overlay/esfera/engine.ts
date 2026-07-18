@@ -387,6 +387,12 @@ export class EsferaEngine {
   private grupoChispas = new THREE.Group();
   private palabras: FlyingWord[] = [];
   private chispas: SparkCluster[] = [];
+  /** Palabras del camino reduced-motion: sprite estático + timer de retiro. */
+  private palabrasReducidas: {
+    sprite: THREE.Sprite;
+    texture: THREE.Texture;
+    timer: number;
+  }[] = [];
   private sparkTexture: THREE.Texture | null = null;
 
   private uniforms = {
@@ -825,10 +831,37 @@ export class EsferaEngine {
     const dir = this.direccionAleatoria();
 
     if (this.reduced) {
-      // F11: sin vuelo. La palabra aparece ya integrada a la membrana, en
-      // reposo, y se pinta un frame (no hay rAF en movimiento reducido).
-      this.disolverEnChispas(dir, tech, clean.length, true);
+      // F11: sin vuelo dramático, pero la palabra SÍ se muestra — aparece
+      // quieta en el punto de lectura, se deja leer, y recién entonces se
+      // integra a la membrana como chispas en reposo. Dos renders puntuales;
+      // sigue sin haber rAF continuo.
+      const { texture, aspect } = this.texturaTexto(clean, tech);
+      const mat = new THREE.SpriteMaterial({
+        map: texture,
+        transparent: true,
+        depthWrite: false,
+        depthTest: false,
+        blending: THREE.NormalBlending,
+        opacity: 1,
+      });
+      const sprite = new THREE.Sprite(mat);
+      sprite.renderOrder = 10;
+      sprite.scale.set(WORD_HEIGHT * aspect, WORD_HEIGHT, 1);
+      sprite.position.copy(dir.clone().multiplyScalar(WORD_R_READ));
+      this.grupoPalabras.add(sprite);
       this.renderOnce();
+      const entry = { sprite, texture, timer: 0 };
+      entry.timer = window.setTimeout(() => {
+        const idx = this.palabrasReducidas.indexOf(entry);
+        if (idx !== -1) this.palabrasReducidas.splice(idx, 1);
+        if (this.disposed) return;
+        this.grupoPalabras.remove(sprite);
+        texture.dispose();
+        mat.dispose();
+        this.disolverEnChispas(dir, tech, clean.length, true);
+        this.renderOnce();
+      }, WORD_READ_MS * 2);
+      this.palabrasReducidas.push(entry);
       return;
     }
 
@@ -865,6 +898,17 @@ export class EsferaEngine {
     });
   }
 
+  /** Retira los sprites estáticos del camino reduced-motion y sus timers. */
+  private limpiarPalabrasReducidas() {
+    for (const r of this.palabrasReducidas) {
+      window.clearTimeout(r.timer);
+      this.grupoPalabras.remove(r.sprite);
+      r.texture.dispose();
+      r.sprite.material.dispose();
+    }
+    this.palabrasReducidas.length = 0;
+  }
+
   /** Limpia todas las palabras y chispas (p.ej. al iniciar un dictado nuevo). */
   vaciarPalabras() {
     for (const p of this.palabras) {
@@ -879,6 +923,7 @@ export class EsferaEngine {
     }
     this.palabras.length = 0;
     this.chispas.length = 0;
+    this.limpiarPalabrasReducidas();
     if (this.reduced) this.renderOnce();
   }
 
@@ -1035,6 +1080,7 @@ export class EsferaEngine {
     }
     this.palabras.length = 0;
     this.chispas.length = 0;
+    this.limpiarPalabrasReducidas();
     this.sparkTexture = null;
     this.material.dispose();
     this.darkCore.geometry.dispose();

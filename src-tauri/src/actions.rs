@@ -811,6 +811,7 @@ impl ShortcutAction for TranscribeAction {
                                 let paste_time = Instant::now();
                                 let final_text = processed.final_text;
                                 let rm_for_paste = Arc::clone(&rm);
+                                let tm_for_paste = Arc::clone(&tm);
                                 ah.run_on_main_thread(move || {
                                     if rm_for_paste.was_cancelled_since(cancel_generation) {
                                         debug!("Transcription operation cancelled before paste");
@@ -833,7 +834,18 @@ impl ShortcutAction for TranscribeAction {
                                             );
                                         }
                                     }
-                                    utils::hide_recording_overlay(&ah_clone);
+                                    // Modo palabras de la esfera: el overlay se
+                                    // queda lo justo para que las palabras del
+                                    // finalize completen su ciclo (el texto ya
+                                    // se pegó; la ventana no roba foco). En
+                                    // cualquier otro modo el linger es cero y
+                                    // el hide es inmediato, como siempre.
+                                    let linger = if tm_for_paste.esfera_words_enabled() {
+                                        tm_for_paste.esfera_words_linger()
+                                    } else {
+                                        std::time::Duration::ZERO
+                                    };
+                                    utils::hide_recording_overlay_after(&ah_clone, linger);
                                     change_tray_icon(&ah_clone, TrayIconState::Idle);
                                 })
                                 .unwrap_or_else(|e| {

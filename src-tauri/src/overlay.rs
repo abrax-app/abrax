@@ -407,6 +407,10 @@ fn show_overlay_state(app_handle: &AppHandle, state: &str) {
         #[cfg(target_os = "windows")]
         force_overlay_topmost(&overlay_window);
 
+        // Cada show reclama el overlay: invalida cualquier hide diferido en
+        // vuelo (linger del modo palabras) para que jamás oculte una sesión
+        // nueva. Ver `hide_recording_overlay_after`.
+        OVERLAY_GENERATION.fetch_add(1, Ordering::Relaxed);
         let _ = overlay_window.emit("show-overlay", state);
         log::debug!(
             "overlay '{}': set_size={:?} pos_calc={:?} set_pos={:?} show={:?}",
@@ -456,6 +460,37 @@ pub fn update_overlay_position(app_handle: &AppHandle) {
                 .set_position(tauri::Position::Logical(tauri::LogicalPosition { x, y }));
         }
     }
+}
+
+/// Generación del overlay: se incrementa en cada show. Un hide diferido captura
+/// la generación al programarse y solo oculta si nadie re-mostró el overlay en
+/// el intermedio.
+static OVERLAY_GENERATION: AtomicU64 = AtomicU64::new(0);
+
+/// Oculta el overlay tras `delay`, salvo que un nuevo show lo haya reclamado en
+/// el intermedio. Con delay cero es idéntico a `hide_recording_overlay`.
+///
+/// Para el modo Esfera «palabras»: el batch del finalize llega ~250 ms antes
+/// del hide y moriría sin verse; este linger deja que las últimas palabras
+/// completen vuelo+lectura+disolución. El texto ya se pegó (el paste no se
+/// retrasa), la ventana jamás toma foco, y R8 se mantiene: la suscripción de
+/// espectro vive mientras el overlay es visible y, sin frames nuevos, la esfera
+/// decae a su respiración en calma.
+pub fn hide_recording_overlay_after(app_handle: &AppHandle, delay: std::time::Duration) {
+    if delay.is_zero() {
+        hide_recording_overlay(app_handle);
+        return;
+    }
+    let generation = OVERLAY_GENERATION.load(Ordering::Relaxed);
+    let app = app_handle.clone();
+    std::thread::spawn(move || {
+        std::thread::sleep(delay);
+        if OVERLAY_GENERATION.load(Ordering::Relaxed) == generation {
+            hide_recording_overlay(&app);
+        } else {
+            log::debug!("linger de palabras cancelado: el overlay fue re-mostrado");
+        }
+    });
 }
 
 /// Hides the recording overlay window with fade-out animation

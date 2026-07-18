@@ -64,6 +64,36 @@ pub struct TranscriptWordsEvent {
     pub words: Vec<String>,
 }
 
+/// Espejo del ritmo de inyección del overlay (`WORD_RELEASE_MS` en
+/// EsferaStage.tsx): la cola del frontend entrega una palabra a la esfera cada
+/// tanto. Si aquel valor cambia, este debe cambiar con él.
+const ESFERA_WORD_DRAIN_MS: u64 = 130;
+/// Vida visible de una palabra tras inyectarse: vuelo (700) + lectura (380) +
+/// disolución (260), ver las constantes WORD_* de engine.ts.
+const ESFERA_WORD_FLIGHT_MS: u64 = 1340;
+/// Tope del linger del overlay tras el paste: ni una cola enorme retiene la
+/// esfera en pantalla más que esto.
+const ESFERA_LINGER_CAP_MS: u64 = 3500;
+
+/// Instante en que la cola del overlay quedará drenada si a `prev` (drenado
+/// pendiente, si sigue vigente) se le apila un batch de `batch` palabras.
+fn esfera_drained_after(prev: Option<Instant>, now: Instant, batch: usize) -> Instant {
+    let base = prev.filter(|t| *t > now).unwrap_or(now);
+    base + Duration::from_millis(ESFERA_WORD_DRAIN_MS * batch as u64)
+}
+
+/// Cuánto retener el overlay visible para que las palabras aún en cola o en
+/// vuelo completen su ciclo. Cero sin palabras pendientes o con el drenado ya
+/// vencido; nunca más que el tope.
+fn esfera_linger_from(drained_at: Option<Instant>, now: Instant) -> Duration {
+    let Some(t) = drained_at else {
+        return Duration::ZERO;
+    };
+    (t + Duration::from_millis(ESFERA_WORD_FLIGHT_MS))
+        .saturating_duration_since(now)
+        .min(Duration::from_millis(ESFERA_LINGER_CAP_MS))
+}
+
 /// Phase of the streaming overlay card, emitted to drive its UI state.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize, Type)]
 #[serde(rename_all = "lowercase")]
@@ -296,6 +326,11 @@ pub struct TranscriptionManager {
     /// `is_model_loaded()` consults this so the model still reports "loaded"
     /// while the worker holds it.
     active_engine_lease: Arc<AtomicU64>,
+    /// Instante en que la cola de palabras del overlay (modo Esfera «palabras»)
+    /// terminará de drenar, modelando el ritmo del frontend. Lo consume el hide
+    /// de éxito para retener el overlay lo justo y que las últimas palabras
+    /// completen su ciclo antes del fade.
+    esfera_words_drained_at: Arc<Mutex<Option<Instant>>>,
 }
 
 impl TranscriptionManager {
@@ -316,6 +351,7 @@ impl TranscriptionManager {
             next_stream_worker_id: Arc::new(AtomicU64::new(1)),
             active_stream_worker: Arc::new(AtomicU64::new(0)),
             active_engine_lease: Arc::new(AtomicU64::new(0)),
+            esfera_words_drained_at: Arc::new(Mutex::new(None)),
         };
 
         // Start the idle watcher
@@ -972,6 +1008,13 @@ impl TranscriptionManager {
         // parse never lands on the hot streaming path.
         let emit_words = settings.overlay_style == crate::settings::OverlayStyle::Esfera
             && settings.esfera_modo == crate::settings::EsferaModo::Palabras;
+        // Observability: without this line a closed gate is indistinguishable
+        // from a frontend that dropped the events (the perf counter only tracks
+        // StreamTextEvent, never TranscriptWordsEvent).
+        debug!(
+            "esfera words: emission {} for this streaming session",
+            if emit_words { "ACTIVE" } else { "inactive" }
+        );
         let mut emitted_words: usize = 0;
         let stream_started = 'stream: {
             let session = match &mut engine {
@@ -1206,7 +1249,23 @@ impl TranscriptionManager {
         if words.is_empty() {
             return;
         }
+        let batch = words.len();
         let _ = TranscriptWordsEvent { words }.emit(&self.app_handle);
+        // Privacy (S3): word COUNT only, never the words themselves.
+        debug!("esfera words: emitted a batch of {} word(s)", batch);
+        // Modela la cola del overlay (una palabra cada ESFERA_WORD_DRAIN_MS):
+        // los batches se apilan sobre el drenado pendiente, nunca en paralelo.
+        let mut drained = self.esfera_words_drained_at.lock().unwrap();
+        *drained = Some(esfera_drained_after(*drained, Instant::now(), batch));
+    }
+
+    /// Cuánto retener el overlay visible tras el paste para que las palabras
+    /// aún en cola o en vuelo completen su ciclo. Consumible: una lectura por
+    /// dictado (el hide de éxito); las rutas de cancelación no lo leen y un
+    /// valor viejo expira solo (un instante pasado da linger cero).
+    pub fn esfera_words_linger(&self) -> Duration {
+        let drained = self.esfera_words_drained_at.lock().unwrap().take();
+        esfera_linger_from(drained, Instant::now())
     }
 
     pub fn transcribe(&self, audio: Vec<f32>) -> Result<String> {
@@ -2060,6 +2119,49 @@ mod tests {
 
     fn languages(codes: &[&str]) -> Vec<String> {
         codes.iter().map(|code| (*code).to_string()).collect()
+    }
+
+    #[test]
+    fn esfera_linger_models_queue_drain_and_flight() {
+        let now = Instant::now();
+
+        // Sin palabras pendientes → cero linger.
+        assert_eq!(esfera_linger_from(None, now), Duration::ZERO);
+
+        // Un batch fresco de 6 palabras drena en 6·DRAIN y la última vive
+        // FLIGHT más; el linger es exactamente esa suma.
+        let drained = esfera_drained_after(None, now, 6);
+        assert_eq!(
+            drained.duration_since(now),
+            Duration::from_millis(6 * ESFERA_WORD_DRAIN_MS)
+        );
+        assert_eq!(
+            esfera_linger_from(Some(drained), now),
+            Duration::from_millis(6 * ESFERA_WORD_DRAIN_MS + ESFERA_WORD_FLIGHT_MS)
+        );
+
+        // Batches sucesivos se apilan sobre el drenado pendiente (la cola del
+        // overlay es serial), y un drenado ya vencido rebasa a `now`.
+        let stacked = esfera_drained_after(Some(drained), now, 4);
+        assert_eq!(
+            stacked.duration_since(now),
+            Duration::from_millis(10 * ESFERA_WORD_DRAIN_MS)
+        );
+        let stale = now - Duration::from_secs(60);
+        let refreshed = esfera_drained_after(Some(stale), now, 2);
+        assert_eq!(
+            refreshed.duration_since(now),
+            Duration::from_millis(2 * ESFERA_WORD_DRAIN_MS)
+        );
+
+        // Un drenado viejo con vuelo ya cumplido da cero (saturating), y una
+        // cola enorme queda topada por el cap.
+        assert_eq!(esfera_linger_from(Some(stale), now), Duration::ZERO);
+        let huge = esfera_drained_after(None, now, 500);
+        assert_eq!(
+            esfera_linger_from(Some(huge), now),
+            Duration::from_millis(ESFERA_LINGER_CAP_MS)
+        );
     }
 
     #[test]
