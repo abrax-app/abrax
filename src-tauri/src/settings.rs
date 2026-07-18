@@ -420,6 +420,15 @@ pub struct AppSettings {
     pub audio_feedback_volume: f32,
     #[serde(default = "default_sound_theme")]
     pub sound_theme: SoundTheme,
+    /// Carpeta donde se descargan los modelos. `None` = la carpeta de datos de
+    /// la app (comportamiento histórico). Se expone para que el usuario elija
+    /// **en qué disco** viven los modelos, que pesan varios GB.
+    ///
+    /// Se guarda como ruta absoluta. Si al arrancar apunta a algo que ya no
+    /// existe (disco externo desconectado, carpeta borrada), quien la resuelve
+    /// degrada a la carpeta por defecto en vez de fallar.
+    #[serde(default)]
+    pub models_dir: Option<String>,
     #[serde(default = "default_start_hidden")]
     pub start_hidden: bool,
     #[serde(default = "default_autostart_enabled")]
@@ -984,6 +993,7 @@ pub fn get_default_settings() -> AppSettings {
         audio_feedback: false,
         audio_feedback_volume: default_audio_feedback_volume(),
         sound_theme: default_sound_theme(),
+        models_dir: None,
         start_hidden: default_start_hidden(),
         autostart_enabled: default_autostart_enabled(),
         update_checks_enabled: default_update_checks_enabled(),
