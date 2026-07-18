@@ -7,7 +7,7 @@
 #
 # Usage in your flake:
 #
-#   inputs.abrax.url = "github:wmarquezz/abrax";
+#   inputs.abrax.url = "github:abrax-app/abrax";
 #
 #   nixosConfigurations.myhost = nixpkgs.lib.nixosSystem {
 #     modules = [

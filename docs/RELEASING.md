@@ -13,7 +13,7 @@
 | Updater endpoint + pubkey        | ✅ Desconectado  | Pubkey NUEVO propio + `update_checks_enabled=false` por defecto. Ya no apunta a `cjpais/Handy`                                                            |
 | signCommand (Azure de cjpais)    | ✅ Quitado       | Ver "Firma" abajo                                                                                                                                         |
 | Headers LLM (Referer/UA/X-Title) | ✅ Hecho         | `Abrax` / `abrax.app` en `src-tauri/src/llm_client.rs`                                                                                                    |
-| URLs UI (About, Updater)         | ✅ Hecho         | Placeholder `github.com/wmarquezz/abrax` (confirmar owner real antes de publicar)                                                                         |
+| URLs UI (About, Updater)         | ✅ Hecho         | `github.com/abrax-app/abrax` — owner definitivo (organización `abrax-app`)                                                                                |
 | Nombre del producto en i18n      | ✅ Hecho         | 330 ocurrencias → `Abrax` en 22 locales; paridad verificada                                                                                               |
 | **Fuentes de modelos**           | ⏳ **PENDIENTE** | 17 URLs `blob.handy.computer` en `src-tauri/src/managers/model.rs` (líneas 493–1025). Ver abajo                                                           |
 | Nombre de lib Rust               | ⏳ Deuda menor   | `handy_app_lib` (interno, invisible al usuario). Renombrar a `abrax_app_lib` en una versión futura toca `main.rs` + fuerza recompilación total            |
@@ -48,8 +48,8 @@ Par de claves minisign **nuevo** ya generado (2026-07-11):
 
 Para reactivar el auto-update al publicar:
 
-1. Confirmar el owner/repo real y ajustar `plugins.updater.endpoints` (hoy
-   placeholder `github.com/wmarquezz/abrax`).
+1. El owner/repo definitivo es `github.com/abrax-app/abrax` (organización
+   `abrax-app`); `plugins.updater.endpoints` ya apunta ahí.
 2. En CI, exportar `TAURI_SIGNING_PRIVATE_KEY` (contenido de la clave privada) y
    `TAURI_SIGNING_PRIVATE_KEY_PASSWORD`.
 3. `bun run tauri build` firma los artefactos y genera `latest.json`.

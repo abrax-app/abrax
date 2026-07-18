@@ -176,7 +176,7 @@
 
             meta = {
               description = "A free, open source, and extensible speech-to-text application that works completely offline";
-              homepage = "https://github.com/wmarquezz/abrax";
+              homepage = "https://github.com/abrax-app/abrax";
               license = lib.licenses.mit;
               mainProgram = "abrax";
               platforms = supportedSystems;

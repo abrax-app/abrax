@@ -22,7 +22,7 @@ Prerrequisitos: [Rust](https://rustup.rs/) (estable), [Bun](https://bun.sh/) y l
    ```bash
    git clone git@github.com:TU_USUARIO/abrax.git
    cd abrax
-   git remote add upstream git@github.com:wmarquezz/abrax.git
+   git remote add upstream git@github.com:abrax-app/abrax.git
    ```
 
 2. **Instala dependencias**:
