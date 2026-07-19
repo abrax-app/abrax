@@ -22,9 +22,10 @@ use tauri_plugin_autostart::ManagerExt;
 #[cfg(all(target_os = "macos", target_arch = "aarch64"))]
 use crate::settings::APPLE_INTELLIGENCE_DEFAULT_MODEL_ID;
 use crate::settings::{
-    self, get_settings, AppSettings, AutoSubmitKey, ClipboardHandling, EsferaModo,
-    KeyboardImplementation, LLMPrompt, OverlayPosition, OverlayStyle, PasteMethod, ShortcutBinding,
-    SoundTheme, Theme, TypingTool, UiShell, UiTheme, APPLE_INTELLIGENCE_PROVIDER_ID,
+    self, get_settings, AppSettings, AutoSubmitKey, ClipboardHandling, CorreccionModo,
+    CorreccionMotor, EsferaModo, KeyboardImplementation, LLMPrompt, OverlayPosition, OverlayStyle,
+    PasteMethod, ShortcutBinding, SoundTheme, Theme, TypingTool, UiShell, UiTheme,
+    APPLE_INTELLIGENCE_PROVIDER_ID,
 };
 use crate::tray;
 
@@ -556,6 +557,44 @@ pub fn change_ui_shell_setting(app: AppHandle, ui_shell: String) -> Result<(), S
         }
     };
     settings.ui_shell = parsed;
+    settings::write_settings(&app, settings);
+    Ok(())
+}
+
+#[tauri::command]
+#[specta::specta]
+pub fn change_correccion_modo_setting(app: AppHandle, modo: String) -> Result<(), String> {
+    let mut settings = settings::get_settings(&app);
+    let parsed = match modo.as_str() {
+        "literal" => CorreccionModo::Literal,
+        "limpio" => CorreccionModo::Limpio,
+        "pulido" => CorreccionModo::Pulido,
+        other => {
+            warn!("Modo de corrección inválido '{}', se usa literal", other);
+            CorreccionModo::Literal
+        }
+    };
+    settings.correccion_modo = parsed;
+    settings::write_settings(&app, settings);
+    Ok(())
+}
+
+#[tauri::command]
+#[specta::specta]
+pub fn change_correccion_motor_setting(app: AppHandle, motor: String) -> Result<(), String> {
+    let mut settings = settings::get_settings(&app);
+    let parsed = match motor.as_str() {
+        "auto" => CorreccionMotor::Auto,
+        "solo_reglas" => CorreccionMotor::SoloReglas,
+        "modelo" => CorreccionMotor::Modelo,
+        "desactivado" => CorreccionMotor::Desactivado,
+        other => {
+            // Ante un valor desconocido, el estado seguro es apagado.
+            warn!("Motor de corrección inválido '{}', se desactiva", other);
+            CorreccionMotor::Desactivado
+        }
+    };
+    settings.correccion_motor = parsed;
     settings::write_settings(&app, settings);
     Ok(())
 }

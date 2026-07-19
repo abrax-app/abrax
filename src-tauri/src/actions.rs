@@ -429,6 +429,12 @@ pub(crate) async fn process_transcription_output(
         final_text = converted_text;
     }
 
+    // Corrección local (módulo `correccion`): con el motor por defecto
+    // (`desactivado`) es passthrough byte a byte; solo transforma si el usuario
+    // la activó en ajustes. Corre antes del LLM opcional: si aquel falla, el
+    // fallback conserva al menos la corrección determinista.
+    final_text = crate::correccion::procesar(&final_text, &settings);
+
     if post_process {
         if let Some(processed_text) = post_process_transcription(&settings, &final_text).await {
             post_processed_text = Some(processed_text.clone());

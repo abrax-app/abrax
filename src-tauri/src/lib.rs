@@ -7,6 +7,7 @@ mod catalog;
 pub mod cli;
 mod clipboard;
 mod commands;
+mod correccion;
 mod dictionary;
 mod helpers;
 mod input;
@@ -545,6 +546,8 @@ pub fn run(cli_args: CliArgs) {
             shortcut::change_ui_theme_setting,
             shortcut::change_ui_shell_setting,
             shortcut::change_esfera_modo_setting,
+            shortcut::change_correccion_modo_setting,
+            shortcut::change_correccion_motor_setting,
             signal_handle::trigger_transcription,
             shortcut::change_start_hidden_setting,
             shortcut::change_autostart_setting,
