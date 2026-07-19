@@ -309,10 +309,15 @@ pub struct PruebaMicrofono {
     pub wav: String,
 }
 
+/// Piso de dBFS para silencio digital. Evitamos `-inf`: `serde_json` lo
+/// serializa como `null` y el frontend hace `.toFixed()` sobre él → crash.
+/// -120 dBFS está muy por debajo del ruido de cualquier micrófono real.
+const DB_PISO: f32 = -120.0;
+
 /// RMS y pico en dBFS + % de muestras saturadas, sobre f32 en [-1, 1].
 fn estadisticas_senal(samples: &[f32]) -> (f32, f32, f32) {
     if samples.is_empty() {
-        return (f32::NEG_INFINITY, f32::NEG_INFINITY, 0.0);
+        return (DB_PISO, DB_PISO, 0.0);
     }
     let mut suma_sq = 0.0f64;
     let mut pico = 0.0f32;
@@ -330,9 +335,9 @@ fn estadisticas_senal(samples: &[f32]) -> (f32, f32, f32) {
     let rms = (suma_sq / samples.len() as f64).sqrt() as f32;
     let db = |x: f32| {
         if x > 0.0 {
-            20.0 * x.log10()
+            (20.0 * x.log10()).max(DB_PISO)
         } else {
-            f32::NEG_INFINITY
+            DB_PISO
         }
     };
     (
@@ -514,5 +519,19 @@ mod tests_prueba_microfono {
             veredicto_senal(rms, pico, clip),
             VeredictoMicrofono::SinSenal
         );
+    }
+
+    #[test]
+    fn silencio_devuelve_db_finitos_serializables() {
+        // Regresión: -inf se serializaba como `null` en JSON y el frontend
+        // hacía `.toFixed()` sobre él → TypeError justo con el mic silenciado,
+        // el caso que la prueba debe diagnosticar. Los dB deben ser finitos.
+        for señal in [vec![0.0f32; 16000], vec![]] {
+            let (rms, pico, _) = estadisticas_senal(&señal);
+            assert!(rms.is_finite(), "rms no finito: {rms}");
+            assert!(pico.is_finite(), "pico no finito: {pico}");
+            assert_eq!(rms, DB_PISO);
+            assert_eq!(pico, DB_PISO);
+        }
     }
 }
