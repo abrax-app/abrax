@@ -255,7 +255,8 @@
         "transcription": "转录",
         "history": "历史",
         "experimental": "实验性",
-        "dictionary": "活字典"
+        "dictionary": "活字典",
+        "correccion": "本地校正"
       },
       "experimentalToggle": {
         "label": "实验性功能",
@@ -730,6 +731,32 @@
   },
   "whatsNew": {
     "title": "Abrax v{{version}} 新功能"
+  },
+  "correccion": {
+    "motor": {
+      "title": "校正引擎",
+      "description": "在转写与粘贴之间整理你的口述。关闭:保持转写原样。仅规则:只应用即时的确定性修正。本地模型:额外咨询本机的本地大模型(Ollama),若不可用或改变语义则回退到规则。自动:选择当前可用的最佳方案。",
+      "options": {
+        "auto": "自动",
+        "solo_reglas": "仅规则",
+        "modelo": "本地模型",
+        "desactivado": "关闭"
+      }
+    },
+    "modo": {
+      "title": "校正级别",
+      "description": "逐字:只修正空格和大小写。清爽:还会解决口头自我更正(周二,抱歉,是周三)。润色:可为清晰度轻微调整结构,但绝不改变语义、名称、数字或否定。",
+      "options": {
+        "literal": "逐字",
+        "limpio": "清爽",
+        "pulido": "润色"
+      }
+    },
+    "estado": {
+      "detectado": "已检测到 Ollama — 模型:{{modelo}}",
+      "sinModelos": "Ollama 正在运行但未下载任何模型 — 将使用确定性规则",
+      "noDetectado": "未检测到 Ollama — 将使用确定性规则"
+    }
   },
   "shell": {
     "title": "窗口外形",

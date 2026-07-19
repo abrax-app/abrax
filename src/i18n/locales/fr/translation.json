@@ -255,7 +255,8 @@
         "transcription": "Transcription",
         "history": "Historique",
         "experimental": "Expérimental",
-        "dictionary": "Dictionnaire vivant"
+        "dictionary": "Dictionnaire vivant",
+        "correccion": "Correction locale"
       },
       "experimentalToggle": {
         "label": "Fonctionnalités Expérimentales",
@@ -730,6 +731,32 @@
   },
   "whatsNew": {
     "title": "Nouveautés de Abrax v{{version}}"
+  },
+  "correccion": {
+    "motor": {
+      "title": "Moteur de correction",
+      "description": "Nettoie ta dictée entre la transcription et le collage. Désactivé garde tout exactement comme transcrit. Règles seules applique des corrections déterministes instantanées. Modèle local consulte en plus un LLM local (Ollama sur cette machine) et retombe sur les règles s'il est indisponible ou s'il altère le sens. Auto choisit la meilleure option disponible.",
+      "options": {
+        "auto": "Auto",
+        "solo_reglas": "Règles seules",
+        "modelo": "Modèle local",
+        "desactivado": "Désactivé"
+      }
+    },
+    "modo": {
+      "title": "Niveau de correction",
+      "description": "Littéral ne corrige que les espaces et les majuscules. Épuré résout en plus les autocorrections parlées (mardi — pardon, mercredi). Peaufiné peut restructurer légèrement pour la clarté, sans jamais changer le sens, les noms, les chiffres ni les négations.",
+      "options": {
+        "literal": "Littéral",
+        "limpio": "Épuré",
+        "pulido": "Peaufiné"
+      }
+    },
+    "estado": {
+      "detectado": "Ollama détecté — modèle : {{modelo}}",
+      "sinModelos": "Ollama tourne mais aucun modèle n'est téléchargé — les règles déterministes seront utilisées",
+      "noDetectado": "Ollama non détecté — les règles déterministes seront utilisées"
+    }
   },
   "shell": {
     "title": "Forme de la fenêtre",

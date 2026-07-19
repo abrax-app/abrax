@@ -159,6 +159,10 @@ const settingUpdaters: {
     commands.changeLazyStreamCloseSetting(value as boolean),
   overlay_style: (value) => commands.changeOverlayStyleSetting(value as string),
   esfera_modo: (value) => commands.changeEsferaModoSetting(value as string),
+  correccion_modo: (value) =>
+    commands.changeCorreccionModoSetting(value as string),
+  correccion_motor: (value) =>
+    commands.changeCorreccionMotorSetting(value as string),
   vad_enabled: (value) => commands.changeVadEnabledSetting(value as boolean),
   show_tray_icon: (value) =>
     commands.changeShowTrayIconSetting(value as boolean),

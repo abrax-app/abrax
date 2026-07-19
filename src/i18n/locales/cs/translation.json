@@ -255,7 +255,8 @@
         "transcription": "Přepis",
         "history": "Historie",
         "experimental": "Experimentální",
-        "dictionary": "Živý slovník"
+        "dictionary": "Živý slovník",
+        "correccion": "Místní korekce"
       },
       "experimentalToggle": {
         "label": "Experimentální funkce",
@@ -730,6 +731,32 @@
   },
   "whatsNew": {
     "title": "Novinky v Abrax v{{version}}"
+  },
+  "correccion": {
+    "motor": {
+      "title": "Korekční engine",
+      "description": "Čistí diktát mezi přepisem a vložením. Vypnuto ponechá vše přesně tak, jak bylo přepsáno. Pouze pravidla aplikují okamžité deterministické opravy. Místní model se navíc ptá místního LLM (Ollama na tomto počítači) a při nedostupnosti nebo změně významu se vrací k pravidlům. Automaticky vybere nejlepší dostupnou možnost.",
+      "options": {
+        "auto": "Automaticky",
+        "solo_reglas": "Pouze pravidla",
+        "modelo": "Místní model",
+        "desactivado": "Vypnuto"
+      }
+    },
+    "modo": {
+      "title": "Úroveň korekce",
+      "description": "Doslovný opravuje jen mezery a velká písmena. Čistý navíc řeší mluvené autoopravy (v úterý — pardon, ve středu). Vybroušený smí lehce přeuspořádat pro srozumitelnost, nikdy však nemění význam, jména, čísla ani zápory.",
+      "options": {
+        "literal": "Doslovný",
+        "limpio": "Čistý",
+        "pulido": "Vybroušený"
+      }
+    },
+    "estado": {
+      "detectado": "Ollama nalezena — model: {{modelo}}",
+      "sinModelos": "Ollama běží, ale nemá stažené žádné modely — použijí se deterministická pravidla",
+      "noDetectado": "Ollama nenalezena — použijí se deterministická pravidla"
+    }
   },
   "shell": {
     "title": "Tvar okna",

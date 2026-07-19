@@ -255,7 +255,8 @@
         "transcription": "전사",
         "history": "히스토리",
         "experimental": "실험적",
-        "dictionary": "리빙 사전"
+        "dictionary": "리빙 사전",
+        "correccion": "로컬 교정"
       },
       "experimentalToggle": {
         "label": "실험적 기능",
@@ -730,6 +731,32 @@
   },
   "whatsNew": {
     "title": "Abrax v{{version}}의 새 소식"
+  },
+  "correccion": {
+    "motor": {
+      "title": "교정 엔진",
+      "description": "전사와 붙여넣기 사이에서 받아쓰기를 다듬습니다. 끄기는 전사된 그대로 둡니다. 규칙만은 즉각적인 결정적 수정만 적용합니다. 로컬 모델은 추가로 로컬 LLM(이 컴퓨터의 Ollama)에 문의하고, 사용할 수 없거나 의미가 바뀌면 규칙으로 되돌아갑니다. 자동은 사용 가능한 최선의 옵션을 선택합니다.",
+      "options": {
+        "auto": "자동",
+        "solo_reglas": "규칙만",
+        "modelo": "로컬 모델",
+        "desactivado": "끄기"
+      }
+    },
+    "modo": {
+      "title": "교정 수준",
+      "description": "원문 그대로는 공백과 대문자만 수정합니다. 깔끔하게는 말로 한 자기 수정(화요일에, 아니, 수요일에)도 해결합니다. 다듬기는 명확성을 위해 가볍게 재구성할 수 있지만 의미·이름·숫자·부정은 절대 바꾸지 않습니다.",
+      "options": {
+        "literal": "원문 그대로",
+        "limpio": "깔끔하게",
+        "pulido": "다듬기"
+      }
+    },
+    "estado": {
+      "detectado": "Ollama 감지됨 — 모델: {{modelo}}",
+      "sinModelos": "Ollama가 실행 중이지만 다운로드된 모델이 없습니다 — 결정적 규칙을 사용합니다",
+      "noDetectado": "Ollama가 감지되지 않았습니다 — 결정적 규칙을 사용합니다"
+    }
   },
   "shell": {
     "title": "창 모양",

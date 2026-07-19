@@ -96,6 +96,36 @@ async changeEsferaModoSetting(esferaModo: string) : Promise<Result<null, string>
     else return { status: "error", error: e  as any };
 }
 },
+async changeCorreccionModoSetting(modo: string) : Promise<Result<null, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("change_correccion_modo_setting", { modo }) };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+async changeCorreccionMotorSetting(motor: string) : Promise<Result<null, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("change_correccion_motor_setting", { motor }) };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+/**
+ * Detecta si hay un Ollama vivo en 127.0.0.1 y qué modelos tiene descargados.
+ * `None` = no corre (o no respondió en 500 ms); `Some(vec![])` = corre pero
+ * sin modelos. La UI usa la distinción para explicar el estado del motor:
+ * «no detectado» vs «detectado, sin modelos» vs «detectado (nombre)».
+ */
+async detectarCorreccionOllama() : Promise<Result<string[] | null, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("detectar_correccion_ollama") };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
 /**
  * Toggle dictation from the UI (e.g. clicking the orbital home sphere). Mirrors
  * the global-shortcut / CLI `--toggle-transcription` path by reusing the shared
@@ -1190,7 +1220,7 @@ custom_replacements?: CustomReplacement[];
  * del código indexándolo localmente. El índice vive en el datadir;
  * nada sale del equipo.
  */
-dictionary_project?: DictionaryProject | null; model_unload_timeout?: ModelUnloadTimeout; word_correction_threshold?: number; history_limit?: number; recording_retention_period?: RecordingRetentionPeriod; paste_method?: PasteMethod; clipboard_handling?: ClipboardHandling; auto_submit?: boolean; auto_submit_key?: AutoSubmitKey; post_process_enabled?: boolean; post_process_provider_id?: string; post_process_providers?: PostProcessProvider[]; post_process_api_keys?: SecretMap; post_process_models?: Partial<{ [key in string]: string }>; post_process_prompts?: LLMPrompt[]; post_process_selected_prompt_id?: string | null; mute_while_recording?: boolean; append_trailing_space?: boolean; app_language?: string; theme?: Theme; ui_theme?: UiTheme; ui_shell?: UiShell; experimental_enabled?: boolean; lazy_stream_close?: boolean; keyboard_implementation?: KeyboardImplementation; show_tray_icon?: boolean; paste_delay_ms?: number; paste_delay_after_ms?: number; typing_tool?: TypingTool; external_script_path?: string | null; custom_filler_words?: string[] | null; transcribe_accelerator?: TranscribeAcceleratorSetting; ort_accelerator?: OrtAcceleratorSetting; transcribe_gpu_device?: number; extra_recording_buffer_ms?: number; vad_enabled?: boolean; 
+dictionary_project?: DictionaryProject | null; model_unload_timeout?: ModelUnloadTimeout; word_correction_threshold?: number; history_limit?: number; recording_retention_period?: RecordingRetentionPeriod; paste_method?: PasteMethod; clipboard_handling?: ClipboardHandling; auto_submit?: boolean; auto_submit_key?: AutoSubmitKey; post_process_enabled?: boolean; post_process_provider_id?: string; post_process_providers?: PostProcessProvider[]; post_process_api_keys?: SecretMap; post_process_models?: Partial<{ [key in string]: string }>; post_process_prompts?: LLMPrompt[]; post_process_selected_prompt_id?: string | null; mute_while_recording?: boolean; append_trailing_space?: boolean; app_language?: string; theme?: Theme; ui_theme?: UiTheme; ui_shell?: UiShell; correccion_modo?: CorreccionModo; correccion_motor?: CorreccionMotor; experimental_enabled?: boolean; lazy_stream_close?: boolean; keyboard_implementation?: KeyboardImplementation; show_tray_icon?: boolean; paste_delay_ms?: number; paste_delay_after_ms?: number; typing_tool?: TypingTool; external_script_path?: string | null; custom_filler_words?: string[] | null; transcribe_accelerator?: TranscribeAcceleratorSetting; ort_accelerator?: OrtAcceleratorSetting; transcribe_gpu_device?: number; extra_recording_buffer_ms?: number; vad_enabled?: boolean; 
 /**
  * Which recording overlay to show: None / Minimal / Live. Streaming mode is
  * not gated on this — that follows model capability. Migrated from the old
@@ -1243,6 +1273,20 @@ export type AvailableAccelerators = { transcribe: string[]; ort: string[]; gpu_d
 export type BindingResponse = { success: boolean; binding: ShortcutBinding | null; error: string | null }
 export type ClipboardHandling = "dont_modify" | "copy_to_clipboard"
 export type CompiledPrompt = { markdown: string; warnings: AmbiguityWarning[] }
+/**
+ * Cuánto transforma el módulo de corrección local (`correccion`) el dictado
+ * antes de insertarlo. `Literal` solo ortotipografía (espacios, mayúsculas);
+ * `Limpio` añade autocorrecciones habladas («el martes, perdón, el miércoles»);
+ * `Pulido` reservará la reestructuración al fraseador local cuando exista.
+ */
+export type CorreccionModo = "literal" | "limpio" | "pulido"
+/**
+ * Qué motor ejecuta la corrección. `Desactivado` (default) = passthrough
+ * exacto, el pipeline queda como si el módulo no existiera. `SoloReglas` usa
+ * únicamente las reglas deterministas. `Auto` y `Modelo` degradan a reglas
+ * mientras el micro-modelo local no exista.
+ */
+export type CorreccionMotor = "auto" | "solo_reglas" | "modelo" | "desactivado"
 /**
  * Un reemplazo exacto del Diccionario Vivo: token transcrito → texto final.
  */
