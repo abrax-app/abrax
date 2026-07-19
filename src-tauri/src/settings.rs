@@ -160,6 +160,31 @@ pub enum EsferaModo {
     Palabras,
 }
 
+/// Cuánto transforma el módulo de corrección local (`correccion`) el dictado
+/// antes de insertarlo. `Literal` solo ortotipografía (espacios, mayúsculas);
+/// `Limpio` añade autocorrecciones habladas («el martes, perdón, el miércoles»);
+/// `Pulido` reservará la reestructuración al fraseador local cuando exista.
+#[derive(Serialize, Deserialize, Debug, Clone, Copy, PartialEq, Eq, Type)]
+#[serde(rename_all = "snake_case")]
+pub enum CorreccionModo {
+    Literal,
+    Limpio,
+    Pulido,
+}
+
+/// Qué motor ejecuta la corrección. `Desactivado` (default) = passthrough
+/// exacto, el pipeline queda como si el módulo no existiera. `SoloReglas` usa
+/// únicamente las reglas deterministas. `Auto` y `Modelo` degradan a reglas
+/// mientras el micro-modelo local no exista.
+#[derive(Serialize, Deserialize, Debug, Clone, Copy, PartialEq, Eq, Type)]
+#[serde(rename_all = "snake_case")]
+pub enum CorreccionMotor {
+    Auto,
+    SoloReglas,
+    Modelo,
+    Desactivado,
+}
+
 #[derive(Serialize, Deserialize, Debug, Clone, Copy, PartialEq, Eq, Type, Default)]
 #[serde(rename_all = "snake_case")]
 pub enum ModelUnloadTimeout {
@@ -510,6 +535,10 @@ pub struct AppSettings {
     pub ui_theme: UiTheme,
     #[serde(default = "default_ui_shell")]
     pub ui_shell: UiShell,
+    #[serde(default = "default_correccion_modo")]
+    pub correccion_modo: CorreccionModo,
+    #[serde(default = "default_correccion_motor")]
+    pub correccion_motor: CorreccionMotor,
     #[serde(default)]
     pub experimental_enabled: bool,
     #[serde(default)]
@@ -704,6 +733,16 @@ fn default_ui_theme() -> UiTheme {
 
 fn default_ui_shell() -> UiShell {
     UiShell::Classic
+}
+
+fn default_correccion_modo() -> CorreccionModo {
+    CorreccionModo::Literal
+}
+
+/// Desactivado hasta que el usuario opte: el módulo de corrección jamás debe
+/// cambiar el comportamiento de una instalación existente por sí solo.
+fn default_correccion_motor() -> CorreccionMotor {
+    CorreccionMotor::Desactivado
 }
 
 fn default_post_process_enabled() -> bool {
@@ -1024,6 +1063,8 @@ pub fn get_default_settings() -> AppSettings {
         theme: default_theme(),
         ui_theme: default_ui_theme(),
         ui_shell: default_ui_shell(),
+        correccion_modo: default_correccion_modo(),
+        correccion_motor: default_correccion_motor(),
         experimental_enabled: false,
         lazy_stream_close: false,
         keyboard_implementation: KeyboardImplementation::default(),
@@ -1468,6 +1509,48 @@ mod tests {
             .insert("ui_shell".into(), serde_json::json!("holographic"));
         assert!(serde_json::from_value::<AppSettings>(stored.clone()).is_err());
         assert_eq!(salvage_settings(&stored).ui_shell, default_ui_shell());
+    }
+
+    /// Un store anterior al módulo de corrección no tiene `correccion_modo` y
+    /// debe cargar como Literal; un valor desconocido salva al default en vez
+    /// de resetear el store completo.
+    #[test]
+    fn correccion_modo_defaults_and_salvages() {
+        let settings: AppSettings = serde_json::from_value(serde_json::json!({}))
+            .expect("correccion_modo needs a serde default");
+        assert_eq!(settings.correccion_modo, CorreccionModo::Literal);
+
+        let mut stored = default_settings_json();
+        stored
+            .as_object_mut()
+            .unwrap()
+            .insert("correccion_modo".into(), serde_json::json!("telepatico"));
+        assert!(serde_json::from_value::<AppSettings>(stored.clone()).is_err());
+        assert_eq!(
+            salvage_settings(&stored).correccion_modo,
+            default_correccion_modo()
+        );
+    }
+
+    /// El motor de corrección nace desactivado (passthrough): un store viejo
+    /// jamás debe despertar con la corrección activa, y un valor desconocido
+    /// salva a Desactivado.
+    #[test]
+    fn correccion_motor_defaults_and_salvages() {
+        let settings: AppSettings = serde_json::from_value(serde_json::json!({}))
+            .expect("correccion_motor needs a serde default");
+        assert_eq!(settings.correccion_motor, CorreccionMotor::Desactivado);
+
+        let mut stored = default_settings_json();
+        stored
+            .as_object_mut()
+            .unwrap()
+            .insert("correccion_motor".into(), serde_json::json!("cuantico"));
+        assert!(serde_json::from_value::<AppSettings>(stored.clone()).is_err());
+        assert_eq!(
+            salvage_settings(&stored).correccion_motor,
+            default_correccion_motor()
+        );
     }
 
     /// A store written before the words mode existed has no `esfera_modo` key and
