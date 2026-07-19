@@ -9,6 +9,8 @@
 //! Solo datos aquí: el registro (qué se puede descargar, con qué sha256 y
 //! tamaño). La descarga, el runtime y el enganche viven en otros módulos.
 
+use std::path::{Path, PathBuf};
+
 use serde::{Deserialize, Serialize};
 use specta::Type;
 
@@ -92,6 +94,22 @@ pub fn url_descarga(m: &ModeloCorreccion) -> String {
         "https://huggingface.co/{}/resolve/main/{}",
         m.repo_hf, m.archivo
     )
+}
+
+/// Carpeta donde viven los modelos de corrección descargados, aislada del árbol
+/// de modelos de transcripción.
+pub fn carpeta(datadir: &Path) -> PathBuf {
+    datadir.join("models").join("correccion")
+}
+
+/// Ruta al archivo GGUF de un modelo (exista o no en disco).
+pub fn ruta_gguf(datadir: &Path, m: &ModeloCorreccion) -> PathBuf {
+    carpeta(datadir).join(&m.archivo)
+}
+
+/// `true` si el modelo ya está descargado (archivo presente).
+pub fn esta_descargado(datadir: &Path, m: &ModeloCorreccion) -> bool {
+    ruta_gguf(datadir, m).is_file()
 }
 
 #[cfg(test)]

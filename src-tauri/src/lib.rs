@@ -185,6 +185,19 @@ fn initialize_core_logic(app_handle: &AppHandle) {
     app_handle.manage(transcription_manager.clone());
     app_handle.manage(history_manager.clone());
     app_handle.manage(tray::CurrentTrayIconState::new());
+    // [PULIDO IA] Sidecar LLM opcional: no lanza nada hasta que el usuario elija
+    // un modelo descargado.
+    let sidecar_mgr = Arc::new(correccion::motor_sidecar::SidecarManager::new());
+    app_handle.manage(sidecar_mgr.clone());
+    // Watcher de inactividad: descarga el modelo de RAM/VRAM tras unos minutos
+    // sin uso (misma filosofía que el modelo de transcripción).
+    {
+        let sc = sidecar_mgr.clone();
+        std::thread::spawn(move || loop {
+            std::thread::sleep(std::time::Duration::from_secs(60));
+            sc.stop_si_inactivo();
+        });
+    }
     // [ESCUCHA] El motor TTS del sistema vive en su propio hilo y se inicializa
     // perezosamente en el primer uso, así que crearlo aquí no cuesta nada.
     let escucha_manager = Arc::new(managers::escucha::EscuchaManager::new());
@@ -983,6 +996,13 @@ pub fn run(cli_args: CliArgs) {
             tauri::RunEvent::Exit => {
                 if let Some(tm) = app.try_state::<Arc<TranscriptionManager>>() {
                     let _ = tm.unload_model();
+                }
+                // Mata el sidecar de Pulido para no dejar un llama-server
+                // huérfano (en Windows los hijos no mueren con el padre).
+                if let Some(sc) =
+                    app.try_state::<Arc<correccion::motor_sidecar::SidecarManager>>()
+                {
+                    sc.stop();
                 }
             }
             _ => {}
