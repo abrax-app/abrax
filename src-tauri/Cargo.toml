@@ -138,8 +138,13 @@ windows = { version = "0.61.3", features = [
   # [TTS] Lectura de VRAM dedicada por adaptador (DXGI) para la detección de
   # hardware: wgpu no expone la VRAM total, así que en Windows se consulta
   # `IDXGIAdapter1::GetDesc1().DedicatedVideoMemory` como best-effort.
+  #
+  # DXGI se usa además para enumerar adaptadores en el BUILD DE ENTREGA (sin
+  # `advanced-tts`, donde no se enlaza wgpu). Por eso este bloque no es opcional.
   "Win32_Graphics_Dxgi",
   "Win32_Graphics_Dxgi_Common",
+  # RAM total instalada (`GlobalMemoryStatusEx`) para recomendar modelo de dictado.
+  "Win32_System_SystemInformation",
 ] }
 winreg = "0.55"
 
