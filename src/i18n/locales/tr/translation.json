@@ -758,6 +758,24 @@
       "noDetectado": "Ollama algılanmadı — deterministik kurallar kullanılacak"
     }
   },
+  "pruebaMic": {
+    "title": "Mikrofonu test et",
+    "description": "Modelin duyacağı sesin aynısından 3 saniye kaydeder (16 kHz, VAD'sız), oynatır ve gerçek seviyelerle bir karar verir. Ayrıca Default'un arkasında gerçekte hangi aygıtın olduğunu gösterir.",
+    "boton": "3 sn kaydet",
+    "grabando": "Kaydediliyor…",
+    "niveles": "RMS {{rms}} dBFS · pico {{pico}} dBFS",
+    "nivelClip": " · clip {{clip}}%",
+    "veredicto": {
+      "sin_senal": "Sinyal yok — mikrofon ses iletmiyor",
+      "muy_bajo": "Çok düşük — bu seviyede dikte başarısız olur",
+      "bajo": "Düşük — çalışıyor ama doğruluk düşüyor",
+      "sano": "Sağlıklı seviye",
+      "saturado": "Kırpılma — mikrofon doyuma ulaşıyor"
+    },
+    "dispositivo": "Mikrofon: {{nombre}} ({{contexto}})",
+    "esElDefault": "sistem varsayılanı",
+    "esElegido": "ayarlarda seçilen"
+  },
   "shell": {
     "title": "Pencere biçimi",
     "description": "Abrax penceresinin biçimini seç. Klasik, her zamanki ayarlar penceresidir; Orbital uygulamayı yüzen bir küreye dönüştürür; Retro klasik bir oynatıcı görünümüdür. Pencere çerçevesi, Abrax yeniden başlatıldığında güncellenmesini tamamlar.",

@@ -758,6 +758,24 @@
       "noDetectado": "Ollama nicht erkannt — es werden deterministische Regeln verwendet"
     }
   },
+  "pruebaMic": {
+    "title": "Mikrofon testen",
+    "description": "Nimmt 3 Sekunden genau dessen auf, was das Modell hören würde (16 kHz, ohne VAD), spielt es ab und gibt ein Urteil mit echten Pegeln. Zeigt außerdem, welches Gerät wirklich hinter Default steckt.",
+    "boton": "3 s aufnehmen",
+    "grabando": "Aufnahme…",
+    "niveles": "RMS {{rms}} dBFS · pico {{pico}} dBFS",
+    "nivelClip": " · clip {{clip}}%",
+    "veredicto": {
+      "sin_senal": "Kein Signal — das Mikrofon liefert kein Audio",
+      "muy_bajo": "Sehr leise — auf diesem Pegel wird das Diktat scheitern",
+      "bajo": "Leise — es funktioniert, aber die Genauigkeit leidet",
+      "sano": "Gesunder Pegel",
+      "saturado": "Übersteuert — das Mikrofon clippt"
+    },
+    "dispositivo": "Mikrofon: {{nombre}} ({{contexto}})",
+    "esElDefault": "Systemstandard",
+    "esElegido": "in den Einstellungen gewählt"
+  },
   "shell": {
     "title": "Fensterform",
     "description": "Wähle die Form des Abrax-Fensters. Klassisch ist das gewohnte Einstellungsfenster; Orbital verwandelt die App in eine schwebende Kugel; Retro ist ein klassischer Player-Skin. Der Fensterrahmen wird beim Neustart von Abrax vollständig übernommen.",

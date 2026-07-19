@@ -758,6 +758,24 @@
       "noDetectado": "Ollama niet gedetecteerd — er worden deterministische regels gebruikt"
     }
   },
+  "pruebaMic": {
+    "title": "Microfoon testen",
+    "description": "Neemt 3 seconden op van precies wat het model zou horen (16 kHz, zonder VAD), speelt het af en geeft een oordeel met echte niveaus. Onthult ook welk apparaat er werkelijk achter Default zit.",
+    "boton": "3 s opnemen",
+    "grabando": "Opnemen…",
+    "niveles": "RMS {{rms}} dBFS · pico {{pico}} dBFS",
+    "nivelClip": " · clip {{clip}}%",
+    "veredicto": {
+      "sin_senal": "Geen signaal — de microfoon levert geen audio",
+      "muy_bajo": "Zeer laag — op dit niveau zal dicteren mislukken",
+      "bajo": "Laag — het werkt, maar de nauwkeurigheid lijdt eronder",
+      "sano": "Gezond niveau",
+      "saturado": "Oversturing — de microfoon clipt"
+    },
+    "dispositivo": "Microfoon: {{nombre}} ({{contexto}})",
+    "esElDefault": "systeemstandaard",
+    "esElegido": "gekozen in instellingen"
+  },
   "shell": {
     "title": "Venstervorm",
     "description": "Kies de vorm van het Abrax-venster. Klassiek is het standaard instellingenvenster; Orbital verandert de app in een zwevende bol; Retro is een skin van een klassieke speler. Het vensterkader wordt volledig bijgewerkt zodra Abrax opnieuw opstart.",

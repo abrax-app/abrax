@@ -758,6 +758,24 @@
       "noDetectado": "Ollama not detected — deterministic rules will be used"
     }
   },
+  "pruebaMic": {
+    "title": "Test microphone",
+    "description": "Records 3 seconds of exactly what the model would hear (16 kHz, no VAD), plays it back and gives a verdict with real levels. Also reveals which device is actually behind Default.",
+    "boton": "Record 3 s",
+    "grabando": "Recording…",
+    "niveles": "RMS {{rms}} dBFS · pico {{pico}} dBFS",
+    "nivelClip": " · clip {{clip}}%",
+    "veredicto": {
+      "sin_senal": "No signal — the microphone is not delivering audio",
+      "muy_bajo": "Very low — dictation will fail at this level",
+      "bajo": "Low — it works, but accuracy suffers",
+      "sano": "Healthy level",
+      "saturado": "Clipping — the microphone is saturating"
+    },
+    "dispositivo": "Microphone: {{nombre}} ({{contexto}})",
+    "esElDefault": "system default",
+    "esElegido": "selected in settings"
+  },
   "shell": {
     "title": "Window shell",
     "description": "Choose the shape of the Abrax window. Classic is the standard settings window; Orbital turns the app into a floating sphere; Retro is a classic-player skin. The window frame finishes updating when Abrax restarts.",

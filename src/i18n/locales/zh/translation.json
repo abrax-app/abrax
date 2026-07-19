@@ -758,6 +758,24 @@
       "noDetectado": "未检测到 Ollama — 将使用确定性规则"
     }
   },
+  "pruebaMic": {
+    "title": "测试麦克风",
+    "description": "录制 3 秒与模型将听到的完全相同的声音(16 kHz,无 VAD),回放并给出带真实电平的判定。同时显示 Default 背后实际是哪个设备。",
+    "boton": "录制 3 秒",
+    "grabando": "录音中…",
+    "niveles": "RMS {{rms}} dBFS · pico {{pico}} dBFS",
+    "nivelClip": " · clip {{clip}}%",
+    "veredicto": {
+      "sin_senal": "无信号 — 麦克风没有传来音频",
+      "muy_bajo": "非常低 — 此电平下听写将失败",
+      "bajo": "偏低 — 可以工作,但准确率受影响",
+      "sano": "电平正常",
+      "saturado": "削波 — 麦克风已饱和"
+    },
+    "dispositivo": "麦克风:{{nombre}}({{contexto}})",
+    "esElDefault": "系统默认",
+    "esElegido": "在设置中选择"
+  },
   "shell": {
     "title": "窗口外形",
     "description": "选择 Abrax 窗口的外形。经典是标准的设置窗口；Orbital 会把应用变成悬浮的球体；Retro 是经典播放器皮肤。窗口边框会在 Abrax 重启后完成更新。",

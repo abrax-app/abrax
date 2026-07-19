@@ -758,6 +758,24 @@
       "noDetectado": "Ollama nenalezena — použijí se deterministická pravidla"
     }
   },
+  "pruebaMic": {
+    "title": "Otestovat mikrofon",
+    "description": "Nahraje 3 sekundy přesně toho, co by slyšel model (16 kHz, bez VAD), přehraje je a vydá verdikt se skutečnými úrovněmi. Také odhalí, jaké zařízení se doopravdy skrývá za Default.",
+    "boton": "Nahrát 3 s",
+    "grabando": "Nahrávání…",
+    "niveles": "RMS {{rms}} dBFS · pico {{pico}} dBFS",
+    "nivelClip": " · clip {{clip}}%",
+    "veredicto": {
+      "sin_senal": "Žádný signál — mikrofon nedodává zvuk",
+      "muy_bajo": "Velmi nízká — na této úrovni diktování selže",
+      "bajo": "Nízká — funguje, ale přesnost trpí",
+      "sano": "Zdravá úroveň",
+      "saturado": "Přebuzení — mikrofon ořezává"
+    },
+    "dispositivo": "Mikrofon: {{nombre}} ({{contexto}})",
+    "esElDefault": "výchozí systému",
+    "esElegido": "zvolený v nastavení"
+  },
   "shell": {
     "title": "Tvar okna",
     "description": "Vyberte tvar okna aplikace Abrax. Klasický je běžné okno nastavení; Orbital promění aplikaci v plovoucí kouli; Retro je skin klasického přehrávače. Změna rámečku okna se dokončí po restartu Abrax.",

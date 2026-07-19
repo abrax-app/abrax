@@ -758,6 +758,24 @@
       "noDetectado": "Ollama가 감지되지 않았습니다 — 결정적 규칙을 사용합니다"
     }
   },
+  "pruebaMic": {
+    "title": "마이크 테스트",
+    "description": "모델이 듣게 될 것과 정확히 같은 소리를 3초 녹음하고(16 kHz, VAD 없음) 재생한 뒤 실제 레벨로 판정합니다. Default 뒤에 실제로 어떤 장치가 있는지도 보여줍니다.",
+    "boton": "3초 녹음",
+    "grabando": "녹음 중…",
+    "niveles": "RMS {{rms}} dBFS · pico {{pico}} dBFS",
+    "nivelClip": " · clip {{clip}}%",
+    "veredicto": {
+      "sin_senal": "신호 없음 — 마이크가 오디오를 전달하지 않습니다",
+      "muy_bajo": "매우 낮음 — 이 레벨에서는 받아쓰기가 실패합니다",
+      "bajo": "낮음 — 작동하지만 정확도가 떨어집니다",
+      "sano": "정상 레벨",
+      "saturado": "클리핑 — 마이크가 포화 상태입니다"
+    },
+    "dispositivo": "마이크: {{nombre}} ({{contexto}})",
+    "esElDefault": "시스템 기본값",
+    "esElegido": "설정에서 선택됨"
+  },
   "shell": {
     "title": "창 모양",
     "description": "Abrax 창의 모양을 선택하세요. 클래식은 기본 설정 창이고, 오비탈은 앱을 떠 있는 구체로 바꾸며, 레트로는 클래식 플레이어 스킨입니다. 창 테두리는 Abrax를 다시 시작하면 완전히 적용됩니다.",
