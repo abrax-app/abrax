@@ -255,7 +255,8 @@
         "transcription": "Transcripción",
         "history": "Historial",
         "experimental": "Experimental",
-        "dictionary": "Diccionario vivo"
+        "dictionary": "Diccionario vivo",
+        "correccion": "Corrección local"
       },
       "experimentalToggle": {
         "label": "Funciones Experimentales",
@@ -730,6 +731,32 @@
   },
   "whatsNew": {
     "title": "Nuevo en Abrax v{{version}}"
+  },
+  "correccion": {
+    "motor": {
+      "title": "Motor de corrección",
+      "description": "Limpia tu dictado entre la transcripción y el pegado. Desactivado deja todo tal cual se transcribió. Solo reglas aplica correcciones deterministas instantáneas. Modelo local consulta además un LLM local (Ollama en este equipo) y degrada a reglas si no está disponible o altera el significado. Auto elige la mejor opción disponible.",
+      "options": {
+        "auto": "Auto",
+        "solo_reglas": "Solo reglas",
+        "modelo": "Modelo local",
+        "desactivado": "Desactivado"
+      }
+    },
+    "modo": {
+      "title": "Nivel de corrección",
+      "description": "Literal corrige solo espacios y mayúsculas. Limpio resuelve además autocorrecciones habladas («el martes, perdón, el miércoles»). Pulido puede reestructurar levemente para mayor claridad, sin cambiar jamás significado, nombres, cifras ni negaciones.",
+      "options": {
+        "literal": "Literal",
+        "limpio": "Limpio",
+        "pulido": "Pulido"
+      }
+    },
+    "estado": {
+      "detectado": "Ollama detectado — modelo: {{modelo}}",
+      "sinModelos": "Ollama está corriendo pero sin modelos descargados — se usarán las reglas deterministas",
+      "noDetectado": "Ollama no detectado — se usarán las reglas deterministas"
+    }
   },
   "shell": {
     "title": "Forma de la ventana",

@@ -255,7 +255,8 @@
         "transcription": "Chuyển đổi",
         "history": "Lịch sử",
         "experimental": "Thử nghiệm",
-        "dictionary": "Từ điển sống"
+        "dictionary": "Từ điển sống",
+        "correccion": "Sửa lỗi cục bộ"
       },
       "experimentalToggle": {
         "label": "Tính năng thử nghiệm",
@@ -730,6 +731,32 @@
   },
   "whatsNew": {
     "title": "Điểm mới trong Abrax v{{version}}"
+  },
+  "correccion": {
+    "motor": {
+      "title": "Công cụ sửa lỗi",
+      "description": "Dọn dẹp nội dung đọc giữa bước phiên âm và dán. Tắt giữ nguyên mọi thứ như đã phiên âm. Chỉ quy tắc áp dụng các sửa lỗi tất định tức thì. Mô hình cục bộ còn hỏi thêm một LLM cục bộ (Ollama trên máy này) và quay về quy tắc nếu không khả dụng hoặc làm thay đổi ý nghĩa. Tự động chọn phương án tốt nhất hiện có.",
+      "options": {
+        "auto": "Tự động",
+        "solo_reglas": "Chỉ quy tắc",
+        "modelo": "Mô hình cục bộ",
+        "desactivado": "Tắt"
+      }
+    },
+    "modo": {
+      "title": "Mức sửa lỗi",
+      "description": "Nguyên văn chỉ sửa khoảng trắng và chữ hoa. Gọn gàng còn xử lý các tự sửa khi nói (thứ ba — xin lỗi, thứ tư). Trau chuốt có thể sắp xếp lại nhẹ cho rõ ràng, nhưng không bao giờ đổi ý nghĩa, tên, con số hay phủ định.",
+      "options": {
+        "literal": "Nguyên văn",
+        "limpio": "Gọn gàng",
+        "pulido": "Trau chuốt"
+      }
+    },
+    "estado": {
+      "detectado": "Đã phát hiện Ollama — mô hình: {{modelo}}",
+      "sinModelos": "Ollama đang chạy nhưng chưa tải mô hình nào — sẽ dùng quy tắc tất định",
+      "noDetectado": "Không phát hiện Ollama — sẽ dùng quy tắc tất định"
+    }
   },
   "shell": {
     "title": "Kiểu cửa sổ",

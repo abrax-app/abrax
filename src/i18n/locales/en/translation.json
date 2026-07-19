@@ -255,7 +255,8 @@
         "transcription": "Transcription",
         "history": "History",
         "experimental": "Experimental",
-        "dictionary": "Living dictionary"
+        "dictionary": "Living dictionary",
+        "correccion": "Local correction"
       },
       "experimentalToggle": {
         "label": "Experimental Features",
@@ -730,6 +731,32 @@
   "overlay": {
     "transcribing": "Transcribing...",
     "processing": "Processing..."
+  },
+  "correccion": {
+    "motor": {
+      "title": "Correction engine",
+      "description": "Cleans up your dictation between transcription and paste. Off keeps everything exactly as transcribed. Rules only applies instant deterministic fixes. Local model also consults a local LLM (Ollama on this machine) and falls back to rules if it is unavailable or changes the meaning. Auto picks the best available option.",
+      "options": {
+        "auto": "Auto",
+        "solo_reglas": "Rules only",
+        "modelo": "Local model",
+        "desactivado": "Off"
+      }
+    },
+    "modo": {
+      "title": "Correction level",
+      "description": "Literal fixes only spacing and capitalization. Clean also resolves spoken self-corrections (on Tuesday — sorry, Wednesday). Polished may lightly restructure for clarity, never changing meaning, names, numbers or negations.",
+      "options": {
+        "literal": "Literal",
+        "limpio": "Clean",
+        "pulido": "Polished"
+      }
+    },
+    "estado": {
+      "detectado": "Ollama detected — model: {{modelo}}",
+      "sinModelos": "Ollama is running but has no models downloaded — deterministic rules will be used",
+      "noDetectado": "Ollama not detected — deterministic rules will be used"
+    }
   },
   "shell": {
     "title": "Window shell",

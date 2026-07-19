@@ -255,7 +255,8 @@
         "transcription": "文字起こし",
         "history": "履歴",
         "experimental": "実験的",
-        "dictionary": "リビング辞書"
+        "dictionary": "リビング辞書",
+        "correccion": "ローカル補正"
       },
       "experimentalToggle": {
         "label": "実験的な機能",
@@ -730,6 +731,32 @@
   },
   "whatsNew": {
     "title": "Abrax v{{version}} の新機能"
+  },
+  "correccion": {
+    "motor": {
+      "title": "補正エンジン",
+      "description": "文字起こしから貼り付けまでの間に口述を整えます。「オフ」は文字起こしのまま何も変えません。「ルールのみ」は即時の決定的な修正だけを適用します。「ローカルモデル」はさらにローカルLLM(このマシンのOllama)に問い合わせ、利用できない場合や意味が変わる場合はルールにフォールバックします。「自動」は利用可能な最善の選択肢を選びます。",
+      "options": {
+        "auto": "自動",
+        "solo_reglas": "ルールのみ",
+        "modelo": "ローカルモデル",
+        "desactivado": "オフ"
+      }
+    },
+    "modo": {
+      "title": "補正レベル",
+      "description": "「そのまま」は空白と大文字のみ修正します。「クリーン」は話し言葉の言い直し(火曜日、すみません、水曜日)も解決します。「洗練」は明瞭さのために軽く再構成することがありますが、意味・名前・数字・否定は決して変えません。",
+      "options": {
+        "literal": "そのまま",
+        "limpio": "クリーン",
+        "pulido": "洗練"
+      }
+    },
+    "estado": {
+      "detectado": "Ollamaを検出 — モデル: {{modelo}}",
+      "sinModelos": "Ollamaは起動していますがモデルがありません — 決定的ルールを使用します",
+      "noDetectado": "Ollamaが見つかりません — 決定的ルールを使用します"
+    }
   },
   "shell": {
     "title": "ウィンドウの形状",
