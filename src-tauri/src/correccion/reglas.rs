@@ -124,14 +124,11 @@ fn aplicar_una_autocorreccion(texto: &str) -> Option<String> {
             return None;
         }
         let rangos_pre = tokens_con_rango(pre);
-        let ancla = rangos_pre
+        let &(ancla_inicio, _) = rangos_pre
             .iter()
             .rev()
             .take(MAX_TOKENS_CORRECCION)
-            .find(|&&(a, b)| build_match_key(&pre[a..b]) == clave_ancla);
-        let Some(&(ancla_inicio, _)) = ancla else {
-            return None;
-        };
+            .find(|&&(a, b)| build_match_key(&pre[a..b]) == clave_ancla)?;
 
         let mut nuevo = String::with_capacity(texto.len());
         nuevo.push_str(&pre[..ancla_inicio]);

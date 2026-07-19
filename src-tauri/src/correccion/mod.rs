@@ -64,7 +64,17 @@ pub fn procesar(texto: &str, settings: &AppSettings) -> String {
     if matches!(settings.correccion_motor, CorreccionMotor::Desactivado) {
         return texto.to_string();
     }
-    corregir(texto, settings.correccion_modo).texto
+    let resultado = corregir(texto, settings.correccion_modo);
+    // Solo el método y longitudes — el contenido del dictado jamás va al log
+    // (misma regla que el resto del pipeline, fix S3).
+    log::debug!(
+        "correccion: metodo={:?} modo={:?} {}→{} chars",
+        resultado.metodo,
+        settings.correccion_modo,
+        texto.chars().count(),
+        resultado.texto.chars().count()
+    );
+    resultado.texto
 }
 
 #[cfg(test)]
