@@ -26,6 +26,7 @@
 pub mod fraseador;
 pub mod protegidos;
 pub mod reglas;
+pub mod tildes;
 pub mod validador;
 
 use crate::settings::{AppSettings, CorreccionModo, CorreccionMotor};
@@ -55,12 +56,16 @@ pub struct ResultadoCorreccion {
 
 /// Aplica las reglas deterministas según el modo. `Literal` corrige solo
 /// ortotipografía (espacios y mayúsculas); `Limpio` y `Pulido` añaden las
-/// autocorrecciones habladas. Es el suelo de la cadena: funciones totales que
-/// no pueden fallar.
+/// autocorrecciones habladas y la restauración de tildes seguras. Es el suelo
+/// de la cadena: funciones totales que no pueden fallar.
 pub fn corregir(texto: &str, modo: CorreccionModo) -> ResultadoCorreccion {
     let mut t = texto.to_string();
     if matches!(modo, CorreccionModo::Limpio | CorreccionModo::Pulido) {
         t = reglas::autocorreccion_hablada(&t);
+        // Tildes: corrección léxica, fuera de `Literal` (que promete no cambiar
+        // ninguna palabra). Solo añade acentos cuya omisión no es una palabra
+        // válida — nunca cambia el sentido. Ver [`tildes`].
+        t = tildes::restaurar_tildes(&t);
     }
     t = reglas::normalizar_espacios(&t);
     t = reglas::capitalizar_oraciones(&t);
