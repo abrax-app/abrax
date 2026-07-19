@@ -24,6 +24,7 @@
 //! la conversión de variante china y antes del post-proceso LLM opcional.
 
 pub mod fraseador;
+pub mod modelos;
 pub mod protegidos;
 pub mod reglas;
 pub mod simbolos;
