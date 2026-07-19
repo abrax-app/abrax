@@ -1,4 +1,6 @@
 pub mod audio;
+/// Módulo de corrección local (estado del motor para la UI).
+pub mod correccion;
 // [ESCUCHA]
 pub mod escucha;
 pub mod history;

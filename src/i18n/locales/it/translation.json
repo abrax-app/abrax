@@ -255,7 +255,8 @@
         "transcription": "Trascrizione",
         "history": "Cronologia",
         "experimental": "Sperimentale",
-        "dictionary": "Dizionario vivo"
+        "dictionary": "Dizionario vivo",
+        "correccion": "Correzione locale"
       },
       "experimentalToggle": {
         "label": "Funzionalità Sperimentali",
@@ -730,6 +731,50 @@
   },
   "whatsNew": {
     "title": "Novità in Abrax v{{version}}"
+  },
+  "correccion": {
+    "motor": {
+      "title": "Motore di correzione",
+      "description": "Ripulisce il dettato tra la trascrizione e l'inserimento. Disattivato lascia tutto esattamente come trascritto. Solo regole applica correzioni deterministiche istantanee. Modello locale consulta inoltre un LLM locale (Ollama su questa macchina) e ripiega sulle regole se non è disponibile o altera il significato. Automatico sceglie la migliore opzione disponibile.",
+      "options": {
+        "auto": "Automatico",
+        "solo_reglas": "Solo regole",
+        "modelo": "Modello locale",
+        "desactivado": "Disattivato"
+      }
+    },
+    "modo": {
+      "title": "Livello di correzione",
+      "description": "Letterale corregge solo spazi e maiuscole. Pulito risolve anche le autocorrezioni parlate (martedì — scusa, mercoledì). Rifinito può ristrutturare leggermente per chiarezza, senza mai cambiare significato, nomi, numeri o negazioni.",
+      "options": {
+        "literal": "Letterale",
+        "limpio": "Pulito",
+        "pulido": "Rifinito"
+      }
+    },
+    "estado": {
+      "detectado": "Ollama rilevato — modello: {{modelo}}",
+      "sinModelos": "Ollama è in esecuzione ma senza modelli scaricati — verranno usate le regole deterministiche",
+      "noDetectado": "Ollama non rilevato — verranno usate le regole deterministiche"
+    }
+  },
+  "pruebaMic": {
+    "title": "Prova microfono",
+    "description": "Registra 3 secondi di esattamente ciò che sentirebbe il modello (16 kHz, senza VAD), lo riproduce e dà un verdetto con i livelli reali. Rivela inoltre quale dispositivo c'è davvero dietro Default.",
+    "boton": "Registra 3 s",
+    "grabando": "Registrazione…",
+    "niveles": "RMS {{rms}} dBFS · pico {{pico}} dBFS",
+    "nivelClip": " · clip {{clip}}%",
+    "veredicto": {
+      "sin_senal": "Nessun segnale — il microfono non fornisce audio",
+      "muy_bajo": "Molto basso — a questo livello la dettatura fallirà",
+      "bajo": "Basso — funziona, ma la precisione ne risente",
+      "sano": "Livello sano",
+      "saturado": "Saturo — il microfono sta clippando"
+    },
+    "dispositivo": "Microfono: {{nombre}} ({{contexto}})",
+    "esElDefault": "default di sistema",
+    "esElegido": "scelto nelle impostazioni"
   },
   "shell": {
     "title": "Forma della finestra",

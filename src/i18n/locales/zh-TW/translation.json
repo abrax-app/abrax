@@ -255,7 +255,8 @@
         "transcription": "轉錄",
         "history": "歷史",
         "experimental": "實驗性",
-        "dictionary": "活字典"
+        "dictionary": "活字典",
+        "correccion": "本地校正"
       },
       "experimentalToggle": {
         "label": "實驗性功能",
@@ -730,6 +731,50 @@
   },
   "whatsNew": {
     "title": "Abrax v{{version}} 新功能"
+  },
+  "correccion": {
+    "motor": {
+      "title": "校正引擎",
+      "description": "在轉寫與貼上之間整理你的口述。關閉:保持轉寫原樣。僅規則:只套用即時的確定性修正。本地模型:額外諮詢本機的本地大模型(Ollama),若無法使用或改變語意則回退到規則。自動:選擇目前可用的最佳方案。",
+      "options": {
+        "auto": "自動",
+        "solo_reglas": "僅規則",
+        "modelo": "本地模型",
+        "desactivado": "關閉"
+      }
+    },
+    "modo": {
+      "title": "校正級別",
+      "description": "逐字:只修正空格與大小寫。清爽:還會解決口頭自我更正(週二,抱歉,是週三)。潤色:可為清晰度輕微調整結構,但絕不改變語意、名稱、數字或否定。",
+      "options": {
+        "literal": "逐字",
+        "limpio": "清爽",
+        "pulido": "潤色"
+      }
+    },
+    "estado": {
+      "detectado": "已偵測到 Ollama — 模型:{{modelo}}",
+      "sinModelos": "Ollama 正在執行但未下載任何模型 — 將使用確定性規則",
+      "noDetectado": "未偵測到 Ollama — 將使用確定性規則"
+    }
+  },
+  "pruebaMic": {
+    "title": "測試麥克風",
+    "description": "錄製 3 秒與模型將聽到的完全相同的聲音(16 kHz,無 VAD),回放並給出帶真實電平的判定。同時顯示 Default 背後實際是哪個裝置。",
+    "boton": "錄製 3 秒",
+    "grabando": "錄音中…",
+    "niveles": "RMS {{rms}} dBFS · pico {{pico}} dBFS",
+    "nivelClip": " · clip {{clip}}%",
+    "veredicto": {
+      "sin_senal": "無訊號 — 麥克風沒有傳來音訊",
+      "muy_bajo": "非常低 — 此電平下聽寫將失敗",
+      "bajo": "偏低 — 可以運作,但準確率受影響",
+      "sano": "電平正常",
+      "saturado": "削波 — 麥克風已飽和"
+    },
+    "dispositivo": "麥克風:{{nombre}}({{contexto}})",
+    "esElDefault": "系統預設",
+    "esElegido": "在設定中選擇"
   },
   "shell": {
     "title": "視窗外觀",

@@ -5,6 +5,7 @@ import { ModelUnloadTimeoutSetting } from "../ModelUnloadTimeout";
 import { CustomWords } from "../CustomWords";
 import { CustomFillerWords } from "../CustomFillerWords";
 import { CustomReplacements } from "../CustomReplacements";
+import { CorreccionSettings } from "../CorreccionSettings";
 import { DictionarySettings } from "../DictionarySettings";
 import { SettingsGroup } from "../../ui/SettingsGroup";
 import { StartHidden } from "../StartHidden";
@@ -53,6 +54,10 @@ export const AdvancedSettings: React.FC = () => {
         <CustomWords descriptionMode="tooltip" grouped />
         <CustomFillerWords descriptionMode="tooltip" grouped />
         <AppendTrailingSpace descriptionMode="tooltip" grouped={true} />
+      </SettingsGroup>
+
+      <SettingsGroup title={t("settings.advanced.groups.correccion")}>
+        <CorreccionSettings descriptionMode="tooltip" grouped />
       </SettingsGroup>
 
       <SettingsGroup title={t("settings.advanced.groups.dictionary")}>

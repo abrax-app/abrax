@@ -481,7 +481,7 @@ pub struct AppSettings {
     pub debug_mode: bool,
     #[serde(default = "default_log_level")]
     pub log_level: LogLevel,
-    #[serde(default)]
+    #[serde(default = "default_custom_words")]
     pub custom_words: Vec<String>,
     /// Reemplazos exactos por token (F5.1): "Ruth"→"rut" solo dispara con el
     /// token exacto "Ruth" (case-sensitive) — colisión con "ruta" imposible
@@ -733,6 +733,16 @@ fn default_ui_theme() -> UiTheme {
 
 fn default_ui_shell() -> UiShell {
     UiShell::Classic
+}
+
+/// El nombre del producto viene sembrado: en español **b y v son el mismo
+/// fonema**, así que ningún modelo puede distinguir "Abrax" de "Avrax" por el
+/// sonido — es una moneda al aire. Con la palabra en esta lista viaja como
+/// contexto al modelo (whisper la recibe como initial prompt) y el corrector
+/// difuso remata después. Una app de dictado no debería escribir mal su propio
+/// nombre.
+fn default_custom_words() -> Vec<String> {
+    vec!["Abrax".to_string()]
 }
 
 fn default_correccion_modo() -> CorreccionModo {
@@ -1039,7 +1049,7 @@ pub fn get_default_settings() -> AppSettings {
         overlay_position: default_overlay_position(),
         debug_mode: false,
         log_level: default_log_level(),
-        custom_words: Vec::new(),
+        custom_words: default_custom_words(),
         custom_replacements: Vec::new(),
         dictionary_project: None,
         model_unload_timeout: ModelUnloadTimeout::default(),
@@ -1509,6 +1519,29 @@ mod tests {
             .insert("ui_shell".into(), serde_json::json!("holographic"));
         assert!(serde_json::from_value::<AppSettings>(stored.clone()).is_err());
         assert_eq!(salvage_settings(&stored).ui_shell, default_ui_shell());
+    }
+
+    /// Una instalación nueva trae el nombre del producto sembrado (b/v son el
+    /// mismo fonema en español), pero un store existente manda: si el usuario
+    /// vació la lista o la editó, su decisión se respeta.
+    #[test]
+    fn custom_words_siembra_el_nombre_solo_en_instalaciones_nuevas() {
+        let nuevas: AppSettings =
+            serde_json::from_value(serde_json::json!({})).expect("custom_words needs a default");
+        assert_eq!(nuevas.custom_words, vec!["Abrax".to_string()]);
+        assert_eq!(
+            get_default_settings().custom_words,
+            vec!["Abrax".to_string()]
+        );
+
+        let vaciada: AppSettings = serde_json::from_value(serde_json::json!({"custom_words": []}))
+            .expect("una lista vacía explícita es válida");
+        assert!(vaciada.custom_words.is_empty());
+
+        let propia: AppSettings =
+            serde_json::from_value(serde_json::json!({"custom_words": ["useAuthStore"]}))
+                .expect("una lista propia es válida");
+        assert_eq!(propia.custom_words, vec!["useAuthStore".to_string()]);
     }
 
     /// Un store anterior al módulo de corrección no tiene `correccion_modo` y

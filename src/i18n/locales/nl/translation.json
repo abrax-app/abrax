@@ -255,7 +255,8 @@
         "transcription": "Transcriptie",
         "history": "Geschiedenis",
         "experimental": "Experimenteel",
-        "dictionary": "Levend woordenboek"
+        "dictionary": "Levend woordenboek",
+        "correccion": "Lokale correctie"
       },
       "experimentalToggle": {
         "label": "Experimentele functies",
@@ -730,6 +731,50 @@
   "overlay": {
     "transcribing": "Transcriberen...",
     "processing": "Verwerken..."
+  },
+  "correccion": {
+    "motor": {
+      "title": "Correctie-engine",
+      "description": "Ruimt je dictaat op tussen transcriptie en plakken. Uit laat alles precies zoals getranscribeerd. Alleen regels past directe deterministische correcties toe. Lokaal model raadpleegt daarnaast een lokale LLM (Ollama op deze machine) en valt terug op regels als die niet beschikbaar is of de betekenis verandert. Automatisch kiest de beste beschikbare optie.",
+      "options": {
+        "auto": "Automatisch",
+        "solo_reglas": "Alleen regels",
+        "modelo": "Lokaal model",
+        "desactivado": "Uit"
+      }
+    },
+    "modo": {
+      "title": "Correctieniveau",
+      "description": "Letterlijk corrigeert alleen spaties en hoofdletters. Schoon lost ook gesproken zelfcorrecties op (dinsdag — sorry, woensdag). Verfijnd mag licht herstructureren voor duidelijkheid, zonder ooit betekenis, namen, getallen of ontkenningen te veranderen.",
+      "options": {
+        "literal": "Letterlijk",
+        "limpio": "Schoon",
+        "pulido": "Verfijnd"
+      }
+    },
+    "estado": {
+      "detectado": "Ollama gedetecteerd — model: {{modelo}}",
+      "sinModelos": "Ollama draait maar heeft geen modellen gedownload — er worden deterministische regels gebruikt",
+      "noDetectado": "Ollama niet gedetecteerd — er worden deterministische regels gebruikt"
+    }
+  },
+  "pruebaMic": {
+    "title": "Microfoon testen",
+    "description": "Neemt 3 seconden op van precies wat het model zou horen (16 kHz, zonder VAD), speelt het af en geeft een oordeel met echte niveaus. Onthult ook welk apparaat er werkelijk achter Default zit.",
+    "boton": "3 s opnemen",
+    "grabando": "Opnemen…",
+    "niveles": "RMS {{rms}} dBFS · pico {{pico}} dBFS",
+    "nivelClip": " · clip {{clip}}%",
+    "veredicto": {
+      "sin_senal": "Geen signaal — de microfoon levert geen audio",
+      "muy_bajo": "Zeer laag — op dit niveau zal dicteren mislukken",
+      "bajo": "Laag — het werkt, maar de nauwkeurigheid lijdt eronder",
+      "sano": "Gezond niveau",
+      "saturado": "Oversturing — de microfoon clipt"
+    },
+    "dispositivo": "Microfoon: {{nombre}} ({{contexto}})",
+    "esElDefault": "systeemstandaard",
+    "esElegido": "gekozen in instellingen"
   },
   "shell": {
     "title": "Venstervorm",

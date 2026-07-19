@@ -27,7 +27,13 @@ import { montarEspectro, type EspectroHandle } from "./retroSpectrum";
 import "./retro.css";
 
 type WinId = "main" | "ajustes" | "historial" | "seccion";
-type WinState = { x: number; y: number; z: number; visible: boolean; folded: boolean };
+type WinState = {
+  x: number;
+  y: number;
+  z: number;
+  visible: boolean;
+  folded: boolean;
+};
 
 type SpectrumPayload = {
   bands: number[];
@@ -50,7 +56,10 @@ export const RetroShell: React.FC = () => {
   const [wins, setWins] = useState<Record<WinId, WinState>>(INITIAL);
   const zTop = useRef(50);
   const [menuOpen, setMenuOpen] = useState(false);
-  const [menuPos, setMenuPos] = useState<{ x: number; y: number }>({ x: 60, y: 70 });
+  const [menuPos, setMenuPos] = useState<{ x: number; y: number }>({
+    x: 60,
+    y: 70,
+  });
   const [seccion, setSeccion] = useState<SidebarSection>("general");
   const [dictEnabled, setDictEnabled] = useState<boolean>(false);
 
@@ -200,7 +209,11 @@ export const RetroShell: React.FC = () => {
   const onBarPointerDown = (id: WinId) => (e: React.PointerEvent) => {
     if ((e.target as HTMLElement).closest(".rbtn")) return;
     bringFront(id);
-    drag.current = { id, dx: e.clientX - wins[id].x, dy: e.clientY - wins[id].y };
+    drag.current = {
+      id,
+      dx: e.clientX - wins[id].x,
+      dy: e.clientY - wins[id].y,
+    };
     (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
   };
   const onBarPointerMove = (e: React.PointerEvent) => {
@@ -295,7 +308,11 @@ export const RetroShell: React.FC = () => {
   });
 
   return (
-    <div id="retro-stage" className="select-none" onClick={() => setMenuOpen(false)}>
+    <div
+      id="retro-stage"
+      className="select-none"
+      onClick={() => setMenuOpen(false)}
+    >
       <div className="retro-backdrop" aria-hidden="true" />
 
       {/* ═══ VENTANA PRINCIPAL ═══ */}
@@ -317,7 +334,9 @@ export const RetroShell: React.FC = () => {
             aria-label={t("retro.menu")}
             onClick={(e) => {
               e.stopPropagation();
-              const r = (e.currentTarget as HTMLElement).getBoundingClientRect();
+              const r = (
+                e.currentTarget as HTMLElement
+              ).getBoundingClientRect();
               setMenuPos({ x: r.left, y: r.bottom + 4 });
               setMenuOpen((o) => !o);
             }}
@@ -445,12 +464,26 @@ export const RetroShell: React.FC = () => {
           onPointerUp={onBarPointerUp}
           onDoubleClick={() => foldWin("ajustes")}
         >
-          <SlidersHorizontal size={12} aria-hidden="true" className="riso-static" />
+          <SlidersHorizontal
+            size={12}
+            aria-hidden="true"
+            className="riso-static"
+          />
           <b>{t("retro.titleSettings")}</b>
-          <button type="button" className="rbtn" aria-label={t("retro.fold")} onClick={() => foldWin("ajustes")}>
+          <button
+            type="button"
+            className="rbtn"
+            aria-label={t("retro.fold")}
+            onClick={() => foldWin("ajustes")}
+          >
             <Minus size={11} aria-hidden="true" />
           </button>
-          <button type="button" className="rbtn" aria-label={t("retro.close")} onClick={() => closeWin("ajustes")}>
+          <button
+            type="button"
+            className="rbtn"
+            aria-label={t("retro.close")}
+            onClick={() => closeWin("ajustes")}
+          >
             <X size={11} aria-hidden="true" />
           </button>
         </header>
@@ -459,7 +492,9 @@ export const RetroShell: React.FC = () => {
             <button
               type="button"
               className={`rlamp${settings?.push_to_talk ? " on" : ""}`}
-              onClick={() => updateSetting("push_to_talk", !settings?.push_to_talk)}
+              onClick={() =>
+                updateSetting("push_to_talk", !settings?.push_to_talk)
+              }
               aria-pressed={!!settings?.push_to_talk}
             >
               {t("retro.lamp.ptt")}
@@ -467,7 +502,9 @@ export const RetroShell: React.FC = () => {
             <button
               type="button"
               className={`rlamp${settings?.vad_enabled ? " on" : ""}`}
-              onClick={() => updateSetting("vad_enabled", !settings?.vad_enabled)}
+              onClick={() =>
+                updateSetting("vad_enabled", !settings?.vad_enabled)
+              }
               aria-pressed={!!settings?.vad_enabled}
             >
               {t("retro.lamp.vad")}
@@ -476,7 +513,10 @@ export const RetroShell: React.FC = () => {
               type="button"
               className={`rlamp${settings?.translate_to_english ? " on" : ""}`}
               onClick={() =>
-                updateSetting("translate_to_english", !settings?.translate_to_english)
+                updateSetting(
+                  "translate_to_english",
+                  !settings?.translate_to_english,
+                )
               }
               aria-pressed={!!settings?.translate_to_english}
             >
@@ -500,7 +540,9 @@ export const RetroShell: React.FC = () => {
               className="rmini"
               onClick={(e) => {
                 e.stopPropagation();
-                const r = (e.currentTarget as HTMLElement).getBoundingClientRect();
+                const r = (
+                  e.currentTarget as HTMLElement
+                ).getBoundingClientRect();
                 setMenuPos({ x: r.left, y: r.bottom + 4 });
                 setMenuOpen(true);
               }}
@@ -510,9 +552,29 @@ export const RetroShell: React.FC = () => {
           </div>
           <div className="req rhueco">
             {[
-              { key: "extra_recording_buffer_ms", label: t("retro.slider.buffer"), min: 0, max: 500, val: settings?.extra_recording_buffer_ms ?? 0 },
-              { key: "audio_feedback_volume", label: t("retro.slider.volume"), min: 0, max: 100, val: Math.round((settings?.audio_feedback_volume ?? 0.5) * 100) },
-              { key: "word_correction_threshold", label: t("retro.slider.threshold"), min: 0, max: 100, val: Math.round((settings?.word_correction_threshold ?? 0.18) * 100) },
+              {
+                key: "extra_recording_buffer_ms",
+                label: t("retro.slider.buffer"),
+                min: 0,
+                max: 500,
+                val: settings?.extra_recording_buffer_ms ?? 0,
+              },
+              {
+                key: "audio_feedback_volume",
+                label: t("retro.slider.volume"),
+                min: 0,
+                max: 100,
+                val: Math.round((settings?.audio_feedback_volume ?? 0.5) * 100),
+              },
+              {
+                key: "word_correction_threshold",
+                label: t("retro.slider.threshold"),
+                min: 0,
+                max: 100,
+                val: Math.round(
+                  (settings?.word_correction_threshold ?? 0.18) * 100,
+                ),
+              },
             ].map((s) => (
               <div className="rbanda" key={s.key}>
                 <input
@@ -523,9 +585,12 @@ export const RetroShell: React.FC = () => {
                   aria-label={s.label}
                   onChange={(e) => {
                     const v = Number(e.target.value);
-                    if (s.key === "extra_recording_buffer_ms") updateSetting("extra_recording_buffer_ms", v);
-                    else if (s.key === "audio_feedback_volume") updateSetting("audio_feedback_volume", v / 100);
-                    else if (s.key === "word_correction_threshold") updateSetting("word_correction_threshold", v / 100);
+                    if (s.key === "extra_recording_buffer_ms")
+                      updateSetting("extra_recording_buffer_ms", v);
+                    else if (s.key === "audio_feedback_volume")
+                      updateSetting("audio_feedback_volume", v / 100);
+                    else if (s.key === "word_correction_threshold")
+                      updateSetting("word_correction_threshold", v / 100);
                   }}
                 />
                 <span>{s.label}</span>
@@ -550,10 +615,20 @@ export const RetroShell: React.FC = () => {
         >
           <ListMusic size={12} aria-hidden="true" className="riso-static" />
           <b>{t("retro.titleHistory")}</b>
-          <button type="button" className="rbtn" aria-label={t("retro.fold")} onClick={() => foldWin("historial")}>
+          <button
+            type="button"
+            className="rbtn"
+            aria-label={t("retro.fold")}
+            onClick={() => foldWin("historial")}
+          >
             <Minus size={11} aria-hidden="true" />
           </button>
-          <button type="button" className="rbtn" aria-label={t("retro.close")} onClick={() => closeWin("historial")}>
+          <button
+            type="button"
+            className="rbtn"
+            aria-label={t("retro.close")}
+            onClick={() => closeWin("historial")}
+          >
             <X size={11} aria-hidden="true" />
           </button>
         </header>
@@ -570,7 +645,9 @@ export const RetroShell: React.FC = () => {
                 title={t("retro.copyHint")}
               >
                 <span className="rnum">{i + 1}.</span>
-                <span className="rtxt">{en.title || en.transcription_text}</span>
+                <span className="rtxt">
+                  {en.title || en.transcription_text}
+                </span>
               </div>
             ))
           )}
@@ -591,7 +668,10 @@ export const RetroShell: React.FC = () => {
             type="button"
             className="rmini"
             disabled={selEntry === null}
-            onClick={() => selEntry !== null && void commands.toggleHistoryEntrySaved(selEntry)}
+            onClick={() =>
+              selEntry !== null &&
+              void commands.toggleHistoryEntrySaved(selEntry)
+            }
           >
             {t("retro.save")}
           </button>
@@ -608,10 +688,16 @@ export const RetroShell: React.FC = () => {
           >
             {t("retro.delete")}
           </button>
-          <button type="button" className="rmini" onClick={() => abrirSeccion("history")}>
+          <button
+            type="button"
+            className="rmini"
+            onClick={() => abrirSeccion("history")}
+          >
             {t("retro.compile")}
           </button>
-          <span className="rcontador">{t("retro.count", { n: entries.length })}</span>
+          <span className="rcontador">
+            {t("retro.count", { n: entries.length })}
+          </span>
         </div>
       </section>
 
@@ -630,10 +716,20 @@ export const RetroShell: React.FC = () => {
         >
           <MenuIcon size={12} aria-hidden="true" className="riso-static" />
           <b>{t(SECTIONS_CONFIG[seccion].labelKey)}</b>
-          <button type="button" className="rbtn" aria-label={t("retro.fold")} onClick={() => foldWin("seccion")}>
+          <button
+            type="button"
+            className="rbtn"
+            aria-label={t("retro.fold")}
+            onClick={() => foldWin("seccion")}
+          >
             <Minus size={11} aria-hidden="true" />
           </button>
-          <button type="button" className="rbtn" aria-label={t("retro.close")} onClick={() => closeWin("seccion")}>
+          <button
+            type="button"
+            className="rbtn"
+            aria-label={t("retro.close")}
+            onClick={() => closeWin("seccion")}
+          >
             <X size={11} aria-hidden="true" />
           </button>
         </header>
@@ -662,20 +758,40 @@ export const RetroShell: React.FC = () => {
           ))}
           <hr />
           <div className="rmenu-tit">{t("retro.menuWindows")}</div>
-          <button type="button" className="rmenu-it" onClick={() => toggleWin("main")}>
+          <button
+            type="button"
+            className="rmenu-it"
+            onClick={() => toggleWin("main")}
+          >
             {t("retro.titleMain")}
           </button>
-          <button type="button" className="rmenu-it" onClick={() => toggleWin("ajustes")}>
+          <button
+            type="button"
+            className="rmenu-it"
+            onClick={() => toggleWin("ajustes")}
+          >
             {t("retro.titleSettings")}
           </button>
-          <button type="button" className="rmenu-it" onClick={() => toggleWin("historial")}>
+          <button
+            type="button"
+            className="rmenu-it"
+            onClick={() => toggleWin("historial")}
+          >
             {t("retro.titleHistory")}
           </button>
           <hr />
-          <button type="button" className="rmenu-it" onClick={() => cambiarShell("orbital")}>
+          <button
+            type="button"
+            className="rmenu-it"
+            onClick={() => cambiarShell("orbital")}
+          >
             {t("retro.toOrbital")}
           </button>
-          <button type="button" className="rmenu-it" onClick={() => cambiarShell("classic")}>
+          <button
+            type="button"
+            className="rmenu-it"
+            onClick={() => cambiarShell("classic")}
+          >
             {t("retro.toClassic")}
           </button>
           <hr />

@@ -255,7 +255,8 @@
         "transcription": "Transkripsiyon",
         "history": "Geçmiş",
         "experimental": "Deneysel",
-        "dictionary": "Canlı sözlük"
+        "dictionary": "Canlı sözlük",
+        "correccion": "Yerel düzeltme"
       },
       "experimentalToggle": {
         "label": "Deneysel Özellikler",
@@ -730,6 +731,50 @@
   },
   "whatsNew": {
     "title": "Abrax v{{version}} yenilikleri"
+  },
+  "correccion": {
+    "motor": {
+      "title": "Düzeltme motoru",
+      "description": "Diktenizi transkripsiyon ile yapıştırma arasında temizler. Kapalı her şeyi tam transkribe edildiği gibi bırakır. Yalnızca kurallar anında deterministik düzeltmeler uygular. Yerel model ayrıca yerel bir LLM'e (bu makinedeki Ollama) danışır; kullanılamıyorsa veya anlamı değiştiriyorsa kurallara geri döner. Otomatik mevcut en iyi seçeneği seçer.",
+      "options": {
+        "auto": "Otomatik",
+        "solo_reglas": "Yalnızca kurallar",
+        "modelo": "Yerel model",
+        "desactivado": "Kapalı"
+      }
+    },
+    "modo": {
+      "title": "Düzeltme düzeyi",
+      "description": "Birebir yalnızca boşlukları ve büyük harfleri düzeltir. Temiz ayrıca sözlü öz-düzeltmeleri çözer (salı günü — pardon, çarşamba). Rafine netlik için hafifçe yeniden yapılandırabilir; anlamı, adları, sayıları veya olumsuzlamaları asla değiştirmez.",
+      "options": {
+        "literal": "Birebir",
+        "limpio": "Temiz",
+        "pulido": "Rafine"
+      }
+    },
+    "estado": {
+      "detectado": "Ollama algılandı — model: {{modelo}}",
+      "sinModelos": "Ollama çalışıyor ama indirilmiş model yok — deterministik kurallar kullanılacak",
+      "noDetectado": "Ollama algılanmadı — deterministik kurallar kullanılacak"
+    }
+  },
+  "pruebaMic": {
+    "title": "Mikrofonu test et",
+    "description": "Modelin duyacağı sesin aynısından 3 saniye kaydeder (16 kHz, VAD'sız), oynatır ve gerçek seviyelerle bir karar verir. Ayrıca Default'un arkasında gerçekte hangi aygıtın olduğunu gösterir.",
+    "boton": "3 sn kaydet",
+    "grabando": "Kaydediliyor…",
+    "niveles": "RMS {{rms}} dBFS · pico {{pico}} dBFS",
+    "nivelClip": " · clip {{clip}}%",
+    "veredicto": {
+      "sin_senal": "Sinyal yok — mikrofon ses iletmiyor",
+      "muy_bajo": "Çok düşük — bu seviyede dikte başarısız olur",
+      "bajo": "Düşük — çalışıyor ama doğruluk düşüyor",
+      "sano": "Sağlıklı seviye",
+      "saturado": "Kırpılma — mikrofon doyuma ulaşıyor"
+    },
+    "dispositivo": "Mikrofon: {{nombre}} ({{contexto}})",
+    "esElDefault": "sistem varsayılanı",
+    "esElegido": "ayarlarda seçilen"
   },
   "shell": {
     "title": "Pencere biçimi",

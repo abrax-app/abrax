@@ -255,7 +255,8 @@
         "transcription": "Transcripción",
         "history": "Historial",
         "experimental": "Experimental",
-        "dictionary": "Diccionario vivo"
+        "dictionary": "Diccionario vivo",
+        "correccion": "Corrección local"
       },
       "experimentalToggle": {
         "label": "Funciones Experimentales",
@@ -730,6 +731,50 @@
   },
   "whatsNew": {
     "title": "Nuevo en Abrax v{{version}}"
+  },
+  "correccion": {
+    "motor": {
+      "title": "Motor de corrección",
+      "description": "Limpia tu dictado entre la transcripción y el pegado. Desactivado deja todo tal cual se transcribió. Solo reglas aplica correcciones deterministas instantáneas. Modelo local consulta además un LLM local (Ollama en este equipo) y degrada a reglas si no está disponible o altera el significado. Auto elige la mejor opción disponible.",
+      "options": {
+        "auto": "Auto",
+        "solo_reglas": "Solo reglas",
+        "modelo": "Modelo local",
+        "desactivado": "Desactivado"
+      }
+    },
+    "modo": {
+      "title": "Nivel de corrección",
+      "description": "Literal corrige solo espacios y mayúsculas. Limpio resuelve además autocorrecciones habladas («el martes, perdón, el miércoles»). Pulido puede reestructurar levemente para mayor claridad, sin cambiar jamás significado, nombres, cifras ni negaciones.",
+      "options": {
+        "literal": "Literal",
+        "limpio": "Limpio",
+        "pulido": "Pulido"
+      }
+    },
+    "estado": {
+      "detectado": "Ollama detectado — modelo: {{modelo}}",
+      "sinModelos": "Ollama está corriendo pero sin modelos descargados — se usarán las reglas deterministas",
+      "noDetectado": "Ollama no detectado — se usarán las reglas deterministas"
+    }
+  },
+  "pruebaMic": {
+    "title": "Probar micrófono",
+    "description": "Graba 3 segundos de exactamente lo que escucharía el modelo (16 kHz, sin VAD), lo reproduce y da un veredicto con niveles reales. Además revela qué dispositivo hay de verdad detrás de Default.",
+    "boton": "Grabar 3 s",
+    "grabando": "Grabando…",
+    "niveles": "RMS {{rms}} dBFS · pico {{pico}} dBFS",
+    "nivelClip": " · clip {{clip}}%",
+    "veredicto": {
+      "sin_senal": "Sin señal — el micrófono no está entregando audio",
+      "muy_bajo": "Muy bajo — a este nivel el dictado va a fallar",
+      "bajo": "Bajo — funciona, pero la precisión sufre",
+      "sano": "Nivel sano",
+      "saturado": "Saturado — el micrófono está recortando"
+    },
+    "dispositivo": "Micrófono: {{nombre}} ({{contexto}})",
+    "esElDefault": "default del sistema",
+    "esElegido": "elegido en ajustes"
   },
   "shell": {
     "title": "Forma de la ventana",

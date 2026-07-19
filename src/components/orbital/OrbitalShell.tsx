@@ -275,9 +275,7 @@ export const OrbitalShell: React.FC<OrbitalShellProps> = ({
       </div>
 
       <div className="orbital-hint" aria-live="polite">
-        {atajo
-          ? t("orbital.hint", { atajo })
-          : t("orbital.hintNoBinding")}
+        {atajo ? t("orbital.hint", { atajo }) : t("orbital.hintNoBinding")}
       </div>
     </div>
   );

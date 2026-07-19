@@ -255,7 +255,8 @@
         "transcription": "Transkription",
         "history": "Historik",
         "experimental": "Experimentellt",
-        "dictionary": "Levande ordbok"
+        "dictionary": "Levande ordbok",
+        "correccion": "Lokal korrigering"
       },
       "experimentalToggle": {
         "label": "Experimentella funktioner",
@@ -730,6 +731,50 @@
   },
   "whatsNew": {
     "title": "Nytt i Abrax v{{version}}"
+  },
+  "correccion": {
+    "motor": {
+      "title": "Korrigeringsmotor",
+      "description": "Städar upp din diktering mellan transkribering och inklistring. Av lämnar allt exakt som det transkriberades. Endast regler tillämpar omedelbara deterministiska korrigeringar. Lokal modell rådfrågar dessutom en lokal LLM (Ollama på den här datorn) och faller tillbaka på regler om den inte är tillgänglig eller ändrar betydelsen. Auto väljer det bästa tillgängliga alternativet.",
+      "options": {
+        "auto": "Auto",
+        "solo_reglas": "Endast regler",
+        "modelo": "Lokal modell",
+        "desactivado": "Av"
+      }
+    },
+    "modo": {
+      "title": "Korrigeringsnivå",
+      "description": "Ordagrann korrigerar bara mellanslag och versaler. Ren löser även talade självrättelser (på tisdag — förlåt, onsdag). Polerad får omstrukturera lätt för tydlighet, utan att någonsin ändra betydelse, namn, siffror eller negationer.",
+      "options": {
+        "literal": "Ordagrann",
+        "limpio": "Ren",
+        "pulido": "Polerad"
+      }
+    },
+    "estado": {
+      "detectado": "Ollama hittad — modell: {{modelo}}",
+      "sinModelos": "Ollama körs men har inga modeller nedladdade — deterministiska regler används",
+      "noDetectado": "Ollama hittades inte — deterministiska regler används"
+    }
+  },
+  "pruebaMic": {
+    "title": "Testa mikrofon",
+    "description": "Spelar in 3 sekunder av exakt det modellen skulle höra (16 kHz, utan VAD), spelar upp det och ger ett utlåtande med verkliga nivåer. Avslöjar också vilken enhet som faktiskt döljer sig bakom Default.",
+    "boton": "Spela in 3 s",
+    "grabando": "Spelar in…",
+    "niveles": "RMS {{rms}} dBFS · pico {{pico}} dBFS",
+    "nivelClip": " · clip {{clip}}%",
+    "veredicto": {
+      "sin_senal": "Ingen signal — mikrofonen levererar inget ljud",
+      "muy_bajo": "Mycket låg — på den här nivån kommer dikteringen att misslyckas",
+      "bajo": "Låg — det fungerar, men precisionen blir lidande",
+      "sano": "Sund nivå",
+      "saturado": "Övermodulerad — mikrofonen klipper"
+    },
+    "dispositivo": "Mikrofon: {{nombre}} ({{contexto}})",
+    "esElDefault": "systemets standard",
+    "esElegido": "vald i inställningarna"
   },
   "shell": {
     "title": "Fönsterform",

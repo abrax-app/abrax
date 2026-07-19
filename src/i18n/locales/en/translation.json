@@ -255,7 +255,8 @@
         "transcription": "Transcription",
         "history": "History",
         "experimental": "Experimental",
-        "dictionary": "Living dictionary"
+        "dictionary": "Living dictionary",
+        "correccion": "Local correction"
       },
       "experimentalToggle": {
         "label": "Experimental Features",
@@ -730,6 +731,50 @@
   "overlay": {
     "transcribing": "Transcribing...",
     "processing": "Processing..."
+  },
+  "correccion": {
+    "motor": {
+      "title": "Correction engine",
+      "description": "Cleans up your dictation between transcription and paste. Off keeps everything exactly as transcribed. Rules only applies instant deterministic fixes. Local model also consults a local LLM (Ollama on this machine) and falls back to rules if it is unavailable or changes the meaning. Auto picks the best available option.",
+      "options": {
+        "auto": "Auto",
+        "solo_reglas": "Rules only",
+        "modelo": "Local model",
+        "desactivado": "Off"
+      }
+    },
+    "modo": {
+      "title": "Correction level",
+      "description": "Literal fixes only spacing and capitalization. Clean also resolves spoken self-corrections (on Tuesday — sorry, Wednesday). Polished may lightly restructure for clarity, never changing meaning, names, numbers or negations.",
+      "options": {
+        "literal": "Literal",
+        "limpio": "Clean",
+        "pulido": "Polished"
+      }
+    },
+    "estado": {
+      "detectado": "Ollama detected — model: {{modelo}}",
+      "sinModelos": "Ollama is running but has no models downloaded — deterministic rules will be used",
+      "noDetectado": "Ollama not detected — deterministic rules will be used"
+    }
+  },
+  "pruebaMic": {
+    "title": "Test microphone",
+    "description": "Records 3 seconds of exactly what the model would hear (16 kHz, no VAD), plays it back and gives a verdict with real levels. Also reveals which device is actually behind Default.",
+    "boton": "Record 3 s",
+    "grabando": "Recording…",
+    "niveles": "RMS {{rms}} dBFS · pico {{pico}} dBFS",
+    "nivelClip": " · clip {{clip}}%",
+    "veredicto": {
+      "sin_senal": "No signal — the microphone is not delivering audio",
+      "muy_bajo": "Very low — dictation will fail at this level",
+      "bajo": "Low — it works, but accuracy suffers",
+      "sano": "Healthy level",
+      "saturado": "Clipping — the microphone is saturating"
+    },
+    "dispositivo": "Microphone: {{nombre}} ({{contexto}})",
+    "esElDefault": "system default",
+    "esElegido": "selected in settings"
   },
   "shell": {
     "title": "Window shell",

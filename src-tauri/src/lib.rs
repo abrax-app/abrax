@@ -548,6 +548,8 @@ pub fn run(cli_args: CliArgs) {
             shortcut::change_esfera_modo_setting,
             shortcut::change_correccion_modo_setting,
             shortcut::change_correccion_motor_setting,
+            commands::correccion::detectar_correccion_ollama,
+            commands::audio::probar_microfono,
             signal_handle::trigger_transcription,
             shortcut::change_start_hidden_setting,
             shortcut::change_autostart_setting,
