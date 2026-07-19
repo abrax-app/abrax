@@ -37,6 +37,12 @@ playwright-report/
 test-results/
 blob-report/
 
+# Salida del instalador si alguien lo apunta por error a la raíz del repo.
+/abrax.exe
+/uninstall.exe
+/*.dll
+/resources/
+
 .direnv
 .envrc
 
@@ -61,3 +67,9 @@ docs/CODE_AUDIT.md
 
 # Material de firma — jamás al repo.
 .secrets-abrax/
+
+# Skills de terceros (se instalan por máquina con `npx skills add ...`)
+# y sus empaquetados para claude.ai — no forman parte del producto.
+.agents/
+docs/skills-claude/
+skills-lock.json

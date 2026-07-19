@@ -1408,7 +1408,15 @@ export type HardwareInfo = { os: OsKind; gpu_vendor: GpuVendor; gpu_name: string
 /**
  * VRAM dedicada en MB. `None` = no se pudo leer (best-effort), nunca inventada.
  */
-vram_mb: number | null }
+vram_mb: number | null; 
+/**
+ * Hilos de CPU disponibles al proceso. `None` si el SO no lo expone.
+ */
+cpu_threads: number | null; 
+/**
+ * RAM física total en MB. `None` = no se pudo leer, nunca inventada.
+ */
+ram_mb: number | null }
 export type HistoryEntry = { id: number; file_name: string; timestamp: number; saved: boolean; title: string; transcription_text: string; post_processed_text: string | null; post_process_prompt: string | null; post_process_requested: boolean }
 export type HistoryUpdatePayload = { action: "added"; entry: HistoryEntry } | { action: "updated"; entry: HistoryEntry } | { action: "deleted"; id: number } | { action: "toggled"; id: number }
 /**
