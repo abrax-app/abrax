@@ -46,6 +46,12 @@
   const palabras = [];
   const chispas = [];
   let reloj;
+  /* perillas de afinado en vivo (ESFERA.tune) */
+  let ajusteNucleo = 1,
+    ajusteHalo = 1,
+    ajusteGiro = 1,
+    ajusteInterior = 1;
+  let interiorMat, polvo;
 
   /* ── texturas útiles (canvas 2D) ── */
   function texturaRadial(r, g, b, aCentro) {
@@ -130,6 +136,10 @@ uniform float uSize;
 uniform float uPushAngle;
 uniform float uPushRing;
 uniform float uPushAmt;
+uniform float uOrganico;
+uniform float uRuido;
+uniform float uRuidoEsc;
+uniform float uRuidoVel;
 uniform float uBands[32];
 attribute float aRing;
 attribute float aAngle;
@@ -145,6 +155,55 @@ float bandAt(float r){
   int i = int(floor(f));
   int j = i + 1; if (j > 31) j = 31;
   return mix(uBands[i], uBands[j], fract(f));
+}
+
+/* ── ruido simplex 3D (Ashima / IQ, dominio público) ──
+   deforma la estructura con ruido real: nada de redondez de compás */
+vec3 mod289(vec3 x){ return x - floor(x * (1.0/289.0)) * 289.0; }
+vec4 mod289(vec4 x){ return x - floor(x * (1.0/289.0)) * 289.0; }
+vec4 permute(vec4 x){ return mod289(((x*34.0)+1.0)*x); }
+vec4 taylorInvSqrt(vec4 r){ return 1.79284291400159 - 0.85373472095314 * r; }
+float snoise(vec3 v){
+  const vec2 C = vec2(1.0/6.0, 1.0/3.0);
+  const vec4 D = vec4(0.0, 0.5, 1.0, 2.0);
+  vec3 i  = floor(v + dot(v, C.yyy));
+  vec3 x0 = v - i + dot(i, C.xxx);
+  vec3 g = step(x0.yzx, x0.xyz);
+  vec3 l = 1.0 - g;
+  vec3 i1 = min(g.xyz, l.zxy);
+  vec3 i2 = max(g.xyz, l.zxy);
+  vec3 x1 = x0 - i1 + C.xxx;
+  vec3 x2 = x0 - i2 + C.yyy;
+  vec3 x3 = x0 - D.yyy;
+  i = mod289(i);
+  vec4 p = permute(permute(permute(
+      i.z + vec4(0.0, i1.z, i2.z, 1.0))
+    + i.y + vec4(0.0, i1.y, i2.y, 1.0))
+    + i.x + vec4(0.0, i1.x, i2.x, 1.0));
+  float n_ = 0.142857142857;
+  vec3 ns = n_ * D.wyz - D.xzx;
+  vec4 j = p - 49.0 * floor(p * ns.z * ns.z);
+  vec4 x_ = floor(j * ns.z);
+  vec4 y_ = floor(j - 7.0 * x_);
+  vec4 x = x_ * ns.x + ns.yyyy;
+  vec4 y = y_ * ns.x + ns.yyyy;
+  vec4 h = 1.0 - abs(x) - abs(y);
+  vec4 b0 = vec4(x.xy, y.xy);
+  vec4 b1 = vec4(x.zw, y.zw);
+  vec4 s0 = floor(b0)*2.0 + 1.0;
+  vec4 s1 = floor(b1)*2.0 + 1.0;
+  vec4 sh = -step(h, vec4(0.0));
+  vec4 a0 = b0.xzyw + s0.xzyw*sh.xxyy;
+  vec4 a1 = b1.xzyw + s1.xzyw*sh.zzww;
+  vec3 p0 = vec3(a0.xy, h.x);
+  vec3 p1 = vec3(a0.zw, h.y);
+  vec3 p2 = vec3(a1.xy, h.z);
+  vec3 p3 = vec3(a1.zw, h.w);
+  vec4 norm = taylorInvSqrt(vec4(dot(p0,p0), dot(p1,p1), dot(p2,p2), dot(p3,p3)));
+  p0 *= norm.x; p1 *= norm.y; p2 *= norm.z; p3 *= norm.w;
+  vec4 m = max(0.6 - vec4(dot(x0,x0), dot(x1,x1), dot(x2,x2), dot(x3,x3)), 0.0);
+  m = m * m;
+  return 42.0 * dot(m*m, vec4(dot(p0,x0), dot(p1,x1), dot(p2,x2), dot(p3,x3)));
 }
 
 void main(){
@@ -172,11 +231,27 @@ void main(){
   float dr = abs(rr - uPushRing);
   float bulge = uPushAmt * exp(-da*da*10.0 - dr*dr*16.0) * (0.4 + ramp*0.6);
 
-  float disp = breath + ripple + ruffle + bandPush + bassPush + bulge*0.16*uSens;
-  disp = clamp(disp, -0.10, 0.30);
+  /* bultos orgánicos de baja frecuencia: rompen la redondez perfecta de la
+     silueta, lentos como una membrana viva (0 = esfera matemática) */
+  float lump = (
+      sin(aAngle*2.0 + uTime*0.16 + ph*0.35) * 0.55 +
+      sin(aAngle*5.0 - uTime*0.11 + aRing*9.0) * 0.30 +
+      sin(aAngle*9.0 + uTime*0.07 - ph*1.2) * 0.15
+    ) * uOrganico * 0.09 * m;
+
+  /* estructura de ruido: la masa entera respira con simplex 3D — la
+     silueta deja de ser un círculo y el volumen gana vetas y grietas */
+  float ruido = 0.0;
+  if (uRuido > 0.001) {
+    vec3 pR = dir * uRuidoEsc + vec3(0.0, uTime * uRuidoVel * 0.14, uTime * uRuidoVel * 0.09);
+    ruido = (snoise(pR) * 0.72 + snoise(pR * 2.3 + 11.7) * 0.28) * uRuido * m;
+  }
+
+  float disp = breath + ripple + ruffle + lump + ruido + bandPush + bassPush + bulge*0.16*uSens;
+  disp = clamp(disp, -0.10 - uRuido*0.55, 0.30 + uRuido*0.65);
   vec3 pos = dir * (1.0 + disp);
 
-  vShade  = clamp(0.55 + ruffle*4.2 + bulge*0.6, 0.18, 1.30);
+  vShade  = clamp(0.55 + ruffle*4.2 + bulge*0.6 + ruido*2.2, 0.18, 1.30);
   vEnergy = clamp(e*1.0 + bulge*1.3 + uRMS*0.22, 0.0, 1.5);
   vWarm   = clamp(bulge*1.5, 0.0, 1.0);
   vRR     = rr;
@@ -192,6 +267,7 @@ void main(){
   /* colores de marca: cian #2FD9FF · violeta #8B5CF6 · magenta #F23DC4 */
   const FRAG = `
 precision mediump float;
+uniform float uBlanco;
 varying float vEnergy;
 varying float vWarm;
 varying float vShade;
@@ -213,7 +289,7 @@ void main(){
   col = mix(blanco, col, smoothstep(0.02, 0.16, vRR));
   col *= vShade;
   col = mix(col, vec3(1.0, 0.62, 0.42), vWarm*0.5);
-  col = mix(col, vec3(1.0), clamp(vEnergy*vEnergy*0.45, 0.0, 0.75));
+  col = mix(col, vec3(1.0), clamp(vEnergy*vEnergy*0.45, 0.0, 0.75) * uBlanco);
   gl_FragColor = vec4(col * (0.42 + vEnergy*0.70), alpha);
 }
 `;
@@ -520,7 +596,7 @@ void main(){
     uniforms.uPushAngle.value = audio.pushAngle;
     uniforms.uPushRing.value = 0.15 + (audio.dom / (BANDAS - 1)) * 0.75;
 
-    const velGiro = reducirMotion ? 0.006 : 0.05;
+    const velGiro = (reducirMotion ? 0.006 : 0.05) * ajusteGiro;
     spinner.rotation.z = t * velGiro;
     const wobX = reducirMotion ? 0 : Math.sin(t * 0.3) * 0.05;
     const wobY = reducirMotion ? 0 : Math.cos(t * 0.23) * 0.06;
@@ -538,9 +614,16 @@ void main(){
     const llenado = Math.min((palabras.length + chispas.length) / 120, 1);
     const lat =
       0.32 + audio.rms * 0.45 * audio.sens + audio.bass * 0.3 + llenado * 0.18;
-    nucleoGlow.scale.setScalar(reducirMotion ? 0.34 : lat);
-    nucleoGlow.material.opacity = 0.55 + audio.rms * 0.4 + llenado * 0.2;
-    haloRosa.material.opacity = 0.32 + audio.rms * 0.25 + llenado * 0.15;
+    nucleoGlow.scale.setScalar((reducirMotion ? 0.34 : lat) * ajusteNucleo);
+    nucleoGlow.material.opacity =
+      (0.55 + audio.rms * 0.4 + llenado * 0.2) * Math.min(ajusteNucleo, 1.2);
+    haloRosa.material.opacity =
+      (0.32 + audio.rms * 0.25 + llenado * 0.15) * ajusteHalo;
+    if (polvo) {
+      polvo.material.opacity =
+        (0.13 + audio.rms * 0.1 + llenado * 0.05) * ajusteInterior;
+      polvo.rotation.z = -t * 0.03; /* contra-remolino sutil del polvo */
+    }
 
     animarPalabras(tAnim);
 
@@ -894,11 +977,41 @@ void main(){
       escena.add(new THREE.Points(g, m));
     })();
 
+    /* interior: ya no una bola negra plana — un cuenco (BackSide) con
+       gradiente de paleta en la diagonal de marca, que ocluye los puntos
+       traseros pero se funde con el universo en vez de leerse como hoyo */
+    interiorMat = new THREE.ShaderMaterial({
+      side: THREE.BackSide,
+      uniforms: { uInterior: { value: 1 } },
+      vertexShader: `
+        varying vec3 vN;
+        void main(){
+          vN = normalize(normalMatrix * normal);
+          gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+        }`,
+      fragmentShader: `
+        precision mediump float;
+        uniform float uInterior;
+        varying vec3 vN;
+        void main(){
+          float fondo = abs(vN.z);                              /* 1 = centro del cuenco, 0 = borde */
+          /* disolución granulada hacia el contorno: la oclusión se apaga
+             pixel a pixel (dither), los puntos traseros reaparecen gradual
+             y la silueta deja de ser un círculo dibujado */
+          float velo = smoothstep(0.45, 0.97, 1.0 - fondo);
+          float h = fract(sin(dot(gl_FragCoord.xy, vec2(12.9898, 78.233))) * 43758.5453);
+          if (h < velo) discard;
+          float t = clamp((vN.x + vN.y) * 0.5 + 0.5, 0.0, 1.0); /* diagonal de marca en pantalla */
+          vec3 borde   = vec3(0.020, 0.024, 0.059);             /* tinta */
+          vec3 violeta = vec3(0.090, 0.058, 0.180);
+          vec3 cian    = vec3(0.028, 0.080, 0.125);
+          vec3 centro  = mix(violeta, cian, t) * uInterior;
+          vec3 col = borde + centro * pow(fondo, 1.5);
+          gl_FragColor = vec4(col, 1.0);
+        }`,
+    });
     spinner.add(
-      new THREE.Mesh(
-        new THREE.SphereGeometry(0.86, 48, 48),
-        new THREE.MeshBasicMaterial({ color: 0x05050e }),
-      ),
+      new THREE.Mesh(new THREE.SphereGeometry(0.86, 48, 48), interiorMat),
     );
     nucleoGlow = new THREE.Sprite(
       new THREE.SpriteMaterial({
@@ -939,6 +1052,11 @@ void main(){
       uPushAngle: { value: -0.6 },
       uPushRing: { value: 0.4 },
       uPushAmt: { value: 0 },
+      uOrganico: { value: 0 },
+      uBlanco: { value: 1 },
+      uRuido: { value: 0 },
+      uRuidoEsc: { value: 2.2 },
+      uRuidoVel: { value: 1 },
       uBands: { value: new Float32Array(BANDAS) },
     };
     materialPuntos = new THREE.ShaderMaterial({
@@ -951,6 +1069,37 @@ void main(){
       transparent: true,
     });
     texChispa = texturaRadial(150, 220, 255, 1.0);
+
+    /* polvo interior: partículas tenues llenando el volumen (denso hacia el
+       núcleo) — el interior deja de ser vacío y gana la nube de la paleta */
+    (function crearPolvo() {
+      const N = 4200,
+        pos = new Float32Array(N * 3);
+      for (let i = 0; i < N; i++) {
+        const a = Math.random() * Math.PI * 2,
+          b = Math.acos(2 * Math.random() - 1);
+        const r = 0.16 + 0.66 * Math.pow(Math.random(), 0.55);
+        pos[i * 3] = r * Math.sin(b) * Math.cos(a);
+        pos[i * 3 + 1] = r * Math.sin(b) * Math.sin(a);
+        pos[i * 3 + 2] = r * Math.cos(b);
+      }
+      const g = new THREE.BufferGeometry();
+      g.setAttribute("position", new THREE.Float32BufferAttribute(pos, 3));
+      polvo = new THREE.Points(
+        g,
+        new THREE.PointsMaterial({
+          map: texChispa,
+          size: 0.035,
+          color: 0x9a7bff,
+          transparent: true,
+          opacity: 0.15,
+          depthWrite: false,
+          blending: THREE.AdditiveBlending,
+          sizeAttenuation: true,
+        }),
+      );
+      spinner.add(polvo);
+    })();
 
     nivelActual = reducirMotion ? "baja" : nivelAuto();
     modoCalidad = "auto";
@@ -1019,6 +1168,40 @@ void main(){
     },
     getFps() {
       return fpsProm;
+    },
+    /* afinado en vivo: {nucleo, halo, blanco, organico, giro} — todos 0..~1.5,
+       1 = como el prototipo. Pensado para el laboratorio (lab-esfera.html). */
+    tune(o) {
+      if (!listo || !o) return;
+      const c = (v, max) => Math.max(0, Math.min(max, v));
+      if (typeof o.nucleo === "number") ajusteNucleo = c(o.nucleo, 2);
+      if (typeof o.halo === "number") ajusteHalo = c(o.halo, 2);
+      if (typeof o.giro === "number") ajusteGiro = c(o.giro, 3);
+      if (typeof o.interior === "number") {
+        ajusteInterior = c(o.interior, 2);
+        if (interiorMat) interiorMat.uniforms.uInterior.value = ajusteInterior;
+      }
+      if (typeof o.blanco === "number") uniforms.uBlanco.value = c(o.blanco, 2);
+      if (typeof o.organico === "number")
+        uniforms.uOrganico.value = c(o.organico, 1.5);
+      if (typeof o.ruido === "number") uniforms.uRuido.value = c(o.ruido, 0.6);
+      if (typeof o.ruidoEscala === "number")
+        uniforms.uRuidoEsc.value = c(o.ruidoEscala, 5);
+      if (typeof o.ruidoVel === "number")
+        uniforms.uRuidoVel.value = c(o.ruidoVel, 3);
+    },
+    getTune() {
+      return {
+        nucleo: ajusteNucleo,
+        halo: ajusteHalo,
+        giro: ajusteGiro,
+        interior: ajusteInterior,
+        blanco: listo ? uniforms.uBlanco.value : 1,
+        organico: listo ? uniforms.uOrganico.value : 0,
+        ruido: listo ? uniforms.uRuido.value : 0,
+        ruidoEscala: listo ? uniforms.uRuidoEsc.value : 2.2,
+        ruidoVel: listo ? uniforms.uRuidoVel.value : 1,
+      };
     },
   };
 })();

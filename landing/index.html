@@ -118,7 +118,6 @@
           Local por defecto: el audio del micrófono nunca sale de tu equipo. Las
           funciones online son opt-in y vienen desactivadas.
         </p>
-        <div class="hero-scrollcue" aria-hidden="true"></div>
       </div>
     </section>
 
@@ -183,7 +182,7 @@
     <section class="seccion" id="funciones" aria-labelledby="t-funciones">
       <h2 id="t-funciones">Funciones</h2>
       <p class="display">Hecho para <em>tu voz.</em></p>
-      <p class="sub-seccion">Lo que hace hoy — ni más ni menos.</p>
+      <p class="sub-seccion">Lo que hace hoy. Ni más ni menos.</p>
       <div class="fila-funcion">
         <div class="texto">
           <div class="kicker">Diccionario Vivo</div>
@@ -294,9 +293,11 @@
 
       <div class="cards">
         <div class="card">
-          <div class="kicker">Dictado local</div>
-          <div class="titulo">es-419 de primera clase</div>
-          <p>Entiende el español que hablas — no uno neutro de doblaje.</p>
+          <div class="titulo">Dictado local</div>
+          <p>
+            es-419 de primera clase: entiende el español que hablas, no uno
+            neutro de doblaje.
+          </p>
           <div class="mini-captura">
             <img
               src="assets/capturas/app-principal.webp"
@@ -308,7 +309,6 @@
           </div>
         </div>
         <div class="card">
-          <div class="kicker">Ventana</div>
           <div class="titulo">3 shells</div>
           <p>Clásico, Orbital y Retro.</p>
           <div class="mini-duo">
@@ -333,7 +333,6 @@
           </div>
         </div>
         <div class="card">
-          <div class="kicker">Temas</div>
           <div class="titulo">2 paletas</div>
           <p>ABRAX e IMPERIAL.</p>
           <div class="paletas" aria-hidden="true">
@@ -362,7 +361,7 @@
       <h2 id="t-privacidad">Privacidad</h2>
       <p class="display">Tu audio <em>no sale</em> de aquí.</p>
       <p class="sub-seccion">
-        Sin letra chica — esto es exactamente lo que pasa con tus datos.
+        Sin letra chica: esto es exactamente lo que pasa con tus datos.
       </p>
       <div class="callout">
         <b>«Local por defecto» significa:</b> el audio del micrófono nunca sale
@@ -422,7 +421,7 @@
       <h2 id="t-demo">Escúchalo y pruébalo</h2>
       <p class="display">La esfera <em>te escucha.</em></p>
       <p class="sub-seccion">
-        La esfera de arriba ya está viva — con tu micrófono respira contigo.
+        La esfera de arriba ya está viva: con tu micrófono respira contigo.
       </p>
       <div class="demo-mic">
         <button type="button" class="btn btn--sec" id="btnMicDemo">
@@ -432,7 +431,7 @@
           >modo demo · respiración sintética</span
         >
         <p class="demo-nota">
-          El permiso de micrófono se pide solo si presionas el botón — nunca al
+          El permiso de micrófono se pide solo si presionas el botón, nunca al
           cargar la página. El audio se procesa en tu navegador y no se envía a
           ningún servidor.
         </p>
@@ -458,7 +457,7 @@
     <section class="seccion" aria-labelledby="t-compat">
       <h2 id="t-compat">Compatibilidad</h2>
       <p class="sub-seccion">
-        Lo que funciona — y lo que todavía no, con la misma letra.
+        Lo que funciona y lo que todavía no, con la misma letra.
       </p>
       <div class="cards">
         <div class="card card--compat">
@@ -497,7 +496,7 @@
           </ul>
           <div class="limite-titulo">Límites honestos</div>
           <p>
-            En Wayland la inserción global es limitada — algunos entornos pasan
+            En Wayland la inserción global es limitada: algunos entornos pasan
             por el portapapeles.
           </p>
         </div>
@@ -562,7 +561,7 @@
         <details>
           <summary>¿Necesito internet para dictar?</summary>
           <div class="resp">
-            No. La primera vez descargas un modelo — eso sí es online, con
+            No. La primera vez descargas un modelo: eso sí es online, con
             checksum. Después, todo corre sin conexión.
           </div>
         </details>
@@ -774,11 +773,18 @@
             coreoHero();
           }
         }
-        ponerInert(true);
-        if (!reduced && heroCuerpo) heroCuerpo.classList.add("prep");
-        document
-          .getElementById("btnPalabra")
-          .addEventListener("click", transformar, { once: true });
+        const sinActo = /[?&]sin-acto\b/.test(location.search);
+        if (sinActo) {
+          /* modo QA (?sin-acto): salta la portada para capturas automatizadas */
+          cortina.remove();
+          revelado.remove();
+        } else {
+          ponerInert(true);
+          if (!reduced && heroCuerpo) heroCuerpo.classList.add("prep");
+          document
+            .getElementById("btnPalabra")
+            .addEventListener("click", transformar, { once: true });
+        }
 
         /* 2) Esfera en el hero, protegida: sin WebGL la página sigue siendo
            una landing legible sobre fondo de tinta. Alzada sobre el centro
@@ -802,6 +808,7 @@
         } catch (e) {
           console.warn("Esfera no disponible:", e);
         }
+        if (sinActo && esferaOk) arrancarFeed();
         /* 3) Micrófono: permiso solo con el gesto del usuario */
         const btnMic = document.getElementById("btnMicDemo");
         if (btnMic && esferaOk) {
@@ -1045,6 +1052,103 @@
              se pueda reproducir a mano */
           clip.setAttribute("controls", "");
           clip.preload = "metadata";
+        }
+
+        /* 6) scroll con inercia — la rueda desliza, no salta. Solo rueda y
+           escritorio: teclado, touch y reduced-motion siguen nativos.
+           CLAVE: se desactiva el scroll-behavior:smooth del CSS — si no,
+           cada paso del lerp dispara OTRA animación del navegador y los dos
+           sistemas pelean frame a frame (eso era la trabazón). Las anclas
+           del menú pasan por la misma inercia. */
+        if (!reduced && window.matchMedia("(pointer: fine)").matches) {
+          document.documentElement.style.scrollBehavior = "auto";
+          let objetivo = window.scrollY;
+          let deslizando = false;
+          let ultimaY = -1; // última posición que escribió la inercia
+          function maxScroll() {
+            return Math.max(
+              0,
+              document.documentElement.scrollHeight - window.innerHeight,
+            );
+          }
+          /* animación de duración fija: cada recorrido tarda DURACION ms en
+             asentarse — arranque inmediato, frenada larga (como Lenis) */
+          const DURACION = 700;
+          let desde = 0,
+            inicioAnim = 0;
+          function suavizado(t) {
+            return 1 - Math.pow(1 - t, 4); // easeOutQuart: responde al tiro, frena largo
+          }
+          function deslizar(ahora) {
+            const y = window.scrollY;
+            /* si alguien más movió el scroll (barra lateral, teclado,
+               arrastre), la inercia SUELTA el control — jamás pelear
+               contra el usuario */
+            if (ultimaY >= 0 && Math.abs(y - ultimaY) > 2) {
+              deslizando = false;
+              ultimaY = -1;
+              objetivo = y;
+              return;
+            }
+            const t = Math.min(1, (ahora - inicioAnim) / DURACION);
+            const pos = desde + (objetivo - desde) * suavizado(t);
+            ultimaY = pos;
+            window.scrollTo(0, pos);
+            if (t < 1) {
+              requestAnimationFrame(deslizar);
+            } else {
+              deslizando = false;
+              ultimaY = -1;
+            }
+          }
+          function irA(top) {
+            objetivo = Math.max(0, Math.min(maxScroll(), top));
+            desde = window.scrollY;
+            inicioAnim = performance.now();
+            if (!deslizando) {
+              deslizando = true;
+              requestAnimationFrame(deslizar);
+            }
+          }
+          window.addEventListener(
+            "wheel",
+            function (e) {
+              if (e.ctrlKey) return; // zoom del navegador, no scroll
+              e.preventDefault();
+              let paso = e.deltaMode === 1 ? e.deltaY * 16 : e.deltaY;
+              /* tope por tic: ruedas con pasos gigantes (o Windows en
+                 "una pantalla por vez") no catapultan la página */
+              paso = Math.max(-150, Math.min(150, paso));
+              /* y el objetivo nunca se adelanta más de ~una pantalla:
+                 girar rápido acelera suave, no teletransporta */
+              const lim = window.innerHeight * 1.15;
+              const aqui = window.scrollY;
+              irA(
+                Math.max(aqui - lim, Math.min(aqui + lim, objetivo + paso)),
+              );
+            },
+            { passive: false },
+          );
+          document.querySelectorAll('a[href^="#"]').forEach(function (a) {
+            const destino = a.getAttribute("href");
+            if (!destino || destino.length < 2) return;
+            a.addEventListener("click", function (e) {
+              const el = document.querySelector(destino);
+              if (!el) return;
+              e.preventDefault();
+              irA(el.getBoundingClientRect().top + window.scrollY - 72);
+              history.pushState(null, "", destino);
+            });
+          });
+          /* si el scroll viene por otra vía (teclado, barra),
+             el objetivo se resincroniza para no pelear */
+          window.addEventListener(
+            "scroll",
+            function () {
+              if (!deslizando) objetivo = window.scrollY;
+            },
+            { passive: true },
+          );
         }
       })();
     </script>
