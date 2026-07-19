@@ -26,6 +26,7 @@
 pub mod fraseador;
 pub mod protegidos;
 pub mod reglas;
+pub mod simbolos;
 pub mod tildes;
 pub mod validador;
 
@@ -66,6 +67,10 @@ pub fn corregir(texto: &str, modo: CorreccionModo) -> ResultadoCorreccion {
         // ninguna palabra). Solo añade acentos cuya omisión no es una palabra
         // válida — nunca cambia el sentido. Ver [`tildes`].
         t = tildes::restaurar_tildes(&t);
+        // Símbolos dictados inequívocos: «dos slash tres» → «2/3». Solo dispara
+        // con disparadores que no son habla normal y números a los lados; jamás
+        // toca «más/por/igual» sueltos. Ver [`simbolos`].
+        t = simbolos::normalizar_simbolos(&t);
     }
     t = reglas::normalizar_espacios(&t);
     t = reglas::capitalizar_oraciones(&t);
