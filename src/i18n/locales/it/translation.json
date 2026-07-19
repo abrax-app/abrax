@@ -758,6 +758,24 @@
       "noDetectado": "Ollama non rilevato — verranno usate le regole deterministiche"
     }
   },
+  "pruebaMic": {
+    "title": "Prova microfono",
+    "description": "Registra 3 secondi di esattamente ciò che sentirebbe il modello (16 kHz, senza VAD), lo riproduce e dà un verdetto con i livelli reali. Rivela inoltre quale dispositivo c'è davvero dietro Default.",
+    "boton": "Registra 3 s",
+    "grabando": "Registrazione…",
+    "niveles": "RMS {{rms}} dBFS · pico {{pico}} dBFS",
+    "nivelClip": " · clip {{clip}}%",
+    "veredicto": {
+      "sin_senal": "Nessun segnale — il microfono non fornisce audio",
+      "muy_bajo": "Molto basso — a questo livello la dettatura fallirà",
+      "bajo": "Basso — funziona, ma la precisione ne risente",
+      "sano": "Livello sano",
+      "saturado": "Saturo — il microfono sta clippando"
+    },
+    "dispositivo": "Microfono: {{nombre}} ({{contexto}})",
+    "esElDefault": "default di sistema",
+    "esElegido": "scelto nelle impostazioni"
+  },
   "shell": {
     "title": "Forma della finestra",
     "description": "Scegli la forma della finestra di Abrax. Classica è la finestra delle impostazioni di sempre; Orbitale trasforma l'app in una sfera fluttuante; Retro è uno skin da lettore classico. La cornice della finestra completa l'aggiornamento al riavvio di Abrax.",

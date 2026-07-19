@@ -758,6 +758,24 @@
       "noDetectado": "未偵測到 Ollama — 將使用確定性規則"
     }
   },
+  "pruebaMic": {
+    "title": "測試麥克風",
+    "description": "錄製 3 秒與模型將聽到的完全相同的聲音(16 kHz,無 VAD),回放並給出帶真實電平的判定。同時顯示 Default 背後實際是哪個裝置。",
+    "boton": "錄製 3 秒",
+    "grabando": "錄音中…",
+    "niveles": "RMS {{rms}} dBFS · pico {{pico}} dBFS",
+    "nivelClip": " · clip {{clip}}%",
+    "veredicto": {
+      "sin_senal": "無訊號 — 麥克風沒有傳來音訊",
+      "muy_bajo": "非常低 — 此電平下聽寫將失敗",
+      "bajo": "偏低 — 可以運作,但準確率受影響",
+      "sano": "電平正常",
+      "saturado": "削波 — 麥克風已飽和"
+    },
+    "dispositivo": "麥克風:{{nombre}}({{contexto}})",
+    "esElDefault": "系統預設",
+    "esElegido": "在設定中選擇"
+  },
   "shell": {
     "title": "視窗外觀",
     "description": "選擇 Abrax 視窗的外形。「經典」是一般的設定視窗；Orbital 會將應用程式變成漂浮的球體；Retro 是復古播放器風格的外觀。視窗外框會在 Abrax 重新啟動後完成套用。",

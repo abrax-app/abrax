@@ -758,6 +758,24 @@
       "noDetectado": "Ollama não detetado — serão usadas as regras determinísticas"
     }
   },
+  "pruebaMic": {
+    "title": "Testar microfone",
+    "description": "Grava 3 segundos de exatamente o que o modelo ouviria (16 kHz, sem VAD), reproduz e dá um veredicto com níveis reais. Também revela qual dispositivo está de fato por trás do Default.",
+    "boton": "Gravar 3 s",
+    "grabando": "Gravando…",
+    "niveles": "RMS {{rms}} dBFS · pico {{pico}} dBFS",
+    "nivelClip": " · clip {{clip}}%",
+    "veredicto": {
+      "sin_senal": "Sem sinal — o microfone não está entregando áudio",
+      "muy_bajo": "Muito baixo — nesse nível o ditado vai falhar",
+      "bajo": "Baixo — funciona, mas a precisão sofre",
+      "sano": "Nível saudável",
+      "saturado": "Saturado — o microfone está clipando"
+    },
+    "dispositivo": "Microfone: {{nombre}} ({{contexto}})",
+    "esElDefault": "padrão do sistema",
+    "esElegido": "escolhido nos ajustes"
+  },
   "shell": {
     "title": "Forma da janela",
     "description": "Escolha a forma da janela do Abrax. Clássico é a janela de ajustes de sempre; Orbital transforma o app numa esfera flutuante; Retro é um skin de reprodutor clássico. A moldura da janela termina de ser aplicada ao reiniciar o Abrax.",

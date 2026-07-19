@@ -127,6 +127,20 @@ async detectarCorreccionOllama() : Promise<Result<string[] | null, string>> {
 }
 },
 /**
+ * Graba unos segundos con el micrófono configurado (o el default del sistema),
+ * SIN VAD y sin tocar el pipeline de dictado, y devuelve nivel + veredicto +
+ * el WAV para reproducir. Es la respuesta a "¿qué está escuchando ABRAX de
+ * verdad?": la misma señal 16 kHz mono que recibiría el modelo.
+ */
+async probarMicrofono(duracionMs: number) : Promise<Result<PruebaMicrofono, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("probar_microfono", { duracionMs }) };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+/**
  * Toggle dictation from the UI (e.g. clicking the orbital home sphere). Mirrors
  * the global-shortcut / CLI `--toggle-transcription` path by reusing the shared
  * coordinator entry point, so it adds no new recording pipeline.
@@ -1485,6 +1499,19 @@ export type PiperVoiceInfo = { id: string; display: string; lang: string; size_m
  */
 for_code: boolean; installed: boolean }
 export type PostProcessProvider = { id: string; label: string; base_url: string; allow_base_url_edit?: boolean; models_endpoint?: string | null; supports_structured_output?: boolean }
+export type PruebaMicrofono = { 
+/**
+ * Nombre real del dispositivo usado — revela qué hay detrás de "Default".
+ */
+dispositivo: string; 
+/**
+ * `true` si se usó el default del sistema (no había micrófono elegido).
+ */
+es_default: boolean; duracion_s: number; rms_db: number; pico_db: number; clip_pct: number; veredicto: VeredictoMicrofono; 
+/**
+ * Ruta absoluta del WAV grabado, para reproducirlo en la UI.
+ */
+wav: string }
 export type RecordingRetentionPeriod = "never" | "preserve_limit" | "days_3" | "weeks_2" | "months_3"
 export type SecretMap = Partial<{ [key in string]: string }>
 export type ShortcutBinding = { id: string; name: string; description: string; default_binding: string; current_binding: string }
@@ -1571,6 +1598,31 @@ ts_ms: number }
  * "abre"/"cierra" en cada uno (fidelidad total, útil para dictar de vuelta).
  */
 export type VerbosidadSimbolos = "natural" | "literal"
+/**
+ * Veredicto de la prueba de micrófono, calculado sobre la señal REAL que
+ * recibiría el modelo (16 kHz mono, post-captura, sin VAD).
+ */
+export type VeredictoMicrofono = 
+/**
+ * Pico < -40 dBFS: el micrófono no está entregando señal.
+ */
+"sin_senal" | 
+/**
+ * RMS < -34 dBFS: demasiado bajo — el dictado va a fallar.
+ */
+"muy_bajo" | 
+/**
+ * RMS entre -34 y -28 dBFS: funciona, pero con errores de precisión.
+ */
+"bajo" | 
+/**
+ * RMS ≥ -28 dBFS sin saturación: zona sana.
+ */
+"sano" | 
+/**
+ * Más del 1% de muestras al tope: el micrófono está saturando.
+ */
+"saturado"
 /**
  * Una voz instalada en el sistema operativo.
  */

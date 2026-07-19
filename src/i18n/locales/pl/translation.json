@@ -758,6 +758,24 @@
       "noDetectado": "Nie wykryto Ollama — zostaną użyte reguły deterministyczne"
     }
   },
+  "pruebaMic": {
+    "title": "Testuj mikrofon",
+    "description": "Nagrywa 3 sekundy dokładnie tego, co usłyszałby model (16 kHz, bez VAD), odtwarza i wydaje werdykt z rzeczywistymi poziomami. Ujawnia też, jakie urządzenie naprawdę kryje się za Default.",
+    "boton": "Nagraj 3 s",
+    "grabando": "Nagrywanie…",
+    "niveles": "RMS {{rms}} dBFS · pico {{pico}} dBFS",
+    "nivelClip": " · clip {{clip}}%",
+    "veredicto": {
+      "sin_senal": "Brak sygnału — mikrofon nie dostarcza dźwięku",
+      "muy_bajo": "Bardzo cicho — na tym poziomie dyktowanie zawiedzie",
+      "bajo": "Cicho — działa, ale precyzja cierpi",
+      "sano": "Zdrowy poziom",
+      "saturado": "Przester — mikrofon obcina"
+    },
+    "dispositivo": "Mikrofon: {{nombre}} ({{contexto}})",
+    "esElDefault": "domyślny systemu",
+    "esElegido": "wybrany w ustawieniach"
+  },
   "shell": {
     "title": "Kształt okna",
     "description": "Wybierz kształt okna Abrax. Klasyczny to standardowe okno ustawień; Orbital zmienia aplikację w pływającą sferę; Retro to skórka klasycznego odtwarzacza. Ramka okna zostanie w pełni zastosowana po ponownym uruchomieniu Abrax.",

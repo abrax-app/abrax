@@ -758,6 +758,24 @@
       "noDetectado": "Không phát hiện Ollama — sẽ dùng quy tắc tất định"
     }
   },
+  "pruebaMic": {
+    "title": "Kiểm tra micro",
+    "description": "Ghi 3 giây đúng những gì mô hình sẽ nghe (16 kHz, không VAD), phát lại và đưa ra kết luận với mức thực. Đồng thời cho biết thiết bị nào thực sự đứng sau Default.",
+    "boton": "Ghi 3 giây",
+    "grabando": "Đang ghi…",
+    "niveles": "RMS {{rms}} dBFS · pico {{pico}} dBFS",
+    "nivelClip": " · clip {{clip}}%",
+    "veredicto": {
+      "sin_senal": "Không có tín hiệu — micro không truyền âm thanh",
+      "muy_bajo": "Rất thấp — ở mức này việc đọc chính tả sẽ thất bại",
+      "bajo": "Thấp — hoạt động nhưng độ chính xác giảm",
+      "sano": "Mức khỏe mạnh",
+      "saturado": "Vỡ tiếng — micro đang bão hòa"
+    },
+    "dispositivo": "Micro: {{nombre}} ({{contexto}})",
+    "esElDefault": "mặc định hệ thống",
+    "esElegido": "được chọn trong cài đặt"
+  },
   "shell": {
     "title": "Kiểu cửa sổ",
     "description": "Chọn hình dạng cửa sổ Abrax. Cổ điển là cửa sổ cài đặt tiêu chuẩn; Orbital biến ứng dụng thành một quả cầu nổi; Retro là giao diện kiểu trình phát cổ điển. Khung cửa sổ sẽ hoàn tất cập nhật khi Abrax khởi động lại.",

@@ -758,6 +758,24 @@
       "noDetectado": "Ollamaが見つかりません — 決定的ルールを使用します"
     }
   },
+  "pruebaMic": {
+    "title": "マイクをテスト",
+    "description": "モデルが聞くのとまったく同じ音声を3秒録音し(16 kHz・VADなし)、再生して実際のレベルで判定します。Defaultの裏に実際にどのデバイスがあるかも表示します。",
+    "boton": "3秒録音",
+    "grabando": "録音中…",
+    "niveles": "RMS {{rms}} dBFS · pico {{pico}} dBFS",
+    "nivelClip": " · clip {{clip}}%",
+    "veredicto": {
+      "sin_senal": "信号なし — マイクから音声が届いていません",
+      "muy_bajo": "非常に小さい — このレベルでは書き起こしは失敗します",
+      "bajo": "小さい — 動作しますが精度が落ちます",
+      "sano": "良好なレベル",
+      "saturado": "クリッピング — マイクが飽和しています"
+    },
+    "dispositivo": "マイク: {{nombre}}({{contexto}})",
+    "esElDefault": "システム既定",
+    "esElegido": "設定で選択"
+  },
   "shell": {
     "title": "ウィンドウの形状",
     "description": "Abrax ウィンドウの形状を選びます。クラシックは従来の設定ウィンドウ、オービタルはアプリを浮かぶ球体に変え、レトロはクラシックプレーヤー風のスキンです。ウィンドウ枠の変更は Abrax の再起動時に完了します。",

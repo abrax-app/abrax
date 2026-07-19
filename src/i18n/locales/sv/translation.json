@@ -758,6 +758,24 @@
       "noDetectado": "Ollama hittades inte — deterministiska regler används"
     }
   },
+  "pruebaMic": {
+    "title": "Testa mikrofon",
+    "description": "Spelar in 3 sekunder av exakt det modellen skulle höra (16 kHz, utan VAD), spelar upp det och ger ett utlåtande med verkliga nivåer. Avslöjar också vilken enhet som faktiskt döljer sig bakom Default.",
+    "boton": "Spela in 3 s",
+    "grabando": "Spelar in…",
+    "niveles": "RMS {{rms}} dBFS · pico {{pico}} dBFS",
+    "nivelClip": " · clip {{clip}}%",
+    "veredicto": {
+      "sin_senal": "Ingen signal — mikrofonen levererar inget ljud",
+      "muy_bajo": "Mycket låg — på den här nivån kommer dikteringen att misslyckas",
+      "bajo": "Låg — det fungerar, men precisionen blir lidande",
+      "sano": "Sund nivå",
+      "saturado": "Övermodulerad — mikrofonen klipper"
+    },
+    "dispositivo": "Mikrofon: {{nombre}} ({{contexto}})",
+    "esElDefault": "systemets standard",
+    "esElegido": "vald i inställningarna"
+  },
   "shell": {
     "title": "Fönsterform",
     "description": "Välj formen på Abrax-fönstret. Klassisk är det vanliga inställningsfönstret; Orbital förvandlar appen till en svävande sfär; Retro är ett skal i klassisk spelarstil. Fönsterramen uppdateras färdigt när Abrax startar om.",

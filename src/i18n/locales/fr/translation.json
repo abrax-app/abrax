@@ -758,6 +758,24 @@
       "noDetectado": "Ollama non détecté — les règles déterministes seront utilisées"
     }
   },
+  "pruebaMic": {
+    "title": "Tester le micro",
+    "description": "Enregistre 3 secondes de ce que le modèle entendrait exactement (16 kHz, sans VAD), le rejoue et rend un verdict avec les niveaux réels. Révèle aussi quel appareil se cache vraiment derrière Default.",
+    "boton": "Enregistrer 3 s",
+    "grabando": "Enregistrement…",
+    "niveles": "RMS {{rms}} dBFS · pico {{pico}} dBFS",
+    "nivelClip": " · clip {{clip}}%",
+    "veredicto": {
+      "sin_senal": "Pas de signal — le micro ne fournit aucun audio",
+      "muy_bajo": "Très faible — à ce niveau la dictée échouera",
+      "bajo": "Faible — ça fonctionne, mais la précision en souffre",
+      "sano": "Niveau sain",
+      "saturado": "Saturé — le micro écrête"
+    },
+    "dispositivo": "Micro : {{nombre}} ({{contexto}})",
+    "esElDefault": "défaut du système",
+    "esElegido": "choisi dans les réglages"
+  },
   "shell": {
     "title": "Forme de la fenêtre",
     "description": "Choisissez la forme de la fenêtre d'Abrax. Classique est la fenêtre de réglages habituelle ; Orbital transforme l'application en une sphère flottante ; Rétro est un habillage de lecteur classique. Le cadre de la fenêtre finit de s'appliquer au redémarrage d'Abrax.",
