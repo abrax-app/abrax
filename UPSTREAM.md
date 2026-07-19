@@ -14,6 +14,7 @@
 - Revisar migraciones y conflictos antes de integrar cambios.
 
 <!-- REBRAND-KIT-CAPTURE -->
+
 ## Captura automática del kit
 
 - Fecha UTC: 2026-07-11T19:07:23Z

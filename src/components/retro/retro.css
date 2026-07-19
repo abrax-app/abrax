@@ -7,8 +7,8 @@
   position: fixed;
   inset: 0;
   overflow: hidden;
-  font-family: ui-monospace, "Cascadia Code", "JetBrains Mono", Menlo, Consolas,
-    monospace;
+  font-family:
+    ui-monospace, "Cascadia Code", "JetBrains Mono", Menlo, Consolas, monospace;
   /* Tokens locales derivados de la paleta activa (retiñen con ui_theme). */
   --r-tinta: var(--esfera-fondo, #05060f);
   --r-led: var(--esfera-stop-a, #2fd9ff);
@@ -106,13 +106,15 @@
     color-mix(in srgb, var(--r-accent) 60%, #000)
   );
   border: 1px solid;
-  border-color: color-mix(in srgb, var(--r-bevel-hi) 80%, #fff) var(--r-bevel-lo)
-    var(--r-bevel-lo) color-mix(in srgb, var(--r-bevel-hi) 80%, #fff);
+  border-color: color-mix(in srgb, var(--r-bevel-hi) 80%, #fff)
+    var(--r-bevel-lo) var(--r-bevel-lo)
+    color-mix(in srgb, var(--r-bevel-hi) 80%, #fff);
   cursor: pointer;
   padding: 0;
 }
 .rbtn:active {
-  border-color: var(--r-bevel-lo) color-mix(in srgb, var(--r-bevel-hi) 80%, #fff)
+  border-color: var(--r-bevel-lo)
+    color-mix(in srgb, var(--r-bevel-hi) 80%, #fff)
     color-mix(in srgb, var(--r-bevel-hi) 80%, #fff) var(--r-bevel-lo);
 }
 .riso {
@@ -251,11 +253,13 @@ button.rlamp {
     color-mix(in srgb, var(--r-accent) 55%, #000)
   );
   border: 2px solid;
-  border-color: color-mix(in srgb, var(--r-bevel-hi) 70%, #fff) var(--r-bevel-lo)
-    var(--r-bevel-lo) color-mix(in srgb, var(--r-bevel-hi) 70%, #fff);
+  border-color: color-mix(in srgb, var(--r-bevel-hi) 70%, #fff)
+    var(--r-bevel-lo) var(--r-bevel-lo)
+    color-mix(in srgb, var(--r-bevel-hi) 70%, #fff);
 }
 .rtbtn:active {
-  border-color: var(--r-bevel-lo) color-mix(in srgb, var(--r-bevel-hi) 70%, #fff)
+  border-color: var(--r-bevel-lo)
+    color-mix(in srgb, var(--r-bevel-hi) 70%, #fff)
     color-mix(in srgb, var(--r-bevel-hi) 70%, #fff) var(--r-bevel-lo);
 }
 .rrec-btn {
@@ -318,11 +322,13 @@ button.rlamp {
     color-mix(in srgb, var(--r-accent) 55%, #000)
   );
   border: 2px solid;
-  border-color: color-mix(in srgb, var(--r-bevel-hi) 70%, #fff) var(--r-bevel-lo)
-    var(--r-bevel-lo) color-mix(in srgb, var(--r-bevel-hi) 70%, #fff);
+  border-color: color-mix(in srgb, var(--r-bevel-hi) 70%, #fff)
+    var(--r-bevel-lo) var(--r-bevel-lo)
+    color-mix(in srgb, var(--r-bevel-hi) 70%, #fff);
 }
 .rmini:active {
-  border-color: var(--r-bevel-lo) color-mix(in srgb, var(--r-bevel-hi) 70%, #fff)
+  border-color: var(--r-bevel-lo)
+    color-mix(in srgb, var(--r-bevel-hi) 70%, #fff)
     color-mix(in srgb, var(--r-bevel-hi) 70%, #fff) var(--r-bevel-lo);
 }
 .rmini:disabled {

@@ -168,7 +168,13 @@ export function montarEsfera(cv: HTMLCanvasElement): EsferaHandle {
     const n = Math.max(9, Math.floor((2 * Math.PI * r) / 5.6));
     for (let j = 0; j < n; j++) {
       const a = (j / n) * 2 * Math.PI;
-      puntos.push({ rr, r, a, fase: Math.random() * 6.28, col: colorPunto(rr, a) });
+      puntos.push({
+        rr,
+        r,
+        a,
+        fase: Math.random() * 6.28,
+        col: colorPunto(rr, a),
+      });
     }
   }
 
@@ -176,7 +182,12 @@ export function montarEsfera(cv: HTMLCanvasElement): EsferaHandle {
   const orbPts: OrbPunto[] = [];
   for (let i = 0; i < N_ORB; i++) {
     const ang = (i * 360) / N_ORB;
-    orbPts.push({ ang, f: 0, fase: Math.random() * 6.28, col: colorDeg(-90 + ang, pal) });
+    orbPts.push({
+      ang,
+      f: 0,
+      fase: Math.random() * 6.28,
+      col: colorDeg(-90 + ang, pal),
+    });
   }
 
   const reColor = () => {
@@ -212,7 +223,10 @@ export function montarEsfera(cv: HTMLCanvasElement): EsferaHandle {
       const x = C + R * Math.cos(p.a);
       const y = C + R * Math.sin(p.a);
       const luz =
-        0.42 + Math.max(0, ondas) * 0.4 * ramp * boost + dom * 0.6 + (p.rr < 0.12 ? 0.5 : 0);
+        0.42 +
+        Math.max(0, ondas) * 0.4 * ramp * boost +
+        dom * 0.6 +
+        (p.rr < 0.12 ? 0.5 : 0);
       ctx.globalAlpha = Math.min(1, luz) * (1 - aper * 0.15);
       ctx.fillStyle = p.col;
       ctx.fillRect(x - 1, y - 1, 2, 2);
@@ -221,14 +235,20 @@ export function montarEsfera(cv: HTMLCanvasElement): EsferaHandle {
     // Anillo orbital con física de sector dominante.
     const objetivo = sector;
     for (const p of orbPts) {
-      const fObj = objetivo === null ? 0 : Math.exp(-Math.pow(angDist(p.ang, objetivo) / 20, 2));
+      const fObj =
+        objetivo === null
+          ? 0
+          : Math.exp(-Math.pow(angDist(p.ang, objetivo) / 20, 2));
       p.f += (fObj - p.f) * (reducido ? 1 : 0.14);
-      const shimmer = reducido ? 0 : Math.sin(t * 1.3 + p.fase) * (grabando ? 1.1 : 0.5);
+      const shimmer = reducido
+        ? 0
+        : Math.sin(t * 1.3 + p.fase) * (grabando ? 1.1 : 0.5);
       const r = R_ORB + p.f * 16 + shimmer;
       const rad = ((p.ang - 90) * Math.PI) / 180;
       const x = C + r * Math.cos(rad);
       const y = C + r * Math.sin(rad);
-      let op = 0.4 + p.f * 0.6 + (reducido ? 0 : 0.08 * Math.sin(t * 1.1 + p.fase));
+      let op =
+        0.4 + p.f * 0.6 + (reducido ? 0 : 0.08 * Math.sin(t * 1.1 + p.fase));
       if (aper > 0.5) {
         op *= objetivo !== null && angDist(p.ang, objetivo) < 26 ? 1 : 0.6;
       }
@@ -242,7 +262,8 @@ export function montarEsfera(cv: HTMLCanvasElement): EsferaHandle {
 
     // Núcleo (se disuelve al abrirse el iris).
     ctx.globalAlpha = Math.max(0, 1 - aper);
-    const rN = 6.5 + (grabando ? Math.sin(t * 6) * 2.4 : Math.sin(t * 1.4) * 0.8);
+    const rN =
+      6.5 + (grabando ? Math.sin(t * 6) * 2.4 : Math.sin(t * 1.4) * 0.8);
     const g = ctx.createRadialGradient(C, C, 0, C, C, 30);
     g.addColorStop(0, grabando ? pal.recGlow : pal.coreGlow);
     g.addColorStop(1, "rgba(0,0,0,0)");
@@ -250,7 +271,9 @@ export function montarEsfera(cv: HTMLCanvasElement): EsferaHandle {
     ctx.beginPath();
     ctx.arc(C, C, 30, 0, 7);
     ctx.fill();
-    ctx.fillStyle = grabando ? pal.rec : `rgb(${pal.blanco[0]},${pal.blanco[1]},${pal.blanco[2]})`;
+    ctx.fillStyle = grabando
+      ? pal.rec
+      : `rgb(${pal.blanco[0]},${pal.blanco[1]},${pal.blanco[2]})`;
     ctx.beginPath();
     ctx.arc(C, C, rN, 0, 7);
     ctx.fill();
