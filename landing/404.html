@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>404 — ABRAX</title>
+    <meta name="robots" content="noindex" />
+    <!-- rutas absolutas: Vercel sirve este 404 también en rutas anidadas -->
+    <link rel="icon" type="image/svg+xml" href="/assets/abrax-favicon.svg" />
+    <link rel="stylesheet" href="/css/estilos.css" />
+    <style>
+      .p404 {
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        padding: 24px;
+        gap: 18px;
+      }
+      .p404 img {
+        width: 84px;
+        height: 84px;
+      }
+      .p404 .codigo {
+        font-size: 15px;
+        letter-spacing: 0.34em;
+        color: #fff;
+      }
+      .p404 p {
+        font-size: 12px;
+        color: var(--suave);
+        max-width: 420px;
+        margin: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <main class="p404">
+      <img src="/assets/abrax-isotipo.svg" alt="" aria-hidden="true" />
+      <div class="codigo">« 404 »</div>
+      <p>
+        Esta página no existe. Dijiste una palabra que todavía no conocemos.
+      </p>
+      <a class="btn btn--sec" href="/">Volver al inicio</a>
+    </main>
+  </body>
+</html>
