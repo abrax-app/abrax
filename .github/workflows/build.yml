@@ -520,7 +520,7 @@ jobs:
           # Sin firma (builds de prueba) el bundling no puede producir artefactos
           # de updater (exigen TAURI_SIGNING_PRIVATE_KEY): se desactivan con el
           # override tauri.noupdater.conf.json. El release firmado no usa esta rama.
-          args: ${{ inputs.sign-binaries && inputs.build-args || format('{0} --config tauri.noupdater.conf.json', inputs.build-args) }}
+          args: ${{ inputs.sign-binaries && inputs.build-args || format('{0} --config src-tauri/tauri.noupdater.conf.json', inputs.build-args) }}
 
       - name: Verify macOS dylib bundling
         if: inputs.target == 'x86_64-apple-darwin'
