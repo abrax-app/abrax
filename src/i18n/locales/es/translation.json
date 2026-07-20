@@ -925,5 +925,14 @@
     "activo": "Activo",
     "borrar": "Borrar",
     "errorDescarga": "No se pudo descargar: {{error}}"
+  },
+  "carpetaModelos": {
+    "titulo": "Carpeta de modelos",
+    "cambiar": "Cambiar",
+    "discoConNombre": "{{nombre}} ({{punto}})",
+    "removible": "· extraíble",
+    "espacio": "{{libre}} GB libres de {{total}} GB",
+    "volverPorDefecto": "Volver a la carpeta original",
+    "avisoNoMueve": "Las descargas nuevas irán a esta carpeta. Los modelos ya descargados se quedan donde estaban; si no aparecen, vuelve a la carpeta original o descárgalos de nuevo aquí."
   }
 }
