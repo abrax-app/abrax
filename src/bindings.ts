@@ -183,6 +183,19 @@ async seleccionarModeloCorreccion(modeloId: string | null) : Promise<Result<null
 }
 },
 /**
+ * Lista los discos con su espacio libre, deduplicados por punto de montaje y
+ * ordenados. Best-effort: si el SO no expone discos, devuelve lista vacía.
+ */
+async listarDiscos() : Promise<DiscoInfo[]> {
+    return await TAURI_INVOKE("listar_discos");
+},
+/**
+ * Devuelve la carpeta de modelos efectiva y la de por defecto.
+ */
+async obtenerCarpetaModelos() : Promise<CarpetaModelos> {
+    return await TAURI_INVOKE("obtener_carpeta_modelos");
+},
+/**
  * Graba unos segundos con el micrófono configurado (o el default del sistema),
  * SIN VAD y sin tocar el pipeline de dictado, y devuelve nivel + veredicto +
  * el WAV para reproducir. Es la respuesta a "¿qué está escuchando ABRAX de
@@ -1271,7 +1284,17 @@ settings_schema_version?: number;
  * Defaults to empty on partial stores; the load path merges in the
  * default bindings for any missing keys before the settings are used.
  */
-bindings?: Partial<{ [key in string]: ShortcutBinding }>; push_to_talk?: boolean; audio_feedback?: boolean; audio_feedback_volume?: number; sound_theme?: SoundTheme; start_hidden?: boolean; autostart_enabled?: boolean; update_checks_enabled?: boolean; show_whats_new_on_update?: boolean; 
+bindings?: Partial<{ [key in string]: ShortcutBinding }>; push_to_talk?: boolean; audio_feedback?: boolean; audio_feedback_volume?: number; sound_theme?: SoundTheme; 
+/**
+ * Carpeta donde se descargan los modelos. `None` = la carpeta de datos de
+ * la app (comportamiento histórico). Se expone para que el usuario elija
+ * **en qué disco** viven los modelos, que pesan varios GB.
+ * 
+ * Se guarda como ruta absoluta. Si al arrancar apunta a algo que ya no
+ * existe (disco externo desconectado, carpeta borrada), quien la resuelve
+ * degrada a la carpeta por defecto en vez de fallar.
+ */
+models_dir?: string | null; start_hidden?: boolean; autostart_enabled?: boolean; update_checks_enabled?: boolean; show_whats_new_on_update?: boolean; 
 /**
  * The app version whose What's New the user has already seen. Fresh installs
  * default to the current version (nothing is "new" to them). Existing users
@@ -1347,6 +1370,23 @@ export type AudioDevice = { index: string; name: string; is_default: boolean }
 export type AutoSubmitKey = "enter" | "ctrl_enter" | "cmd_enter"
 export type AvailableAccelerators = { transcribe: string[]; ort: string[]; gpu_devices: GpuDeviceOption[] }
 export type BindingResponse = { success: boolean; binding: ShortcutBinding | null; error: string | null }
+/**
+ * Carpeta de descarga de modelos: la efectiva y la de por defecto (para que la
+ * UI muestre dónde están y ofrezca "volver a la original").
+ */
+export type CarpetaModelos = { 
+/**
+ * Carpeta efectiva actual (respeta la elegida en ajustes).
+ */
+actual: string; 
+/**
+ * Carpeta por defecto (dentro de los datos de la app).
+ */
+por_defecto: string; 
+/**
+ * `true` si el usuario eligió una carpeta distinta a la de por defecto.
+ */
+personalizada: boolean }
 export type ClipboardHandling = "dont_modify" | "copy_to_clipboard"
 export type CompiledPrompt = { markdown: string; warnings: AmbiguityWarning[] }
 /**
@@ -1378,6 +1418,23 @@ export type DictionaryProject = { path: string; enabled: boolean;
  */
 last_indexed_ms: number | null }
 export type DictionaryStats = { project_path: string; term_count: number; indexed_at_ms: number; sample: DictTerm[] }
+/**
+ * Un disco/volumen montado con su espacio.
+ */
+export type DiscoInfo = { 
+/**
+ * Punto de montaje: en Windows la unidad (`C:\`), en Unix la ruta de montaje.
+ */
+punto_montaje: string; 
+/**
+ * Nombre/etiqueta del volumen (puede venir vacío).
+ */
+nombre: string; total_bytes: number; libre_bytes: number; 
+/**
+ * `true` si es extraíble (USB, tarjeta…): útil para avisar antes de poner
+ * ahí modelos que la app espera encontrar luego.
+ */
+removible: boolean }
 /**
  * Identidad de un motor TTS. Se persiste en settings (`tts_selected_engine`).
  * **Ninguna variante es de nube** — invariante del producto.

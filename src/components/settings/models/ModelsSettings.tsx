@@ -4,6 +4,7 @@ import { ask } from "@tauri-apps/plugin-dialog";
 import { ChevronDown, Globe, RefreshCw, Search } from "lucide-react";
 import type { ModelCardStatus } from "@/components/onboarding";
 import { ModelCard } from "@/components/onboarding";
+import { CarpetaModelos } from "./CarpetaModelos";
 import { useModelStore } from "@/stores/modelStore";
 import {
   getLanguageLabel,
@@ -234,6 +235,9 @@ export const ModelsSettings: React.FC = () => {
           {t("settings.models.description")}
         </p>
       </div>
+
+      {/* Dónde viven los modelos (elección de disco, compartida con Pulido) */}
+      <CarpetaModelos />
 
       {/* Search bar — filter the catalog by name or description */}
       <div className="relative">

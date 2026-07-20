@@ -3,7 +3,7 @@
 //! activo. Todo opcional; nada corre hasta que el usuario elige un modelo.
 
 use std::collections::HashMap;
-use std::path::Path;
+use std::path::{Path, PathBuf};
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::{Arc, Mutex};
 use std::time::{Duration, Instant};
@@ -16,7 +16,15 @@ use tokio::io::AsyncWriteExt;
 
 use crate::correccion::modelos::{self, ModeloCorreccion};
 use crate::correccion::motor_sidecar::SidecarManager;
+use crate::managers::model::ModelManager;
 use crate::settings::{get_settings, write_settings};
+
+/// Carpeta de modelos EFECTIVA (respeta el disco elegido en ajustes). Se
+/// resuelve vía el `ModelManager`, así los modelos LLM viven en el mismo disco
+/// que los de transcripción (en subcarpetas distintas).
+fn carpeta_modelos(app: &AppHandle) -> PathBuf {
+    app.state::<Arc<ModelManager>>().models_dir()
+}
 
 /// Descargas en curso (id → bandera de cancelación). Estado de Tauri.
 #[derive(Default)]
@@ -46,14 +54,14 @@ pub struct ProgresoDescargaModelo {
 #[tauri::command]
 #[specta::specta]
 pub fn listar_modelos_correccion(app: AppHandle) -> Result<Vec<ModeloEstado>, String> {
-    let datadir = crate::portable::app_data_dir(&app).map_err(|e| e.to_string())?;
+    let models_dir = carpeta_modelos(&app);
     let settings = get_settings(&app);
     let estado = app.state::<EstadoDescargas>();
     let activas = estado.activas.lock().unwrap();
     Ok(modelos::catalogo()
         .into_iter()
         .map(|m| ModeloEstado {
-            descargado: modelos::esta_descargado(&datadir, &m),
+            descargado: modelos::esta_descargado(&models_dir, &m),
             descargando: activas.contains_key(&m.id),
             seleccionado: settings.correccion_modelo_local.as_deref() == Some(m.id.as_str()),
             modelo: m,
@@ -68,12 +76,12 @@ pub fn listar_modelos_correccion(app: AppHandle) -> Result<Vec<ModeloEstado>, St
 #[specta::specta]
 pub async fn descargar_modelo_correccion(app: AppHandle, modelo_id: String) -> Result<(), String> {
     let m = modelos::por_id(&modelo_id).ok_or_else(|| "modelo desconocido".to_string())?;
-    let datadir = crate::portable::app_data_dir(&app).map_err(|e| e.to_string())?;
-    let carpeta = modelos::carpeta(&datadir);
+    let models_dir = carpeta_modelos(&app);
+    let carpeta = modelos::carpeta(&models_dir);
     tokio::fs::create_dir_all(&carpeta)
         .await
         .map_err(|e| format!("no se pudo crear la carpeta: {e}"))?;
-    let destino = modelos::ruta_gguf(&datadir, &m);
+    let destino = modelos::ruta_gguf(&models_dir, &m);
     if destino.is_file() {
         return Ok(()); // ya descargado
     }
@@ -213,8 +221,8 @@ pub fn cancelar_descarga_correccion(app: AppHandle, modelo_id: String) {
 #[specta::specta]
 pub fn eliminar_modelo_correccion(app: AppHandle, modelo_id: String) -> Result<(), String> {
     let m = modelos::por_id(&modelo_id).ok_or_else(|| "modelo desconocido".to_string())?;
-    let datadir = crate::portable::app_data_dir(&app).map_err(|e| e.to_string())?;
-    let ruta = modelos::ruta_gguf(&datadir, &m);
+    let models_dir = carpeta_modelos(&app);
+    let ruta = modelos::ruta_gguf(&models_dir, &m);
     if ruta.is_file() {
         std::fs::remove_file(&ruta).map_err(|e| format!("no se pudo borrar: {e}"))?;
     }
@@ -245,13 +253,17 @@ pub fn seleccionar_modelo_correccion(
     match modelo_id {
         Some(id) => {
             if let Some(m) = modelos::por_id(&id) {
-                if let Ok(datadir) = crate::portable::app_data_dir(&app) {
-                    if modelos::esta_descargado(&datadir, &m) {
-                        if let Some(sc) = app.try_state::<Arc<SidecarManager>>() {
-                            let mgr = sc.inner().clone();
-                            let gguf = modelos::ruta_gguf(&datadir, &m);
-                            mgr.solicitar_arranque(datadir, id, gguf);
-                        }
+                let models_dir = carpeta_modelos(&app);
+                // El GGUF vive en el disco elegido (models_dir); el runtime del
+                // sidecar vive en los datos de la app (app_data_dir).
+                if modelos::esta_descargado(&models_dir, &m) {
+                    if let (Ok(app_data), Some(sc)) = (
+                        crate::portable::app_data_dir(&app),
+                        app.try_state::<Arc<SidecarManager>>(),
+                    ) {
+                        let mgr = sc.inner().clone();
+                        let gguf = modelos::ruta_gguf(&models_dir, &m);
+                        mgr.solicitar_arranque(app_data, id, gguf);
                     }
                 }
             }

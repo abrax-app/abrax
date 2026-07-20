@@ -447,7 +447,10 @@ impl<'a> Drop for DownloadCleanup<'a> {
 
 pub struct ModelManager {
     app_handle: AppHandle,
-    models_dir: PathBuf,
+    /// Carpeta de modelos por defecto (dentro de los datos de la app). Es el
+    /// **fallback**: la carpeta efectiva la resuelve [`Self::models_dir`], que
+    /// respeta la que el usuario haya elegido en ajustes.
+    default_models_dir: PathBuf,
     available_models: Mutex<HashMap<String, ModelInfo>>,
     cancel_flags: Arc<Mutex<HashMap<String, CancellationToken>>>,
     extracting_models: Arc<Mutex<HashSet<String>>>,
@@ -1065,7 +1068,7 @@ impl ModelManager {
 
         let manager = Self {
             app_handle: app_handle.clone(),
-            models_dir,
+            default_models_dir: models_dir,
             available_models: Mutex::new(available_models),
             cancel_flags: Arc::new(Mutex::new(HashMap::new())),
             extracting_models: Arc::new(Mutex::new(HashSet::new())),
@@ -1085,6 +1088,45 @@ impl ModelManager {
         manager.auto_select_model_if_needed()?;
 
         Ok(manager)
+    }
+
+    /// Carpeta de modelos **efectiva**, resuelta en cada uso (no cacheada) para
+    /// que cambiarla en ajustes surta efecto sin reiniciar la app.
+    ///
+    /// Degrada a la carpeta por defecto —nunca falla— si la elegida no existe y
+    /// tampoco se puede crear: es lo que pasa cuando el usuario puso los modelos
+    /// en un disco externo y arranca sin él conectado. Preferimos seguir
+    /// funcionando (y que la UI muestre los modelos como no descargados) antes
+    /// que impedir el arranque.
+    pub fn models_dir(&self) -> PathBuf {
+        let configured = get_settings(&self.app_handle)
+            .models_dir
+            .filter(|s| !s.trim().is_empty())
+            .map(PathBuf::from);
+
+        let Some(dir) = configured else {
+            return self.default_models_dir.clone();
+        };
+        if dir.is_dir() {
+            return dir;
+        }
+        match fs::create_dir_all(&dir) {
+            Ok(()) => dir,
+            Err(e) => {
+                warn!(
+                    "Carpeta de modelos configurada inutilizable ({}): {}. Se usa la de por defecto.",
+                    dir.display(),
+                    e
+                );
+                self.default_models_dir.clone()
+            }
+        }
+    }
+
+    /// Carpeta por defecto, ignorando lo que haya en ajustes. La UI la necesita
+    /// para ofrecer "volver a la ubicación original".
+    pub fn default_models_dir(&self) -> &Path {
+        &self.default_models_dir
     }
 
     pub fn get_available_models(&self) -> Vec<ModelInfo> {
@@ -1164,7 +1206,7 @@ impl ModelManager {
         // The discover_* helpers are purely additive (they skip ids already in
         // the map), so the snapshot ends up as {current} ∪ {newly-found}.
         let mut snapshot = self.available_models.lock().unwrap().clone();
-        if let Err(e) = Self::discover_custom_transcribe_models(&self.models_dir, &mut snapshot) {
+        if let Err(e) = Self::discover_custom_transcribe_models(&self.models_dir(), &mut snapshot) {
             warn!("Rescan: failed to discover custom models: {}", e);
         }
         Self::discover_hf_cache_models(&mut snapshot);
@@ -1245,7 +1287,7 @@ impl ModelManager {
 
             if let Ok(bundled_path) = bundled_path {
                 if bundled_path.exists() {
-                    let user_path = self.models_dir.join(filename);
+                    let user_path = self.models_dir().join(filename);
 
                     // Only copy if user doesn't already have the model
                     if !user_path.exists() {
@@ -1264,8 +1306,8 @@ impl ModelManager {
     /// to the new directory format (giga-am-v3-int8/model.int8.onnx + vocab.txt).
     /// This was required by the transcribe-rs 0.3.x upgrade.
     fn migrate_gigaam_to_directory(&self) -> Result<()> {
-        let old_file = self.models_dir.join("giga-am-v3.int8.onnx");
-        let new_dir = self.models_dir.join("giga-am-v3-int8");
+        let old_file = self.models_dir().join("giga-am-v3.int8.onnx");
+        let new_dir = self.models_dir().join("giga-am-v3-int8");
 
         if !old_file.exists() || new_dir.exists() {
             return Ok(());
@@ -1295,7 +1337,7 @@ impl ModelManager {
         fs::copy(&vocab_path, new_dir.join("vocab.txt"))?;
 
         // Clean up old partial file if it exists
-        let old_partial = self.models_dir.join("giga-am-v3.int8.onnx.partial");
+        let old_partial = self.models_dir().join("giga-am-v3.int8.onnx.partial");
         if old_partial.exists() {
             let _ = fs::remove_file(&old_partial);
         }
@@ -1316,10 +1358,12 @@ impl ModelManager {
             }
             if model.is_directory {
                 // For directory-based models, check if the directory exists
-                let model_path = self.models_dir.join(&model.filename);
-                let partial_path = self.models_dir.join(format!("{}.partial", model.filename));
+                let model_path = self.models_dir().join(&model.filename);
+                let partial_path = self
+                    .models_dir()
+                    .join(format!("{}.partial", model.filename));
                 let extracting_path = self
-                    .models_dir
+                    .models_dir()
                     .join(format!("{}.extracting", model.filename));
 
                 // Clean up any leftover .extracting directories from interrupted extractions
@@ -1344,8 +1388,10 @@ impl ModelManager {
                 }
             } else {
                 // For file-based models (existing logic)
-                let model_path = self.models_dir.join(&model.filename);
-                let partial_path = self.models_dir.join(format!("{}.partial", model.filename));
+                let model_path = self.models_dir().join(&model.filename);
+                let partial_path = self
+                    .models_dir()
+                    .join(format!("{}.partial", model.filename));
 
                 model.is_downloaded = model_path.exists();
                 model.is_downloading = false;
@@ -1845,9 +1891,9 @@ impl ModelManager {
                 return Err(anyhow::anyhow!("No download source for model"));
             }
         };
-        let model_path = self.models_dir.join(&model_info.filename);
+        let model_path = self.models_dir().join(&model_info.filename);
         let partial_path = self
-            .models_dir
+            .models_dir()
             .join(format!("{}.partial", model_info.filename));
 
         // Don't download if complete version already exists
@@ -2076,9 +2122,9 @@ impl ModelManager {
 
             // Use a temporary extraction directory to ensure atomic operations
             let temp_extract_dir = self
-                .models_dir
+                .models_dir()
                 .join(format!("{}.extracting", model_info.filename));
-            let final_model_dir = self.models_dir.join(&model_info.filename);
+            let final_model_dir = self.models_dir().join(&model_info.filename);
 
             // Clean up any previous incomplete extraction
             if temp_extract_dir.exists() {
@@ -2218,9 +2264,9 @@ impl ModelManager {
             return Ok(());
         }
 
-        let model_path = self.models_dir.join(&model_info.filename);
+        let model_path = self.models_dir().join(&model_info.filename);
         let partial_path = self
-            .models_dir
+            .models_dir()
             .join(format!("{}.partial", model_info.filename));
         debug!("ModelManager: Model path: {:?}", model_path);
         debug!("ModelManager: Partial path: {:?}", partial_path);
@@ -2298,9 +2344,9 @@ impl ModelManager {
             });
         }
 
-        let model_path = self.models_dir.join(&model_info.filename);
+        let model_path = self.models_dir().join(&model_info.filename);
         let partial_path = self
-            .models_dir
+            .models_dir()
             .join(format!("{}.partial", model_info.filename));
 
         if model_info.is_directory {
