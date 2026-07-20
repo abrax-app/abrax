@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Dropdown } from "../ui/Dropdown";
 import { SettingContainer } from "../ui/SettingContainer";
+import { ModelosPulido } from "./ModelosPulido";
 import { useSettings } from "@/hooks/useSettings";
 import { commands } from "@/bindings";
 import type { CorreccionModo, CorreccionMotor } from "@/bindings";
@@ -117,9 +118,12 @@ export const CorreccionSettings: React.FC<CorreccionSettingsProps> = React.memo(
         </SettingContainer>
 
         {usaModelo && (
-          <div className="px-4 py-2 text-xs opacity-70" aria-live="polite">
-            {lineaEstado()}
-          </div>
+          <>
+            <div className="px-4 py-2 text-xs opacity-70" aria-live="polite">
+              {lineaEstado()}
+            </div>
+            <ModelosPulido />
+          </>
         )}
       </>
     );

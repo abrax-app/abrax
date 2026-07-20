@@ -913,5 +913,17 @@
     "descSystem": "Voces del sistema operativo. Siempre disponible, sin descargas.",
     "descPiper": "Voz neuronal en español, liviana, corre en CPU.",
     "descKokoro": "Voz neuronal de alta calidad en CPU."
+  },
+  "pulidoModelos": {
+    "intro": "Descarga un modelo local para el Pulido con IA. Es opcional: sin un modelo, la corrección usa las reglas deterministas. Corre en un proceso aparte y se apaga solo por inactividad.",
+    "nombreRecomendado": "{{nombre}} · recomendado",
+    "tamanoLicencia": "{{gb}} GB · {{licencia}}",
+    "descargar": "Descargar ({{gb}} GB)",
+    "porcentaje": "{{pct}}%",
+    "cancelar": "Cancelar",
+    "usar": "Usar",
+    "activo": "Activo",
+    "borrar": "Borrar",
+    "errorDescarga": "No se pudo descargar: {{error}}"
   }
 }

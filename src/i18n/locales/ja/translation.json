@@ -913,5 +913,17 @@
     "descSystem": "OS のシステム音声。常に利用でき、ダウンロード不要です。",
     "descPiper": "軽量な日本語のニューラル音声。CPU で動作します。",
     "descKokoro": "CPU で動作する高品質なニューラル音声。"
+  },
+  "pulidoModelos": {
+    "intro": "Download a local model for AI Polish. It's optional: without a model, correction uses the deterministic rules. It runs in a separate process and unloads itself when idle.",
+    "nombreRecomendado": "{{nombre}} · recommended",
+    "tamanoLicencia": "{{gb}} GB · {{licencia}}",
+    "descargar": "Download ({{gb}} GB)",
+    "porcentaje": "{{pct}}%",
+    "cancelar": "Cancel",
+    "usar": "Use",
+    "activo": "Active",
+    "borrar": "Delete",
+    "errorDescarga": "Download failed: {{error}}"
   }
 }
