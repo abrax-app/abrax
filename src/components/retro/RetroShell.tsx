@@ -25,6 +25,7 @@ import { commands, type HistoryEntry } from "@/bindings";
 import { applyShell } from "@/lib/utils/theme";
 import { montarEspectro, type EspectroHandle } from "./retroSpectrum";
 import "./retro.css";
+import type { SpectrumPayload } from "@/lib/types/events";
 
 type WinId = "main" | "ajustes" | "historial" | "seccion";
 type WinState = {
@@ -33,13 +34,6 @@ type WinState = {
   z: number;
   visible: boolean;
   folded: boolean;
-};
-
-type SpectrumPayload = {
-  bands: number[];
-  rms: number;
-  bass: number;
-  dominant: number;
 };
 
 const INITIAL: Record<WinId, WinState> = {

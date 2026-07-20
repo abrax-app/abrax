@@ -2,15 +2,9 @@ import { listen } from "@tauri-apps/api/event";
 import React, { useEffect, useRef } from "react";
 import { events } from "@/bindings";
 import { EsferaEngine, EsferaState, readEsferaPalette } from "./esfera/engine";
+import type { SpectrumPayload } from "@/lib/types/events";
 
 /** Payload del evento `spectrum` (overlay.rs::emit_spectrum). */
-type SpectrumPayload = {
-  bands: number[];
-  rms: number;
-  bass: number;
-  dominant: number;
-};
-
 interface EsferaStageProps {
   state: EsferaState;
   /** Visible → motor corriendo; oculto → rAF detenido y GPU liberada. */

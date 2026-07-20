@@ -4,15 +4,13 @@ import { listen } from "@tauri-apps/api/event";
 import { Button } from "../ui/Button";
 import { commands } from "@/bindings";
 import type { ModeloEstado } from "@/bindings";
+import { bytesAGb } from "@/lib/utils/format";
 
 interface ProgresoPayload {
   modelo_id: string;
   bajados: number;
   total: number;
 }
-
-const GB = 1_073_741_824;
-const enGb = (bytes: number) => (bytes / GB).toFixed(1);
 
 /**
  * Catálogo de modelos LLM opcionales para el "Pulido con IA" local. Permite
@@ -91,7 +89,7 @@ export const ModelosPulido: React.FC = React.memo(() => {
               </span>
               <span className="opacity-60 whitespace-nowrap">
                 {t("pulidoModelos.tamanoLicencia", {
-                  gb: enGb(m.tamano_bytes),
+                  gb: bytesAGb(m.tamano_bytes),
                   licencia: m.licencia,
                 })}
               </span>
@@ -149,7 +147,9 @@ export const ModelosPulido: React.FC = React.memo(() => {
                   size="sm"
                   onClick={() => void descargar(m.id)}
                 >
-                  {t("pulidoModelos.descargar", { gb: enGb(m.tamano_bytes) })}
+                  {t("pulidoModelos.descargar", {
+                    gb: bytesAGb(m.tamano_bytes),
+                  })}
                 </Button>
               )}
             </div>

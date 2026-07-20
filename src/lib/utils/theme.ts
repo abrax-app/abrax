@@ -19,10 +19,10 @@ import { commands, type Theme, type UiShell, type UiTheme } from "@/bindings";
  * mounts, avoiding a flash of the wrong palette.
  */
 
-export const THEME_STORAGE_KEY = "abrax.theme";
+const THEME_STORAGE_KEY = "abrax.theme";
 /** Pre-rebrand storage key, read once as a fallback so nobody gets reset. */
 const LEGACY_THEME_STORAGE_KEY = "handy.theme";
-export const UI_THEME_STORAGE_KEY = "abrax.palette";
+const UI_THEME_STORAGE_KEY = "abrax.palette";
 /**
  * Window shell (`classic`/`orbital`/`retro`) — the SHAPE axis, orthogonal to
  * mode and palette. Mirrored to localStorage so the boot can set `data-shell`
@@ -30,7 +30,7 @@ export const UI_THEME_STORAGE_KEY = "abrax.palette";
  * classic layout. The window chrome (frameless/transparent) is decided
  * backend-side at build time; this only drives the CSS/React shell.
  */
-export const SHELL_STORAGE_KEY = "abrax.shell";
+const SHELL_STORAGE_KEY = "abrax.shell";
 
 export const THEME_OPTIONS: Theme[] = ["system", "light", "dark"];
 export const UI_THEME_OPTIONS: UiTheme[] = ["abrax", "imperial"];
@@ -95,7 +95,7 @@ export const applyUiTheme = (uiTheme: UiTheme): void => {
  * attribute (the base, decorated layout) and any other shell sets `data-shell`,
  * which the shell CSS keys off to go transparent and mount its own chrome.
  */
-export const applyShellToRoot = (
+const applyShellToRoot = (
   shell: UiShell,
   root: HTMLElement = document.documentElement,
 ): void => {
@@ -113,7 +113,7 @@ export const applyShell = (shell: UiShell): void => {
 };
 
 /** Read the last-applied mode for synchronous boot-time application. */
-export const getStoredTheme = (): Theme => {
+const getStoredTheme = (): Theme => {
   try {
     const stored = localStorage.getItem(THEME_STORAGE_KEY);
     if (isTheme(stored)) return stored;
@@ -131,7 +131,7 @@ export const getStoredTheme = (): Theme => {
 };
 
 /** Read the last-applied palette for synchronous boot-time application. */
-export const getStoredUiTheme = (): UiTheme => {
+const getStoredUiTheme = (): UiTheme => {
   try {
     const stored = localStorage.getItem(UI_THEME_STORAGE_KEY);
     if (isUiTheme(stored)) return stored;
@@ -142,7 +142,7 @@ export const getStoredUiTheme = (): UiTheme => {
 };
 
 /** Read the last-applied shell for synchronous boot-time application. */
-export const getStoredShell = (): UiShell => {
+const getStoredShell = (): UiShell => {
   try {
     const stored = localStorage.getItem(SHELL_STORAGE_KEY);
     if (isUiShell(stored)) return stored;

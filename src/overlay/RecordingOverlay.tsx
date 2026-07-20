@@ -15,17 +15,11 @@ import { applyAppearanceToRoot } from "@/lib/utils/theme";
 import { getLanguageDirection } from "@/lib/utils/rtl";
 import EsferaStage from "./EsferaStage";
 import type { EsferaState } from "./esfera/engine";
+import type { SpectrumPayload } from "@/lib/types/events";
 
 type OverlayState = "recording" | "streaming" | "transcribing" | "processing";
 
 /** Payload del evento `spectrum` (overlay.rs::emit_spectrum). */
-type SpectrumPayload = {
-  bands: number[];
-  rms: number;
-  bass: number;
-  dominant: number;
-};
-
 // Number of reactive bars in the waveform (the simple, smoothed style shared by
 // the pill overlay forms). The spectrum arrives as 32 log bands over 70–8000 Hz;
 // each bar averages 3 consecutive bands across the voice range.
