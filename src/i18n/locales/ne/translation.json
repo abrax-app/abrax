@@ -913,5 +913,17 @@
     "descSystem": "अपरेटिङ प्रणालीका आवाजहरू। सधैँ उपलब्ध, डाउनलोड बिना।",
     "descPiper": "स्पेनिसमा न्युरल आवाज, हलुका, CPU मा चल्छ।",
     "descKokoro": "CPU मा उच्च गुणस्तरको न्युरल आवाज।"
+  },
+  "pulidoModelos": {
+    "intro": "Download a local model for AI Polish. It's optional: without a model, correction uses the deterministic rules. It runs in a separate process and unloads itself when idle.",
+    "nombreRecomendado": "{{nombre}} · recommended",
+    "tamanoLicencia": "{{gb}} GB · {{licencia}}",
+    "descargar": "Download ({{gb}} GB)",
+    "porcentaje": "{{pct}}%",
+    "cancelar": "Cancel",
+    "usar": "Use",
+    "activo": "Active",
+    "borrar": "Delete",
+    "errorDescarga": "Download failed: {{error}}"
   }
 }

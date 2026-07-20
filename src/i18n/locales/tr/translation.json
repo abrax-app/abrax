@@ -913,5 +913,17 @@
     "descSystem": "İşletim sisteminin sesleri. Her zaman kullanılabilir, indirme gerekmez.",
     "descPiper": "Türkçe nöral ses, hafif, CPU'da çalışır.",
     "descKokoro": "CPU'da yüksek kaliteli nöral ses."
+  },
+  "pulidoModelos": {
+    "intro": "Download a local model for AI Polish. It's optional: without a model, correction uses the deterministic rules. It runs in a separate process and unloads itself when idle.",
+    "nombreRecomendado": "{{nombre}} · recommended",
+    "tamanoLicencia": "{{gb}} GB · {{licencia}}",
+    "descargar": "Download ({{gb}} GB)",
+    "porcentaje": "{{pct}}%",
+    "cancelar": "Cancel",
+    "usar": "Use",
+    "activo": "Active",
+    "borrar": "Delete",
+    "errorDescarga": "Download failed: {{error}}"
   }
 }

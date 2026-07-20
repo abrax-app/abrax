@@ -127,6 +127,62 @@ async detectarCorreccionOllama() : Promise<Result<string[] | null, string>> {
 }
 },
 /**
+ * Lista el catálogo con el estado de cada modelo (descargado / descargando /
+ * seleccionado).
+ */
+async listarModelosCorreccion() : Promise<Result<ModeloEstado[], string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("listar_modelos_correccion") };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+/**
+ * Descarga el GGUF de un modelo a la carpeta de modelos de corrección, con
+ * eventos de progreso, verificación sha256 y `.partial` + rename atómico.
+ * Cancelable con [`cancelar_descarga_correccion`].
+ */
+async descargarModeloCorreccion(modeloId: string) : Promise<Result<null, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("descargar_modelo_correccion", { modeloId }) };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+/**
+ * Marca una descarga en curso para que se cancele (el bucle la ve y aborta).
+ */
+async cancelarDescargaCorreccion(modeloId: string) : Promise<void> {
+    await TAURI_INVOKE("cancelar_descarga_correccion", { modeloId });
+},
+/**
+ * Borra un modelo descargado. Si era el seleccionado, lo deselecciona y apaga
+ * el sidecar.
+ */
+async eliminarModeloCorreccion(modeloId: string) : Promise<Result<null, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("eliminar_modelo_correccion", { modeloId }) };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+/**
+ * Elige (o deselecciona con `None`) el modelo activo de Pulido. Si el elegido
+ * está descargado, lo pre-calienta en segundo plano para que esté listo antes
+ * del primer dictado.
+ */
+async seleccionarModeloCorreccion(modeloId: string | null) : Promise<Result<null, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("seleccionar_modelo_correccion", { modeloId }) };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+/**
  * Graba unos segundos con el micrófono configurado (o el default del sistema),
  * SIN VAD y sin tocar el pipeline de dictado, y devuelve nivel + veredicto +
  * el WAV para reproducir. Es la respuesta a "¿qué está escuchando ABRAX de
@@ -1234,7 +1290,13 @@ custom_replacements?: CustomReplacement[];
  * del código indexándolo localmente. El índice vive en el datadir;
  * nada sale del equipo.
  */
-dictionary_project?: DictionaryProject | null; model_unload_timeout?: ModelUnloadTimeout; word_correction_threshold?: number; history_limit?: number; recording_retention_period?: RecordingRetentionPeriod; paste_method?: PasteMethod; clipboard_handling?: ClipboardHandling; auto_submit?: boolean; auto_submit_key?: AutoSubmitKey; post_process_enabled?: boolean; post_process_provider_id?: string; post_process_providers?: PostProcessProvider[]; post_process_api_keys?: SecretMap; post_process_models?: Partial<{ [key in string]: string }>; post_process_prompts?: LLMPrompt[]; post_process_selected_prompt_id?: string | null; mute_while_recording?: boolean; append_trailing_space?: boolean; app_language?: string; theme?: Theme; ui_theme?: UiTheme; ui_shell?: UiShell; correccion_modo?: CorreccionModo; correccion_motor?: CorreccionMotor; experimental_enabled?: boolean; lazy_stream_close?: boolean; keyboard_implementation?: KeyboardImplementation; show_tray_icon?: boolean; paste_delay_ms?: number; paste_delay_after_ms?: number; typing_tool?: TypingTool; external_script_path?: string | null; custom_filler_words?: string[] | null; transcribe_accelerator?: TranscribeAcceleratorSetting; ort_accelerator?: OrtAcceleratorSetting; transcribe_gpu_device?: number; extra_recording_buffer_ms?: number; vad_enabled?: boolean; 
+dictionary_project?: DictionaryProject | null; model_unload_timeout?: ModelUnloadTimeout; word_correction_threshold?: number; history_limit?: number; recording_retention_period?: RecordingRetentionPeriod; paste_method?: PasteMethod; clipboard_handling?: ClipboardHandling; auto_submit?: boolean; auto_submit_key?: AutoSubmitKey; post_process_enabled?: boolean; post_process_provider_id?: string; post_process_providers?: PostProcessProvider[]; post_process_api_keys?: SecretMap; post_process_models?: Partial<{ [key in string]: string }>; post_process_prompts?: LLMPrompt[]; post_process_selected_prompt_id?: string | null; mute_while_recording?: boolean; append_trailing_space?: boolean; app_language?: string; theme?: Theme; ui_theme?: UiTheme; ui_shell?: UiShell; correccion_modo?: CorreccionModo; correccion_motor?: CorreccionMotor; 
+/**
+ * Id (del catálogo `correccion::modelos`) del modelo LLM descargado que se
+ * usa para el "Pulido con IA" local. `None` = ninguno (se usa Ollama en
+ * loopback si está, o solo reglas). Opcional por diseño.
+ */
+correccion_modelo_local?: string | null; experimental_enabled?: boolean; lazy_stream_close?: boolean; keyboard_implementation?: KeyboardImplementation; show_tray_icon?: boolean; paste_delay_ms?: number; paste_delay_after_ms?: number; typing_tool?: TypingTool; external_script_path?: string | null; custom_filler_words?: string[] | null; transcribe_accelerator?: TranscribeAcceleratorSetting; ort_accelerator?: OrtAcceleratorSetting; transcribe_gpu_device?: number; extra_recording_buffer_ms?: number; vad_enabled?: boolean; 
 /**
  * Which recording overlay to show: None / Minimal / Live. Streaming mode is
  * not gated on this — that follows model capability. Migrated from the old
@@ -1458,6 +1520,34 @@ sha256: string | null } } |
  */
 "Local"
 export type ModelUnloadTimeout = "never" | "immediately" | "min_2" | "min_5" | "min_10" | "min_15" | "hour_1" | "sec_15"
+/**
+ * Una entrada del catálogo de modelos de corrección descargables.
+ */
+export type ModeloCorreccion = { 
+/**
+ * Identificador estable (se usa en ajustes y como nombre de archivo).
+ */
+id: string; nombre: string; descripcion: string; 
+/**
+ * Repo de Hugging Face y archivo GGUF concreto a descargar.
+ */
+repo_hf: string; archivo: string; 
+/**
+ * SHA-256 del archivo, para verificar integridad tras la descarga.
+ */
+sha256: string; tamano_bytes: number; 
+/**
+ * RAM (o VRAM en GPU) aproximada recomendada para que corra con soltura.
+ */
+ram_min_mb: number; licencia: string; 
+/**
+ * Sugerido para la mayoría (mejor equilibrio calidad/tamaño).
+ */
+recomendado: boolean }
+/**
+ * Un modelo del catálogo con su estado local, para la UI.
+ */
+export type ModeloEstado = { modelo: ModeloCorreccion; descargado: boolean; descargando: boolean; seleccionado: boolean }
 /**
  * Cómo interpretar el contenido a leer.
  */

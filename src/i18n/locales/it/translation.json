@@ -913,5 +913,17 @@
     "descSystem": "Voci del sistema operativo. Sempre disponibili, senza download.",
     "descPiper": "Voce neurale in italiano, leggera, gira su CPU.",
     "descKokoro": "Voce neurale di alta qualità su CPU."
+  },
+  "pulidoModelos": {
+    "intro": "Download a local model for AI Polish. It's optional: without a model, correction uses the deterministic rules. It runs in a separate process and unloads itself when idle.",
+    "nombreRecomendado": "{{nombre}} · recommended",
+    "tamanoLicencia": "{{gb}} GB · {{licencia}}",
+    "descargar": "Download ({{gb}} GB)",
+    "porcentaje": "{{pct}}%",
+    "cancelar": "Cancel",
+    "usar": "Use",
+    "activo": "Active",
+    "borrar": "Delete",
+    "errorDescarga": "Download failed: {{error}}"
   }
 }

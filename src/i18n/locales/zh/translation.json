@@ -913,5 +913,17 @@
     "descSystem": "操作系统自带语音。始终可用，无需下载。",
     "descPiper": "轻量级西班牙语神经语音，可在 CPU 上运行。",
     "descKokoro": "高质量神经语音，在 CPU 上运行。"
+  },
+  "pulidoModelos": {
+    "intro": "Download a local model for AI Polish. It's optional: without a model, correction uses the deterministic rules. It runs in a separate process and unloads itself when idle.",
+    "nombreRecomendado": "{{nombre}} · recommended",
+    "tamanoLicencia": "{{gb}} GB · {{licencia}}",
+    "descargar": "Download ({{gb}} GB)",
+    "porcentaje": "{{pct}}%",
+    "cancelar": "Cancel",
+    "usar": "Use",
+    "activo": "Active",
+    "borrar": "Delete",
+    "errorDescarga": "Download failed: {{error}}"
   }
 }

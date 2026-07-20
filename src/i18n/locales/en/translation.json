@@ -913,5 +913,17 @@
     "descSystem": "Operating-system voices. Always available, no downloads.",
     "descPiper": "Lightweight neural Spanish voice, runs on CPU.",
     "descKokoro": "High-quality neural voice on CPU."
+  },
+  "pulidoModelos": {
+    "intro": "Download a local model for AI Polish. It's optional: without a model, correction uses the deterministic rules. It runs in a separate process and unloads itself when idle.",
+    "nombreRecomendado": "{{nombre}} · recommended",
+    "tamanoLicencia": "{{gb}} GB · {{licencia}}",
+    "descargar": "Download ({{gb}} GB)",
+    "porcentaje": "{{pct}}%",
+    "cancelar": "Cancel",
+    "usar": "Use",
+    "activo": "Active",
+    "borrar": "Delete",
+    "errorDescarga": "Download failed: {{error}}"
   }
 }

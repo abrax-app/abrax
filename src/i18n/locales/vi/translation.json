@@ -913,5 +913,17 @@
     "descSystem": "Giọng nói của hệ điều hành. Luôn có sẵn, không cần tải xuống.",
     "descPiper": "Giọng nói nơ-ron tiếng Tây Ban Nha, nhẹ, chạy trên CPU.",
     "descKokoro": "Giọng nói nơ-ron chất lượng cao trên CPU."
+  },
+  "pulidoModelos": {
+    "intro": "Download a local model for AI Polish. It's optional: without a model, correction uses the deterministic rules. It runs in a separate process and unloads itself when idle.",
+    "nombreRecomendado": "{{nombre}} · recommended",
+    "tamanoLicencia": "{{gb}} GB · {{licencia}}",
+    "descargar": "Download ({{gb}} GB)",
+    "porcentaje": "{{pct}}%",
+    "cancelar": "Cancel",
+    "usar": "Use",
+    "activo": "Active",
+    "borrar": "Delete",
+    "errorDescarga": "Download failed: {{error}}"
   }
 }

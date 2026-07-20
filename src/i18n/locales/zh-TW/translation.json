@@ -913,5 +913,17 @@
     "descSystem": "作業系統內建語音。隨時可用，無需下載。",
     "descPiper": "輕量中文神經網路語音，可在 CPU 上運行。",
     "descKokoro": "在 CPU 上運行的高品質神經網路語音。"
+  },
+  "pulidoModelos": {
+    "intro": "Download a local model for AI Polish. It's optional: without a model, correction uses the deterministic rules. It runs in a separate process and unloads itself when idle.",
+    "nombreRecomendado": "{{nombre}} · recommended",
+    "tamanoLicencia": "{{gb}} GB · {{licencia}}",
+    "descargar": "Download ({{gb}} GB)",
+    "porcentaje": "{{pct}}%",
+    "cancelar": "Cancel",
+    "usar": "Use",
+    "activo": "Active",
+    "borrar": "Delete",
+    "errorDescarga": "Download failed: {{error}}"
   }
 }
