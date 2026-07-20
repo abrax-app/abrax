@@ -425,6 +425,12 @@ pub fn validate_shortcut(raw: &str) -> Result<(), String> {
 pub fn init_shortcuts(app: &AppHandle) -> Result<(), String> {
     let state = HandyKeysState::new(app.clone())?;
 
+    // Auto-sanado (antes de registrar): cura configs peligrosas heredadas —
+    // p. ej. un `transcribe = "up"` de una versión sin la validación de
+    // `change_binding` — restableciéndolas al default y persistiendo. Así no se
+    // registra ningún hook global que secuestre el teclado.
+    super::sanear_bindings_peligrosos(app);
+
     let default_bindings = settings::get_default_settings().bindings;
     let user_settings = settings::load_or_create_app_settings(app);
 
