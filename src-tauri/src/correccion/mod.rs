@@ -25,6 +25,7 @@
 
 pub mod fraseador;
 pub mod modelos;
+pub mod motor_sidecar;
 pub mod protegidos;
 pub mod reglas;
 pub mod simbolos;
@@ -83,19 +84,24 @@ pub fn corregir(texto: &str, modo: CorreccionModo) -> ResultadoCorreccion {
     ResultadoCorreccion { texto: t, metodo }
 }
 
-/// El camino del modelo local: proteger → frasear → restaurar → validar, con
-/// un único reintento estricto si el primer intento rompe un marcador o el
-/// validador lo rechaza. `None` = este camino no produjo un resultado
-/// confiable; el caller degrada a reglas.
-///
-/// Hoy `Auto` y `Modelo` se comportan igual: primer modelo que Ollama tenga
-/// descargado. El selector de modelo llegará con el PR de UI; el contrato de
-/// degradación no cambia.
-async fn camino_modelo(texto: &str, modo: CorreccionModo) -> Option<ResultadoCorreccion> {
-    let modelos = fraseador::detectar_ollama().await?;
-    // `Some(vec![])` = Ollama vive pero sin modelos: no hay camino.
-    let modelo = modelos.first()?.clone();
+/// Endpoint OpenAI-compat de un motor de fraseo local ya resuelto: Ollama en
+/// loopback o el sidecar propio (`motor_sidecar`). El orquestador no distingue
+/// cuál es — ambos hablan `/v1/chat/completions`.
+#[derive(Debug, Clone)]
+pub struct Motor {
+    pub base_url: String,
+    pub modelo: String,
+}
 
+/// El camino del modelo: proteger → frasear → restaurar → validar, con un único
+/// reintento estricto si el primer intento rompe un marcador o el validador lo
+/// rechaza. `None` = este camino no produjo un resultado confiable; el caller
+/// degrada a reglas. El `motor` ya viene resuelto por el llamador.
+async fn camino_modelo(
+    texto: &str,
+    modo: CorreccionModo,
+    motor: &Motor,
+) -> Option<ResultadoCorreccion> {
     let protegido = protegidos::proteger(texto);
     log::debug!(
         "correccion: camino modelo con {} términos protegidos",
@@ -103,7 +109,15 @@ async fn camino_modelo(texto: &str, modo: CorreccionModo) -> Option<ResultadoCor
     );
 
     for estricto in [false, true] {
-        let respuesta = match fraseador::frasear(&protegido.texto, modo, &modelo, estricto).await {
+        let respuesta = match fraseador::frasear(
+            &motor.base_url,
+            &protegido.texto,
+            modo,
+            &motor.modelo,
+            estricto,
+        )
+        .await
+        {
             Ok(r) => r,
             Err(e) => {
                 // Error de transporte/formato: reintentar no cambia nada — el
@@ -153,13 +167,32 @@ async fn camino_modelo(texto: &str, modo: CorreccionModo) -> Option<ResultadoCor
 /// texto **sin tocar** — ni siquiera lo pasa por las reglas. `SoloReglas` va
 /// directo al suelo determinista. `Auto` y `Modelo` intentan el camino del
 /// modelo local y degradan a reglas ante cualquier fallo.
-pub async fn procesar(texto: &str, settings: &AppSettings) -> String {
+///
+/// `sidecar` es el motor local ya resuelto por el llamador (que tiene el
+/// `AppHandle`): si el usuario eligió un modelo descargado y está corriendo,
+/// llega `Some`. Si es `None`, se intenta Ollama en loopback. Ante cualquier
+/// ausencia o fallo, degrada a reglas — nunca deja al usuario sin texto.
+pub async fn procesar(texto: &str, settings: &AppSettings, sidecar: Option<Motor>) -> String {
     let resultado = match settings.correccion_motor {
         CorreccionMotor::Desactivado => return texto.to_string(),
         CorreccionMotor::SoloReglas => corregir(texto, settings.correccion_modo),
         CorreccionMotor::Auto | CorreccionMotor::Modelo => {
-            match camino_modelo(texto, settings.correccion_modo).await {
-                Some(r) => r,
+            // Motor: el sidecar si el llamador lo resolvió; si no, Ollama en
+            // loopback (primer modelo disponible). Sin motor → reglas.
+            let motor = match sidecar {
+                Some(m) => Some(m),
+                None => fraseador::detectar_ollama()
+                    .await
+                    .and_then(|ms| ms.into_iter().next())
+                    .map(|modelo| Motor {
+                        base_url: fraseador::OLLAMA_BASE.to_string(),
+                        modelo,
+                    }),
+            };
+            match motor {
+                Some(m) => camino_modelo(texto, settings.correccion_modo, &m)
+                    .await
+                    .unwrap_or_else(|| corregir(texto, settings.correccion_modo)),
                 None => corregir(texto, settings.correccion_modo),
             }
         }
@@ -196,7 +229,7 @@ mod tests {
         let s = crate::settings::get_default_settings();
         assert!(matches!(s.correccion_motor, CorreccionMotor::Desactivado));
         let sucio = "  hola , mundo. el martes, perdón, el miércoles  ";
-        assert_eq!(block_on(procesar(sucio, &s)), sucio);
+        assert_eq!(block_on(procesar(sucio, &s, None)), sucio);
     }
 
     #[test]
@@ -204,7 +237,7 @@ mod tests {
         let s = settings_con(CorreccionMotor::SoloReglas, CorreccionModo::Literal);
         // Espacios y mayúsculas sí; el marcador hablado queda intacto.
         assert_eq!(
-            block_on(procesar("vamos el martes, perdón, el miércoles", &s)),
+            block_on(procesar("vamos el martes, perdón, el miércoles", &s, None)),
             "Vamos el martes, perdón, el miércoles"
         );
     }
@@ -213,7 +246,7 @@ mod tests {
     fn modo_limpio_resuelve_la_autocorreccion() {
         let s = settings_con(CorreccionMotor::SoloReglas, CorreccionModo::Limpio);
         assert_eq!(
-            block_on(procesar("vamos el martes, perdón, el miércoles", &s)),
+            block_on(procesar("vamos el martes, perdón, el miércoles", &s, None)),
             "Vamos el miércoles"
         );
     }
@@ -238,7 +271,14 @@ mod tests {
     #[ignore]
     fn correccion_smoke_camino_modelo() {
         let entrada = "no puedo ir el 22/07, perdón, el 23/07, cuesta 15 dólares";
-        match block_on(camino_modelo(entrada, CorreccionModo::Limpio)) {
+        let motor = block_on(fraseador::detectar_ollama())
+            .and_then(|ms| ms.into_iter().next())
+            .map(|modelo| Motor {
+                base_url: fraseador::OLLAMA_BASE.to_string(),
+                modelo,
+            })
+            .expect("Ollama no responde con ≥1 modelo — smoke requiere Ollama vivo");
+        match block_on(camino_modelo(entrada, CorreccionModo::Limpio, &motor)) {
             Some(r) => {
                 println!("[smoke] metodo={:?}", r.metodo);
                 println!("[smoke] entrada : {entrada}");

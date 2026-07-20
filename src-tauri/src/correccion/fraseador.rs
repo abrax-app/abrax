@@ -23,7 +23,7 @@ use std::time::{Duration, Instant};
 
 /// Dirección de Ollama. Loopback fijo a propósito: la regla de red de este
 /// módulo es "nada sale del equipo", y no se ofrece configurarla.
-const OLLAMA_BASE: &str = "http://127.0.0.1:11434";
+pub(crate) const OLLAMA_BASE: &str = "http://127.0.0.1:11434";
 
 /// Presupuesto total para detectar Ollama. Medio segundo porque la detección
 /// corre en caliente (antes de frasear o al abrir ajustes) y un Ollama sano
@@ -141,7 +141,11 @@ pub async fn detectar_ollama() -> Option<Vec<String>> {
 /// sus términos ya sustituidos por tokens `__TIPO_n__`). `estricto` es el
 /// reintento único tras una validación fallida: endurece el prompt para que
 /// cambie lo mínimo. El llamador restaura los tokens y valida el resultado.
+///
+/// `base_url` es el endpoint OpenAI-compat del motor: el loopback de Ollama
+/// ([`OLLAMA_BASE`]) o el del sidecar local. Ambos hablan `/v1/chat/completions`.
 pub async fn frasear(
+    base_url: &str,
     texto_protegido: &str,
     modo: CorreccionModo,
     modelo: &str,
@@ -172,7 +176,7 @@ pub async fn frasear(
 
     let inicio = Instant::now();
     let respuesta = cliente
-        .post(format!("{}/v1/chat/completions", OLLAMA_BASE))
+        .post(format!("{}/v1/chat/completions", base_url))
         .json(&peticion)
         .send()
         .await
@@ -423,6 +427,7 @@ mod tests {
             println!("modelos disponibles: {:?}", modelos);
 
             let r = frasear(
+                OLLAMA_BASE,
                 "hola , mundo visita __URL_0__ el martes, perdón, el miércoles",
                 CorreccionModo::Limpio,
                 &modelos[0],
@@ -451,6 +456,7 @@ mod tests {
                 .expect("Ollama no responde en 127.0.0.1:11434 — ¿está corriendo?");
             assert!(!modelos.is_empty(), "Ollama sin modelos descargados");
             let r = frasear(
+                OLLAMA_BASE,
                 "no vamos a firmar el contrato de __PERSONA_0__",
                 CorreccionModo::Literal,
                 &modelos[0],

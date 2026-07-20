@@ -539,6 +539,11 @@ pub struct AppSettings {
     pub correccion_modo: CorreccionModo,
     #[serde(default = "default_correccion_motor")]
     pub correccion_motor: CorreccionMotor,
+    /// Id (del catálogo `correccion::modelos`) del modelo LLM descargado que se
+    /// usa para el "Pulido con IA" local. `None` = ninguno (se usa Ollama en
+    /// loopback si está, o solo reglas). Opcional por diseño.
+    #[serde(default)]
+    pub correccion_modelo_local: Option<String>,
     #[serde(default)]
     pub experimental_enabled: bool,
     #[serde(default)]
@@ -1075,6 +1080,7 @@ pub fn get_default_settings() -> AppSettings {
         ui_shell: default_ui_shell(),
         correccion_modo: default_correccion_modo(),
         correccion_motor: default_correccion_motor(),
+        correccion_modelo_local: None,
         experimental_enabled: false,
         lazy_stream_close: false,
         keyboard_implementation: KeyboardImplementation::default(),
