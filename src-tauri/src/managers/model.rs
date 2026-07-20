@@ -9,7 +9,6 @@ use hf_hub::api::tokio::{ApiBuilder, CancellationToken, Progress};
 use hf_hub::{Cache, Repo, RepoType};
 use log::{debug, info, warn};
 use serde::{Deserialize, Serialize};
-use sha2::{Digest, Sha256};
 use specta::Type;
 use std::collections::{HashMap, HashSet};
 use std::fs;
@@ -1769,19 +1768,9 @@ impl ModelManager {
         }
     }
 
-    /// Computes the SHA256 hex digest of a file, reading in 64KB chunks to handle large models.
+    /// Computes the SHA256 hex digest of a file (shared impl in `crate::hashing`).
     fn compute_sha256(path: &Path) -> Result<String> {
-        let mut file = File::open(path)?;
-        let mut hasher = Sha256::new();
-        let mut buffer = [0u8; 65536];
-        loop {
-            let n = file.read(&mut buffer)?;
-            if n == 0 {
-                break;
-            }
-            hasher.update(&buffer[..n]);
-        }
-        Ok(format!("{:x}", hasher.finalize()))
+        Ok(crate::hashing::sha256_file(path)?)
     }
 
     /// Download a Hugging Face-sourced model into the shared HF cache via

@@ -9,6 +9,7 @@ mod clipboard;
 mod commands;
 mod correccion;
 mod dictionary;
+mod hashing;
 mod helpers;
 mod input;
 mod llm_client;
