@@ -1006,8 +1006,7 @@ pub fn run(cli_args: CliArgs) {
                 }
                 // Mata el sidecar de Pulido para no dejar un llama-server
                 // huérfano (en Windows los hijos no mueren con el padre).
-                if let Some(sc) =
-                    app.try_state::<Arc<correccion::motor_sidecar::SidecarManager>>()
+                if let Some(sc) = app.try_state::<Arc<correccion::motor_sidecar::SidecarManager>>()
                 {
                     sc.stop();
                 }

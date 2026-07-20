@@ -29,12 +29,12 @@ como sidecar en loopback.
 
 ### 1a. Reescritura libre (el modelo devuelve la frase corregida)
 
-| Modelo | Resultado |
-|---|---|
-| Qwen2.5-0.5B-Instruct | Conserva marcadores; no resuelve autocorrecciones; acentúa a medias |
-| Qwen2.5-1.5B-Instruct | Igual que 0.5B; ~3× más lento |
-| Qwen2.5-3B-Instruct | Igual; a veces devuelve la entrada intacta; parte mal las oraciones |
-| Salamandra-2B-instruct (español-first, BSC) | **Idéntico a Qwen** — la especialización en español no cambió nada |
+| Modelo                                      | Resultado                                                           |
+| ------------------------------------------- | ------------------------------------------------------------------- |
+| Qwen2.5-0.5B-Instruct                       | Conserva marcadores; no resuelve autocorrecciones; acentúa a medias |
+| Qwen2.5-1.5B-Instruct                       | Igual que 0.5B; ~3× más lento                                       |
+| Qwen2.5-3B-Instruct                         | Igual; a veces devuelve la entrada intacta; parte mal las oraciones |
+| Salamandra-2B-instruct (español-first, BSC) | **Idéntico a Qwen** — la especialización en español no cambió nada  |
 
 Patrón consistente: con prompts conservadores los modelos **devuelven la entrada
 casi intacta**; con prompts largos/detallados empeoran (se saturan). Latencia
@@ -49,15 +49,15 @@ salida restringida por `json_schema`.
 
 Resultados contra los criterios de aceptación (dos estrategias de prompt):
 
-| Métrica | Umbral | Conservador | Forzado + few-shot |
-|---|---|---|---|
-| `invalid_json_rate` | ~0 | 0 % ✓ | 0 % ✓ |
-| `self_repair_recall` | ≥ 0.40 | **0.00** ✗ | **0.00** ✗ |
-| `disfluency_recall` | ≥ 0.40 | **0.00** ✗ | **0.00** ✗ |
-| `accent_recall` | — | 0.00 | 0.00 |
-| `meaning_change_rate` | ≤ 1 % | 10 % ✗ | 10 % ✗ |
-| `latency_p95` | ≤ 3 s | 5.4 s ✗ | 11 s ✗ |
-| `marker_preservation` | = 100 % | lo sostuvo el validador, no el modelo | ídem |
+| Métrica               | Umbral  | Conservador                           | Forzado + few-shot |
+| --------------------- | ------- | ------------------------------------- | ------------------ |
+| `invalid_json_rate`   | ~0      | 0 % ✓                                 | 0 % ✓              |
+| `self_repair_recall`  | ≥ 0.40  | **0.00** ✗                            | **0.00** ✗         |
+| `disfluency_recall`   | ≥ 0.40  | **0.00** ✗                            | **0.00** ✗         |
+| `accent_recall`       | —       | 0.00                                  | 0.00               |
+| `meaning_change_rate` | ≤ 1 %   | 10 % ✗                                | 10 % ✗             |
+| `latency_p95`         | ≤ 3 s   | 5.4 s ✗                               | 11 s ✗             |
+| `marker_preservation` | = 100 % | lo sostuvo el validador, no el modelo | ídem               |
 
 Con prompt conservador el modelo devuelve `edits: []` (no hace nada) en los casos
 que sí requerían corrección. Con prompt forzado + ejemplos, **copia mecánicamente
@@ -79,9 +79,9 @@ capacidad, no de formato ni de prompt.
 - La restricción se implementa por enmascarado de tokens (constrained decoding):
   el formato queda garantizado. Un array de objetos con `enum` es de los casos
   mejor soportados; `minimum`/`maximum` acota índices enteros.
-- **Formato ≠ decisión.** La literatura lo respalda: *"Let Me Speak Freely?"*
+- **Formato ≠ decisión.** La literatura lo respalda: _"Let Me Speak Freely?"_
   (arXiv 2408.02442, EMNLP 2024) — las restricciones de formato no mejoran, y a
-  veces degradan, el razonamiento; *"When Correct Isn't Usable"* (arXiv
+  veces degradan, el razonamiento; _"When Correct Isn't Usable"_ (arXiv
   2605.02363) — el constrained decoding fuerza validez pero degrada la tarea y
   multiplica la latencia.
 - **Índices de token:** los LLM pequeños cuentan mal por tokenización BPE
@@ -107,7 +107,7 @@ runtime:
 **Matiz decisivo:** los corpus de GEC son **español escrito** (COWS-L2H son textos
 de aprendices). Cubren tildes/gramática — que el corrector determinista ya hace —
 pero **no** disfluencias habladas (muletillas, autocorrecciones), que es el hueco
-real. La arquitectura *correcta* (tagger estilo GECToR, encoder-only) **no existe
+real. La arquitectura _correcta_ (tagger estilo GECToR, encoder-only) **no existe
 preentrenada para español** (verificado; MultiGEC-2025 no incluye español). La
 ruta encoder-decoder es, con rigor, un bonus marginal.
 

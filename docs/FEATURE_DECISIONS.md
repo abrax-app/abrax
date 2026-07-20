@@ -60,14 +60,14 @@ Si en el futuro se reevalúa un modelo local para la corrección, debe superar
 **todos** estos criterios en un banco de frases reales, con seguridad por encima
 de recall (una edición peligrosa penaliza mucho más que una corrección omitida):
 
-| Criterio | Umbral |
-|---|---|
-| `marker_preservation` | = 100 % (bloqueante) |
+| Criterio                      | Umbral               |
+| ----------------------------- | -------------------- |
+| `marker_preservation`         | = 100 % (bloqueante) |
 | `protected_data_preservation` | = 100 % (bloqueante) |
-| `meaning_change_rate` | ≤ 1 % (bloqueante) |
-| `self_repair_recall` | ≥ 0.40 |
-| `unnecessary_edit_rate` | ≤ 10 % |
-| `latency_p95` | ≤ 3 s en CPU |
+| `meaning_change_rate`         | ≤ 1 % (bloqueante)   |
+| `self_repair_recall`          | ≥ 0.40               |
+| `unnecessary_edit_rate`       | ≤ 10 %               |
+| `latency_p95`                 | ≤ 3 s en CPU         |
 
 `invalid_json_rate` no es criterio de éxito: la gramática lo fuerza a ~0.
 
