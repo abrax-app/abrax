@@ -1,11 +1,11 @@
 # Upstream
 
 - Repositorio: https://github.com/cjpais/Handy
-- Remote:
-- Rama base:
-- Commit base:
-- Fecha de captura:
-- Método: clone/worktree/fork.
+- Remote: https://github.com/cjpais/Handy.git
+- Rama base: rebrand/product (derivada del main del upstream)
+- Commit base: 38825767cf933f59b90209c3f3c5f1e3bbe98766
+- Fecha de captura: 2026-07-11
+- Método: fork.
 
 ## Política de sincronización
 
