@@ -87,22 +87,32 @@ pub async fn descargar_modelo_correccion(app: AppHandle, modelo_id: String) -> R
     }
     let parcial = carpeta.join(format!("{}.partial", m.archivo));
 
+    // Guarda anti-duplicado: si ya hay una descarga viva de ESTE modelo, no se
+    // arranca otra. Dos descargas del mismo modelo escriben al mismo `.partial`
+    // (y `File::create` trunca), así que se corrompen entre sí y el sha256 falla
+    // al final — tras haber bajado varios GB. El chequeo y la inserción van bajo
+    // el MISMO lock para que dos llamadas simultáneas no pasen las dos.
     let cancel = Arc::new(AtomicBool::new(false));
     {
         let estado = app.state::<EstadoDescargas>();
-        estado
-            .activas
-            .lock()
-            .unwrap()
-            .insert(modelo_id.clone(), cancel.clone());
+        let mut activas = estado.activas.lock().unwrap();
+        if activas.contains_key(&modelo_id) {
+            // Idempotente, como el caso "ya descargado" de arriba: la descarga
+            // en curso sigue y emite su progreso; esta llamada no hace nada.
+            return Ok(());
+        }
+        activas.insert(modelo_id.clone(), cancel.clone());
     }
+    // La entrada en `activas` se mantiene hasta que TODO termina (descarga +
+    // sha256 + rename), no solo la descarga: el guard RAII la quita en su Drop,
+    // sea cual sea la salida (éxito, error, cancelación, `?`). Así ningún segundo
+    // intento puede tocar el `.partial` mientras se verifica o renombra.
+    let _guarda = GuardaDescargaActiva {
+        app: app.clone(),
+        modelo_id: modelo_id.clone(),
+    };
 
     let res = bajar_con_progreso(&app, &m, &parcial, &cancel).await;
-
-    {
-        let estado = app.state::<EstadoDescargas>();
-        estado.activas.lock().unwrap().remove(&modelo_id);
-    }
 
     if res.is_err() {
         let _ = tokio::fs::remove_file(&parcial).await;
@@ -124,6 +134,25 @@ pub async fn descargar_modelo_correccion(app: AppHandle, modelo_id: String) -> R
         .await
         .map_err(|e| format!("no se pudo finalizar la descarga: {e}"))?;
     Ok(())
+}
+
+/// Quita la marca de descarga en curso al salir del comando por CUALQUIER vía
+/// (éxito, error, `?`, cancelación), cubriendo también la verificación sha256 y
+/// el rename. Sin esto, liberar la marca antes de verificar reabriría la ventana
+/// de doble escritura al mismo `.partial`.
+struct GuardaDescargaActiva {
+    app: AppHandle,
+    modelo_id: String,
+}
+
+impl Drop for GuardaDescargaActiva {
+    fn drop(&mut self) {
+        if let Some(estado) = self.app.try_state::<EstadoDescargas>() {
+            if let Ok(mut activas) = estado.activas.lock() {
+                activas.remove(&self.modelo_id);
+            }
+        }
+    }
 }
 
 async fn bajar_con_progreso(
