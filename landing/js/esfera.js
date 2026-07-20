@@ -1061,9 +1061,10 @@ void main(){
              pixel a pixel (dither), los puntos traseros reaparecen gradual
              y la silueta deja de ser un círculo dibujado */
           float velo = smoothstep(0.45, 0.97, 1.0 - fondo);
-          /* hash seguro en fp16: sin argumentos gigantes dentro de sin() */
-          vec2 q = fract(gl_FragCoord.xy * 0.0173);
-          float h = fract(dot(q, q + 19.19) * 43.7);
+          /* hash seguro en fp16 y sin periodicidad visible (variante hash12) */
+          vec2 q = fract(gl_FragCoord.xy * vec2(0.1031, 0.113));
+          q += dot(q, q.yx + 13.33);
+          float h = fract((q.x + q.y) * q.x);
           if (h < velo) discard;
           float t = clamp((vN.x + vN.y) * 0.5 + 0.5, 0.0, 1.0); /* diagonal de marca en pantalla */
           vec3 borde   = vec3(0.020, 0.024, 0.059);             /* tinta */
