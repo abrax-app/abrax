@@ -37,7 +37,10 @@ jobs:
       platform: ${{ matrix.platform }}
       target: ${{ matrix.target }}
       build-args: ${{ matrix.args }}
-      sign-binaries: true
+      # Los builds de PRUEBA no firman: la org aún no tiene los secrets de
+      # Apple Developer y el paso de firma moría por eso. El release real
+      # (release.yml) sigue firmando cuando existan.
+      sign-binaries: false
       asset-prefix: "abrax-test"
       upload-artifacts: true
       is-debug-build: ${{ contains(matrix.args, '--debug') }}
