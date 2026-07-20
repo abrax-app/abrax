@@ -9,6 +9,7 @@ mod clipboard;
 mod commands;
 mod correccion;
 mod dictionary;
+mod hashing;
 mod helpers;
 mod input;
 mod llm_client;
@@ -60,7 +61,7 @@ pub static FILE_LOG_LEVEL: AtomicU8 = AtomicU8::new(log::LevelFilter::Debug as u
 /// mode — the live log viewer is its only consumer and only exists in debug
 /// mode — so normal runs never broadcast log records (which can include file
 /// paths or transcribed text) onto the frontend event bus. Synced at startup
-/// and whenever debug mode is toggled (see `shortcut::change_debug_mode_setting`).
+/// and whenever debug mode is toggled (see `commands::settings::change_debug_mode_setting`).
 pub static WEBVIEW_LOG_STREAMING: AtomicBool = AtomicBool::new(false);
 
 fn level_filter_from_u8(value: u8) -> log::LevelFilter {
@@ -311,7 +312,7 @@ fn initialize_core_logic(app_handle: &AppHandle) {
     app_handle.manage(tray);
 
     // Initialize tray menu with idle state
-    utils::update_tray_menu(app_handle, None);
+    tray::update_tray_menu(app_handle, None);
 
     // Apply show_tray_icon setting
     let settings = settings::get_settings(app_handle);
@@ -338,7 +339,7 @@ fn initialize_core_logic(app_handle: &AppHandle) {
     }
 
     // Create the recording overlay window (hidden by default)
-    utils::create_recording_overlay(app_handle);
+    overlay::create_recording_overlay(app_handle);
 }
 
 #[tauri::command]
@@ -553,16 +554,16 @@ pub fn run(cli_args: CliArgs) {
         .commands(collect_commands![
             shortcut::change_binding,
             shortcut::reset_binding,
-            shortcut::change_ptt_setting,
-            shortcut::change_audio_feedback_setting,
-            shortcut::change_audio_feedback_volume_setting,
-            shortcut::change_sound_theme_setting,
-            shortcut::change_theme_setting,
-            shortcut::change_ui_theme_setting,
-            shortcut::change_ui_shell_setting,
-            shortcut::change_esfera_modo_setting,
-            shortcut::change_correccion_modo_setting,
-            shortcut::change_correccion_motor_setting,
+            commands::settings::change_ptt_setting,
+            commands::settings::change_audio_feedback_setting,
+            commands::settings::change_audio_feedback_volume_setting,
+            commands::settings::change_sound_theme_setting,
+            commands::settings::change_theme_setting,
+            commands::settings::change_ui_theme_setting,
+            commands::settings::change_ui_shell_setting,
+            commands::settings::change_esfera_modo_setting,
+            commands::settings::change_correccion_modo_setting,
+            commands::settings::change_correccion_motor_setting,
             commands::correccion::detectar_correccion_ollama,
             commands::correccion_modelos::listar_modelos_correccion,
             commands::correccion_modelos::descargar_modelo_correccion,
@@ -573,53 +574,53 @@ pub fn run(cli_args: CliArgs) {
             commands::discos::obtener_carpeta_modelos,
             commands::audio::probar_microfono,
             signal_handle::trigger_transcription,
-            shortcut::change_start_hidden_setting,
-            shortcut::change_autostart_setting,
-            shortcut::change_translate_to_english_setting,
-            shortcut::change_selected_language_setting,
-            shortcut::change_overlay_position_setting,
-            shortcut::change_overlay_style_setting,
-            shortcut::change_debug_mode_setting,
-            shortcut::change_word_correction_threshold_setting,
-            shortcut::change_extra_recording_buffer_setting,
-            shortcut::change_paste_delay_ms_setting,
-            shortcut::change_paste_delay_after_ms_setting,
-            shortcut::change_paste_method_setting,
-            shortcut::get_available_typing_tools,
-            shortcut::change_typing_tool_setting,
-            shortcut::change_external_script_path_setting,
-            shortcut::change_clipboard_handling_setting,
-            shortcut::change_auto_submit_setting,
-            shortcut::change_auto_submit_key_setting,
-            shortcut::change_post_process_enabled_setting,
-            shortcut::change_experimental_enabled_setting,
-            shortcut::change_post_process_base_url_setting,
-            shortcut::change_post_process_api_key_setting,
-            shortcut::change_post_process_model_setting,
-            shortcut::set_post_process_provider,
-            shortcut::fetch_post_process_models,
-            shortcut::add_post_process_prompt,
-            shortcut::update_post_process_prompt,
-            shortcut::delete_post_process_prompt,
-            shortcut::set_post_process_selected_prompt,
-            shortcut::update_custom_words,
-            shortcut::update_custom_filler_words,
+            commands::settings::change_start_hidden_setting,
+            commands::settings::change_autostart_setting,
+            commands::settings::change_translate_to_english_setting,
+            commands::settings::change_selected_language_setting,
+            commands::settings::change_overlay_position_setting,
+            commands::settings::change_overlay_style_setting,
+            commands::settings::change_debug_mode_setting,
+            commands::settings::change_word_correction_threshold_setting,
+            commands::settings::change_extra_recording_buffer_setting,
+            commands::settings::change_paste_delay_ms_setting,
+            commands::settings::change_paste_delay_after_ms_setting,
+            commands::settings::change_paste_method_setting,
+            commands::settings::get_available_typing_tools,
+            commands::settings::change_typing_tool_setting,
+            commands::settings::change_external_script_path_setting,
+            commands::settings::change_clipboard_handling_setting,
+            commands::settings::change_auto_submit_setting,
+            commands::settings::change_auto_submit_key_setting,
+            commands::settings::change_post_process_enabled_setting,
+            commands::settings::change_experimental_enabled_setting,
+            commands::settings::change_post_process_base_url_setting,
+            commands::settings::change_post_process_api_key_setting,
+            commands::settings::change_post_process_model_setting,
+            commands::settings::set_post_process_provider,
+            commands::settings::fetch_post_process_models,
+            commands::settings::add_post_process_prompt,
+            commands::settings::update_post_process_prompt,
+            commands::settings::delete_post_process_prompt,
+            commands::settings::set_post_process_selected_prompt,
+            commands::settings::update_custom_words,
+            commands::settings::update_custom_filler_words,
             shortcut::suspend_binding,
             shortcut::resume_binding,
-            shortcut::change_mute_while_recording_setting,
-            shortcut::change_append_trailing_space_setting,
-            shortcut::change_lazy_stream_close_setting,
-            shortcut::change_vad_enabled_setting,
-            shortcut::change_app_language_setting,
-            shortcut::change_update_checks_setting,
-            shortcut::change_show_whats_new_on_update_setting,
-            shortcut::change_whats_new_last_seen_version_setting,
+            commands::settings::change_mute_while_recording_setting,
+            commands::settings::change_append_trailing_space_setting,
+            commands::settings::change_lazy_stream_close_setting,
+            commands::settings::change_vad_enabled_setting,
+            commands::settings::change_app_language_setting,
+            commands::settings::change_update_checks_setting,
+            commands::settings::change_show_whats_new_on_update_setting,
+            commands::settings::change_whats_new_last_seen_version_setting,
             shortcut::change_keyboard_implementation_setting,
-            shortcut::change_show_tray_icon_setting,
-            shortcut::change_transcribe_accelerator_setting,
-            shortcut::change_ort_accelerator_setting,
-            shortcut::change_transcribe_gpu_device,
-            shortcut::get_available_accelerators,
+            commands::settings::change_show_tray_icon_setting,
+            commands::settings::change_transcribe_accelerator_setting,
+            commands::settings::change_ort_accelerator_setting,
+            commands::settings::change_transcribe_gpu_device,
+            commands::settings::get_available_accelerators,
             shortcut::handy_keys::start_handy_keys_recording,
             shortcut::handy_keys::stop_handy_keys_recording,
             show_main_window_command,
@@ -910,7 +911,10 @@ pub fn run(cli_args: CliArgs) {
             // of the wrong theme. On macOS/Linux, Tauri themes are app-wide and
             // would also affect windows that intentionally keep the system theme.
             #[cfg(target_os = "windows")]
-            shortcut::apply_window_theme(app.handle(), shortcut::effective_window_theme(&settings));
+            commands::settings::apply_window_theme(
+                app.handle(),
+                commands::settings::effective_window_theme(&settings),
+            );
 
             // CLI --debug flag overrides debug_mode and log level (runtime-only, not persisted)
             if cli_args.debug {
@@ -989,7 +993,7 @@ pub fn run(cli_args: CliArgs) {
             tauri::WindowEvent::ThemeChanged(theme) => {
                 log::info!("Theme changed to: {:?}", theme);
                 // Re-apply the current tray state with the new theme's icon set
-                utils::refresh_tray_icon(window.app_handle());
+                tray::refresh_tray_icon(window.app_handle());
             }
             _ => {}
         })

@@ -9,7 +9,6 @@ use crate::audio_toolkit::{
 use crate::helpers::clamshell;
 use crate::managers::transcription::StreamRouter;
 use crate::settings::{get_settings, AppSettings};
-use crate::utils;
 use log::{debug, error, info, warn};
 use std::path::Path;
 use std::sync::atomic::{AtomicU64, Ordering};
@@ -158,7 +157,7 @@ fn create_audio_recorder(
         .with_level_callback({
             let app_handle = app_handle.clone();
             move |frame| {
-                utils::emit_spectrum(&app_handle, &frame);
+                crate::overlay::emit_spectrum(&app_handle, &frame);
             }
         })
         // Subscription gate (R8): the FFT only runs while some window called

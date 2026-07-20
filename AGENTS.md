@@ -42,12 +42,8 @@ bun run format:frontend   # Prettier only
 bun run format:backend    # cargo fmt only
 ```
 
-**Model Setup (Required for Development):**
-
-```bash
-mkdir -p src-tauri/resources/models
-curl -o src-tauri/resources/models/silero_vad_v4.onnx https://blob.handy.computer/silero_vad_v4.onnx
-```
+**Model Setup:** the VAD model (`src-tauri/resources/models/silero_vad_v4.onnx`)
+is tracked in the repo — no download step is needed for development.
 
 For detailed platform-specific build setup, see [BUILD.md](BUILD.md).
 

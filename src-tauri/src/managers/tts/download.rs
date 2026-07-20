@@ -14,7 +14,6 @@ use std::path::{Path, PathBuf};
 
 use futures_util::StreamExt;
 use serde::Serialize;
-use sha2::{Digest, Sha256};
 use specta::Type;
 use tauri::{AppHandle, Emitter};
 
@@ -51,20 +50,9 @@ pub fn runtime_dir(app: &AppHandle, name: &str) -> Result<PathBuf, String> {
     Ok(dir)
 }
 
-/// sha256 hex de un archivo, en trozos de 64 KiB (como el gestor de modelos).
+/// sha256 hex de un archivo (implementación compartida en `crate::hashing`).
 pub fn compute_sha256(path: &Path) -> Result<String, String> {
-    use std::io::Read;
-    let mut file = std::fs::File::open(path).map_err(|e| e.to_string())?;
-    let mut hasher = Sha256::new();
-    let mut buffer = [0u8; 65536];
-    loop {
-        let n = file.read(&mut buffer).map_err(|e| e.to_string())?;
-        if n == 0 {
-            break;
-        }
-        hasher.update(&buffer[..n]);
-    }
-    Ok(format!("{:x}", hasher.finalize()))
+    crate::hashing::sha256_file(path).map_err(|e| e.to_string())
 }
 
 /// Verifica el sha256 esperado; en desajuste BORRA el archivo (para que el

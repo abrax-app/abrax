@@ -15,17 +15,25 @@
 | Headers LLM (Referer/UA/X-Title) | ✅ Hecho         | `Abrax` / `abrax.app` en `src-tauri/src/llm_client.rs`                                                                                                    |
 | URLs UI (About, Updater)         | ✅ Hecho         | `github.com/abrax-app/abrax` — owner definitivo (organización `abrax-app`)                                                                                |
 | Nombre del producto en i18n      | ✅ Hecho         | 330 ocurrencias → `Abrax` en 22 locales; paridad verificada                                                                                               |
-| **Fuentes de modelos**           | ⏳ **PENDIENTE** | 17 URLs `blob.handy.computer` en `src-tauri/src/managers/model.rs` (líneas 493–1025). Ver abajo                                                           |
+| **Fuentes de modelos**           | ⏳ **PENDIENTE** | 5 tarballs `blob.handy.computer` en `model.rs` (moonshine ×2, giga-am, canary ×2) + 1 mirror de CI (onnxruntime macOS Intel). Ver abajo                   |
 | Nombre de lib Rust               | ⏳ Deuda menor   | `handy_app_lib` (interno, invisible al usuario). Renombrar a `abrax_app_lib` en una versión futura toca `main.rs` + fuerza recompilación total            |
 | Release notes / test fixtures    | ⏳ Menor         | `src/content/release-notes/0.9.0.md` (link a cjpais/issues) y fixture `settings.rs:1199`                                                                  |
 
 ### Fuentes de modelos (tarea dedicada, NO cambiar a ciegas)
 
-Los modelos legacy se descargan de `blob.handy.computer` (infra del autor original).
+Estado 2026-07-20: quedan **5 tarballs** de modelos legacy en
+`blob.handy.computer` (`model.rs`: moonshine-base, moonshine-tiny-streaming,
+giga-am-v3-int8, canary-180m-flash, canary-1b-v2 — todos con `sha256` presente,
+así que la integridad está protegida aunque el hosting sea de terceros). En CI,
+onnxruntime Linux y Windows ya bajan del **release oficial de Microsoft**; el de
+**macOS Intel sigue en el blob** porque Microsoft dejó de publicar binarios
+osx-x86_64 (v1.24.2 solo trae arm64) — ese requiere hosting propio sí o sí.
+
 Migrar a fuentes propias **con verificación de checksum**:
 
-1. Para cada modelo (17), localizar el equivalente en Hugging Face (la org
-   `handy-computer` ya publica varios; el catálogo bundled ya usa la ruta HF).
+1. Para cada tarball, localizar el equivalente en Hugging Face (la org
+   `handy-computer` ya publica varios; el catálogo bundled ya usa la ruta HF) o
+   re-subirlo a la org HF propia cuando exista la cuenta.
 2. Reemplazar `ModelSource::Url { url, sha256 }` por la URL de HF **conservando el
    `sha256`** ya presente (la verificación SHA-256 previa a extracción ya existe y
    debe mantenerse — hallazgo S4 de la auditoría).

@@ -5,9 +5,7 @@ import { Button } from "@/components/ui/Button";
 import { useSettings } from "@/hooks/useSettings";
 import { commands } from "@/bindings";
 import type { CarpetaModelos as Carpeta, DiscoInfo } from "@/bindings";
-
-const GB = 1_073_741_824;
-const enGb = (b: number) => (b / GB).toFixed(0);
+import { bytesAGb } from "@/lib/utils/format";
 
 /**
  * Selector de dónde viven los modelos (transcripción y Pulido comparten la
@@ -92,8 +90,8 @@ export const CarpetaModelos: React.FC = React.memo(() => {
               </span>
               <span className="opacity-60 whitespace-nowrap tabular-nums">
                 {t("carpetaModelos.espacio", {
-                  libre: enGb(d.libre_bytes),
-                  total: enGb(d.total_bytes),
+                  libre: bytesAGb(d.libre_bytes, 0),
+                  total: bytesAGb(d.total_bytes, 0),
                 })}
               </span>
             </button>

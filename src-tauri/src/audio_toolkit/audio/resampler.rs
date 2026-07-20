@@ -47,7 +47,6 @@ impl FrameResampler {
             src = &src[take..];
 
             if self.in_buf.len() == self.chunk_in {
-                // let start = std::time::Instant::now();
                 if let Ok(out) = self
                     .resampler
                     .as_mut()
@@ -55,7 +54,6 @@ impl FrameResampler {
                     .process(&[&self.in_buf[..]], None)
                 {
                     // let duration = start.elapsed();
-                    // log::debug!("Resampler took: {:?}", duration);
                     self.emit_frames(&out[0], &mut emit);
                 }
                 self.in_buf.clear();

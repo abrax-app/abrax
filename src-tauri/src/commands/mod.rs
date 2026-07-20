@@ -7,6 +7,7 @@ pub mod discos;
 pub mod escucha;
 pub mod history;
 pub mod models;
+pub mod settings;
 pub mod transcription;
 // [TTS] Motor de voz adaptativo (detección, motores, descarga de assets).
 pub mod tts;

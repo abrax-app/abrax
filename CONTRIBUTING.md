@@ -31,14 +31,8 @@ Prerrequisitos: [Rust](https://rustup.rs/) (estable), [Bun](https://bun.sh/) y l
    bun install
    ```
 
-3. **Descarga el modelo de VAD** (requerido):
-
-   ```bash
-   mkdir -p src-tauri/resources/models
-   curl -o src-tauri/resources/models/silero_vad_v4.onnx https://blob.handy.computer/silero_vad_v4.onnx
-   ```
-
-4. **Corre en modo desarrollo**:
+3. **Corre en modo desarrollo** (el modelo de VAD ya viene trackeado en el
+   repo, no hay que descargar nada):
 
    ```bash
    bun run tauri dev

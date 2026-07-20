@@ -1,9 +1,10 @@
 //! The bundled, offline model catalog.
 //!
-//! `catalog.json` is generated at build time by `scripts/gen_catalog.py` from the
-//! `handy-computer` Hugging Face org (card `transcribe_cpp` capabilities +
-//! benchmarks, a GGUF header probe for name/params, and local curation for the
-//! recommended set). It is compiled into the binary so Abrax ships a complete
+//! `catalog.json` is regenerated MANUALLY (offline, not as a build step) with
+//! `scripts/gen_catalog.py` from the `handy-computer` Hugging Face org (card
+//! `transcribe_cpp` capabilities + benchmarks, a GGUF header probe for
+//! name/params, and local curation for the recommended set). The committed JSON
+//! is compiled into the binary via `include_str!`, so Abrax ships a complete
 //! model list with zero network access.
 //!
 //! Each entry is normalised into a [`ModelDescriptor`] — the same source-agnostic

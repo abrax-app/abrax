@@ -12,7 +12,6 @@
 //! (CPU o Vulkan) se elige según el hardware detectado. Apagado por inactividad
 //! para no dejar un modelo grande ocupando RAM/VRAM.
 
-use std::io::Read;
 use std::path::{Path, PathBuf};
 use std::process::{Child, Command, Stdio};
 use std::sync::atomic::{AtomicBool, AtomicU64, Ordering};
@@ -127,23 +126,6 @@ pub fn find_llama_server(dir: &Path) -> Option<PathBuf> {
     None
 }
 
-/// SHA-256 en hex de un archivo, por trozos (no carga todo a memoria). Mismo
-/// formato que `managers::model` (`{:x}` sobre el digest de sha2).
-fn sha256_archivo(path: &Path) -> std::io::Result<String> {
-    use sha2::{Digest, Sha256};
-    let mut f = std::fs::File::open(path)?;
-    let mut hasher = Sha256::new();
-    let mut buf = [0u8; 65536];
-    loop {
-        let n = f.read(&mut buf)?;
-        if n == 0 {
-            break;
-        }
-        hasher.update(&buf[..n]);
-    }
-    Ok(format!("{:x}", hasher.finalize()))
-}
-
 /// Descarga (si hace falta) y extrae el runtime, devolviendo la ruta al binario
 /// `llama-server`. Idempotente: si ya está extraído y el binario existe, no baja
 /// nada. Verifica sha256 del archivo descargado antes de extraer.
@@ -161,7 +143,7 @@ pub async fn ensure_runtime(datadir: &Path, variante: Variante) -> Result<PathBu
 
     // Descarga a un temporal y verifica sha256.
     descargar(&asset.url, &archivo).await?;
-    let real = sha256_archivo(&archivo).map_err(|e| format!("sha256: {e}"))?;
+    let real = crate::hashing::sha256_file(&archivo).map_err(|e| format!("sha256: {e}"))?;
     if !real.eq_ignore_ascii_case(asset.sha256) {
         let _ = std::fs::remove_file(&archivo);
         return Err(format!(

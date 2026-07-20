@@ -112,7 +112,7 @@ pub async fn descargar_modelo_correccion(app: AppHandle, modelo_id: String) -> R
     // Verifica integridad en un hilo bloqueante (I/O de disco).
     let esperado = m.sha256.clone();
     let parcial2 = parcial.clone();
-    let real = tokio::task::spawn_blocking(move || sha256_archivo(&parcial2))
+    let real = tokio::task::spawn_blocking(move || crate::hashing::sha256_file(&parcial2))
         .await
         .map_err(|e| format!("tarea sha256: {e}"))?
         .map_err(|e| format!("sha256: {e}"))?;
@@ -182,22 +182,6 @@ async fn bajar_con_progreso(
     archivo.flush().await.map_err(|e| format!("flush: {e}"))?;
     emitir(bajados);
     Ok(())
-}
-
-fn sha256_archivo(path: &Path) -> std::io::Result<String> {
-    use sha2::{Digest, Sha256};
-    use std::io::Read;
-    let mut file = std::fs::File::open(path)?;
-    let mut hasher = Sha256::new();
-    let mut buf = [0u8; 65536];
-    loop {
-        let n = file.read(&mut buf)?;
-        if n == 0 {
-            break;
-        }
-        hasher.update(&buf[..n]);
-    }
-    Ok(format!("{:x}", hasher.finalize()))
 }
 
 /// Marca una descarga en curso para que se cancele (el bucle la ve y aborta).
