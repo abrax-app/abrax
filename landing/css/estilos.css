@@ -11,7 +11,8 @@
   --texto: #c9d4e0;
   --suave: #6b7688; /* solo etiquetas y decorativos */
   --suave-lectura: #8a94a6; /* texto secundario de LECTURA: ≥4.5:1 sobre tinta */
-  --violeta-claro: #9d73f8; /* hover del primario */
+  --violeta-boton: #6b46e5; /* fondo de CTA: blanco encima da ≥4.5:1 (AA) */
+  --violeta-claro: #7d55f0; /* hover del primario, también AA con blanco */
   --borde: #1c2140;
 }
 
@@ -247,7 +248,7 @@ h2::before {
   font-size: 10px;
   letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: var(--suave);
+  color: var(--suave-lectura);
   text-decoration: none;
 }
 .nav-principal a:hover {
@@ -357,7 +358,7 @@ h2::before {
   letter-spacing: 0.22em;
   padding: 15px 30px;
   color: #fff;
-  background: var(--violeta);
+  background: var(--violeta-boton);
   box-shadow: 0 0 24px rgba(139, 92, 246, 0.35);
 }
 .btn--hero:hover {
@@ -372,7 +373,7 @@ h2::before {
   letter-spacing: 0.18em;
   padding: 14px 24px;
   color: #fff;
-  background: var(--violeta);
+  background: var(--violeta-boton);
   box-shadow: 0 0 24px rgba(139, 92, 246, 0.3);
 }
 .btn--prim:hover {
@@ -406,7 +407,7 @@ h2::before {
   font-size: 11px;
   letter-spacing: 0.18em;
   padding: 12px 20px;
-  color: var(--suave);
+  color: var(--suave-lectura);
   background: transparent;
 }
 .btn--ghost:hover {
@@ -436,9 +437,6 @@ h2::before {
   display: flex;
   gap: 18px;
   flex-wrap: wrap;
-}
-.cards + .cards {
-  margin-top: 18px;
 }
 .card {
   flex: 1 1 240px;
@@ -502,7 +500,7 @@ h2::before {
   color: var(--violeta);
 }
 .ejemplo--prompt .nota {
-  color: var(--suave);
+  color: var(--suave-lectura);
 }
 .paletas {
   display: flex;
@@ -620,7 +618,7 @@ h2::before {
   font-size: 10px;
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: var(--suave);
+  color: var(--suave-lectura);
   font-weight: 400;
 }
 .tabla-wrap th.abrax {
@@ -631,8 +629,15 @@ h2::before {
   padding: 10px 14px;
   border-top: 1px solid var(--borde);
 }
-.tabla-wrap td:first-child {
-  color: var(--suave);
+.tabla-wrap tbody th {
+  text-align: left;
+  padding: 10px 14px;
+  border-top: 1px solid var(--borde);
+  color: var(--suave-lectura);
+  font-weight: 400;
+  font-size: inherit;
+  letter-spacing: normal;
+  text-transform: none;
 }
 .tabla-wrap td.abrax {
   color: #fff;
@@ -781,7 +786,7 @@ h2::before {
   font-size: 10px;
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: var(--suave);
+  color: var(--suave-lectura);
   text-decoration: none;
 }
 .pie-nav a:hover {
@@ -801,12 +806,6 @@ h2::before {
   }
   .hero-cuerpo {
     padding-top: 84px;
-  }
-  .cta-final {
-    padding-top: 100px;
-  }
-  .dictado {
-    white-space: normal; /* en móvil el resultado quiebra a 2ª línea, no se corta */
   }
   /* header compacto: logo + 4 enlaces caben en una sola línea */
   .hero-cabecera {
@@ -1033,7 +1032,6 @@ h2::before {
   .rvl {
     opacity: 1;
     transform: none;
-    filter: none;
     transition: none;
   }
 }
@@ -1113,9 +1111,6 @@ h2::before {
 }
 .hero-cuerpo.entra > *:nth-child(7) {
   transition-delay: 0.46s;
-}
-.hero-cuerpo.entra > *:nth-child(8) {
-  transition-delay: 0.54s;
 }
 
 /* números gigantes translúcidos en el flujo */
@@ -1397,4 +1392,15 @@ h2::before {
 .portal-sub i {
   font-style: normal;
   color: var(--texto);
+}
+
+/* ── correcciones móviles al FINAL del archivo: deben ganar en cascada a las
+   bases declaradas después de los bloques @media originales ── */
+@media (max-width: 720px) {
+  .seccion .dictado {
+    white-space: normal; /* el resultado quiebra a 2ª línea, no se corta */
+  }
+  .seccion.cta-final {
+    padding-top: 100px;
+  }
 }

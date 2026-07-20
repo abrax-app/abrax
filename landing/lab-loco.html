@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Laboratorio de la esfera · ABRAX</title>
+    <title>LAB LOCO · esfera sin límites</title>
     <meta name="robots" content="noindex" />
     <link rel="icon" type="image/svg+xml" href="assets/abrax-favicon.svg" />
     <style>
@@ -15,7 +15,7 @@
         --panel: #0b0d1c;
         --texto: #c9d4e0;
         --suave: #8a94a6;
-        --borde: #1c2140;
+        --borde: #3a1c40;
       }
       * {
         box-sizing: border-box;
@@ -51,7 +51,7 @@
         width: 300px;
         max-height: calc(100vh - 32px);
         overflow-y: auto;
-        background: rgba(11, 13, 28, 0.88);
+        background: rgba(20, 8, 24, 0.88);
         backdrop-filter: blur(10px);
         border: 1px solid var(--borde);
         border-radius: 14px;
@@ -65,7 +65,7 @@
       }
       .panel h1::before {
         content: "◈ ";
-        color: var(--violeta);
+        color: var(--magenta);
       }
       .panel .sub {
         font-size: 10px;
@@ -86,12 +86,12 @@
         margin-bottom: 5px;
       }
       .ctrl label b {
-        color: var(--cian);
+        color: var(--magenta);
         font-weight: 600;
       }
       .ctrl input[type="range"] {
         width: 100%;
-        accent-color: var(--cian);
+        accent-color: var(--magenta);
       }
       .fila-botones {
         display: flex;
@@ -105,27 +105,27 @@
         font-size: 10.5px;
         letter-spacing: 0.1em;
         color: var(--texto);
-        background: rgba(47, 217, 255, 0.08);
-        border: 1px solid rgba(47, 217, 255, 0.35);
+        background: rgba(242, 61, 196, 0.08);
+        border: 1px solid rgba(242, 61, 196, 0.4);
         border-radius: 8px;
         padding: 8px 12px;
         cursor: pointer;
       }
       button:hover {
-        background: rgba(47, 217, 255, 0.16);
+        background: rgba(242, 61, 196, 0.18);
       }
       button.preset {
         border-color: rgba(139, 92, 246, 0.5);
         background: rgba(139, 92, 246, 0.1);
       }
       button.activo {
-        border-color: var(--magenta);
-        background: rgba(242, 61, 196, 0.12);
+        border-color: var(--cian);
+        background: rgba(47, 217, 255, 0.12);
       }
       #valores {
         font-size: 10.5px;
         line-height: 1.7;
-        color: var(--cian);
+        color: var(--magenta);
         background: var(--tinta);
         border: 1px solid var(--borde);
         border-radius: 8px;
@@ -144,115 +144,82 @@
   <body>
     <div id="escena"><canvas id="esfera"></canvas></div>
 
-    <aside class="panel" aria-label="Controles del laboratorio">
-      <h1>Lab · esfera</h1>
-      <p class="sub">Esculpe en vivo. 1.00 = como el prototipo original.</p>
+    <aside class="panel" aria-label="Controles del laboratorio loco">
+      <h1>Lab LOCO</h1>
+      <p class="sub">
+        Motor clonado, sin cinturón de seguridad. Nada de aquí toca la landing.
+      </p>
 
       <div class="ctrl">
-        <label>Luz del núcleo <b id="v-nucleo">1.00</b></label>
-        <input id="s-nucleo" type="range" min="0" max="1.5" step="0.05" value="1" />
+        <label>Luz del núcleo <b id="v-nucleo">0.50</b></label>
+        <input id="s-nucleo" type="range" min="0" max="5" step="0.05" value="0.5" />
       </div>
       <div class="ctrl">
-        <label>Halo rosado <b id="v-halo">1.00</b></label>
-        <input id="s-halo" type="range" min="0" max="1.5" step="0.05" value="1" />
+        <label>Halo rosado <b id="v-halo">0.65</b></label>
+        <input id="s-halo" type="range" min="0" max="5" step="0.05" value="0.65" />
       </div>
       <div class="ctrl">
-        <label>Luz interior <b id="v-interior">1.00</b></label>
-        <input
-          id="s-interior"
-          type="range"
-          min="0"
-          max="1.5"
-          step="0.05"
-          value="1"
-        />
+        <label>Luz interior <b id="v-interior">1.10</b></label>
+        <input id="s-interior" type="range" min="0" max="5" step="0.05" value="1.1" />
       </div>
       <div class="ctrl">
-        <label>Anillos del isotipo <b id="v-anillo">0.00</b></label>
-        <input id="s-anillo" type="range" min="0" max="1.5" step="0.05" value="0" />
+        <label>Anillos del isotipo <b id="v-anillo">0.70</b></label>
+        <input id="s-anillo" type="range" min="0" max="1.5" step="0.05" value="0.7" />
       </div>
       <div class="ctrl">
         <label>Anillos cruzados <b id="v-cruzados">0.00</b></label>
-        <input
-          id="s-cruzados"
-          type="range"
-          min="0"
-          max="1.5"
-          step="0.05"
-          value="0"
-        />
+        <input id="s-cruzados" type="range" min="0" max="1.5" step="0.05" value="0" />
       </div>
       <div class="ctrl">
-        <label>Picos blancos <b id="v-blanco">1.00</b></label>
-        <input id="s-blanco" type="range" min="0" max="1.5" step="0.05" value="1" />
+        <label>Picos blancos <b id="v-blanco">0.40</b></label>
+        <input id="s-blanco" type="range" min="0" max="5" step="0.05" value="0.4" />
       </div>
       <div class="ctrl">
-        <label>Orgánico (bultos) <b id="v-organico">0.00</b></label>
-        <input id="s-organico" type="range" min="0" max="1.5" step="0.05" value="0" />
+        <label>Orgánico (bultos) <b id="v-organico">0.30</b></label>
+        <input id="s-organico" type="range" min="0" max="4" step="0.05" value="0.3" />
       </div>
       <div class="ctrl">
-        <label>Ruido (estructura) <b id="v-ruido">0.00</b></label>
-        <input id="s-ruido" type="range" min="0" max="0.6" step="0.02" value="0" />
+        <label>Ruido (estructura) <b id="v-ruido">0.34</b></label>
+        <input id="s-ruido" type="range" min="0" max="2.4" step="0.02" value="0.34" />
       </div>
       <div class="ctrl">
         <label>Escala del ruido <b id="v-ruidoEscala">2.20</b></label>
-        <input
-          id="s-ruidoEscala"
-          type="range"
-          min="0.5"
-          max="5"
-          step="0.1"
-          value="2.2"
-        />
+        <input id="s-ruidoEscala" type="range" min="0.2" max="15" step="0.1" value="2.2" />
       </div>
       <div class="ctrl">
-        <label>Velocidad del ruido <b id="v-ruidoVel">1.00</b></label>
-        <input
-          id="s-ruidoVel"
-          type="range"
-          min="0"
-          max="3"
-          step="0.1"
-          value="1"
-        />
+        <label>Velocidad del ruido <b id="v-ruidoVel">0.90</b></label>
+        <input id="s-ruidoVel" type="range" min="0" max="10" step="0.1" value="0.9" />
       </div>
       <div class="ctrl">
         <label>Venas (filamentos) <b id="v-venas">0.00</b></label>
-        <input id="s-venas" type="range" min="0" max="1.5" step="0.05" value="0" />
+        <input id="s-venas" type="range" min="0" max="5" step="0.05" value="0" />
       </div>
       <div class="ctrl">
         <label>Escala de venas <b id="v-venaEscala">3.00</b></label>
-        <input
-          id="s-venaEscala"
-          type="range"
-          min="1"
-          max="6"
-          step="0.1"
-          value="3"
-        />
+        <input id="s-venaEscala" type="range" min="0.3" max="20" step="0.1" value="3" />
       </div>
       <div class="ctrl">
-        <label>Velocidad de giro <b id="v-giro">1.00</b></label>
-        <input id="s-giro" type="range" min="0" max="2.5" step="0.1" value="1" />
+        <label>Velocidad de giro <b id="v-giro">0.90</b></label>
+        <input id="s-giro" type="range" min="0" max="10" step="0.1" value="0.9" />
       </div>
       <div class="ctrl">
         <label>Sensibilidad <b id="v-sens">1.00</b></label>
-        <input id="s-sens" type="range" min="0.2" max="2.5" step="0.05" value="1" />
+        <input id="s-sens" type="range" min="0.05" max="6" step="0.05" value="1" />
       </div>
 
       <div class="fila-botones">
-        <button class="preset" id="btnFirma">Firma (landing)</button>
-        <button class="preset" id="btnSuave">Suave y viva</button>
+        <button class="preset" id="btnBase">Firma ABRAX</button>
+        <button class="preset" id="btnSinAnillos">Sin anillos</button>
+        <button class="preset" id="btnArmilar">Armilar</button>
       </div>
       <div class="fila-botones">
-        <button class="preset" id="btnMasa">Masa viva (ruido)</button>
-        <button class="preset" id="btnOriginal">Original</button>
+        <button class="preset" id="btnCaos">CAOS TOTAL</button>
+        <button class="preset" id="btnGelatina">Gelatina</button>
+        <button class="preset" id="btnErizo">Erizo eléctrico</button>
       </div>
       <div class="fila-botones">
-        <button id="btnMic">🎤 Hablar con la esfera</button>
-      </div>
-      <div class="fila-botones">
-        <button id="btnFeed">Simular dictado</button>
+        <button id="btnMic">🎤 Hablar</button>
+        <button id="btnFeed">Dictado</button>
         <button id="btnVaciar">Vaciar</button>
         <select id="selCalidad" aria-label="Calidad">
           <option value="auto" selected>Auto</option>
@@ -261,19 +228,17 @@
           <option value="baja">Baja</option>
         </select>
       </div>
-      <p class="sub" id="estado" role="status">
-        modo demo · respiración sintética
-      </p>
+      <p class="sub" id="estado" role="status">modo demo</p>
 
       <div id="valores">{}</div>
       <p class="nota">
-        Copia estos valores y pásaselos a Claude para fijarlos en la landing.
-        Página solo de desarrollo (noindex; no se enlaza desde la landing).
+        Si algo te gusta de verdad, copia el JSON y lo domesticamos en el lab
+        serio. Si el navegador llora, baja la calidad.
       </p>
     </aside>
 
     <script src="vendor/three.min.js"></script>
-    <script src="js/esfera.js"></script>
+    <script src="js/esfera-loca.js"></script>
     <script>
       (function () {
         "use strict";
@@ -284,15 +249,6 @@
           onEstado: function (txt) {
             document.getElementById("estado").textContent = txt;
           },
-        });
-
-        const btnMic = document.getElementById("btnMic");
-        btnMic.addEventListener("click", async function () {
-          const activo = await ESFERA.toggleMic();
-          btnMic.textContent = activo
-            ? "⏹ Detener micrófono"
-            : "🎤 Hablar con la esfera";
-          btnMic.classList.toggle("activo", activo);
         });
 
         const claves = [
@@ -340,7 +296,6 @@
         claves.concat(["sens"]).forEach(function (k) {
           document.getElementById("s-" + k).addEventListener("input", aplicar);
         });
-
         function ponerSliders(o) {
           Object.keys(o).forEach(function (k) {
             const s = document.getElementById("s-" + k);
@@ -348,82 +303,106 @@
           });
           aplicar();
         }
-        document.getElementById("btnFirma").addEventListener("click", () =>
+
+        const FIRMA = {
+          nucleo: 0.55,
+          halo: 0.6,
+          interior: 1,
+          anillo: 0.7,
+          cruzados: 0,
+          blanco: 0.5,
+          organico: 0.22,
+          ruido: 0.15,
+          ruidoEscala: 2,
+          ruidoVel: 0.7,
+          venas: 0,
+          venaEscala: 3,
+          giro: 0.8,
+          sens: 1,
+        };
+        document
+          .getElementById("btnBase")
+          .addEventListener("click", () => ponerSliders(FIRMA));
+        document
+          .getElementById("btnSinAnillos")
+          .addEventListener("click", () =>
+            ponerSliders(Object.assign({}, FIRMA, { anillo: 0, cruzados: 0 })),
+          );
+        document
+          .getElementById("btnArmilar")
+          .addEventListener("click", () =>
+            ponerSliders(
+              Object.assign({}, FIRMA, { anillo: 0.5, cruzados: 0.75 }),
+            ),
+          );
+        document.getElementById("btnCaos").addEventListener("click", () =>
           ponerSliders({
-            nucleo: 0.55,
-            halo: 0.55,
-            interior: 1,
-            anillo: 0,
-            cruzados: 0,
-            blanco: 0.4,
-            organico: 0.15,
-            ruido: 0.1,
-            ruidoEscala: 2,
-            ruidoVel: 0.55,
-            venas: 0,
-            venaEscala: 3,
-            giro: 0.7,
+            nucleo: 2.2,
+            halo: 2.5,
+            interior: 3,
+            anillo: 1.4,
+            cruzados: 1.3,
+            blanco: 2,
+            organico: 2.5,
+            ruido: 1.6,
+            ruidoEscala: 6,
+            ruidoVel: 6,
+            venas: 2.5,
+            venaEscala: 8,
+            giro: 5,
+            sens: 3,
           }),
         );
-        document.getElementById("btnSuave").addEventListener("click", () =>
+        document.getElementById("btnGelatina").addEventListener("click", () =>
           ponerSliders({
-            nucleo: 0.55,
-            halo: 0.7,
-            interior: 1,
-            anillo: 0,
-            cruzados: 0,
-            blanco: 0.45,
-            organico: 0.7,
-            ruido: 0,
-            ruidoEscala: 2.2,
-            ruidoVel: 1,
+            nucleo: 0.4,
+            halo: 1.2,
+            interior: 1.6,
+            anillo: 0.3,
+            cruzados: 0.15,
+            blanco: 0.3,
+            organico: 3.5,
+            ruido: 0.9,
+            ruidoEscala: 1.1,
+            ruidoVel: 2.5,
             venas: 0,
             venaEscala: 3,
-            giro: 0.9,
+            giro: 0.4,
+            sens: 1.4,
           }),
         );
-        document.getElementById("btnMasa").addEventListener("click", () =>
+        document.getElementById("btnErizo").addEventListener("click", () =>
           ponerSliders({
-            nucleo: 0.5,
-            halo: 0.65,
-            interior: 1.1,
+            nucleo: 0.8,
+            halo: 0.4,
+            interior: 0.6,
             anillo: 0,
-            cruzados: 0,
-            blanco: 0.4,
-            organico: 0.3,
-            ruido: 0.34,
-            ruidoEscala: 2.2,
-            ruidoVel: 0.9,
-            venas: 0,
-            venaEscala: 3,
-            giro: 0.85,
-          }),
-        );
-        document.getElementById("btnOriginal").addEventListener("click", () =>
-          ponerSliders({
-            nucleo: 1,
-            halo: 1,
-            interior: 0,
-            anillo: 0,
-            cruzados: 0,
-            blanco: 1,
-            organico: 0,
-            ruido: 0,
-            ruidoEscala: 2.2,
-            ruidoVel: 1,
-            venas: 0,
-            venaEscala: 3,
-            giro: 1,
+            cruzados: 0.8,
+            blanco: 1.6,
+            organico: 0.5,
+            ruido: 1.8,
+            ruidoEscala: 12,
+            ruidoVel: 1.2,
+            venas: 3,
+            venaEscala: 15,
+            giro: 1.5,
+            sens: 2,
           }),
         );
 
+        const btnMic = document.getElementById("btnMic");
+        btnMic.addEventListener("click", async function () {
+          const activo = await ESFERA.toggleMic();
+          btnMic.textContent = activo ? "⏹ Detener" : "🎤 Hablar";
+          btnMic.classList.toggle("activo", activo);
+        });
         let feed = false;
         const btnFeed = document.getElementById("btnFeed");
         btnFeed.addEventListener("click", function () {
           feed = !feed;
-          if (feed) ESFERA.iniciarFeed(900);
+          if (feed) ESFERA.iniciarFeed(600);
           else ESFERA.detenerFeed();
-          btnFeed.textContent = feed ? "● Escuchando…" : "Simular dictado";
+          btnFeed.textContent = feed ? "● …" : "Dictado";
           btnFeed.classList.toggle("activo", feed);
         });
         document
@@ -433,7 +412,7 @@
           .getElementById("selCalidad")
           .addEventListener("change", (e) => ESFERA.setQuality(e.target.value));
 
-        pintarValores();
+        document.getElementById("btnSinAnillos").click();
       })();
     </script>
   </body>

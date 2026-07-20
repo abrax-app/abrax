@@ -1,8 +1,7 @@
 # Landing de ABRAX
 
-Sitio estático, sin build. Estructura y copy según `abrax-kit/kit/PROMPT_MAESTRO_V2.md`
-FASE 8 (secciones) y FASE 7 (esfera); diseño base generado con Claude Design a partir del
-design system "ABRAX — Design System" (claude.ai/design) e integrado aquí con el código real.
+Sitio estático, sin build ni dependencias de red: three.js va self-hosteado y
+las fuentes son la pila monoespaciada del sistema.
 
 ## Ver en local
 
@@ -14,37 +13,43 @@ npx serve landing
 python -m http.server 8000 --directory landing
 ```
 
-Abrir directamente `index.html` con doble clic también funciona (no usa módulos ES
-ni fetch), pero un servidor reproduce mejor el entorno de Vercel.
+Parámetro de desarrollo: `?sin-acto` salta la portada (útil para QA y capturas).
 
 ## Piezas
 
-- `index.html` — página completa (hero, flujo, funciones, privacidad, demo,
-  compatibilidad, comparación, FAQ, descarga, footer).
-- `js/esfera.js` — esfera «palabras vivas» adaptada del prototipo
-  `assets/prototipos/esfera_con_palabras.html`: tamaño de contenedor, poda de
-  chispas (el prototipo las filtraba para siempre), colores de marca exactos,
-  pausa fuera del viewport, feed y micrófono controlados por API. El micrófono
-  jamás se pide al cargar: solo con el botón de la sección demo.
-- `js/cuadraditos.js` — transición de revelado portada de `web/index.html`
-  (retícula radial con flashes del degradado de marca). Corre una vez por
-  sesión; con `prefers-reduced-motion` se sustituye por un fundido.
-- `vendor/three.min.js` — three.js r128 self-hosteado (misma versión que el
-  prototipo; sin CDN por privacidad y por CSP).
-- `assets/` — SVG oficiales del kit de marca.
+- `index.html` — página completa (Acto I, hero con esfera, flujo, funciones,
+  privacidad, demo, compatibilidad, comparación, FAQ, descarga, footer). El
+  guion inline fija la receta visual oficial de la esfera vía `ESFERA.tune()`
+  y carga three.js + motor **en diferido** (idle) para no bloquear el pintado.
+- `js/esfera.js` — motor de la esfera «palabras vivas»: audio-reactiva
+  (demo/micrófono/datos externos), palabras que vuelan y se disuelven,
+  interior con fundido granulado, ruido orgánico, limbo, anillos orbitales
+  opcionales (apagados por defecto) y API `tune()/getTune()`. Respeta
+  `prefers-reduced-motion` en todas las capas y se pausa fuera del viewport.
+- `js/cuadraditos.js` — transición de revelado (retícula radial con flashes
+  del degradado de marca). Canvas 2D puro, sin dependencias.
+- `js/esfera-loca.js` + `lab-loco.html` — fork del motor sin límites y su
+  laboratorio de experimentos (solo desarrollo).
+- `lab-esfera.html` — laboratorio del motor serio con perillas en vivo y el
+  preset "Firma (landing)" que reproduce la receta oficial (solo desarrollo).
+- `recetas-esfera.md` — recetas visuales guardadas de la esfera.
+- `vendor/three.min.js` — three.js r128 minificado tal cual (no formatear:
+  `landing/vendor/` está en `.prettierignore`).
+- `assets/` — SVG oficiales de marca, capturas reales en WebP, clip MP4 de
+  Escucha y `og.jpg` (tarjeta social 1200×630).
 - `css/estilos.css` — tokens y componentes.
+- `.vercelignore` — excluye del deploy los laboratorios, el fork, las recetas
+  y este README.
 
 ## Deploy (Vercel)
 
-Proyecto estático con esta carpeta como root. `404.html` ya está en su lugar.
+Proyecto estático con esta carpeta como root; `404.html` y `.vercelignore` ya
+están en su lugar.
 
-## Pendiente (se llena antes del 25/07)
+## Pendiente antes de publicar
 
-- [x] Capturas reales integradas (WebP en `assets/capturas/`, convertidas con ffmpeg
-      desde `abrax-kit/capturas-maraton/`) + clip real de Escucha (mp4 116 KB, sin audio).
-- [ ] Video demo ≤ 2:00 embebido (producción 27–29/07, sección demo).
-- [ ] URLs de release reales + `SHA256SUMS.txt` (bloqueado por distribución).
-- [ ] `og:image` como PNG 1200×630 (hoy apunta al SVG del ícono).
-- [ ] Ratificar dominio (`abrax.krafify.com` según decisión 12/07 vs `abrax.app`
-      del CLAUDE.md) y añadir `canonical`.
-- [ ] QA en iPad Pro/Safari (AudioContext con gesto, touch, reduced-motion).
+- [ ] Video demo embebido en la sección "Escúchalo y pruébalo".
+- [ ] URLs de release reales + `SHA256SUMS.txt` publicado junto al binario.
+- [ ] Dominio definitivo: convertir `og:image` en URL absoluta y añadir
+      `canonical` + `og:url` (los scrapers de OG exigen URL absoluta).
+- [ ] QA en iPad/Safari (AudioContext con gesto, touch, reduced-motion).

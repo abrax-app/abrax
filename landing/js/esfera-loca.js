@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════════════════════════════════
-   ESFERA «palabras vivas» · adaptación para la landing de ABRAX
+   ESFERA «palabras vivas» · FORK LOCO con REBRAND: el isotipo hecho carne
    Origen: assets/prototipos/esfera_con_palabras.html (prototipo aprobado).
    Cambios respecto al prototipo:
    - init({canvas,...}) con tamaño de contenedor + ResizeObserver (antes fullscreen).
@@ -53,8 +53,8 @@
     ajusteInterior = 1;
   let interiorMat, polvo;
   let anillo1, anillo2;
+  let ajusteAnillo = 0.7;
   const anillosCruzados = [];
-  let ajusteAnillo = 0;
   let ajusteCruzados = 0;
 
   /* ── texturas útiles (canvas 2D) ── */
@@ -279,7 +279,7 @@ void main(){
   vec4 mv = modelViewMatrix * vec4(pos, 1.0);
   gl_Position = projectionMatrix * mv;
   float ps = uSize * (0.85 + vEnergy*0.6 + vena*0.7) * uScale / max(-mv.z, 0.1);
-  gl_PointSize = clamp(ps, 1.0, 5.5);
+  gl_PointSize = clamp(ps, 1.0, 14.0);
 }
 `;
 
@@ -312,7 +312,7 @@ void main(){
   col = mix(col, vec3(1.0), clamp(vEnergy*vEnergy*0.45, 0.0, 0.75) * uBlanco);
   /* limbo luminoso: el borde de la esfera arde suave, como eclipse */
   float limbo = smoothstep(0.80, 0.97, vRR);
-  col += exterior * limbo * 0.28;
+  col += exterior * limbo * 0.38;
 
   /* las venas tiñen a cian luminoso y suben el brillo del punto */
   float vn = clamp(vVena, 0.0, 1.0);
@@ -672,6 +672,7 @@ void main(){
       anillo2.visible = verAnillos;
       for (let i = 0; i < anillosCruzados.length; i++)
         anillosCruzados[i].p.visible = verCruzados;
+      /* las órbitas giran en sentidos opuestos y laten con la voz */
       const velReduc = reducirMotion ? 0.12 : 1; /* órbitas también en calma */
       if (verAnillos) {
         anillo1.rotation.z = t * 0.1 * ajusteGiro * velReduc;
@@ -805,9 +806,9 @@ void main(){
     g.setAttribute("position", new THREE.Float32BufferAttribute(pos, 3));
     const m = new THREE.PointsMaterial({
       map: texChispa,
-      size: 0.072,
+      size: 0.09,
       transparent: true,
-      opacity: 0.8,
+      opacity: 0.95,
       depthWrite: false,
       blending: THREE.AdditiveBlending,
       sizeAttenuation: true,
@@ -1168,8 +1169,8 @@ void main(){
       spinner.add(polvo);
     })();
 
-    /* anillos del isotipo (2) + enjambre armilar (3): órbitas punteadas de
-       marca. Apagados por defecto; se encienden con tune({anillo, cruzados}) */
+    /* anillos del isotipo: los dos aros de puntos del logo, materializados
+       como órbitas inclinadas que giran en sentidos opuestos */
     function crearAnillo(radio, n, color, tam) {
       const pos = new Float32Array(n * 3);
       for (let i = 0; i < n; i++) {
@@ -1187,19 +1188,22 @@ void main(){
           size: tam,
           color: color,
           transparent: true,
-          opacity: 0,
+          opacity: 0.3,
           depthWrite: false,
           blending: THREE.AdditiveBlending,
           sizeAttenuation: true,
         }),
       );
-      p.rotation.x = 1.12;
+      p.rotation.x = 1.12; /* inclinación de órbita */
       p.rotation.y = -0.34;
       holder.add(p);
       return p;
     }
     anillo1 = crearAnillo(1.38, 190, 0x7fd4ff, 0.042);
     anillo2 = crearAnillo(1.62, 150, 0xa98bff, 0.05);
+
+    /* enjambre armilar: órbitas cruzadas en planos distintos, un giroscopio
+       de marca alrededor de la esfera (perilla: cruzados) */
     [
       { r: 1.5, n: 170, color: 0x8fd8ff, tam: 0.04, rx: -0.95, ry: 0.85, vel: 0.085 },
       { r: 1.56, n: 160, color: 0xc59bff, tam: 0.045, rx: 0.35, ry: 1.45, vel: -0.06 },
@@ -1208,6 +1212,7 @@ void main(){
       const p = crearAnillo(d.r, d.n, d.color, d.tam);
       p.rotation.x = d.rx;
       p.rotation.y = d.ry;
+      p.material.opacity = 0;
       anillosCruzados.push({ p: p, vel: d.vel });
     });
 
@@ -1268,7 +1273,7 @@ void main(){
       return activarMic();
     },
     setSensitivity(v) {
-      audio.sens = Math.max(0.2, Math.min(2.5, v));
+      audio.sens = Math.max(0.05, Math.min(6, v));
     },
     setQuality(q) {
       if (!listo) return;
@@ -1287,7 +1292,7 @@ void main(){
        1 = como el prototipo. Pensado para el laboratorio (lab-esfera.html). */
     tune(o) {
       if (!listo || !o) return;
-      const c = (v, max) => Math.max(0, Math.min(max, v));
+      const c = (v, max) => Math.max(0, Math.min(max * 4, v)); // sin cinturon
       if (typeof o.nucleo === "number") ajusteNucleo = c(o.nucleo, 2);
       if (typeof o.halo === "number") ajusteHalo = c(o.halo, 2);
       if (typeof o.giro === "number") ajusteGiro = c(o.giro, 3);

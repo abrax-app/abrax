@@ -1,0 +1,11 @@
+# Solo de desarrollo — no viajan al deploy público
+lab-esfera.html
+lab-loco.html
+js/esfera-loca.js
+recetas-esfera.md
+README.md
+.vercelignore
+
+# Assets de marca sin uso en la página (referencia del kit)
+assets/abrax-app-icon.svg
+assets/abrax-tray.svg

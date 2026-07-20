@@ -17,13 +17,18 @@
     <meta property="og:image" content="assets/og.jpg" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
+    <meta property="og:site_name" content="ABRAX" />
+    <meta name="twitter:card" content="summary_large_image" />
     <meta name="theme-color" content="#05060F" />
     <link rel="icon" type="image/svg+xml" href="assets/abrax-favicon.svg" />
     <link rel="stylesheet" href="css/estilos.css" />
     <noscript>
       <style>
         #cortina,
-        #revelado {
+        #revelado,
+        .demo-mic,
+        .dictado {
+          /* sin JS no hay esfera ni dictado: fuera los controles muertos */
           display: none;
         }
       </style>
@@ -66,7 +71,7 @@
 
       <header class="hero-cabecera">
         <a href="#" aria-label="ABRAX — inicio">
-          <img src="assets/abrax-lockup.svg" alt="ABRAX" />
+          <img src="assets/abrax-lockup.svg" alt="ABRAX" width="112" height="30" />
         </a>
         <nav class="nav-principal" aria-label="Principal">
           <a href="#funciones">Funciones</a>
@@ -91,6 +96,8 @@
             class="hero-wordmark"
             src="assets/abrax-wordmark.svg"
             alt="ABRAX"
+            width="340"
+            height="74"
           />
         </h1>
         <p class="lema">« DI LA <em>PALABRA</em>. »</p>
@@ -424,7 +431,7 @@
         La esfera de arriba ya está viva: con tu micrófono respira contigo.
       </p>
       <div class="demo-mic">
-        <button type="button" class="btn btn--sec" id="btnMicDemo">
+        <button type="button" class="btn btn--sec" id="btnMicDemo" disabled>
           Probar con mi micrófono
         </button>
         <span class="demo-estado" id="estadoEsfera" role="status"
@@ -521,25 +528,25 @@
           </thead>
           <tbody>
             <tr>
-              <td>Precio</td>
+              <th scope="row">Precio</th>
               <td class="abrax">Gratis (MIT)</td>
               <td>Incluido en el SO</td>
               <td>Suscripción o pago por uso</td>
             </tr>
             <tr>
-              <td>El audio se procesa</td>
+              <th scope="row">El audio se procesa</th>
               <td class="abrax">En tu equipo</td>
               <td>Según el SO, a veces en la nube</td>
               <td>En servidores de terceros</td>
             </tr>
             <tr>
-              <td>Español es-419</td>
+              <th scope="row">Español es-419</th>
               <td class="abrax">Primera clase — muletillas, voz de código</td>
               <td>Variable</td>
               <td>Generalmente bueno</td>
             </tr>
             <tr>
-              <td>Vocabulario de tu repo</td>
+              <th scope="row">Vocabulario de tu repo</th>
               <td class="abrax">Sí — Diccionario Vivo</td>
               <td>No</td>
               <td>No</td>
@@ -609,6 +616,8 @@
         src="assets/abrax-isotipo.svg"
         alt=""
         aria-hidden="true"
+        width="72"
+        height="72"
       />
       <p class="cta-mantra" id="t-descarga">
         Gratis. Open source. Local. <em>Para siempre.</em>
@@ -656,7 +665,13 @@
     <footer class="pie">
       <div class="pie-fila">
         <div class="pie-marca">
-          <img src="assets/abrax-isotipo.svg" alt="" aria-hidden="true" />
+          <img
+            src="assets/abrax-isotipo.svg"
+            alt=""
+            aria-hidden="true"
+            width="22"
+            height="22"
+          />
           <span>ABRAX — un producto de Krafify</span>
         </div>
         <nav class="pie-nav" aria-label="Pie">
@@ -692,8 +707,8 @@
       </p>
     </footer>
 
-    <script src="vendor/three.min.js"></script>
-    <script src="js/esfera.js"></script>
+    <!-- three.js y el motor de la esfera se cargan en diferido desde el
+         guion inline: el primer pintado no espera 600 KB de WebGL -->
     <script src="js/cuadraditos.js"></script>
     <script>
       (function () {
@@ -704,6 +719,8 @@
         const estadoEl = document.getElementById("estadoEsfera");
         const cortina = document.getElementById("cortina");
         const revelado = document.getElementById("revelado");
+        let esferaOk = false; /* true cuando el motor diferido esté listo */
+        let quiereFeed = false; /* el revelado terminó antes que el motor */
 
         /* 1) Acto I: la portada aparece SIEMPRE — es la entrada de la casa,
            con lo mínimo: isotipo + « DI LA PALABRA. ». El clic dispara los
@@ -712,9 +729,13 @@
         function arrancarFeed() {
           /* con prefers-reduced-motion el feed no arranca a propósito:
              palabras volando es justo el movimiento que se pidió reducir */
-          if (reduced || typeof ESFERA === "undefined") return;
+          if (reduced) return;
+          if (!esferaOk) {
+            quiereFeed = true; /* el motor aún carga: arrancará al estar listo */
+            return;
+          }
           try {
-            ESFERA.iniciarFeed(900);
+            ESFERA.iniciarFeed(1200);
           } catch (e) {}
         }
         /* mientras el Acto I está activo, el resto de la página queda inert
@@ -743,7 +764,8 @@
           });
         }
         function transformar() {
-          ponerInert(false);
+          /* el inert se retira recién cuando el contenido queda a la vista
+             (fin del fundido o de la onda), no al primer clic */
           if (reduced || typeof CUADRADITOS === "undefined") {
             cortina.style.transition = "opacity 450ms ease";
             cortina.style.opacity = "0";
@@ -751,6 +773,7 @@
             setTimeout(function () {
               cortina.remove();
               revelado.remove();
+              ponerInert(false);
               arrancarFeed();
               coreoHero();
             }, 470);
@@ -762,6 +785,7 @@
               cortina: cortina,
               focoY: 0.42,
               alFinal: function () {
+                ponerInert(false);
                 arrancarFeed();
                 coreoHero();
               },
@@ -769,6 +793,7 @@
           } catch (e) {
             cortina.remove();
             revelado.remove();
+            ponerInert(false);
             arrancarFeed();
             coreoHero();
           }
@@ -786,12 +811,11 @@
             .addEventListener("click", transformar, { once: true });
         }
 
-        /* 2) Esfera en el hero, protegida: sin WebGL la página sigue siendo
-           una landing legible sobre fondo de tinta. Alzada sobre el centro
-           para que el bloque de marca respire abajo. */
-        let esferaOk = false;
-        try {
-          if (typeof ESFERA !== "undefined")
+        /* 2) Esfera en el hero — CARGA DIFERIDA: three.js (600 KB) y el motor
+           se inyectan en idle, después del primer pintado. El Acto I cubre la
+           espera; sin WebGL la página sigue siendo una landing legible. */
+        function iniciarEsfera() {
+          try {
             esferaOk = !!ESFERA.init({
               canvas: document.getElementById("esfera"),
               contenedor: document.querySelector(".hero"),
@@ -805,13 +829,61 @@
                 if (estadoEl) estadoEl.textContent = txt;
               },
             });
-        } catch (e) {
-          console.warn("Esfera no disponible:", e);
+          } catch (e) {
+            console.warn("Esfera no disponible:", e);
+          }
+          if (!esferaOk) return motorFallo();
+          /* receta oficial de la esfera — "Firma ABRAX sin anillos" */
+          ESFERA.tune({
+            nucleo: 0.55,
+            halo: 0.55,
+            interior: 1,
+            anillo: 0,
+            cruzados: 0,
+            blanco: 0.4,
+            organico: 0.15,
+            ruido: 0.1,
+            ruidoEscala: 2,
+            ruidoVel: 0.55,
+            venas: 0,
+            venaEscala: 3,
+            giro: 0.7,
+          });
+          conectarMic();
+          if (sinActo || quiereFeed) arrancarFeed();
         }
-        if (sinActo && esferaOk) arrancarFeed();
-        /* 3) Micrófono: permiso solo con el gesto del usuario */
-        const btnMic = document.getElementById("btnMicDemo");
-        if (btnMic && esferaOk) {
+        function motorFallo() {
+          if (estadoEl)
+            estadoEl.textContent =
+              "la esfera no está disponible en este navegador (WebGL)";
+          const b = document.getElementById("btnMicDemo");
+          if (b) b.disabled = true;
+          const fp = document.getElementById("formPalabra");
+          if (fp) fp.style.display = "none";
+        }
+        function cargarMotor() {
+          if (estadoEl) estadoEl.textContent = "despertando la esfera…";
+          const s1 = document.createElement("script");
+          s1.src = "vendor/three.min.js";
+          s1.onerror = motorFallo;
+          s1.onload = function () {
+            const s2 = document.createElement("script");
+            s2.src = "js/esfera.js";
+            s2.onerror = motorFallo;
+            s2.onload = iniciarEsfera;
+            document.body.appendChild(s2);
+          };
+          document.body.appendChild(s1);
+        }
+        if ("requestIdleCallback" in window)
+          requestIdleCallback(cargarMotor, { timeout: 1500 });
+        else setTimeout(cargarMotor, 250);
+        /* 3) Micrófono: permiso solo con el gesto del usuario. Se conecta
+           cuando el motor diferido queda listo (iniciarEsfera → conectarMic) */
+        function conectarMic() {
+          const btnMic = document.getElementById("btnMicDemo");
+          if (!btnMic) return;
+          btnMic.disabled = false; /* recién ahora el clic tiene motor detrás */
           btnMic.addEventListener("click", async function () {
             const activo = await ESFERA.toggleMic();
             btnMic.textContent = activo
@@ -823,11 +895,6 @@
                 .getElementById("esfera")
                 .scrollIntoView({ behavior: reduced ? "auto" : "smooth" });
           });
-        } else if (btnMic) {
-          btnMic.disabled = true;
-          if (estadoEl)
-            estadoEl.textContent =
-              "la esfera no está disponible en este navegador (WebGL)";
         }
 
         /* 4) Sensación de vida: header vidrio, revelados, foco en cards,
@@ -943,12 +1010,11 @@
         /* lanzar tu palabra a la esfera */
         const formPal = document.getElementById("formPalabra");
         if (formPal) {
-          if (!esferaOk) formPal.style.display = "none";
           formPal.addEventListener("submit", function (e) {
             e.preventDefault();
             const inp = document.getElementById("inputPalabra");
             const palabra = (inp.value || "").trim().slice(0, 24);
-            if (!palabra || typeof ESFERA === "undefined") return;
+            if (!palabra || !esferaOk) return;
             inp.value = "";
             document
               .getElementById("esfera")
@@ -1114,6 +1180,9 @@
             "wheel",
             function (e) {
               if (e.ctrlKey) return; // zoom del navegador, no scroll
+              /* scroll horizontal (shift+rueda, trackpad) pasa nativo:
+                 lo necesita la tabla comparativa en ventanas angostas */
+              if (e.shiftKey || Math.abs(e.deltaX) > Math.abs(e.deltaY)) return;
               e.preventDefault();
               let paso = e.deltaMode === 1 ? e.deltaY * 16 : e.deltaY;
               /* tope por tic: ruedas con pasos gigantes (o Windows en
@@ -1132,12 +1201,17 @@
           document.querySelectorAll('a[href^="#"]').forEach(function (a) {
             const destino = a.getAttribute("href");
             if (!destino || destino.length < 2) return;
+            /* el skip link conserva el salto nativo (mueve el foco solo) */
+            if (a.classList.contains("skip")) return;
             a.addEventListener("click", function (e) {
               const el = document.querySelector(destino);
               if (!el) return;
               e.preventDefault();
               irA(el.getBoundingClientRect().top + window.scrollY - 72);
               history.pushState(null, "", destino);
+              /* la navegación por teclado también mueve el foco al destino */
+              el.setAttribute("tabindex", "-1");
+              el.focus({ preventScroll: true });
             });
           });
           /* si el scroll viene por otra vía (teclado, barra),
