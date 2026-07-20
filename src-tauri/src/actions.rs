@@ -8,12 +8,14 @@ use crate::managers::model::ModelManager;
 use crate::managers::transcription::StreamWorkKind;
 use crate::managers::transcription::TranscriptionManager;
 use crate::managers::tts::manager::TtsManager;
+use crate::overlay::{
+    hide_recording_overlay, show_processing_overlay, show_recording_overlay,
+    show_streaming_overlay, show_transcribing_overlay,
+};
 use crate::settings::{get_settings, AppSettings, OverlayStyle, APPLE_INTELLIGENCE_PROVIDER_ID};
 use crate::shortcut;
 use crate::tray::{change_tray_icon, TrayIconState};
-use crate::utils::{
-    self, show_processing_overlay, show_recording_overlay, show_transcribing_overlay,
-};
+use crate::utils;
 use crate::TranscriptionCoordinator;
 use ferrous_opencc::{config::BuiltinConfig, OpenCC};
 use log::{debug, error, warn};
@@ -575,7 +577,7 @@ impl ShortcutAction for TranscribeAction {
         // pill instead of an oversized transparent live window.
         let overlay_started = Instant::now();
         match settings.overlay_style {
-            OverlayStyle::Live if model_supports_streaming => utils::show_streaming_overlay(app),
+            OverlayStyle::Live if model_supports_streaming => show_streaming_overlay(app),
             OverlayStyle::Live | OverlayStyle::Minimal | OverlayStyle::Esfera => {
                 show_recording_overlay(app)
             }
@@ -643,7 +645,7 @@ impl ShortcutAction for TranscribeAction {
             // Starting failed (for example due to blocked microphone permissions).
             // Revert UI state so we don't stay stuck in the recording overlay.
             tm.cancel_stream();
-            utils::hide_recording_overlay(app);
+            hide_recording_overlay(app);
             change_tray_icon(app, TrayIconState::Idle);
             if let Some(err) = recording_error {
                 let kind = if is_microphone_access_denied(&err) {
@@ -718,7 +720,7 @@ impl ShortcutAction for TranscribeAction {
                 if rm.was_cancelled_since(cancel_generation) {
                     debug!("Transcription operation cancelled after recording stop");
                     tm.cancel_stream();
-                    utils::hide_recording_overlay(&ah);
+                    hide_recording_overlay(&ah);
                     change_tray_icon(&ah, TrayIconState::Idle);
                     return;
                 }
@@ -728,7 +730,7 @@ impl ShortcutAction for TranscribeAction {
                     // Tear down any streaming worker so its channel doesn't leak
                     // and block the next start_stream.
                     tm.cancel_stream();
-                    utils::hide_recording_overlay(&ah);
+                    hide_recording_overlay(&ah);
                     change_tray_icon(&ah, TrayIconState::Idle);
                 } else {
                     // Save WAV concurrently with transcription
@@ -787,7 +789,7 @@ impl ShortcutAction for TranscribeAction {
 
                     if rm.was_cancelled_since(cancel_generation) {
                         debug!("Transcription operation cancelled before output handling");
-                        utils::hide_recording_overlay(&ah);
+                        hide_recording_overlay(&ah);
                         change_tray_icon(&ah, TrayIconState::Idle);
                         return;
                     }
@@ -834,14 +836,14 @@ impl ShortcutAction for TranscribeAction {
                             .await
                             else {
                                 debug!("Transcription operation cancelled during output handling");
-                                utils::hide_recording_overlay(&ah);
+                                hide_recording_overlay(&ah);
                                 change_tray_icon(&ah, TrayIconState::Idle);
                                 return;
                             };
 
                             if rm.was_cancelled_since(cancel_generation) {
                                 debug!("Transcription operation cancelled before paste");
-                                utils::hide_recording_overlay(&ah);
+                                hide_recording_overlay(&ah);
                                 change_tray_icon(&ah, TrayIconState::Idle);
                                 return;
                             }
@@ -860,7 +862,7 @@ impl ShortcutAction for TranscribeAction {
                             }
 
                             if processed.final_text.is_empty() {
-                                utils::hide_recording_overlay(&ah);
+                                hide_recording_overlay(&ah);
                                 change_tray_icon(&ah, TrayIconState::Idle);
                             } else {
                                 let ah_clone = ah.clone();
@@ -871,12 +873,12 @@ impl ShortcutAction for TranscribeAction {
                                 ah.run_on_main_thread(move || {
                                     if rm_for_paste.was_cancelled_since(cancel_generation) {
                                         debug!("Transcription operation cancelled before paste");
-                                        utils::hide_recording_overlay(&ah_clone);
+                                        hide_recording_overlay(&ah_clone);
                                         change_tray_icon(&ah_clone, TrayIconState::Idle);
                                         return;
                                     }
 
-                                    match utils::paste(final_text, ah_clone.clone()) {
+                                    match crate::clipboard::paste(final_text, ah_clone.clone()) {
                                         Ok(()) => debug!(
                                             "Text pasted successfully in {:?}",
                                             paste_time.elapsed()
@@ -901,12 +903,12 @@ impl ShortcutAction for TranscribeAction {
                                     } else {
                                         std::time::Duration::ZERO
                                     };
-                                    utils::hide_recording_overlay_after(&ah_clone, linger);
+                                    crate::overlay::hide_recording_overlay_after(&ah_clone, linger);
                                     change_tray_icon(&ah_clone, TrayIconState::Idle);
                                 })
                                 .unwrap_or_else(|e| {
                                     error!("Failed to run paste on main thread: {:?}", e);
-                                    utils::hide_recording_overlay(&ah);
+                                    hide_recording_overlay(&ah);
                                     change_tray_icon(&ah, TrayIconState::Idle);
                                 });
                             }
@@ -916,7 +918,7 @@ impl ShortcutAction for TranscribeAction {
                                 debug!(
                                     "Transcription operation cancelled after transcription error"
                                 );
-                                utils::hide_recording_overlay(&ah);
+                                hide_recording_overlay(&ah);
                                 change_tray_icon(&ah, TrayIconState::Idle);
                                 return;
                             }
@@ -943,7 +945,7 @@ impl ShortcutAction for TranscribeAction {
                                     error!("Failed to save failed history entry: {}", save_err);
                                 }
                             }
-                            utils::hide_recording_overlay(&ah);
+                            hide_recording_overlay(&ah);
                             change_tray_icon(&ah, TrayIconState::Idle);
                         }
                     }
@@ -952,7 +954,7 @@ impl ShortcutAction for TranscribeAction {
                 debug!("No samples retrieved from recording stop");
                 // Tear down any streaming worker so its channel doesn't leak.
                 tm.cancel_stream();
-                utils::hide_recording_overlay(&ah);
+                hide_recording_overlay(&ah);
                 change_tray_icon(&ah, TrayIconState::Idle);
             }
         });

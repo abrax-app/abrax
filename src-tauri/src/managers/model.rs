@@ -13,7 +13,7 @@ use specta::Type;
 use std::collections::{HashMap, HashSet};
 use std::fs;
 use std::fs::File;
-use std::io::{Read, Write};
+use std::io::Write;
 use std::path::{Path, PathBuf};
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::{Arc, Mutex};
