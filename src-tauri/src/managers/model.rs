@@ -1359,7 +1359,9 @@ impl ModelManager {
             if model.is_directory {
                 // For directory-based models, check if the directory exists
                 let model_path = self.models_dir().join(&model.filename);
-                let partial_path = self.models_dir().join(format!("{}.partial", model.filename));
+                let partial_path = self
+                    .models_dir()
+                    .join(format!("{}.partial", model.filename));
                 let extracting_path = self
                     .models_dir()
                     .join(format!("{}.extracting", model.filename));
@@ -1387,7 +1389,9 @@ impl ModelManager {
             } else {
                 // For file-based models (existing logic)
                 let model_path = self.models_dir().join(&model.filename);
-                let partial_path = self.models_dir().join(format!("{}.partial", model.filename));
+                let partial_path = self
+                    .models_dir()
+                    .join(format!("{}.partial", model.filename));
 
                 model.is_downloaded = model_path.exists();
                 model.is_downloading = false;
