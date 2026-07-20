@@ -189,6 +189,8 @@ fn initialize_core_logic(app_handle: &AppHandle) {
     // un modelo descargado.
     let sidecar_mgr = Arc::new(correccion::motor_sidecar::SidecarManager::new());
     app_handle.manage(sidecar_mgr.clone());
+    // Registro de descargas de modelos de Pulido en curso (para progreso/cancelación).
+    app_handle.manage(commands::correccion_modelos::EstadoDescargas::default());
     // Watcher de inactividad: descarga el modelo de RAM/VRAM tras unos minutos
     // sin uso (misma filosofía que el modelo de transcripción).
     {
@@ -562,6 +564,11 @@ pub fn run(cli_args: CliArgs) {
             shortcut::change_correccion_modo_setting,
             shortcut::change_correccion_motor_setting,
             commands::correccion::detectar_correccion_ollama,
+            commands::correccion_modelos::listar_modelos_correccion,
+            commands::correccion_modelos::descargar_modelo_correccion,
+            commands::correccion_modelos::cancelar_descarga_correccion,
+            commands::correccion_modelos::eliminar_modelo_correccion,
+            commands::correccion_modelos::seleccionar_modelo_correccion,
             commands::audio::probar_microfono,
             signal_handle::trigger_transcription,
             shortcut::change_start_hidden_setting,
