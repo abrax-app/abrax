@@ -35,24 +35,9 @@
     </noscript>
   </head>
   <body>
-    <!-- Acto I: portada mínima — el clic en el lema dispara los cuadraditos
-         que transforman la página (cuadraditos.js retira todo al terminar) -->
-    <div id="cortina">
-      <img class="portal-iso" src="assets/abrax-isotipo.svg" alt="ABRAX" />
-      <button
-        id="btnPalabra"
-        class="portal-lema"
-        type="button"
-        autofocus
-        aria-describedby="pistaPortal"
-      >
-        « DI LA <em>PALABRA</em>. »
-      </button>
-      <p class="portal-sub">
-        Del arameo <i>avra k'davra</i> — «creo mientras hablo».
-      </p>
-      <p class="portal-hint" id="pistaPortal">clic para entrar</p>
-    </div>
+    <!-- Acto I: la intro cinemática corre aislada en un iframe; al terminar
+         (o al saltarla) los cuadraditos transforman la página hacia el hero -->
+    <div id="cortina"></div>
     <canvas id="revelado" aria-hidden="true"></canvas>
 
     <a href="#contenido" class="skip">Saltar al contenido</a>
@@ -722,10 +707,10 @@
         let esferaOk = false; /* true cuando el motor diferido esté listo */
         let quiereFeed = false; /* el revelado terminó antes que el motor */
 
-        /* 1) Acto I: la portada aparece SIEMPRE — es la entrada de la casa,
-           con lo mínimo: isotipo + « DI LA PALABRA. ». El clic dispara los
-           cuadraditos que transforman la página; con reduced-motion (o sin
-           CUADRADITOS) el clic hace un fundido. */
+        /* 1) Acto I: la intro cinemática corre aislada en un iframe (1×/sesión).
+           Al terminar o al saltarla, los cuadraditos transforman la página
+           hacia el hero. Con reduced-motion, sesión repetida o QA, se entra
+           directo al hero sin intro. */
         function arrancarFeed() {
           /* con prefers-reduced-motion el feed no arranca a propósito:
              palabras volando es justo el movimiento que se pidió reducir */
@@ -763,9 +748,16 @@
             }, 2600);
           });
         }
+        /* el hero queda a la vista: se retira el inert, arranca la esfera
+           (que estuvo precargando sin renderizar) y la marca entra en cascada */
+        function revelarHero() {
+          ponerInert(false);
+          heroVisible = true;
+          quiereFeed = !reduced;
+          talVezArrancarEsfera();
+          coreoHero();
+        }
         function transformar() {
-          /* el inert se retira recién cuando el contenido queda a la vista
-             (fin del fundido o de la onda), no al primer clic */
           if (reduced || typeof CUADRADITOS === "undefined") {
             cortina.style.transition = "opacity 450ms ease";
             cortina.style.opacity = "0";
@@ -773,47 +765,77 @@
             setTimeout(function () {
               cortina.remove();
               revelado.remove();
-              ponerInert(false);
-              arrancarFeed();
-              coreoHero();
+              revelarHero();
             }, 470);
             return;
           }
           try {
             CUADRADITOS.revelar({
               canvas: revelado,
-              cortina: cortina,
+              cortina: cortina, // contiene el iframe de la intro: se retira aquí
               focoY: 0.42,
-              alFinal: function () {
-                ponerInert(false);
-                arrancarFeed();
-                coreoHero();
-              },
+              alFinal: revelarHero,
             });
           } catch (e) {
             cortina.remove();
             revelado.remove();
-            ponerInert(false);
-            arrancarFeed();
-            coreoHero();
+            revelarHero();
           }
         }
+
         const sinActo = /[?&]sin-acto\b/.test(location.search);
-        if (sinActo) {
-          /* modo QA (?sin-acto): salta la portada para capturas automatizadas */
+        var introVista = false;
+        try {
+          introVista = sessionStorage.getItem("abrax_intro") === "1";
+        } catch (e) {}
+        var saltarIntro =
+          sinActo || introVista || reduced || typeof CUADRADITOS === "undefined";
+
+        if (saltarIntro) {
+          /* sin intro: al hero directo (QA, reduced-motion o ya vista) */
           cortina.remove();
           revelado.remove();
+          revelarHero();
         } else {
+          /* intro cinemática en iframe, una vez por sesión */
           ponerInert(true);
-          if (!reduced && heroCuerpo) heroCuerpo.classList.add("prep");
-          document
-            .getElementById("btnPalabra")
-            .addEventListener("click", transformar, { once: true });
+          if (heroCuerpo) heroCuerpo.classList.add("prep");
+          try {
+            sessionStorage.setItem("abrax_intro", "1");
+          } catch (e) {}
+          var marco = document.createElement("iframe");
+          marco.id = "introFrame";
+          marco.src = "intro.html";
+          marco.title = "Intro de ABRAX";
+          marco.setAttribute("scrolling", "no");
+          cortina.appendChild(marco);
+          var entrado = false;
+          function entrarDesdeIntro() {
+            if (entrado) return;
+            entrado = true;
+            transformar();
+          }
+          window.addEventListener("message", function (e) {
+            if (e.data === "abrax-intro-fin") entrarDesdeIntro();
+          });
+          /* red de seguridad: si la intro no avisa (iframe bloqueado o error),
+             se entra igual a los 16 s — nunca se atrapa al visitante */
+          setTimeout(entrarDesdeIntro, 16000);
         }
 
-        /* 2) Esfera en el hero — CARGA DIFERIDA: three.js (600 KB) y el motor
-           se inyectan en idle, después del primer pintado. El Acto I cubre la
-           espera; sin WebGL la página sigue siendo una landing legible. */
+        /* 2) Esfera en el hero — CARGA DIFERIDA y ARRANQUE DIFERIDO: three.js
+           (600 KB) y el motor se PRECARGAN en idle mientras corre la intro,
+           pero la esfera solo ARRANCA cuando el hero queda a la vista, para no
+           renderizar en vano detrás de la cortina. */
+        var motorListo = false,
+          heroVisible = false,
+          esferaArrancada = false;
+        function talVezArrancarEsfera() {
+          if (motorListo && heroVisible && !esferaArrancada) {
+            esferaArrancada = true;
+            iniciarEsfera();
+          }
+        }
         function iniciarEsfera() {
           try {
             esferaOk = !!ESFERA.init({
@@ -870,7 +892,10 @@
             const s2 = document.createElement("script");
             s2.src = "js/esfera.js";
             s2.onerror = motorFallo;
-            s2.onload = iniciarEsfera;
+            s2.onload = function () {
+              motorListo = true;
+              talVezArrancarEsfera(); // arranca solo si el hero ya está a la vista
+            };
             document.body.appendChild(s2);
           };
           document.body.appendChild(s1);
