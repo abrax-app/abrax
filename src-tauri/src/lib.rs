@@ -569,6 +569,8 @@ pub fn run(cli_args: CliArgs) {
             commands::correccion_modelos::cancelar_descarga_correccion,
             commands::correccion_modelos::eliminar_modelo_correccion,
             commands::correccion_modelos::seleccionar_modelo_correccion,
+            commands::discos::listar_discos,
+            commands::discos::obtener_carpeta_modelos,
             commands::audio::probar_microfono,
             signal_handle::trigger_transcription,
             shortcut::change_start_hidden_setting,

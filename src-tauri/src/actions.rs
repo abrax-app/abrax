@@ -428,11 +428,16 @@ async fn resolver_sidecar_correccion(
     }
     let id = settings.correccion_modelo_local.as_deref()?;
     let modelo = crate::correccion::modelos::por_id(id)?;
-    let datadir = crate::portable::app_data_dir(app).ok()?;
-    if !crate::correccion::modelos::esta_descargado(&datadir, &modelo) {
+    // El GGUF vive en el disco elegido por el usuario (models_dir); el runtime
+    // del sidecar vive en los datos de la app (app_data).
+    let models_dir = app
+        .try_state::<std::sync::Arc<ModelManager>>()?
+        .models_dir();
+    if !crate::correccion::modelos::esta_descargado(&models_dir, &modelo) {
         return None; // no descargado todavía → Ollama/reglas
     }
-    let gguf = crate::correccion::modelos::ruta_gguf(&datadir, &modelo);
+    let app_data = crate::portable::app_data_dir(app).ok()?;
+    let gguf = crate::correccion::modelos::ruta_gguf(&models_dir, &modelo);
     let mgr: std::sync::Arc<crate::correccion::motor_sidecar::SidecarManager> = app
         .try_state::<std::sync::Arc<crate::correccion::motor_sidecar::SidecarManager>>()?
         .inner()
@@ -448,7 +453,7 @@ async fn resolver_sidecar_correccion(
             modelo: modelo.id,
         })
     } else {
-        mgr.solicitar_arranque(datadir, modelo.id.clone(), gguf);
+        mgr.solicitar_arranque(app_data, modelo.id.clone(), gguf);
         None
     }
 }

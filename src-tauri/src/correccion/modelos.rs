@@ -96,20 +96,22 @@ pub fn url_descarga(m: &ModeloCorreccion) -> String {
     )
 }
 
-/// Carpeta donde viven los modelos de corrección descargados, aislada del árbol
-/// de modelos de transcripción.
-pub fn carpeta(datadir: &Path) -> PathBuf {
-    datadir.join("models").join("correccion")
+/// Carpeta donde viven los modelos de corrección descargados. `models_dir` es la
+/// carpeta de modelos EFECTIVA (la que resuelve `ModelManager::models_dir()`,
+/// respetando el disco elegido en ajustes) — así los modelos LLM y los de
+/// transcripción comparten la misma elección de disco, en subcarpetas separadas.
+pub fn carpeta(models_dir: &Path) -> PathBuf {
+    models_dir.join("correccion")
 }
 
 /// Ruta al archivo GGUF de un modelo (exista o no en disco).
-pub fn ruta_gguf(datadir: &Path, m: &ModeloCorreccion) -> PathBuf {
-    carpeta(datadir).join(&m.archivo)
+pub fn ruta_gguf(models_dir: &Path, m: &ModeloCorreccion) -> PathBuf {
+    carpeta(models_dir).join(&m.archivo)
 }
 
 /// `true` si el modelo ya está descargado (archivo presente).
-pub fn esta_descargado(datadir: &Path, m: &ModeloCorreccion) -> bool {
-    ruta_gguf(datadir, m).is_file()
+pub fn esta_descargado(models_dir: &Path, m: &ModeloCorreccion) -> bool {
+    ruta_gguf(models_dir, m).is_file()
 }
 
 #[cfg(test)]
