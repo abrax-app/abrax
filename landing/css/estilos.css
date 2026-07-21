@@ -756,7 +756,7 @@ h2::before {
   .hero-cuerpo {
     padding-top: 84px;
   }
-  /* header compacto: logo + 4 enlaces caben en una sola línea */
+  /* header compacto: logo + enlaces en una sola línea, sin saltar de fila */
   .hero-cabecera {
     padding: 12px 14px;
   }
@@ -765,6 +765,7 @@ h2::before {
   }
   .nav-principal {
     gap: 10px;
+    flex-wrap: nowrap; /* nunca a dos filas: la 2.ª tapaba el eyebrow del hero */
   }
   .nav-principal a {
     font-size: 9px;
@@ -773,6 +774,18 @@ h2::before {
   }
   .nav-principal a.nav-codigo {
     padding: 5px 10px;
+  }
+}
+
+/* teléfonos angostos: los enlaces de sección no caben junto al logo + Código.
+   Se dejan logo + Código (la navegación por secciones se hace con scroll);
+   así el header queda en una sola fila y deja de solaparse con el hero. */
+@media (max-width: 560px) {
+  .nav-principal a:not(.nav-codigo) {
+    display: none;
+  }
+  .nav-principal a.nav-codigo {
+    padding: 9px 14px; /* área táctil cómoda al quedar como único control */
   }
 }
 
