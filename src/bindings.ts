@@ -70,7 +70,7 @@ async changeUiThemeSetting(uiTheme: string) : Promise<Result<null, string>> {
 }
 },
 /**
- * Persists the window shell (`classic`/`retro`). Unlike the palette,
+ * Persists the window shell (`classic`/`retro`/`quiet`). Unlike the palette,
  * the shell only takes full effect on the next launch, because the
  * frameless/transparent chrome is decided when the window is built; this
  * command just records the choice so the next boot builds the right window.
