@@ -15,7 +15,7 @@ interface ShellSelectorProps {
 /**
  * Selector de shell (`ui_shell`), el eje de FORMA de la ventana, ortogonal al
  * tema (claro/oscuro) y a la paleta (`ui_theme`). `classic` es el default y el
- * fallback; `orbital` y `retro` son shells sin marco. El contenido del shell
+ * fallback; `retro` es un shell sin marco. El contenido del shell
  * cambia al instante (preview); el marco transparente real de la ventana se
  * decide al construirla, así que se completa al reiniciar Abrax (lo dice la
  * descripción). No se traducen los nombres (son de marca), igual que la paleta.

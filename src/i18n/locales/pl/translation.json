@@ -12,7 +12,8 @@
     "errorTranscription": "Transkrypcja nie powiodła się. Otwórz Abrax, aby ponowić z historii.",
     "errorPaste": "Nie udało się wkleić tekstu. Został zapisany w historii.",
     "errorModelLoad": "Nie udało się wczytać modelu mowy. Otwórz Abrax, aby poznać przyczynę.",
-    "errorModelDownload": "Pobieranie modelu nie powiodło się. Otwórz Abrax, aby ponowić."
+    "errorModelDownload": "Pobieranie modelu nie powiodło się. Otwórz Abrax, aby ponowić.",
+    "show": "Show Abrax"
   },
   "sidebar": {
     "general": "Ogólne",
@@ -781,18 +782,8 @@
     "description": "Wybierz kształt okna Abrax. Klasyczny to standardowe okno ustawień; Orbital zmienia aplikację w pływającą sferę; Retro to skórka klasycznego odtwarzacza. Ramka okna zostanie w pełni zastosowana po ponownym uruchomieniu Abrax.",
     "options": {
       "classic": "Klasyczny",
-      "orbital": "Orbital",
-      "retro": "Retro"
-    }
-  },
-  "orbital": {
-    "menu": "Menu Abrax",
-    "close": "Zamknij",
-    "hint": "przytrzymaj {{atajo}} i mów — puść, aby wkleić",
-    "hintNoBinding": "ustaw skrót dyktowania w sekcji Ogólne, a następnie przytrzymaj go i mów",
-    "controls": {
-      "minimize": "Minimalizuj",
-      "hide": "Ukryj w zasobniku"
+      "retro": "Retro",
+      "quiet": "Quiet"
     }
   },
   "retro": {
@@ -834,10 +825,11 @@
     "copied": "Skopiowano do schowka",
     "menuSections": "SEKCJE",
     "menuWindows": "OKNA",
-    "toOrbital": "↺ Powrót do Orbital",
     "toClassic": "Powrót do Klasycznego",
     "theme": "Motyw",
-    "footer": "TRYB RETRO — skórka ABRAX · to samo przezroczyste okno"
+    "footer": "TRYB RETRO — skórka ABRAX · to samo przezroczyste okno",
+    "tray": "Send to tray",
+    "minimize": "Minimize"
   },
   "logo": {
     "tagline": "« Di la <accent>palabra</accent>. »"
@@ -934,5 +926,26 @@
     "espacio": "{{libre}} GB free of {{total}} GB",
     "volverPorDefecto": "Back to the original folder",
     "avisoNoMueve": "New downloads will go to this folder. Already-downloaded models stay where they were; if they don't show up, go back to the original folder or download them again here."
+  },
+  "quiet": {
+    "nav": {
+      "listen": "Listen",
+      "transcriptions": "Transcriptions",
+      "models": "Models",
+      "settings": "Settings"
+    },
+    "ready": "ABRAX is ready",
+    "holdHint": "Hold <k>{{atajo}}</k> and start talking",
+    "holdHintNoBinding": "Set a shortcut in Settings and start talking",
+    "start": "Start transcription",
+    "stop": "Stop",
+    "recent": "Recent transcriptions",
+    "empty": "No transcriptions yet. Hold the shortcut and say the word.",
+    "local": "Local processing",
+    "noCloud": "No cloud connection",
+    "min": "Minimize",
+    "max": "Maximize",
+    "close": "Close",
+    "tray": "Send to tray"
   }
 }

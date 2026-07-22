@@ -12,7 +12,8 @@
     "errorTranscription": "Не вдалося розшифрувати запис. Відкрийте Abrax і повторіть з історії.",
     "errorPaste": "Не вдалося вставити текст. Він збережений в історії.",
     "errorModelLoad": "Не вдалося завантажити голосову модель. Відкрийте Abrax, щоб дізнатися причину.",
-    "errorModelDownload": "Не вдалося завантажити модель. Відкрийте Abrax, щоб повторити."
+    "errorModelDownload": "Не вдалося завантажити модель. Відкрийте Abrax, щоб повторити.",
+    "show": "Show Abrax"
   },
   "sidebar": {
     "general": "Загальні",
@@ -781,18 +782,8 @@
     "description": "Виберіть форму вікна Abrax. «Класичний» — це звичайне вікно налаштувань; «Orbital» перетворює застосунок на плаваючу сферу; «Retro» — це скін класичного плеєра. Оформлення вікна остаточно застосовується після перезапуску Abrax.",
     "options": {
       "classic": "Класичний",
-      "orbital": "Orbital",
-      "retro": "Retro"
-    }
-  },
-  "orbital": {
-    "menu": "Меню Abrax",
-    "close": "Закрити",
-    "hint": "утримуйте {{atajo}} та говоріть — відпустіть, щоб вставити",
-    "hintNoBinding": "задайте комбінацію для диктування в розділі «Загальні», а потім утримуйте її та говоріть",
-    "controls": {
-      "minimize": "Згорнути",
-      "hide": "Сховати в трей"
+      "retro": "Retro",
+      "quiet": "Quiet"
     }
   },
   "retro": {
@@ -834,10 +825,11 @@
     "copied": "Скопійовано в буфер обміну",
     "menuSections": "РОЗДІЛИ",
     "menuWindows": "ВІКНА",
-    "toOrbital": "↺ Назад до Orbital",
     "toClassic": "Назад до класичного",
     "theme": "Тема",
-    "footer": "РЕТРОРЕЖИМ — скін ABRAX · те саме прозоре вікно"
+    "footer": "РЕТРОРЕЖИМ — скін ABRAX · те саме прозоре вікно",
+    "tray": "Send to tray",
+    "minimize": "Minimize"
   },
   "logo": {
     "tagline": "« Di la <accent>palabra</accent>. »"
@@ -934,5 +926,26 @@
     "espacio": "{{libre}} GB free of {{total}} GB",
     "volverPorDefecto": "Back to the original folder",
     "avisoNoMueve": "New downloads will go to this folder. Already-downloaded models stay where they were; if they don't show up, go back to the original folder or download them again here."
+  },
+  "quiet": {
+    "nav": {
+      "listen": "Listen",
+      "transcriptions": "Transcriptions",
+      "models": "Models",
+      "settings": "Settings"
+    },
+    "ready": "ABRAX is ready",
+    "holdHint": "Hold <k>{{atajo}}</k> and start talking",
+    "holdHintNoBinding": "Set a shortcut in Settings and start talking",
+    "start": "Start transcription",
+    "stop": "Stop",
+    "recent": "Recent transcriptions",
+    "empty": "No transcriptions yet. Hold the shortcut and say the word.",
+    "local": "Local processing",
+    "noCloud": "No cloud connection",
+    "min": "Minimize",
+    "max": "Maximize",
+    "close": "Close",
+    "tray": "Send to tray"
   }
 }

@@ -337,24 +337,23 @@ pub enum UiTheme {
 
 /// Shape of the main window, orthogonal to [`UiTheme`] (palette) and [`Theme`]
 /// (light/dark). `Classic` is the default decorated settings window and the
-/// permanent fallback. `Orbital` and `Retro` are frameless/transparent shells:
-/// the app becomes a floating sphere (Orbital) or a stack of retro-player
-/// windows (Retro). Both consume the palette tokens, so a shell never hardcodes
-/// color. The frameless/transparent chrome is decided at window build time, so
-/// switching shells takes full effect on the next launch.
+/// permanent fallback. `Retro` is a frameless/transparent shell: the app
+/// becomes a stack of retro-player windows. It consumes the palette tokens, so a
+/// shell never hardcodes color. The frameless/transparent chrome is decided at
+/// window build time, so switching shells takes full effect on the next launch.
 #[derive(Serialize, Deserialize, Debug, Clone, Copy, PartialEq, Eq, Type)]
 #[serde(rename_all = "snake_case")]
 pub enum UiShell {
     Classic,
-    Orbital,
     Retro,
+    Quiet,
 }
 
 impl UiShell {
     /// Whether this shell wants a frameless, transparent window. `Classic`
-    /// keeps the native decorated chrome; `Orbital`/`Retro` paint their own.
+    /// keeps the native decorated chrome; `Retro` and `Quiet` paint their own.
     pub fn wants_transparency(self) -> bool {
-        matches!(self, UiShell::Orbital | UiShell::Retro)
+        matches!(self, UiShell::Retro | UiShell::Quiet)
     }
 }
 

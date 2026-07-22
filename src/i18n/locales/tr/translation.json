@@ -12,7 +12,8 @@
     "errorTranscription": "Yazıya dökme başarısız. Geçmişten yeniden denemek için Abrax'ı aç.",
     "errorPaste": "Metin yapıştırılamadı. Geçmişinde kayıtlı.",
     "errorModelLoad": "Konuşma modeli yüklenemedi. Nedenini görmek için Abrax'ı aç.",
-    "errorModelDownload": "Model indirme başarısız oldu. Yeniden denemek için Abrax'ı aç."
+    "errorModelDownload": "Model indirme başarısız oldu. Yeniden denemek için Abrax'ı aç.",
+    "show": "Show Abrax"
   },
   "sidebar": {
     "general": "Genel",
@@ -781,18 +782,8 @@
     "description": "Abrax penceresinin biçimini seç. Klasik, her zamanki ayarlar penceresidir; Orbital uygulamayı yüzen bir küreye dönüştürür; Retro klasik bir oynatıcı görünümüdür. Pencere çerçevesi, Abrax yeniden başlatıldığında güncellenmesini tamamlar.",
     "options": {
       "classic": "Klasik",
-      "orbital": "Orbital",
-      "retro": "Retro"
-    }
-  },
-  "orbital": {
-    "menu": "Abrax menüsü",
-    "close": "Kapat",
-    "hint": "{{atajo}} tuşunu basılı tut ve konuş — yapıştırmak için bırak",
-    "hintNoBinding": "Genel bölümünden bir dikte kısayolu belirle, sonra basılı tutup konuş",
-    "controls": {
-      "minimize": "Küçült",
-      "hide": "Sistem tepsisine gizle"
+      "retro": "Retro",
+      "quiet": "Quiet"
     }
   },
   "retro": {
@@ -834,10 +825,11 @@
     "copied": "Panoya kopyalandı",
     "menuSections": "BÖLÜMLER",
     "menuWindows": "PENCERELER",
-    "toOrbital": "↺ Orbital'e dön",
     "toClassic": "Klasik'e dön",
     "theme": "Tema",
-    "footer": "RETRO MOD — bir ABRAX kaplaması · aynı şeffaf pencere"
+    "footer": "RETRO MOD — bir ABRAX kaplaması · aynı şeffaf pencere",
+    "tray": "Send to tray",
+    "minimize": "Minimize"
   },
   "logo": {
     "tagline": "« Di la <accent>palabra</accent>. »"
@@ -934,5 +926,26 @@
     "espacio": "{{libre}} GB free of {{total}} GB",
     "volverPorDefecto": "Back to the original folder",
     "avisoNoMueve": "New downloads will go to this folder. Already-downloaded models stay where they were; if they don't show up, go back to the original folder or download them again here."
+  },
+  "quiet": {
+    "nav": {
+      "listen": "Listen",
+      "transcriptions": "Transcriptions",
+      "models": "Models",
+      "settings": "Settings"
+    },
+    "ready": "ABRAX is ready",
+    "holdHint": "Hold <k>{{atajo}}</k> and start talking",
+    "holdHintNoBinding": "Set a shortcut in Settings and start talking",
+    "start": "Start transcription",
+    "stop": "Stop",
+    "recent": "Recent transcriptions",
+    "empty": "No transcriptions yet. Hold the shortcut and say the word.",
+    "local": "Local processing",
+    "noCloud": "No cloud connection",
+    "min": "Minimize",
+    "max": "Maximize",
+    "close": "Close",
+    "tray": "Send to tray"
   }
 }

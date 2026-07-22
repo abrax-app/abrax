@@ -21,7 +21,7 @@ pub fn send_transcription_input(app: &AppHandle, binding_id: &str, source: &str)
     }
 }
 
-/// Toggle dictation from the UI (e.g. clicking the orbital home sphere). Mirrors
+/// Toggle dictation from the UI (e.g. a retro transport button). Mirrors
 /// the global-shortcut / CLI `--toggle-transcription` path by reusing the shared
 /// coordinator entry point, so it adds no new recording pipeline.
 #[tauri::command]

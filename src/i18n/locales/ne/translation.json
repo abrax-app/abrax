@@ -12,7 +12,8 @@
     "errorTranscription": "ट्रान्स्क्रिप्सन असफल भयो। इतिहासबाट पुनः प्रयास गर्न Abrax खोल्नुहोस्।",
     "errorPaste": "पाठ टाँस्न सकिएन। यो तपाईंको इतिहासमा सुरक्षित छ।",
     "errorModelLoad": "स्पीच मोडेल लोड गर्न सकिएन। कारण हेर्न Abrax खोल्नुहोस्।",
-    "errorModelDownload": "मोडेल डाउनलोड असफल भयो। पुनः प्रयास गर्न Abrax खोल्नुहोस्।"
+    "errorModelDownload": "मोडेल डाउनलोड असफल भयो। पुनः प्रयास गर्न Abrax खोल्नुहोस्।",
+    "show": "Show Abrax"
   },
   "sidebar": {
     "general": "सामान्य",
@@ -781,18 +782,8 @@
     "description": "Abrax विन्डोको आकार छान्नुहोस्। परम्परागत भनेको साधारण सेटिङ विन्डो हो; अर्बिटलले एपलाई तैरिरहेको गोलामा बदल्छ; रेट्रो चाहिँ पुरानो शैलीको प्लेयर स्किन हो। Abrax पुनः सुरु हुँदा विन्डो फ्रेमको अद्यावधिक पूरा हुन्छ।",
     "options": {
       "classic": "परम्परागत",
-      "orbital": "अर्बिटल",
-      "retro": "रेट्रो"
-    }
-  },
-  "orbital": {
-    "menu": "Abrax मेनु",
-    "close": "बन्द गर्नुहोस्",
-    "hint": "{{atajo}} थिचिराखेर बोल्नुहोस् — टाँस्न छोड्नुहोस्",
-    "hintNoBinding": "सामान्यमा डिक्टेसन सर्टकट सेट गर्नुहोस्, अनि त्यसलाई थिचिराखेर बोल्नुहोस्",
-    "controls": {
-      "minimize": "सानो बनाउनुहोस्",
-      "hide": "ट्रेमा लुकाउनुहोस्"
+      "retro": "रेट्रो",
+      "quiet": "Quiet"
     }
   },
   "retro": {
@@ -834,10 +825,11 @@
     "copied": "क्लिपबोर्डमा प्रतिलिपि गरियो",
     "menuSections": "खण्डहरू",
     "menuWindows": "विन्डोहरू",
-    "toOrbital": "↺ Orbital मा फर्कनुहोस्",
     "toClassic": "क्लासिकमा फर्कनुहोस्",
     "theme": "थिम",
-    "footer": "रेट्रो मोड — एउटा ABRAX स्किन · उही पारदर्शी विन्डो"
+    "footer": "रेट्रो मोड — एउटा ABRAX स्किन · उही पारदर्शी विन्डो",
+    "tray": "Send to tray",
+    "minimize": "Minimize"
   },
   "logo": {
     "tagline": "« Di la <accent>palabra</accent>. »"
@@ -934,5 +926,26 @@
     "espacio": "{{libre}} GB free of {{total}} GB",
     "volverPorDefecto": "Back to the original folder",
     "avisoNoMueve": "New downloads will go to this folder. Already-downloaded models stay where they were; if they don't show up, go back to the original folder or download them again here."
+  },
+  "quiet": {
+    "nav": {
+      "listen": "Listen",
+      "transcriptions": "Transcriptions",
+      "models": "Models",
+      "settings": "Settings"
+    },
+    "ready": "ABRAX is ready",
+    "holdHint": "Hold <k>{{atajo}}</k> and start talking",
+    "holdHintNoBinding": "Set a shortcut in Settings and start talking",
+    "start": "Start transcription",
+    "stop": "Stop",
+    "recent": "Recent transcriptions",
+    "empty": "No transcriptions yet. Hold the shortcut and say the word.",
+    "local": "Local processing",
+    "noCloud": "No cloud connection",
+    "min": "Minimize",
+    "max": "Maximize",
+    "close": "Close",
+    "tray": "Send to tray"
   }
 }

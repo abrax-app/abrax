@@ -5,93 +5,138 @@ import React, {
   useRef,
   useState,
 } from "react";
-import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { listen } from "@tauri-apps/api/event";
+import { getCurrentWindow } from "@tauri-apps/api/window";
+import { LogicalSize } from "@tauri-apps/api/dpi";
+import { relaunch } from "@tauri-apps/plugin-process";
 import {
   Mic,
-  Square,
-  SlidersHorizontal,
-  ListMusic,
-  Wand2,
+  ArrowDownToLine,
   Minus,
+  Square,
   X,
-  Menu as MenuIcon,
+  FileText,
+  Boxes,
+  Settings,
+  Clock,
+  CloudOff,
+  VenetianMask,
+  Palette,
+  Languages,
+  Eraser,
+  AudioLines,
+  Orbit,
+  RectangleHorizontal,
+  Copy,
+  Trash2,
+  type LucideIcon,
 } from "lucide-react";
-import AbraxGlyph from "../icons/AbraxGlyph";
-import { SECTIONS_CONFIG, type SidebarSection } from "../Sidebar";
+import AbraxLogo from "../icons/AbraxLogo";
 import { useSettings } from "@/hooks/useSettings";
-import { commands, type HistoryEntry } from "@/bindings";
+import { commands, events, type HistoryEntry } from "@/bindings";
 import { applyShell } from "@/lib/utils/theme";
-import { montarEspectro, type EspectroHandle } from "./retroSpectrum";
+import { EsferaEngine, readEsferaPalette } from "../../overlay/esfera/engine";
 import "./retro.css";
-import type { SpectrumPayload } from "@/lib/types/events";
 
-type WinId = "main" | "ajustes" | "historial" | "seccion";
-type WinState = {
-  x: number;
-  y: number;
-  z: number;
-  visible: boolean;
-  folded: boolean;
+// Skin "ABRAX" — reproductor vertical (mockup del usuario): ESTADO + nivel de
+// entrada, botones de acción, transporte, ecualizador, transcripciones recientes
+// + modelo activo, y nav con íconos. Controles cableados a features reales; el
+// ecualizador y el transporte de reproducción son cosméticos (ABRAX no edita
+// audio ni reproduce), pensados como "vibe" del reproductor.
+
+type RView =
+  | "escuchar"
+  | "transcripciones"
+  | "modelos"
+  | "ajustes"
+  | "historial";
+
+const NAV: [RView, string, LucideIcon][] = [
+  ["escuchar", "ESCUCHAR", Mic],
+  ["transcripciones", "TRANSCRIPCIONES", FileText],
+  ["modelos", "MODELOS", Boxes],
+  ["ajustes", "AJUSTES", Settings],
+  ["historial", "HISTORIAL", Clock],
+];
+
+const EQ_LABELS = ["60", "170", "310", "600", "1K", "3K", "6K", "12K"];
+
+const SKINS: ["retro" | "quiet" | "classic", string][] = [
+  ["retro", "Retro"],
+  ["quiet", "Quiet"],
+  ["classic", "Clásico"],
+];
+
+const LANG_NAMES: Record<string, string> = {
+  auto: "Auto",
+  es: "Español",
+  en: "English",
+  pt: "Português",
+  fr: "Français",
+  de: "Deutsch",
+  it: "Italiano",
 };
 
-const INITIAL: Record<WinId, WinState> = {
-  main: { x: 48, y: 40, z: 40, visible: true, folded: false },
-  ajustes: { x: 48, y: 300, z: 30, visible: false, folded: false },
-  historial: { x: 540, y: 40, z: 35, visible: true, folded: false },
-  seccion: { x: 210, y: 96, z: 20, visible: false, folded: false },
+const fmtHora = (secs: number): string => {
+  try {
+    return new Date(secs * 1000).toLocaleTimeString(undefined, {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  } catch {
+    return "";
+  }
 };
 
 export const RetroShell: React.FC = () => {
-  const { t } = useTranslation();
   const { settings, updateSetting } = useSettings();
 
-  const [wins, setWins] = useState<Record<WinId, WinState>>(INITIAL);
-  const zTop = useRef(50);
-  const [menuOpen, setMenuOpen] = useState(false);
-  const [menuPos, setMenuPos] = useState<{ x: number; y: number }>({
-    x: 60,
-    y: 70,
-  });
-  const [seccion, setSeccion] = useState<SidebarSection>("general");
-  const [dictEnabled, setDictEnabled] = useState<boolean>(false);
-
-  // ── reloj de dictado ──
+  const [view, setView] = useState<RView | null>("escuchar");
   const [grabando, setGrabando] = useState(false);
   const [seg, setSeg] = useState(0);
   const grabandoRef = useRef(false);
-
-  // ── historial-playlist ──
   const [entries, setEntries] = useState<HistoryEntry[]>([]);
   const [selEntry, setSelEntry] = useState<number | null>(null);
+  const [eq, setEq] = useState<number[]>([4, 7, 5, 2, 0, -2, 1, 3]);
+  const [skinMenu, setSkinMenu] = useState(false);
+  // Cuadro de dictado en vivo (vista ESCUCHAR): texto acumulado editable +
+  // fragmento parcial en curso (solo modelos streaming).
+  const [dictado, setDictado] = useState("");
+  const [parcial, setParcial] = useState("");
 
-  // ── espectro (R8) ──
+  // ── esfera oficial (motor WebGL del overlay: "flor cósmica" ~24k puntos) ──
   const cvRef = useRef<HTMLCanvasElement>(null);
-  const esp = useRef<EspectroHandle | null>(null);
+  const esf = useRef<EsferaEngine | null>(null);
   const subscribed = useRef(false);
+  const stackRef = useRef<HTMLDivElement>(null);
 
-  // Motor del espectro: montar una vez.
   useEffect(() => {
     if (!cvRef.current) return;
-    esp.current = montarEspectro(cvRef.current);
+    const eng = new EsferaEngine(cvRef.current);
+    eng.setPalette(readEsferaPalette());
+    eng.setState("recording");
+    eng.start();
+    esf.current = eng;
     return () => {
-      esp.current?.destroy();
-      esp.current = null;
-      if (subscribed.current) {
-        void commands.stopSpectrum();
-        subscribed.current = false;
-      }
+      eng.stop();
+      eng.dispose();
+      esf.current = null;
     };
   }, []);
 
-  // Escucha del stream R8 (siempre atada; solo llegan frames si estamos suscritos).
+  // Espectro real del micrófono → esfera (solo mientras se dicta; en reposo
+  // no llega audio y la esfera queda calma).
   useEffect(() => {
     let unlisten: (() => void) | null = null;
     let cancelled = false;
-    listen<SpectrumPayload>("spectrum", (e) => {
-      esp.current?.push(e.payload.bands);
-    }).then((fn) => {
+    listen<{ bands: number[]; rms: number; bass: number; dominant: number }>(
+      "spectrum",
+      (e) => {
+        const { bands, rms, bass, dominant } = e.payload;
+        esf.current?.setAudioData(bands, rms, bass, dominant);
+      },
+    ).then((fn) => {
       if (cancelled) fn();
       else unlisten = fn;
     });
@@ -101,8 +146,6 @@ export const RetroShell: React.FC = () => {
     };
   }, []);
 
-  // Sondeo del estado de dictado real → reloj + suscripción R8 (solo al grabar,
-  // para no escuchar en reposo; privacidad + regla R8).
   useEffect(() => {
     let vivo = true;
     const tick = async () => {
@@ -111,9 +154,9 @@ export const RetroShell: React.FC = () => {
         if (!vivo || rec === grabandoRef.current) return;
         grabandoRef.current = rec;
         setGrabando(rec);
-        esp.current?.setGrabando(rec);
         if (rec) {
           setSeg(0);
+          setParcial("");
           if (!subscribed.current) {
             void commands.startSpectrum();
             subscribed.current = true;
@@ -123,7 +166,7 @@ export const RetroShell: React.FC = () => {
           subscribed.current = false;
         }
       } catch {
-        // comando aún no listo
+        // aún no listo
       }
     };
     const id = setInterval(tick, 200);
@@ -131,20 +174,22 @@ export const RetroShell: React.FC = () => {
     return () => {
       vivo = false;
       clearInterval(id);
+      if (subscribed.current) {
+        void commands.stopSpectrum();
+        subscribed.current = false;
+      }
     };
   }, []);
 
-  // Contador del reloj mientras se graba.
   useEffect(() => {
     if (!grabando) return;
     const id = setInterval(() => setSeg((s) => s + 1), 1000);
     return () => clearInterval(id);
   }, [grabando]);
 
-  // Historial: carga inicial + actualizaciones en vivo.
   const loadHistory = useCallback(async () => {
     try {
-      const r = await commands.getHistoryEntries(null, 30);
+      const r = await commands.getHistoryEntries(null, 50);
       if (r.status === "ok") setEntries(r.data.entries);
     } catch {
       // ignorar
@@ -164,108 +209,107 @@ export const RetroShell: React.FC = () => {
     };
   }, [loadHistory]);
 
-  // Estado del diccionario (para la lámpara DICC).
+  // Dictado en vivo → cuadro de ESCUCHAR: fragmento parcial (streaming) y, al
+  // completar cada dictado, se anexa el texto final (funciona con cualquier
+  // modelo vía history-update-payload).
   useEffect(() => {
-    commands
-      .getDictionaryStats()
-      .then((s: any) => setDictEnabled(!!s?.enabled))
-      .catch(() => {});
+    let un1: (() => void) | null = null;
+    let un2: (() => void) | null = null;
+    let cancelled = false;
+    events.streamTextEvent
+      .listen((e) => {
+        const { committed, tentative } = e.payload;
+        setParcial(`${committed} ${tentative}`.trim());
+      })
+      .then((fn) => {
+        if (cancelled) fn();
+        else un1 = fn;
+      });
+    events.historyUpdatePayload
+      .listen((e) => {
+        if (e.payload.action !== "added") return;
+        const t = e.payload.entry.transcription_text?.trim();
+        if (t) setDictado((prev) => (prev ? `${prev} ${t}` : t));
+        setParcial("");
+      })
+      .then((fn) => {
+        if (cancelled) fn();
+        else un2 = fn;
+      });
+    return () => {
+      cancelled = true;
+      un1?.();
+      un2?.();
+    };
   }, []);
 
-  // Re-tinte del espectro al cambiar la paleta.
   useEffect(() => {
     const root = document.documentElement;
-    const obs = new MutationObserver(() => esp.current?.setPalette());
-    obs.observe(root, { attributes: true, attributeFilter: ["data-ui-theme"] });
+    const obs = new MutationObserver(() =>
+      esf.current?.setPalette(readEsferaPalette()),
+    );
+    obs.observe(root, {
+      attributes: true,
+      attributeFilter: ["data-ui-theme", "data-theme"],
+    });
     return () => obs.disconnect();
   }, []);
 
-  // ── gestión de ventanas ──
-  const bringFront = (id: WinId) =>
-    setWins((w) => ({ ...w, [id]: { ...w[id], z: ++zTop.current } }));
-  const toggleWin = (id: WinId) =>
-    setWins((w) => ({
-      ...w,
-      [id]: { ...w[id], visible: !w[id].visible, z: ++zTop.current },
-    }));
-  const openWin = (id: WinId) =>
-    setWins((w) => ({
-      ...w,
-      [id]: { ...w[id], visible: true, folded: false, z: ++zTop.current },
-    }));
-  const closeWin = (id: WinId) =>
-    setWins((w) => ({ ...w, [id]: { ...w[id], visible: false } }));
-  const foldWin = (id: WinId) =>
-    setWins((w) => ({ ...w, [id]: { ...w[id], folded: !w[id].folded } }));
-
-  // Arrastre.
-  const drag = useRef<{ id: WinId; dx: number; dy: number } | null>(null);
-  const onBarPointerDown = (id: WinId) => (e: React.PointerEvent) => {
-    if ((e.target as HTMLElement).closest(".rbtn")) return;
-    bringFront(id);
-    drag.current = {
-      id,
-      dx: e.clientX - wins[id].x,
-      dy: e.clientY - wins[id].y,
+  // ── ventana = tamaño del reproductor ──
+  const ajustar = useCallback(() => {
+    const el = stackRef.current;
+    if (!el) return;
+    const r = el.getBoundingClientRect();
+    void getCurrentWindow()
+      .setSize(new LogicalSize(Math.ceil(r.right), Math.ceil(r.bottom)))
+      .catch(() => {});
+  }, []);
+  useEffect(() => {
+    const el = stackRef.current;
+    if (!el) return;
+    let raf = 0;
+    const s = () => {
+      if (!raf)
+        raf = requestAnimationFrame(() => {
+          raf = 0;
+          ajustar();
+        });
     };
-    (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
-  };
-  const onBarPointerMove = (e: React.PointerEvent) => {
-    const d = drag.current;
-    if (!d) return;
-    const x = Math.max(0, e.clientX - d.dx);
-    const y = Math.max(0, e.clientY - d.dy);
-    setWins((w) => ({ ...w, [d.id]: { ...w[d.id], x, y } }));
-  };
-  const onBarPointerUp = () => {
-    drag.current = null;
-  };
+    s();
+    const ro = new ResizeObserver(s);
+    ro.observe(el);
+    return () => {
+      if (raf) cancelAnimationFrame(raf);
+      ro.disconnect();
+    };
+  }, [ajustar]);
+  useEffect(() => {
+    const id = requestAnimationFrame(ajustar);
+    return () => cancelAnimationFrame(id);
+  }, [view, entries.length, ajustar]);
 
-  // ── acciones ──
-  const dictar = () => {
-    if (!grabandoRef.current) void commands.triggerTranscription();
-  };
-  const detener = () => {
-    if (grabandoRef.current) void commands.triggerTranscription();
-  };
-  const copiar = async (text: string) => {
+  const dictar = () => void commands.triggerTranscription();
+  const cerrar = () => setView(null);
+  const copiar = async (t: string) => {
     try {
-      await navigator.clipboard.writeText(text);
-      toast.success(t("retro.copied"));
+      await navigator.clipboard.writeText(t);
+      toast.success("Copiado al portapapeles");
     } catch {
       // ignorar
     }
   };
-  const toggleDict = async () => {
-    const next = !dictEnabled;
-    setDictEnabled(next);
-    try {
-      await commands.setDictionaryEnabled(next);
-    } catch {
-      setDictEnabled(!next);
-    }
-  };
-  // Muletillas: null = filtro por defecto del idioma (ON); [] = desactivado (OFF).
-  const fillerOn = useMemo(() => {
-    const f = settings?.custom_filler_words;
-    return f === null || f === undefined || f.length > 0;
-  }, [settings?.custom_filler_words]);
-  const toggleFiller = () =>
-    updateSetting("custom_filler_words", fillerOn ? [] : null);
-
-  const abrirSeccion = (id: SidebarSection) => {
-    setSeccion(id);
-    openWin("seccion");
-    setMenuOpen(false);
-  };
-  const cambiarShell = (shell: "orbital" | "classic") => {
+  const cambiarShell = async (shell: "retro" | "quiet" | "classic") => {
+    setSkinMenu(false);
     applyShell(shell);
-    updateSetting("ui_shell", shell);
-    setMenuOpen(false);
+    try {
+      await commands.changeUiShellSetting(shell);
+    } catch {
+      // se persiste igual
+    }
+    await relaunch();
   };
-  const toggleTema = () => {
+  const togglePaleta = () => {
     const next = settings?.ui_theme === "imperial" ? "abrax" : "imperial";
-    // Efecto inmediato + persistencia (mismo patrón del selector de paleta).
     if (next === "imperial") {
       document.documentElement.dataset.uiTheme = "imperial";
       document.documentElement.dataset.theme = "dark";
@@ -274,530 +318,455 @@ export const RetroShell: React.FC = () => {
     }
     updateSetting("ui_theme", next);
   };
+  // Estilo de overlay al grabar: "esfera" (los puntitos WebGL de ABRAX) o
+  // "minimal" (la píldora ORIGINAL de Handy con waveform). El botón/valor
+  // alterna esfera ⇄ Handy(minimal). ("live" = píldora que crece con texto en
+  // vivo, solo modelos streaming; se puede fijar desde Ajustes → Overlay.)
+  const overlayStyle = settings?.overlay_style ?? "minimal";
+  const visualLabel = {
+    none: "Ninguna",
+    minimal: "Handy",
+    live: "Live",
+    esfera: "Esfera",
+  }[overlayStyle];
+  const toggleVisual = () =>
+    updateSetting(
+      "overlay_style",
+      overlayStyle === "esfera" ? "minimal" : "esfera",
+    );
 
-  const reloj = `${String(Math.floor(seg / 60)).padStart(2, "0")}:${String(
-    seg % 60,
-  ).padStart(2, "0")}`;
-
-  const availableSections = useMemo(
-    () =>
-      (Object.entries(SECTIONS_CONFIG) as [SidebarSection, any][])
-        .filter(([, c]) => c.enabled(settings))
-        .map(([id, c]) => ({ id, labelKey: c.labelKey })),
-    [settings],
-  );
-
-  const SeccionComp = SECTIONS_CONFIG[seccion].component;
-  // Nombre corto del modelo activo (el id suele ser una ruta larga).
+  const win = getCurrentWindow();
+  const reloj = `${String(Math.floor(seg / 3600)).padStart(2, "0")}:${String(
+    Math.floor((seg % 3600) / 60),
+  ).padStart(2, "0")}:${String(seg % 60).padStart(2, "0")}`;
   const modelName = (settings?.selected_model ?? "—")
     .split("/")
     .pop()!
-    .replace(/\.(gguf|bin|onnx|safetensors)$/i, "");
+    .replace(/\.(gguf|bin|onnx|safetensors)$/i, "")
+    .split(/[-_]/)
+    .slice(0, 2)
+    .join(" ")
+    .replace(/\b\w/g, (c) => c.toUpperCase());
+  const langLabel =
+    LANG_NAMES[settings?.selected_language ?? "auto"] ??
+    settings?.selected_language ??
+    "Auto";
 
-  const winStyle = (id: WinId): React.CSSProperties => ({
-    left: wins[id].x,
-    top: wins[id].y,
-    zIndex: wins[id].z,
-    display: wins[id].visible ? undefined : "none",
-  });
+  const fillerOn = useMemo(() => {
+    const f = settings?.custom_filler_words;
+    return f === null || f === undefined || f.length > 0;
+  }, [settings?.custom_filler_words]);
+
+  const barraTitulo = (
+    <header className="rk-top" data-tauri-drag-region>
+      <AbraxLogo variant="horizontal" width={100} />
+      <span className="rk-top-status" data-tauri-drag-region>
+        <i className={`rk-dot${grabando ? " live" : " on"}`} />
+        Procesamiento local · 0% Nube
+        <CloudOff size={11} aria-hidden="true" />
+      </span>
+      <div className="rk-win">
+        {settings?.show_tray_icon !== false && (
+          <button
+            type="button"
+            title="Enviar a la bandeja"
+            aria-label="Enviar a la bandeja"
+            onClick={() => void win.hide()}
+          >
+            <ArrowDownToLine size={12} aria-hidden="true" />
+          </button>
+        )}
+        <button
+          type="button"
+          title="Minimizar"
+          aria-label="Minimizar"
+          onClick={() => void win.minimize()}
+        >
+          <Minus size={12} aria-hidden="true" />
+        </button>
+        <button
+          type="button"
+          title="Cerrar"
+          aria-label="Cerrar"
+          onClick={() => void win.hide()}
+        >
+          <X size={12} aria-hidden="true" />
+        </button>
+      </div>
+    </header>
+  );
+
+  const panelEstado = (
+    <section className="rk-panel rk-estado-panel">
+      <div className="rk-estado-top">
+        <div className="rk-estado-l">
+          <div className="rk-cap">ESTADO</div>
+          <div className={`rk-estado-txt${grabando ? " live" : ""}`}>
+            {grabando ? "ESCUCHANDO..." : "LISTO"}
+          </div>
+          <div className="rk-estado-t">{reloj}</div>
+        </div>
+        <div className="rk-nivel">
+          <div className="rk-esfera">
+            <canvas ref={cvRef} className="rk-esfera-cv" aria-hidden="true" />
+          </div>
+        </div>
+      </div>
+      <div className="rk-infobar">
+        <span>
+          <b>Paleta</b>
+          {settings?.ui_theme === "imperial" ? "Imperial" : "ABRAX"}
+        </span>
+        <span>
+          <b>Idioma</b>
+          {langLabel}
+        </span>
+        <span>
+          <b>Muletillas</b>
+          {fillerOn ? "On" : "Off"}
+        </span>
+        <span>
+          <b>Traducir</b>
+          {settings?.translate_to_english ? "On" : "Off"}
+        </span>
+        <span>
+          <b>Auto-voz</b>
+          {settings?.vad_enabled ? "On" : "Off"}
+        </span>
+        <span>
+          <b>Visual</b>
+          {visualLabel}
+        </span>
+      </div>
+    </section>
+  );
+
+  // ESCUCHAR: botón de dictado + CUADRO en vivo donde va apareciendo el texto
+  // que dictas (editable, para retocarlo o luego procesarlo con el LLM local).
+  const textoVivo =
+    grabando && parcial ? `${dictado ? `${dictado} ` : ""}${parcial}` : dictado;
+  const numPalabras = dictado.trim() ? dictado.trim().split(/\s+/).length : 0;
+  const vistaEscuchar = (
+    <div className="rk-escuchar">
+      <div className="rk-dictar-row">
+        <button
+          type="button"
+          className={`rk-dictar rk-dictar-sm${grabando ? " rec" : ""}`}
+          onClick={dictar}
+          title={grabando ? "Detener" : "Dictar"}
+        >
+          {grabando ? (
+            <Square size={15} aria-hidden="true" />
+          ) : (
+            <Mic size={16} aria-hidden="true" />
+          )}
+        </button>
+        <div className="rk-hint rk-dictar-hint">
+          {grabando
+            ? "Escuchando… habla y aparecerá aquí abajo"
+            : "Clic o mantén tu atajo para dictar"}
+        </div>
+      </div>
+      <textarea
+        className="rk-dictado-ta"
+        value={textoVivo}
+        readOnly={grabando}
+        onChange={(e) => setDictado(e.target.value)}
+        placeholder="Aquí irá apareciendo lo que dictes… (editable)"
+        spellCheck={false}
+      />
+      <div className="rk-dictado-foot">
+        <span className="rk-dictado-count">{numPalabras} palabras</span>
+        <div className="rk-dictado-acts">
+          <button
+            type="button"
+            onClick={() => void copiar(dictado)}
+            disabled={!dictado.trim()}
+          >
+            <Copy size={12} aria-hidden="true" /> Copiar
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              setDictado("");
+              setParcial("");
+            }}
+            disabled={!dictado && !parcial}
+          >
+            <Trash2 size={12} aria-hidden="true" /> Limpiar
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+
+  const vistaLista = (
+    <section className="rk-panel rk-lista">
+      <div className="rk-cap">
+        {view === "historial" ? "HISTORIAL" : "TRANSCRIPCIONES"}
+      </div>
+      <div className="rk-recents-list rk-lista-full">
+        {entries.length === 0 ? (
+          <div className="rk-vacio">Aún no hay transcripciones.</div>
+        ) : (
+          entries.map((e) => (
+            <button
+              type="button"
+              key={e.id}
+              className={`rk-rec-row${selEntry === e.id ? " sel" : ""}`}
+              onClick={() => setSelEntry(e.id)}
+              onDoubleClick={() => copiar(e.transcription_text)}
+            >
+              <span className="rk-rec-t">
+                {e.title || e.transcription_text}
+              </span>
+              <span className="rk-rec-h">{fmtHora(e.timestamp)}</span>
+            </button>
+          ))
+        )}
+      </div>
+    </section>
+  );
+
+  const vistaModelos = (
+    <section className="rk-panel rk-modelos-v">
+      <div className="rk-cap">MODELO ACTIVO</div>
+      <div className="rk-model-name rk-model-big">{modelName}</div>
+      <div className="rk-model-sub">Procesamiento 100% local · Sin nube</div>
+    </section>
+  );
+
+  const toggle = (
+    key: "push_to_talk" | "vad_enabled" | "translate_to_english",
+    label: string,
+  ) => (
+    <button
+      type="button"
+      className={`rk-sw${settings?.[key] ? " on" : ""}`}
+      onClick={() => updateSetting(key, !settings?.[key])}
+      aria-pressed={!!settings?.[key]}
+    >
+      <i className="rk-sw-led" /> {label}
+    </button>
+  );
+
+  const vistaAjustes = (
+    <>
+      <section className="rk-panel rk-eq">
+        <div className="rk-cap">ECUALIZADOR</div>
+        <div className="rk-eq-body">
+          <div className="rk-eq-scale">
+            <span>+12</span>
+            <span>0</span>
+            <span>-12</span>
+          </div>
+          {EQ_LABELS.map((label, i) => (
+            <div className="rk-eq-band" key={label}>
+              <input
+                type="range"
+                min={-12}
+                max={12}
+                value={eq[i]}
+                aria-label={`EQ ${label}`}
+                onChange={(e) =>
+                  setEq((p) => {
+                    const n = [...p];
+                    n[i] = Number(e.target.value);
+                    return n;
+                  })
+                }
+              />
+              <span>{label}</span>
+            </div>
+          ))}
+          <div className="rk-eq-scale">
+            <span>+12</span>
+            <span>0</span>
+            <span>-12</span>
+          </div>
+        </div>
+      </section>
+      <section className="rk-panel rk-ajustes-v">
+        <div className="rk-cap">PROCESO</div>
+        <div className="rk-sw-grid">
+          {toggle("push_to_talk", "PUSH-TO-TALK")}
+          {toggle("vad_enabled", "AUTO-VOZ (VAD)")}
+          {toggle("translate_to_english", "TRADUCIR → EN")}
+          <button
+            type="button"
+            className={`rk-sw${fillerOn ? " on" : ""}`}
+            onClick={() =>
+              updateSetting("custom_filler_words", fillerOn ? [] : null)
+            }
+            aria-pressed={fillerOn}
+          >
+            <i className="rk-sw-led" /> MULETILLAS
+          </button>
+        </div>
+        <button
+          type="button"
+          className="rk-link"
+          onClick={() => void cambiarShell("classic")}
+        >
+          ↺ VOLVER AL SKIN CLÁSICO
+        </button>
+      </section>
+    </>
+  );
 
   return (
     <div
       id="retro-stage"
-      className="select-none"
-      onClick={() => setMenuOpen(false)}
+      className="rk select-none"
+      onClick={() => setSkinMenu(false)}
     >
-      <div className="retro-backdrop" aria-hidden="true" />
+      <div className="rk-frame" ref={stackRef}>
+        {barraTitulo}
+        {panelEstado}
 
-      {/* ═══ VENTANA PRINCIPAL ═══ */}
-      <section
-        className={`rvent rvent-main${wins.main.folded ? " plegada" : ""}`}
-        style={winStyle("main")}
-        onPointerDown={() => bringFront("main")}
-      >
-        <header
-          className="rbarra"
-          onPointerDown={onBarPointerDown("main")}
-          onPointerMove={onBarPointerMove}
-          onPointerUp={onBarPointerUp}
-          onDoubleClick={() => foldWin("main")}
-        >
-          <button
-            type="button"
-            className="rbtn riso"
-            aria-label={t("retro.menu")}
-            onClick={(e) => {
-              e.stopPropagation();
-              const r = (
-                e.currentTarget as HTMLElement
-              ).getBoundingClientRect();
-              setMenuPos({ x: r.left, y: r.bottom + 4 });
-              setMenuOpen((o) => !o);
-            }}
-          >
-            <AbraxGlyph width={14} height={14} />
-          </button>
-          <b>{t("retro.titleMain")}</b>
-          <button
-            type="button"
-            className="rbtn"
-            aria-label={t("retro.fold")}
-            onClick={() => foldWin("main")}
-          >
-            <Minus size={11} aria-hidden="true" />
-          </button>
-          <button
-            type="button"
-            className="rbtn"
-            aria-label={t("retro.close")}
-            onClick={() => closeWin("main")}
-          >
-            <X size={11} aria-hidden="true" />
-          </button>
-        </header>
-
-        <div className="rcuerpo">
-          <div className={`rhueco rreloj${grabando ? " on" : ""}`}>
-            <span className="rrec" aria-hidden="true" />
-            <span>{reloj}</span>
-          </div>
-          <canvas
-            ref={cvRef}
-            className="rhueco rspectro"
-            width={252}
-            height={44}
-            aria-hidden="true"
-          />
-          <div className="rhueco rmarquee">
-            <span>{t("retro.marquee")}</span>
-          </div>
-
-          <div className="rlamparas">
-            <span className="rlamp on" title={t("retro.lamp.model")}>
-              {modelName}
-            </span>
-            <span className="rlamp on">{t("retro.lamp.local")}</span>
+        {/* barra de opciones tipo Winamp (acciones REALES) */}
+        <div className="rk-optbar">
+          <div className="rk-opt-skin">
             <button
               type="button"
-              className={`rlamp mg${fillerOn ? " on" : ""}`}
-              onClick={toggleFiller}
-              aria-pressed={fillerOn}
-            >
-              {t("retro.lamp.filler")}
-            </button>
-            <button
-              type="button"
-              className={`rlamp${dictEnabled ? " on" : ""}`}
-              onClick={toggleDict}
-              aria-pressed={dictEnabled}
-            >
-              {t("retro.lamp.dict")}
-            </button>
-          </div>
-
-          <div className="rtransporte">
-            <button
-              type="button"
-              className="rtbtn rrec-btn"
-              onClick={dictar}
-              aria-label={t("retro.dictate")}
-              title={t("retro.dictate")}
-            >
-              <Mic size={13} aria-hidden="true" />
-            </button>
-            <button
-              type="button"
-              className="rtbtn"
-              onClick={detener}
-              aria-label={t("retro.stop")}
-              title={t("retro.stop")}
-            >
-              <Square size={12} aria-hidden="true" />
-            </button>
-            <button
-              type="button"
-              className="rtbtn"
-              onClick={() => toggleWin("ajustes")}
-              aria-label={t("retro.settings")}
-              title={t("retro.settings")}
-            >
-              <SlidersHorizontal size={13} aria-hidden="true" />
-            </button>
-            <button
-              type="button"
-              className="rtbtn"
-              onClick={() => toggleWin("historial")}
-              aria-label={t("retro.history")}
-              title={t("retro.history")}
-            >
-              <ListMusic size={13} aria-hidden="true" />
-            </button>
-            <button
-              type="button"
-              className="rtbtn"
-              onClick={() => abrirSeccion("history")}
-              aria-label={t("retro.compiler")}
-              title={t("retro.compiler")}
-            >
-              <Wand2 size={13} aria-hidden="true" />
-            </button>
-          </div>
-        </div>
-      </section>
-
-      {/* ═══ VENTANA AJUSTES ═══ */}
-      <section
-        className={`rvent rvent-ajustes${wins.ajustes.folded ? " plegada" : ""}`}
-        style={winStyle("ajustes")}
-        onPointerDown={() => bringFront("ajustes")}
-      >
-        <header
-          className="rbarra"
-          onPointerDown={onBarPointerDown("ajustes")}
-          onPointerMove={onBarPointerMove}
-          onPointerUp={onBarPointerUp}
-          onDoubleClick={() => foldWin("ajustes")}
-        >
-          <SlidersHorizontal
-            size={12}
-            aria-hidden="true"
-            className="riso-static"
-          />
-          <b>{t("retro.titleSettings")}</b>
-          <button
-            type="button"
-            className="rbtn"
-            aria-label={t("retro.fold")}
-            onClick={() => foldWin("ajustes")}
-          >
-            <Minus size={11} aria-hidden="true" />
-          </button>
-          <button
-            type="button"
-            className="rbtn"
-            aria-label={t("retro.close")}
-            onClick={() => closeWin("ajustes")}
-          >
-            <X size={11} aria-hidden="true" />
-          </button>
-        </header>
-        <div className="rcuerpo">
-          <div className="rfila-onoff">
-            <button
-              type="button"
-              className={`rlamp${settings?.push_to_talk ? " on" : ""}`}
-              onClick={() =>
-                updateSetting("push_to_talk", !settings?.push_to_talk)
-              }
-              aria-pressed={!!settings?.push_to_talk}
-            >
-              {t("retro.lamp.ptt")}
-            </button>
-            <button
-              type="button"
-              className={`rlamp${settings?.vad_enabled ? " on" : ""}`}
-              onClick={() =>
-                updateSetting("vad_enabled", !settings?.vad_enabled)
-              }
-              aria-pressed={!!settings?.vad_enabled}
-            >
-              {t("retro.lamp.vad")}
-            </button>
-            <button
-              type="button"
-              className={`rlamp${settings?.translate_to_english ? " on" : ""}`}
-              onClick={() =>
-                updateSetting(
-                  "translate_to_english",
-                  !settings?.translate_to_english,
-                )
-              }
-              aria-pressed={!!settings?.translate_to_english}
-            >
-              {t("retro.lamp.translate")}
-            </button>
-            <button
-              type="button"
-              className={`rlamp${settings?.overlay_style === "esfera" ? " on" : ""}`}
-              onClick={() =>
-                updateSetting(
-                  "overlay_style",
-                  settings?.overlay_style === "esfera" ? "minimal" : "esfera",
-                )
-              }
-              aria-pressed={settings?.overlay_style === "esfera"}
-            >
-              {t("retro.lamp.sphere")}
-            </button>
-            <button
-              type="button"
-              className="rmini"
+              className={skinMenu ? "on" : ""}
               onClick={(e) => {
                 e.stopPropagation();
-                const r = (
-                  e.currentTarget as HTMLElement
-                ).getBoundingClientRect();
-                setMenuPos({ x: r.left, y: r.bottom + 4 });
-                setMenuOpen(true);
+                setSkinMenu((v) => !v);
               }}
+              title="Cambiar de skin / apariencia"
+              aria-label="Cambiar de skin / apariencia"
             >
-              {t("retro.sections")}
+              <VenetianMask size={15} aria-hidden="true" />
             </button>
-          </div>
-          <div className="req rhueco">
-            {[
-              {
-                key: "extra_recording_buffer_ms",
-                label: t("retro.slider.buffer"),
-                min: 0,
-                max: 500,
-                val: settings?.extra_recording_buffer_ms ?? 0,
-              },
-              {
-                key: "audio_feedback_volume",
-                label: t("retro.slider.volume"),
-                min: 0,
-                max: 100,
-                val: Math.round((settings?.audio_feedback_volume ?? 0.5) * 100),
-              },
-              {
-                key: "word_correction_threshold",
-                label: t("retro.slider.threshold"),
-                min: 0,
-                max: 100,
-                val: Math.round(
-                  (settings?.word_correction_threshold ?? 0.18) * 100,
-                ),
-              },
-            ].map((s) => (
-              <div className="rbanda" key={s.key}>
-                <input
-                  type="range"
-                  min={s.min}
-                  max={s.max}
-                  defaultValue={s.val}
-                  aria-label={s.label}
-                  onChange={(e) => {
-                    const v = Number(e.target.value);
-                    if (s.key === "extra_recording_buffer_ms")
-                      updateSetting("extra_recording_buffer_ms", v);
-                    else if (s.key === "audio_feedback_volume")
-                      updateSetting("audio_feedback_volume", v / 100);
-                    else if (s.key === "word_correction_threshold")
-                      updateSetting("word_correction_threshold", v / 100);
-                  }}
-                />
-                <span>{s.label}</span>
+            {skinMenu && (
+              <div className="rk-skinmenu" onClick={(e) => e.stopPropagation()}>
+                {SKINS.filter(
+                  ([s]) => s !== (settings?.ui_shell ?? "retro"),
+                ).map(([s, l]) => (
+                  <button
+                    key={s}
+                    type="button"
+                    onClick={() => void cambiarShell(s)}
+                  >
+                    {l}
+                  </button>
+                ))}
               </div>
-            ))}
+            )}
           </div>
-        </div>
-      </section>
-
-      {/* ═══ VENTANA HISTORIAL (playlist) ═══ */}
-      <section
-        className={`rvent rvent-hist${wins.historial.folded ? " plegada" : ""}`}
-        style={winStyle("historial")}
-        onPointerDown={() => bringFront("historial")}
-      >
-        <header
-          className="rbarra"
-          onPointerDown={onBarPointerDown("historial")}
-          onPointerMove={onBarPointerMove}
-          onPointerUp={onBarPointerUp}
-          onDoubleClick={() => foldWin("historial")}
-        >
-          <ListMusic size={12} aria-hidden="true" className="riso-static" />
-          <b>{t("retro.titleHistory")}</b>
           <button
             type="button"
-            className="rbtn"
-            aria-label={t("retro.fold")}
-            onClick={() => foldWin("historial")}
-          >
-            <Minus size={11} aria-hidden="true" />
-          </button>
-          <button
-            type="button"
-            className="rbtn"
-            aria-label={t("retro.close")}
-            onClick={() => closeWin("historial")}
-          >
-            <X size={11} aria-hidden="true" />
-          </button>
-        </header>
-        <div className="rlista rhueco">
-          {entries.length === 0 ? (
-            <div className="rvacio">{t("retro.emptyHistory")}</div>
-          ) : (
-            entries.map((en, i) => (
-              <div
-                key={en.id}
-                className={`rpista${selEntry === en.id ? " sel" : ""}`}
-                onClick={() => setSelEntry(en.id)}
-                onDoubleClick={() => copiar(en.transcription_text)}
-                title={t("retro.copyHint")}
-              >
-                <span className="rnum">{i + 1}.</span>
-                <span className="rtxt">
-                  {en.title || en.transcription_text}
-                </span>
-              </div>
-            ))
-          )}
-        </div>
-        <div className="rbotonera">
-          <button
-            type="button"
-            className="rmini"
-            disabled={selEntry === null}
-            onClick={() => {
-              const e = entries.find((x) => x.id === selEntry);
-              if (e) void copiar(e.transcription_text);
-            }}
-          >
-            {t("retro.copy")}
-          </button>
-          <button
-            type="button"
-            className="rmini"
-            disabled={selEntry === null}
-            onClick={() =>
-              selEntry !== null &&
-              void commands.toggleHistoryEntrySaved(selEntry)
+            className={settings?.ui_theme === "imperial" ? "on" : ""}
+            onClick={togglePaleta}
+            title={
+              settings?.ui_theme === "imperial"
+                ? "Paleta: Imperial (clic → ABRAX)"
+                : "Paleta: ABRAX (clic → Imperial)"
             }
+            aria-label="Paleta"
           >
-            {t("retro.save")}
+            <Palette size={15} aria-hidden="true" />
           </button>
           <button
             type="button"
-            className="rmini"
-            disabled={selEntry === null}
-            onClick={async () => {
-              if (selEntry !== null) {
-                await commands.deleteHistoryEntry(selEntry);
-                setSelEntry(null);
-              }
-            }}
+            className={settings?.vad_enabled ? "on" : ""}
+            onClick={() => updateSetting("vad_enabled", !settings?.vad_enabled)}
+            title={
+              settings?.vad_enabled
+                ? "Auto-voz (VAD): ACTIVADO — recorta silencios"
+                : "Auto-voz (VAD): desactivado"
+            }
+            aria-pressed={!!settings?.vad_enabled}
           >
-            {t("retro.delete")}
+            <AudioLines size={15} aria-hidden="true" />
           </button>
           <button
             type="button"
-            className="rmini"
-            onClick={() => abrirSeccion("history")}
+            className={settings?.translate_to_english ? "on" : ""}
+            onClick={() =>
+              updateSetting(
+                "translate_to_english",
+                !settings?.translate_to_english,
+              )
+            }
+            title={
+              settings?.translate_to_english
+                ? "Traducir a inglés: ACTIVADO"
+                : "Traducir a inglés: desactivado"
+            }
+            aria-pressed={!!settings?.translate_to_english}
           >
-            {t("retro.compile")}
+            <Languages size={15} aria-hidden="true" />
           </button>
-          <span className="rcontador">
-            {t("retro.count", { n: entries.length })}
-          </span>
+          <button
+            type="button"
+            className={fillerOn ? "on" : ""}
+            onClick={() =>
+              updateSetting("custom_filler_words", fillerOn ? [] : null)
+            }
+            title={
+              fillerOn
+                ? "Filtro de muletillas: ACTIVADO"
+                : "Filtro de muletillas: desactivado"
+            }
+            aria-pressed={fillerOn}
+          >
+            <Eraser size={15} aria-hidden="true" />
+          </button>
+          <button
+            type="button"
+            className={overlayStyle === "esfera" ? "on" : ""}
+            onClick={toggleVisual}
+            title={
+              overlayStyle === "esfera"
+                ? "Visual al grabar: Esfera (clic → Handy)"
+                : `Visual al grabar: ${visualLabel} (clic → Esfera)`
+            }
+            aria-label="Visual al grabar"
+          >
+            {overlayStyle === "esfera" ? (
+              <Orbit size={15} aria-hidden="true" />
+            ) : (
+              <RectangleHorizontal size={15} aria-hidden="true" />
+            )}
+          </button>
         </div>
-      </section>
 
-      {/* ═══ VENTANA SECCIÓN (hospeda una sección real desde el menú) ═══ */}
-      <section
-        className={`rvent rvent-seccion${wins.seccion.folded ? " plegada" : ""}`}
-        style={winStyle("seccion")}
-        onPointerDown={() => bringFront("seccion")}
-      >
-        <header
-          className="rbarra"
-          onPointerDown={onBarPointerDown("seccion")}
-          onPointerMove={onBarPointerMove}
-          onPointerUp={onBarPointerUp}
-          onDoubleClick={() => foldWin("seccion")}
-        >
-          <MenuIcon size={12} aria-hidden="true" className="riso-static" />
-          <b>{t(SECTIONS_CONFIG[seccion].labelKey)}</b>
-          <button
-            type="button"
-            className="rbtn"
-            aria-label={t("retro.fold")}
-            onClick={() => foldWin("seccion")}
-          >
-            <Minus size={11} aria-hidden="true" />
-          </button>
-          <button
-            type="button"
-            className="rbtn"
-            aria-label={t("retro.close")}
-            onClick={() => closeWin("seccion")}
-          >
-            <X size={11} aria-hidden="true" />
-          </button>
-        </header>
-        <div className="rseccion-body">
-          <SeccionComp />
-        </div>
-      </section>
-
-      {/* ═══ menú clásico ═══ */}
-      {menuOpen && (
-        <div
-          className="rmenu"
-          style={{ left: menuPos.x, top: menuPos.y }}
-          onClick={(e) => e.stopPropagation()}
-        >
-          <div className="rmenu-tit">{t("retro.menuSections")}</div>
-          {availableSections.map((s) => (
+        <nav className="rk-nav">
+          {NAV.map(([id, label, Icon]) => (
             <button
+              key={id}
               type="button"
-              key={s.id}
-              className="rmenu-it"
-              onClick={() => abrirSeccion(s.id)}
+              className={`rk-tab${view === id ? " on" : ""}`}
+              onClick={() => setView(view === id ? null : id)}
             >
-              {t(s.labelKey)}
+              <Icon size={14} />
+              <span>{label}</span>
             </button>
           ))}
-          <hr />
-          <div className="rmenu-tit">{t("retro.menuWindows")}</div>
-          <button
-            type="button"
-            className="rmenu-it"
-            onClick={() => toggleWin("main")}
-          >
-            {t("retro.titleMain")}
-          </button>
-          <button
-            type="button"
-            className="rmenu-it"
-            onClick={() => toggleWin("ajustes")}
-          >
-            {t("retro.titleSettings")}
-          </button>
-          <button
-            type="button"
-            className="rmenu-it"
-            onClick={() => toggleWin("historial")}
-          >
-            {t("retro.titleHistory")}
-          </button>
-          <hr />
-          <button
-            type="button"
-            className="rmenu-it"
-            onClick={() => cambiarShell("orbital")}
-          >
-            {t("retro.toOrbital")}
-          </button>
-          <button
-            type="button"
-            className="rmenu-it"
-            onClick={() => cambiarShell("classic")}
-          >
-            {t("retro.toClassic")}
-          </button>
-          <hr />
-          <button type="button" className="rmenu-it" onClick={toggleTema}>
-            {t("retro.theme")}:{" "}
-            {settings?.ui_theme === "imperial" ? "Imperial" : "ABRAX"}
-          </button>
-        </div>
-      )}
+        </nav>
 
-      <div className="retro-hint" aria-hidden="true">
-        {t("retro.footer")}
+        <div className="rk-body">
+          {view !== null && (
+            <div className="rk-sub">
+              <button
+                type="button"
+                className="rk-sub-close"
+                onClick={cerrar}
+                title="Cerrar"
+                aria-label="Cerrar"
+              >
+                <X size={14} aria-hidden="true" />
+              </button>
+              {view === "escuchar" && vistaEscuchar}
+              {(view === "transcripciones" || view === "historial") &&
+                vistaLista}
+              {view === "modelos" && vistaModelos}
+              {view === "ajustes" && vistaAjustes}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

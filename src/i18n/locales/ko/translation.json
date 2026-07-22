@@ -12,7 +12,8 @@
     "errorTranscription": "받아쓰기에 실패했습니다. Abrax를 열어 기록에서 다시 시도하세요.",
     "errorPaste": "텍스트를 붙여넣을 수 없습니다. 기록에 저장되어 있습니다.",
     "errorModelLoad": "음성 모델을 로드하지 못했습니다. Abrax를 열어 원인을 확인하세요.",
-    "errorModelDownload": "모델 다운로드에 실패했습니다. Abrax를 열어 다시 시도하세요."
+    "errorModelDownload": "모델 다운로드에 실패했습니다. Abrax를 열어 다시 시도하세요.",
+    "show": "Show Abrax"
   },
   "sidebar": {
     "general": "일반",
@@ -781,18 +782,8 @@
     "description": "Abrax 창의 모양을 선택하세요. 클래식은 기본 설정 창이고, 오비탈은 앱을 떠 있는 구체로 바꾸며, 레트로는 클래식 플레이어 스킨입니다. 창 테두리는 Abrax를 다시 시작하면 완전히 적용됩니다.",
     "options": {
       "classic": "클래식",
-      "orbital": "오비탈",
-      "retro": "레트로"
-    }
-  },
-  "orbital": {
-    "menu": "Abrax 메뉴",
-    "close": "닫기",
-    "hint": "{{atajo}} 키를 누른 채 말하세요 — 놓으면 붙여넣기",
-    "hintNoBinding": "일반에서 받아쓰기 단축키를 설정한 다음, 누른 채로 말하세요",
-    "controls": {
-      "minimize": "최소화",
-      "hide": "트레이로 숨기기"
+      "retro": "레트로",
+      "quiet": "Quiet"
     }
   },
   "retro": {
@@ -834,10 +825,11 @@
     "copied": "클립보드에 복사됨",
     "menuSections": "섹션",
     "menuWindows": "창",
-    "toOrbital": "↺ 오비탈로 돌아가기",
     "toClassic": "클래식으로 돌아가기",
     "theme": "테마",
-    "footer": "레트로 모드 — ABRAX 스킨 · 동일한 투명 창"
+    "footer": "레트로 모드 — ABRAX 스킨 · 동일한 투명 창",
+    "tray": "Send to tray",
+    "minimize": "Minimize"
   },
   "logo": {
     "tagline": "« Di la <accent>palabra</accent>. »"
@@ -934,5 +926,26 @@
     "espacio": "{{libre}} GB free of {{total}} GB",
     "volverPorDefecto": "Back to the original folder",
     "avisoNoMueve": "New downloads will go to this folder. Already-downloaded models stay where they were; if they don't show up, go back to the original folder or download them again here."
+  },
+  "quiet": {
+    "nav": {
+      "listen": "Listen",
+      "transcriptions": "Transcriptions",
+      "models": "Models",
+      "settings": "Settings"
+    },
+    "ready": "ABRAX is ready",
+    "holdHint": "Hold <k>{{atajo}}</k> and start talking",
+    "holdHintNoBinding": "Set a shortcut in Settings and start talking",
+    "start": "Start transcription",
+    "stop": "Stop",
+    "recent": "Recent transcriptions",
+    "empty": "No transcriptions yet. Hold the shortcut and say the word.",
+    "local": "Local processing",
+    "noCloud": "No cloud connection",
+    "min": "Minimize",
+    "max": "Maximize",
+    "close": "Close",
+    "tray": "Send to tray"
   }
 }

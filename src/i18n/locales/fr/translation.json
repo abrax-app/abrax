@@ -12,7 +12,8 @@
     "errorTranscription": "La transcription a échoué. Ouvrez Abrax pour réessayer depuis l'historique.",
     "errorPaste": "Le texte n'a pas pu être collé. Il est enregistré dans votre historique.",
     "errorModelLoad": "Le modèle vocal n'a pas pu être chargé. Ouvrez Abrax pour en connaître la cause.",
-    "errorModelDownload": "Le téléchargement du modèle a échoué. Ouvrez Abrax pour réessayer."
+    "errorModelDownload": "Le téléchargement du modèle a échoué. Ouvrez Abrax pour réessayer.",
+    "show": "Show Abrax"
   },
   "sidebar": {
     "general": "Général",
@@ -781,18 +782,8 @@
     "description": "Choisissez la forme de la fenêtre d'Abrax. Classique est la fenêtre de réglages habituelle ; Orbital transforme l'application en une sphère flottante ; Rétro est un habillage de lecteur classique. Le cadre de la fenêtre finit de s'appliquer au redémarrage d'Abrax.",
     "options": {
       "classic": "Classique",
-      "orbital": "Orbital",
-      "retro": "Rétro"
-    }
-  },
-  "orbital": {
-    "menu": "Menu d'Abrax",
-    "close": "Fermer",
-    "hint": "maintenez {{atajo}} et parlez — relâchez pour coller",
-    "hintNoBinding": "définissez un raccourci de dictée dans Général, puis maintenez-le et parlez",
-    "controls": {
-      "minimize": "Réduire",
-      "hide": "Masquer dans la barre système"
+      "retro": "Rétro",
+      "quiet": "Quiet"
     }
   },
   "retro": {
@@ -834,10 +825,11 @@
     "copied": "Copié dans le presse-papiers",
     "menuSections": "SECTIONS",
     "menuWindows": "FENÊTRES",
-    "toOrbital": "↺ Retour à Orbital",
     "toClassic": "Retour au Classique",
     "theme": "Thème",
-    "footer": "MODE RÉTRO — un skin ABRAX · même fenêtre transparente"
+    "footer": "MODE RÉTRO — un skin ABRAX · même fenêtre transparente",
+    "tray": "Send to tray",
+    "minimize": "Minimize"
   },
   "logo": {
     "tagline": "« Di la <accent>palabra</accent>. »"
@@ -934,5 +926,26 @@
     "espacio": "{{libre}} GB free of {{total}} GB",
     "volverPorDefecto": "Back to the original folder",
     "avisoNoMueve": "New downloads will go to this folder. Already-downloaded models stay where they were; if they don't show up, go back to the original folder or download them again here."
+  },
+  "quiet": {
+    "nav": {
+      "listen": "Listen",
+      "transcriptions": "Transcriptions",
+      "models": "Models",
+      "settings": "Settings"
+    },
+    "ready": "ABRAX is ready",
+    "holdHint": "Hold <k>{{atajo}}</k> and start talking",
+    "holdHintNoBinding": "Set a shortcut in Settings and start talking",
+    "start": "Start transcription",
+    "stop": "Stop",
+    "recent": "Recent transcriptions",
+    "empty": "No transcriptions yet. Hold the shortcut and say the word.",
+    "local": "Local processing",
+    "noCloud": "No cloud connection",
+    "min": "Minimize",
+    "max": "Maximize",
+    "close": "Close",
+    "tray": "Send to tray"
   }
 }

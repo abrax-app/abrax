@@ -250,9 +250,24 @@ fn initialize_core_logic(app_handle: &AppHandle) {
             .unwrap(),
         )
         .tooltip(tray::tray_tooltip())
-        .show_menu_on_left_click(true)
+        .show_menu_on_left_click(false)
         .icon_as_template(true)
+        .on_tray_icon_event(|tray, event| {
+            // Clic izquierdo en el icono = reabrir la app (el menú sale con clic
+            // derecho, y además está el ítem "Mostrar Abrax").
+            if let tauri::tray::TrayIconEvent::Click {
+                button: tauri::tray::MouseButton::Left,
+                button_state: tauri::tray::MouseButtonState::Up,
+                ..
+            } = event
+            {
+                show_main_window(tray.app_handle());
+            }
+        })
         .on_menu_event(|app, event| match event.id.as_ref() {
+            "show" => {
+                show_main_window(app);
+            }
             "settings" => {
                 show_main_window(app);
             }
@@ -861,7 +876,7 @@ pub fn run(cli_args: CliArgs) {
             }
 
             // Read settings BEFORE building the window: the shell (classic vs
-            // orbital/retro) decides whether the main window is a normal
+            // retro) decides whether the main window is a normal
             // decorated window or a frameless/transparent one, and that chrome
             // can only be chosen at build time.
             let mut settings = get_settings(app.handle());
@@ -869,11 +884,32 @@ pub fn run(cli_args: CliArgs) {
                 settings.ui_shell.wants_transparency() && utils::supports_transparency();
 
             // Window size per shell: classic keeps the compact settings window;
-            // orbital is a square canvas for the sphere; retro needs room for the
-            // stacked player windows.
+            // retro opens at the player size and resizes ITSELF to the docked
+            // panels (Winamp-style); quiet is a roomy minimalist panel.
             let ((w, h), (min_w, min_h)) = match (frameless, settings.ui_shell) {
-                (true, settings::UiShell::Orbital) => ((820.0, 800.0), (640.0, 640.0)),
-                (true, settings::UiShell::Retro) => ((980.0, 700.0), (720.0, 560.0)),
+                (true, settings::UiShell::Retro) => ((460.0, 200.0), (200.0, 32.0)),
+                (true, settings::UiShell::Quiet) => {
+                    // Proporcional a la pantalla: misma proporción (~35% ancho ×
+                    // 52% alto) en cualquier resolución, con topes mín/máx para
+                    // que nunca quede minúsculo ni gigante. La ventana se centra.
+                    let (sw, sh) = app
+                        .handle()
+                        .primary_monitor()
+                        .ok()
+                        .flatten()
+                        .map(|m| {
+                            let sf = m.scale_factor();
+                            (m.size().width as f64 / sf, m.size().height as f64 / sf)
+                        })
+                        .unwrap_or((1920.0, 1080.0));
+                    (
+                        (
+                            (sw * 0.35).clamp(640.0, 1180.0),
+                            (sh * 0.52).clamp(540.0, 900.0),
+                        ),
+                        (600.0, 500.0),
+                    )
+                }
                 _ => ((680.0, 570.0), (680.0, 570.0)),
             };
 
@@ -885,12 +921,18 @@ pub fn run(cli_args: CliArgs) {
                     .inner_size(w, h)
                     .min_inner_size(min_w, min_h)
                     .resizable(true)
-                    .maximizable(false)
+                    .maximizable(matches!(settings.ui_shell, settings::UiShell::Quiet))
+                    // La ventana SIEMPRE está en la barra de tareas: el botón de
+                    // "minimizar normal" necesita una entrada en la barra para
+                    // poder volver. La bandeja es una vía ADICIONAL (botón
+                    // dedicado por skin que llama a hide()); al ocultar a bandeja,
+                    // hide() la saca de la barra igualmente.
+                    .skip_taskbar(false)
                     .visible(false);
 
-            // Orbital/Retro shells own their chrome: no OS title bar, no shadow
+            // The Retro shell owns its chrome: no OS title bar, no shadow
             // (a shadow would betray the invisible rectangle), transparent so
-            // the sphere/windows float. Classic keeps the native frame and is
+            // the windows float. Classic keeps the native frame and is
             // the fallback when the platform can't do transparency.
             if frameless {
                 win_builder = win_builder
@@ -990,6 +1032,10 @@ pub fn run(cli_args: CliArgs) {
                     // No tray: keep the dock icon visible so the user can reopen
                 }
             }
+            // Minimizar es AHORA minimizar normal (a la barra de tareas). El envío
+            // a la bandeja se hace con el botón dedicado de cada skin (llama a
+            // hide()), no interceptando el minimizado — por eso ya no hay arm de
+            // Resized que redirija a la bandeja.
             tauri::WindowEvent::ThemeChanged(theme) => {
                 log::info!("Theme changed to: {:?}", theme);
                 // Re-apply the current tray state with the new theme's icon set

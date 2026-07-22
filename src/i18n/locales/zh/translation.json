@@ -12,7 +12,8 @@
     "errorTranscription": "转录失败。打开 Abrax 从历史记录中重试。",
     "errorPaste": "无法粘贴文本。已保存在历史记录中。",
     "errorModelLoad": "语音模型加载失败。打开 Abrax 查看原因。",
-    "errorModelDownload": "模型下载失败。打开 Abrax 重试。"
+    "errorModelDownload": "模型下载失败。打开 Abrax 重试。",
+    "show": "Show Abrax"
   },
   "sidebar": {
     "general": "通用",
@@ -781,18 +782,8 @@
     "description": "选择 Abrax 窗口的外形。经典是标准的设置窗口；Orbital 会把应用变成悬浮的球体；Retro 是经典播放器皮肤。窗口边框会在 Abrax 重启后完成更新。",
     "options": {
       "classic": "经典",
-      "orbital": "Orbital",
-      "retro": "Retro"
-    }
-  },
-  "orbital": {
-    "menu": "Abrax 菜单",
-    "close": "关闭",
-    "hint": "按住 {{atajo}} 说话 —— 松开即可粘贴",
-    "hintNoBinding": "先在「常规」中设置听写快捷键，然后按住它说话",
-    "controls": {
-      "minimize": "最小化",
-      "hide": "隐藏到托盘"
+      "retro": "Retro",
+      "quiet": "Quiet"
     }
   },
   "retro": {
@@ -834,10 +825,11 @@
     "copied": "已复制到剪贴板",
     "menuSections": "板块",
     "menuWindows": "窗口",
-    "toOrbital": "↺ 返回轨道模式",
     "toClassic": "返回经典模式",
     "theme": "主题",
-    "footer": "复古模式 — 一款 ABRAX 皮肤 · 同样的透明窗口"
+    "footer": "复古模式 — 一款 ABRAX 皮肤 · 同样的透明窗口",
+    "tray": "Send to tray",
+    "minimize": "Minimize"
   },
   "logo": {
     "tagline": "« Di la <accent>palabra</accent>. »"
@@ -934,5 +926,26 @@
     "espacio": "{{libre}} GB free of {{total}} GB",
     "volverPorDefecto": "Back to the original folder",
     "avisoNoMueve": "New downloads will go to this folder. Already-downloaded models stay where they were; if they don't show up, go back to the original folder or download them again here."
+  },
+  "quiet": {
+    "nav": {
+      "listen": "Listen",
+      "transcriptions": "Transcriptions",
+      "models": "Models",
+      "settings": "Settings"
+    },
+    "ready": "ABRAX is ready",
+    "holdHint": "Hold <k>{{atajo}}</k> and start talking",
+    "holdHintNoBinding": "Set a shortcut in Settings and start talking",
+    "start": "Start transcription",
+    "stop": "Stop",
+    "recent": "Recent transcriptions",
+    "empty": "No transcriptions yet. Hold the shortcut and say the word.",
+    "local": "Local processing",
+    "noCloud": "No cloud connection",
+    "min": "Minimize",
+    "max": "Maximize",
+    "close": "Close",
+    "tray": "Send to tray"
   }
 }

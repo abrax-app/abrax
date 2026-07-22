@@ -12,7 +12,8 @@
     "errorTranscription": "Přepis selhal. Otevřete Abrax a zkuste to znovu z historie.",
     "errorPaste": "Text se nepodařilo vložit. Je uložen v historii.",
     "errorModelLoad": "Hlasový model se nepodařilo načíst. Otevřete Abrax pro příčinu.",
-    "errorModelDownload": "Stažení modelu selhalo. Otevřete Abrax a zkuste to znovu."
+    "errorModelDownload": "Stažení modelu selhalo. Otevřete Abrax a zkuste to znovu.",
+    "show": "Show Abrax"
   },
   "sidebar": {
     "general": "Obecné",
@@ -781,18 +782,8 @@
     "description": "Vyberte tvar okna aplikace Abrax. Klasický je běžné okno nastavení; Orbital promění aplikaci v plovoucí kouli; Retro je skin klasického přehrávače. Změna rámečku okna se dokončí po restartu Abrax.",
     "options": {
       "classic": "Klasický",
-      "orbital": "Orbital",
-      "retro": "Retro"
-    }
-  },
-  "orbital": {
-    "menu": "Nabídka Abrax",
-    "close": "Zavřít",
-    "hint": "podržte {{atajo}} a mluvte — uvolněním vložíte",
-    "hintNoBinding": "nastavte zkratku pro diktování v části Obecné, poté ji podržte a mluvte",
-    "controls": {
-      "minimize": "Minimalizovat",
-      "hide": "Skrýt do oznamovací oblasti"
+      "retro": "Retro",
+      "quiet": "Quiet"
     }
   },
   "retro": {
@@ -834,10 +825,11 @@
     "copied": "Zkopírováno do schránky",
     "menuSections": "SEKCE",
     "menuWindows": "OKNA",
-    "toOrbital": "↺ Zpět na Orbital",
     "toClassic": "Zpět na Klasický",
     "theme": "Motiv",
-    "footer": "RETRO REŽIM — skin ABRAX · stejné průhledné okno"
+    "footer": "RETRO REŽIM — skin ABRAX · stejné průhledné okno",
+    "tray": "Send to tray",
+    "minimize": "Minimize"
   },
   "logo": {
     "tagline": "« Di la <accent>palabra</accent>. »"
@@ -934,5 +926,26 @@
     "espacio": "{{libre}} GB free of {{total}} GB",
     "volverPorDefecto": "Back to the original folder",
     "avisoNoMueve": "New downloads will go to this folder. Already-downloaded models stay where they were; if they don't show up, go back to the original folder or download them again here."
+  },
+  "quiet": {
+    "nav": {
+      "listen": "Listen",
+      "transcriptions": "Transcriptions",
+      "models": "Models",
+      "settings": "Settings"
+    },
+    "ready": "ABRAX is ready",
+    "holdHint": "Hold <k>{{atajo}}</k> and start talking",
+    "holdHintNoBinding": "Set a shortcut in Settings and start talking",
+    "start": "Start transcription",
+    "stop": "Stop",
+    "recent": "Recent transcriptions",
+    "empty": "No transcriptions yet. Hold the shortcut and say the word.",
+    "local": "Local processing",
+    "noCloud": "No cloud connection",
+    "min": "Minimize",
+    "max": "Maximize",
+    "close": "Close",
+    "tray": "Send to tray"
   }
 }

@@ -12,7 +12,8 @@
     "errorTranscription": "La transcripción falló. Abre Abrax para reintentar desde el Historial.",
     "errorPaste": "No se pudo pegar el texto. Quedó guardado en tu Historial.",
     "errorModelLoad": "El modelo de voz no pudo cargarse. Abre Abrax para ver la causa.",
-    "errorModelDownload": "La descarga del modelo falló. Abre Abrax para reintentar."
+    "errorModelDownload": "La descarga del modelo falló. Abre Abrax para reintentar.",
+    "show": "Mostrar Abrax"
   },
   "sidebar": {
     "general": "General",
@@ -778,21 +779,11 @@
   },
   "shell": {
     "title": "Forma de la ventana",
-    "description": "Elige la forma de la ventana de Abrax. Clásico es la ventana de ajustes de siempre; Orbital convierte la app en una esfera flotante; Retro es un skin de reproductor clásico. El marco de la ventana termina de aplicarse al reiniciar Abrax.",
+    "description": "Elige la forma de la ventana de Abrax. Clásico es la ventana de ajustes estándar; Retro es una skin estilo reproductor clásico; Quiet es un panel minimalista oscuro. El marco de la ventana termina de actualizarse al reiniciar Abrax.",
     "options": {
       "classic": "Clásico",
-      "orbital": "Orbital",
-      "retro": "Retro"
-    }
-  },
-  "orbital": {
-    "menu": "Menú de Abrax",
-    "close": "Cerrar",
-    "hint": "mantén presionado {{atajo}} y habla — suelta para pegar",
-    "hintNoBinding": "define un atajo de dictado en General y mantenlo presionado al hablar",
-    "controls": {
-      "minimize": "Minimizar",
-      "hide": "Ocultar a la bandeja"
+      "retro": "Retro",
+      "quiet": "Quiet"
     }
   },
   "retro": {
@@ -834,10 +825,11 @@
     "copied": "Copiado al portapapeles",
     "menuSections": "SECCIONES",
     "menuWindows": "VENTANAS",
-    "toOrbital": "↺ Volver a Orbital",
     "toClassic": "Volver a Clásico",
     "theme": "Tema",
-    "footer": "MODO RETRO — un skin de ABRAX · misma ventana transparente"
+    "footer": "MODO RETRO — un skin de ABRAX · misma ventana transparente",
+    "tray": "Enviar a la bandeja",
+    "minimize": "Minimizar"
   },
   "logo": {
     "tagline": "« Di la <accent>palabra</accent>. »"
@@ -934,5 +926,26 @@
     "espacio": "{{libre}} GB libres de {{total}} GB",
     "volverPorDefecto": "Volver a la carpeta original",
     "avisoNoMueve": "Las descargas nuevas irán a esta carpeta. Los modelos ya descargados se quedan donde estaban; si no aparecen, vuelve a la carpeta original o descárgalos de nuevo aquí."
+  },
+  "quiet": {
+    "nav": {
+      "listen": "Escuchar",
+      "transcriptions": "Transcripciones",
+      "models": "Modelos",
+      "settings": "Ajustes"
+    },
+    "ready": "ABRAX está listo",
+    "holdHint": "Mantén <k>{{atajo}}</k> y comienza a hablar",
+    "holdHintNoBinding": "Configura un atajo en Ajustes y comienza a hablar",
+    "start": "Iniciar transcripción",
+    "stop": "Detener",
+    "recent": "Transcripciones recientes",
+    "empty": "Aún no hay transcripciones. Mantén el atajo y di la palabra.",
+    "local": "Procesamiento local",
+    "noCloud": "Sin conexión a la nube",
+    "min": "Minimizar",
+    "max": "Maximizar",
+    "close": "Cerrar",
+    "tray": "Enviar a la bandeja"
   }
 }

@@ -72,13 +72,12 @@
 }
 
 /*
- * Shells sin marco (orbital / retro): el fondo del <html> se vuelve
+ * Shell sin marco (retro): el fondo del <html> se vuelve
  * transparente para que la ventana transparente del SO deje ver el escritorio;
  * el propio shell pinta su fondo tinta (que flota). En plataformas sin
  * transparencia real el shell igual pinta ese fondo, así que se ve bien.
  * `classic` (sin data-shell) conserva el fondo opaco de siempre.
  */
-:root[data-shell="orbital"],
 :root[data-shell="retro"] {
   background-color: transparent;
 }

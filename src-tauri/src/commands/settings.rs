@@ -110,7 +110,7 @@ pub fn change_ui_theme_setting(app: AppHandle, ui_theme: String) -> Result<(), S
     Ok(())
 }
 
-/// Persists the window shell (`classic`/`orbital`/`retro`). Unlike the palette,
+/// Persists the window shell (`classic`/`retro`/`quiet`). Unlike the palette,
 /// the shell only takes full effect on the next launch, because the
 /// frameless/transparent chrome is decided when the window is built; this
 /// command just records the choice so the next boot builds the right window.
@@ -120,8 +120,8 @@ pub fn change_ui_shell_setting(app: AppHandle, ui_shell: String) -> Result<(), S
     let mut settings = settings::get_settings(&app);
     let parsed = match ui_shell.as_str() {
         "classic" => UiShell::Classic,
-        "orbital" => UiShell::Orbital,
         "retro" => UiShell::Retro,
+        "quiet" => UiShell::Quiet,
         other => {
             warn!("Invalid ui shell '{}', defaulting to classic", other);
             UiShell::Classic

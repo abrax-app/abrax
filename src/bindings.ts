@@ -70,7 +70,7 @@ async changeUiThemeSetting(uiTheme: string) : Promise<Result<null, string>> {
 }
 },
 /**
- * Persists the window shell (`classic`/`orbital`/`retro`). Unlike the palette,
+ * Persists the window shell (`classic`/`retro`). Unlike the palette,
  * the shell only takes full effect on the next launch, because the
  * frameless/transparent chrome is decided when the window is built; this
  * command just records the choice so the next boot builds the right window.
@@ -210,7 +210,7 @@ async probarMicrofono(duracionMs: number) : Promise<Result<PruebaMicrofono, stri
 }
 },
 /**
- * Toggle dictation from the UI (e.g. clicking the orbital home sphere). Mirrors
+ * Toggle dictation from the UI (e.g. a retro transport button). Mirrors
  * the global-shortcut / CLI `--toggle-transcription` path by reusing the shared
  * coordinator entry point, so it adds no new recording pipeline.
  */
@@ -1723,13 +1723,12 @@ export type TypingTool = "auto" | "wtype" | "kwtype" | "dotool" | "ydotool" | "x
 /**
  * Shape of the main window, orthogonal to [`UiTheme`] (palette) and [`Theme`]
  * (light/dark). `Classic` is the default decorated settings window and the
- * permanent fallback. `Orbital` and `Retro` are frameless/transparent shells:
- * the app becomes a floating sphere (Orbital) or a stack of retro-player
- * windows (Retro). Both consume the palette tokens, so a shell never hardcodes
- * color. The frameless/transparent chrome is decided at window build time, so
- * switching shells takes full effect on the next launch.
+ * permanent fallback. `Retro` is a frameless/transparent shell: the app
+ * becomes a stack of retro-player windows. It consumes the palette tokens, so a
+ * shell never hardcodes color. The frameless/transparent chrome is decided at
+ * window build time, so switching shells takes full effect on the next launch.
  */
-export type UiShell = "classic" | "orbital" | "retro"
+export type UiShell = "classic" | "retro" | "quiet"
 /**
  * Color palette for the whole UI, orthogonal to [`Theme`] (light/dark).
  * `Abrax` is the brand palette (cyan/violet/magenta); `Imperial` is a

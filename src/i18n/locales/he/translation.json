@@ -12,7 +12,8 @@
     "errorTranscription": "התמלול נכשל. פתח את Abrax כדי לנסות שוב מההיסטוריה.",
     "errorPaste": "לא ניתן להדביק את הטקסט. הוא נשמר בהיסטוריה שלך.",
     "errorModelLoad": "טעינת מודל הדיבור נכשלה. פתח את Abrax לפרטים.",
-    "errorModelDownload": "הורדת המודל נכשלה. פתח את Abrax כדי לנסות שוב."
+    "errorModelDownload": "הורדת המודל נכשלה. פתח את Abrax כדי לנסות שוב.",
+    "show": "Show Abrax"
   },
   "sidebar": {
     "general": "כללי",
@@ -781,18 +782,8 @@
     "description": "בחר את צורת החלון של Abrax. קלאסי הוא חלון ההגדרות הרגיל; Orbital הופך את האפליקציה לכדור מרחף; Retro הוא סקין של נגן קלאסי. עדכון מסגרת החלון יושלם עם הפעלתו מחדש של Abrax.",
     "options": {
       "classic": "קלאסי",
-      "orbital": "Orbital",
-      "retro": "Retro"
-    }
-  },
-  "orbital": {
-    "menu": "תפריט Abrax",
-    "close": "סגור",
-    "hint": "החזק {{atajo}} ודבר — שחרר כדי להדביק",
-    "hintNoBinding": "הגדר קיצור דרך להכתבה תחת כללי, ואז החזק אותו ודבר",
-    "controls": {
-      "minimize": "מזער",
-      "hide": "הסתר למגש"
+      "retro": "Retro",
+      "quiet": "Quiet"
     }
   },
   "retro": {
@@ -834,10 +825,11 @@
     "copied": "הועתק ללוח",
     "menuSections": "מקטעים",
     "menuWindows": "חלונות",
-    "toOrbital": "↺ חזרה ל-Orbital",
     "toClassic": "חזרה לקלאסי",
     "theme": "ערכת נושא",
-    "footer": "מצב רטרו — סקין של ABRAX · אותו חלון שקוף"
+    "footer": "מצב רטרו — סקין של ABRAX · אותו חלון שקוף",
+    "tray": "Send to tray",
+    "minimize": "Minimize"
   },
   "logo": {
     "tagline": "« Di la <accent>palabra</accent>. »"
@@ -934,5 +926,26 @@
     "espacio": "{{libre}} GB free of {{total}} GB",
     "volverPorDefecto": "Back to the original folder",
     "avisoNoMueve": "New downloads will go to this folder. Already-downloaded models stay where they were; if they don't show up, go back to the original folder or download them again here."
+  },
+  "quiet": {
+    "nav": {
+      "listen": "Listen",
+      "transcriptions": "Transcriptions",
+      "models": "Models",
+      "settings": "Settings"
+    },
+    "ready": "ABRAX is ready",
+    "holdHint": "Hold <k>{{atajo}}</k> and start talking",
+    "holdHintNoBinding": "Set a shortcut in Settings and start talking",
+    "start": "Start transcription",
+    "stop": "Stop",
+    "recent": "Recent transcriptions",
+    "empty": "No transcriptions yet. Hold the shortcut and say the word.",
+    "local": "Local processing",
+    "noCloud": "No cloud connection",
+    "min": "Minimize",
+    "max": "Maximize",
+    "close": "Close",
+    "tray": "Send to tray"
   }
 }

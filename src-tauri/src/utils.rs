@@ -45,8 +45,8 @@ pub fn cancel_current_operation(app: &AppHandle) {
 /// Whether the platform can render a transparent, frameless window. Windows
 /// (WebView2) and macOS (private API, enabled in `tauri.conf.json`) support it;
 /// on Linux it needs a compositor, so we require an active display server and
-/// otherwise fall back to the decorated classic-style window (the orbital/retro
-/// shells still render, just on a solid backdrop instead of a floating one).
+/// otherwise fall back to the decorated classic-style window (the retro shell
+/// still renders, just on a solid backdrop instead of a floating one).
 pub fn supports_transparency() -> bool {
     #[cfg(target_os = "linux")]
     {

@@ -24,7 +24,7 @@ const THEME_STORAGE_KEY = "abrax.theme";
 const LEGACY_THEME_STORAGE_KEY = "handy.theme";
 const UI_THEME_STORAGE_KEY = "abrax.palette";
 /**
- * Window shell (`classic`/`orbital`/`retro`) — the SHAPE axis, orthogonal to
+ * Window shell (`classic`/`retro`) — the SHAPE axis, orthogonal to
  * mode and palette. Mirrored to localStorage so the boot can set `data-shell`
  * synchronously and paint the transparent backdrop without a flash of the
  * classic layout. The window chrome (frameless/transparent) is decided
@@ -34,7 +34,7 @@ const SHELL_STORAGE_KEY = "abrax.shell";
 
 export const THEME_OPTIONS: Theme[] = ["system", "light", "dark"];
 export const UI_THEME_OPTIONS: UiTheme[] = ["abrax", "imperial"];
-export const UI_SHELL_OPTIONS: UiShell[] = ["classic", "orbital", "retro"];
+export const UI_SHELL_OPTIONS: UiShell[] = ["classic", "retro", "quiet"];
 
 const isTheme = (value: unknown): value is Theme =>
   value === "system" || value === "light" || value === "dark";
@@ -43,7 +43,7 @@ const isUiTheme = (value: unknown): value is UiTheme =>
   value === "abrax" || value === "imperial";
 
 const isUiShell = (value: unknown): value is UiShell =>
-  value === "classic" || value === "orbital" || value === "retro";
+  value === "classic" || value === "retro" || value === "quiet";
 
 /**
  * Apply a mode + palette pair to a document root. Pure DOM: no persistence.
@@ -60,8 +60,13 @@ export const applyAppearanceToRoot = (
   } else {
     root.dataset.uiTheme = uiTheme;
   }
-  // Imperial is a dark palette by design: force dark while it is active.
-  const effective: Theme = uiTheme === "imperial" ? "dark" : theme;
+  // Dark by design → forzar modo oscuro mientras estén activos:
+  //  - Imperial (paleta oscura por diseño).
+  //  - Quiet (shell de identidad "siempre oscuro": sus componentes embebidos
+  //    —historial/ajustes— usan los tokens base, y sin esto seguirían el tema
+  //    ambiente (p. ej. claro), pintando tarjetas claras sobre el negro de Quiet).
+  const forceDark = uiTheme === "imperial" || getStoredShell() === "quiet";
+  const effective: Theme = forceDark ? "dark" : theme;
   if (effective === "system") {
     delete root.dataset.theme;
   } else {

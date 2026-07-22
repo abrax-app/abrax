@@ -12,7 +12,8 @@
     "errorTranscription": "A transcrição falhou. Abra o Abrax para tentar novamente pelo histórico.",
     "errorPaste": "Não foi possível colar o texto. Ele está salvo no seu histórico.",
     "errorModelLoad": "O modelo de voz não pôde ser carregado. Abra o Abrax para ver a causa.",
-    "errorModelDownload": "O download do modelo falhou. Abra o Abrax para tentar novamente."
+    "errorModelDownload": "O download do modelo falhou. Abra o Abrax para tentar novamente.",
+    "show": "Show Abrax"
   },
   "sidebar": {
     "general": "Geral",
@@ -781,18 +782,8 @@
     "description": "Escolha a forma da janela do Abrax. Clássico é a janela de ajustes de sempre; Orbital transforma o app numa esfera flutuante; Retro é um skin de reprodutor clássico. A moldura da janela termina de ser aplicada ao reiniciar o Abrax.",
     "options": {
       "classic": "Clássico",
-      "orbital": "Orbital",
-      "retro": "Retro"
-    }
-  },
-  "orbital": {
-    "menu": "Menu do Abrax",
-    "close": "Fechar",
-    "hint": "mantenha {{atajo}} pressionado e fale — solte para colar",
-    "hintNoBinding": "defina um atalho de ditado em Geral e mantenha-o pressionado ao falar",
-    "controls": {
-      "minimize": "Minimizar",
-      "hide": "Ocultar na bandeja"
+      "retro": "Retro",
+      "quiet": "Quiet"
     }
   },
   "retro": {
@@ -834,10 +825,11 @@
     "copied": "Copiado para a área de transferência",
     "menuSections": "SEÇÕES",
     "menuWindows": "JANELAS",
-    "toOrbital": "↺ Voltar ao Orbital",
     "toClassic": "Voltar ao Clássico",
     "theme": "Tema",
-    "footer": "MODO RETRO — um skin de ABRAX · mesma janela transparente"
+    "footer": "MODO RETRO — um skin de ABRAX · mesma janela transparente",
+    "tray": "Send to tray",
+    "minimize": "Minimize"
   },
   "logo": {
     "tagline": "« Di la <accent>palabra</accent>. »"
@@ -934,5 +926,26 @@
     "espacio": "{{libre}} GB free of {{total}} GB",
     "volverPorDefecto": "Back to the original folder",
     "avisoNoMueve": "New downloads will go to this folder. Already-downloaded models stay where they were; if they don't show up, go back to the original folder or download them again here."
+  },
+  "quiet": {
+    "nav": {
+      "listen": "Listen",
+      "transcriptions": "Transcriptions",
+      "models": "Models",
+      "settings": "Settings"
+    },
+    "ready": "ABRAX is ready",
+    "holdHint": "Hold <k>{{atajo}}</k> and start talking",
+    "holdHintNoBinding": "Set a shortcut in Settings and start talking",
+    "start": "Start transcription",
+    "stop": "Stop",
+    "recent": "Recent transcriptions",
+    "empty": "No transcriptions yet. Hold the shortcut and say the word.",
+    "local": "Local processing",
+    "noCloud": "No cloud connection",
+    "min": "Minimize",
+    "max": "Maximize",
+    "close": "Close",
+    "tray": "Send to tray"
   }
 }
