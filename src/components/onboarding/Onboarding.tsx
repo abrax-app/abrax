@@ -13,7 +13,7 @@ interface OnboardingProps {
 }
 
 const Onboarding: React.FC<OnboardingProps> = ({ onModelSelected }) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const {
     models,
     downloadModel,
@@ -32,27 +32,45 @@ const Onboarding: React.FC<OnboardingProps> = ({ onModelSelected }) => {
 
   const isBusy = selectedModelId !== null;
 
+  // The UI locale's base code ("es-CL" → "es") is the best signal available at
+  // onboarding for what the user will dictate: the dictation language setting
+  // doesn't exist yet at this step.
+  const uiLanguage = (i18n.resolvedLanguage ?? i18n.language ?? "en").split(
+    "-",
+  )[0];
+
   // Curate the download list: legacy (.bin/ONNX) downloads are deprecated and
   // never shown here (they still appear in the compatible section if already on
-  // disk). The catalog arrives rank-sorted, so the first two recommended models
-  // are the featured picks — currently Parakeet Unified (English) and Nemotron
-  // Streaming (multilingual). Everything else hides behind "Show all".
+  // disk). The catalog arrives rank-sorted, but models that can't transcribe
+  // the user's language must not lead: without this, a Spanish-speaking new
+  // user gets English-only Parakeet as pick #1. Within each group the catalog
+  // order is preserved. Everything else hides behind "Show all".
   const { downloadable, topPicks, otherRecommended, rest } = useMemo(() => {
+    const speaksUiLanguage = (m: ModelInfo) =>
+      m.supported_languages.includes(uiLanguage);
+    const uiLanguageFirst = (list: ModelInfo[]) => [
+      ...list.filter(speaksUiLanguage),
+      ...list.filter((m) => !speaksUiLanguage(m)),
+    ];
     const downloadable = models.filter(
       (m: ModelInfo) => !m.is_downloaded && !isLegacySource(m),
     );
-    const recommended = downloadable.filter((m: ModelInfo) => m.is_recommended);
+    const recommended = uiLanguageFirst(
+      downloadable.filter((m: ModelInfo) => m.is_recommended),
+    );
     // `models` arrives in editorial rank order (the backend sorts by rank_of,
     // then accuracy), so keep that order here: ranked-but-not-recommended models
     // surface first, then the unranked tail by accuracy.
-    const rest = downloadable.filter((m: ModelInfo) => !m.is_recommended);
+    const rest = uiLanguageFirst(
+      downloadable.filter((m: ModelInfo) => !m.is_recommended),
+    );
     return {
       downloadable,
       topPicks: recommended.slice(0, 2),
       otherRecommended: recommended.slice(2),
       rest,
     };
-  }, [models]);
+  }, [models, uiLanguage]);
 
   const hasRecommended = topPicks.length > 0 || otherRecommended.length > 0;
   // When nothing recommended remains to download (e.g. all already on disk),
