@@ -161,7 +161,11 @@
     "cancel": "İptal",
     "cancelDownload": "İndirmeyi iptal et",
     "legacy": "Eski",
-    "downloadFailed": "İndirme başarısız"
+    "downloadFailed": "İndirme başarısız",
+    "checkFailed": "Model durumu kontrol edilemedi",
+    "loadFailed": "Model yüklenemedi",
+    "switchFailed": "Model değiştirilemedi",
+    "statusTitle": "Model durumu: {{estado}}"
   },
   "settings": {
     "modelSettings": {
@@ -692,7 +696,12 @@
     "copy": "Kopyala",
     "clear": "Temizle",
     "noOptionsFound": "Seçenek bulunamadı",
-    "retry": "Yeniden dene"
+    "retry": "Yeniden dene",
+    "play": "Oynat",
+    "pause": "Duraklat",
+    "seek": "Oynatma konumu",
+    "moreInfo": "Daha fazla bilgi",
+    "selectOption": "Bir seçenek seçin…"
   },
   "accessibility": {
     "permissionsDescription": "Abrax, transkribe edilen metni yazabilmek için erişilebilirlik izinlerine ihtiyaç duyar.",
@@ -972,5 +981,9 @@
     "max": "Maximize",
     "close": "Close",
     "tray": "Send to tray"
+  },
+  "soundPicker": {
+    "custom": "Özel",
+    "preview": "Temayı dinle (başlangıç ve bitiş)"
   }
 }

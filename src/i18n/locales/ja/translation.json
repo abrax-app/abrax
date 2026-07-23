@@ -161,7 +161,11 @@
     "cancel": "キャンセル",
     "cancelDownload": "ダウンロードをキャンセル",
     "legacy": "旧式",
-    "downloadFailed": "ダウンロードに失敗しました"
+    "downloadFailed": "ダウンロードに失敗しました",
+    "checkFailed": "モデルの状態を確認できませんでした",
+    "loadFailed": "モデルを読み込めませんでした",
+    "switchFailed": "モデルを切り替えられませんでした",
+    "statusTitle": "モデルの状態: {{estado}}"
   },
   "settings": {
     "modelSettings": {
@@ -692,7 +696,12 @@
     "copy": "コピー",
     "clear": "クリア",
     "noOptionsFound": "オプションが見つかりません",
-    "retry": "再試行"
+    "retry": "再試行",
+    "play": "再生",
+    "pause": "一時停止",
+    "seek": "再生位置",
+    "moreInfo": "詳細情報",
+    "selectOption": "オプションを選択…"
   },
   "accessibility": {
     "permissionsDescription": "Abrax が文字起こしテキストを入力するには、アクセシビリティ権限が必要です。",
@@ -972,5 +981,9 @@
     "max": "Maximize",
     "close": "Close",
     "tray": "Send to tray"
+  },
+  "soundPicker": {
+    "custom": "カスタム",
+    "preview": "サウンドテーマを試聴（開始と終了）"
   }
 }

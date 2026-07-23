@@ -161,7 +161,11 @@
       "streaming": "말하는 동안 실시간으로 음성 인식 결과를 표시"
     },
     "legacy": "레거시",
-    "downloadFailed": "다운로드 실패"
+    "downloadFailed": "다운로드 실패",
+    "checkFailed": "모델 상태를 확인하지 못했습니다",
+    "loadFailed": "모델을 불러오지 못했습니다",
+    "switchFailed": "모델을 전환하지 못했습니다",
+    "statusTitle": "모델 상태: {{estado}}"
   },
   "settings": {
     "modelSettings": {
@@ -692,7 +696,12 @@
     "copy": "복사",
     "clear": "지우기",
     "noOptionsFound": "옵션을 찾을 수 없습니다",
-    "retry": "다시 시도"
+    "retry": "다시 시도",
+    "play": "재생",
+    "pause": "일시정지",
+    "seek": "재생 위치",
+    "moreInfo": "자세한 정보",
+    "selectOption": "옵션을 선택하세요…"
   },
   "accessibility": {
     "permissionsDescription": "Abrax는 녹음된 텍스트를 입력하기 위해 접근성 권한이 필요합니다.",
@@ -972,5 +981,9 @@
     "max": "Maximize",
     "close": "Close",
     "tray": "Send to tray"
+  },
+  "soundPicker": {
+    "custom": "사용자 지정",
+    "preview": "사운드 테마 미리 듣기(시작과 끝)"
   }
 }

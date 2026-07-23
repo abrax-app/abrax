@@ -103,7 +103,12 @@ const settingUpdaters: {
     ),
   clamshell_microphone: (value) =>
     commands.setClamshellMicrophone(
-      (value as string) === "Default" ? "default" : (value as string),
+      // null (el default de Rust es None) debe viajar como "default", igual
+      // que en selected_microphone — antes el Reset invocaba con null contra
+      // una firma String y fallaba en silencio (reset placebo).
+      (value as string) === "Default" || value === null
+        ? "default"
+        : (value as string),
     ),
   selected_output_device: (value) =>
     commands.setSelectedOutputDevice(
@@ -313,8 +318,29 @@ export const useSettingsStore = create<SettingsStore>()(
 
         const updater = settingUpdaters[key];
         if (updater) {
-          await updater(value);
-        } else if (key !== "bindings" && key !== "selected_model") {
+          // Los comandos generados por tauri-specta NO lanzan ante un Err del
+          // backend: resuelven { status: "error" }. Sin esta inspección el
+          // catch de abajo era código muerto y el fallo quedaba tragado (UI
+          // optimista mintiendo, sin rollback ni traza) — hallado en revisión.
+          const result = (await updater(value)) as unknown;
+          if (
+            result &&
+            typeof result === "object" &&
+            "status" in result &&
+            (result as { status: string }).status === "error"
+          ) {
+            throw new Error(
+              String((result as unknown as { error: unknown }).error),
+            );
+          }
+        } else if (
+          // Claves cuya persistencia ya la hizo un comando dedicado antes de
+          // llamar updateSetting (solo sincronizan el estado local).
+          key !== "bindings" &&
+          key !== "selected_model" &&
+          key !== "models_dir" &&
+          key !== "model_unload_timeout"
+        ) {
           console.warn(`No handler for setting: ${String(key)}`);
         }
       } catch (error) {
@@ -410,7 +436,13 @@ export const useSettingsStore = create<SettingsStore>()(
       setUpdating(updateKey, true);
 
       try {
-        await commands.resetBinding(id);
+        const result = await commands.resetBinding(id);
+        if (result.status === "error") {
+          throw new Error(String(result.error));
+        }
+        if (!result.data.success) {
+          throw new Error(result.data.error ?? "reset failed");
+        }
         await refreshSettings();
       } catch (error) {
         console.error(`Failed to reset binding ${id}:`, error);

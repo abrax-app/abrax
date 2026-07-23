@@ -161,7 +161,11 @@
     "cancel": "Annulla",
     "cancelDownload": "Annulla download",
     "legacy": "Obsoleto",
-    "downloadFailed": "Download non riuscito"
+    "downloadFailed": "Download non riuscito",
+    "checkFailed": "Impossibile verificare lo stato del modello",
+    "loadFailed": "Impossibile caricare il modello",
+    "switchFailed": "Impossibile cambiare modello",
+    "statusTitle": "Stato del modello: {{estado}}"
   },
   "settings": {
     "modelSettings": {
@@ -692,7 +696,12 @@
     "copy": "Copia",
     "clear": "Svuota",
     "noOptionsFound": "Nessuna opzione trovata",
-    "retry": "Riprova"
+    "retry": "Riprova",
+    "play": "Riproduci",
+    "pause": "Pausa",
+    "seek": "Posizione di riproduzione",
+    "moreInfo": "Maggiori informazioni",
+    "selectOption": "Seleziona un'opzione…"
   },
   "accessibility": {
     "permissionsDescription": "Abrax ha bisogno dei permessi di accessibilità per digitare il testo trascritto.",
@@ -972,5 +981,9 @@
     "max": "Maximize",
     "close": "Close",
     "tray": "Send to tray"
+  },
+  "soundPicker": {
+    "custom": "Personalizzato",
+    "preview": "Ascolta il tema (inizio e fine)"
   }
 }

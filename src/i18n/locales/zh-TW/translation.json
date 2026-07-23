@@ -161,7 +161,11 @@
       "streaming": "在您說話時即時顯示轉錄"
     },
     "legacy": "舊版",
-    "downloadFailed": "下載失敗"
+    "downloadFailed": "下載失敗",
+    "checkFailed": "無法檢查模型狀態",
+    "loadFailed": "無法載入模型",
+    "switchFailed": "無法切換模型",
+    "statusTitle": "模型狀態：{{estado}}"
   },
   "settings": {
     "modelSettings": {
@@ -692,7 +696,12 @@
     "copy": "複製",
     "clear": "清除",
     "noOptionsFound": "未找到選項",
-    "retry": "重試"
+    "retry": "重試",
+    "play": "播放",
+    "pause": "暫停",
+    "seek": "播放位置",
+    "moreInfo": "更多資訊",
+    "selectOption": "選擇一個選項…"
   },
   "accessibility": {
     "permissionsDescription": "Abrax 需要輔助使用權限才能輸入轉錄的文字",
@@ -972,5 +981,9 @@
     "max": "Maximize",
     "close": "Close",
     "tray": "Send to tray"
+  },
+  "soundPicker": {
+    "custom": "自訂",
+    "preview": "試聽音效主題（開始與結束）"
   }
 }

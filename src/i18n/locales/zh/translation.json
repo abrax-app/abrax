@@ -161,7 +161,11 @@
     "cancel": "取消",
     "cancelDownload": "取消下载",
     "legacy": "旧版",
-    "downloadFailed": "下载失败"
+    "downloadFailed": "下载失败",
+    "checkFailed": "无法检查模型状态",
+    "loadFailed": "无法加载模型",
+    "switchFailed": "无法切换模型",
+    "statusTitle": "模型状态：{{estado}}"
   },
   "settings": {
     "modelSettings": {
@@ -692,7 +696,12 @@
     "copy": "复制",
     "clear": "清除",
     "noOptionsFound": "未找到选项",
-    "retry": "重试"
+    "retry": "重试",
+    "play": "播放",
+    "pause": "暂停",
+    "seek": "播放位置",
+    "moreInfo": "更多信息",
+    "selectOption": "选择一个选项…"
   },
   "accessibility": {
     "permissionsDescription": "Abrax 需要辅助功能权限才能输入转录的文字。",
@@ -972,5 +981,9 @@
     "max": "Maximize",
     "close": "Close",
     "tray": "Send to tray"
+  },
+  "soundPicker": {
+    "custom": "自定义",
+    "preview": "试听声音主题（开始与结束）"
   }
 }

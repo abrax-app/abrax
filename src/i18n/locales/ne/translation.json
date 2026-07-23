@@ -161,7 +161,11 @@
       "translate": "अनुवाद",
       "streaming": "बोल्दै गर्दा लाइभ ट्रान्सक्रिप्सन देखाउँछ"
     },
-    "downloadFailed": "डाउनलोड असफल भयो"
+    "downloadFailed": "डाउनलोड असफल भयो",
+    "checkFailed": "मोडेलको स्थिति जाँच्न सकिएन",
+    "loadFailed": "मोडेल लोड गर्न सकिएन",
+    "switchFailed": "मोडेल बदल्न सकिएन",
+    "statusTitle": "मोडेलको स्थिति: {{estado}}"
   },
   "settings": {
     "modelSettings": {
@@ -695,7 +699,12 @@
     "copy": "कपी गर्नुहोस्",
     "clear": "खाली गर्नुहोस्",
     "noOptionsFound": "कुनै विकल्प भेटिएन",
-    "retry": "पुनः प्रयास"
+    "retry": "पुनः प्रयास",
+    "play": "बजाउनुहोस्",
+    "pause": "रोक्नुहोस्",
+    "seek": "प्लेब्याक स्थिति",
+    "moreInfo": "थप जानकारी",
+    "selectOption": "विकल्प छान्नुहोस्…"
   },
   "accessibility": {
     "permissionsDescription": "ट्रान्सक्राइब गरिएको टेक्स्ट टाइप गर्न Abrax लाई एक्सेसिबिलिटी अनुमति चाहिन्छ।",
@@ -972,5 +981,9 @@
     "max": "Maximize",
     "close": "Close",
     "tray": "Send to tray"
+  },
+  "soundPicker": {
+    "custom": "अनुकूलित",
+    "preview": "ध्वनि थिम सुन्नुहोस् (सुरु र अन्त्य)"
   }
 }

@@ -161,7 +161,11 @@
       "streaming": "Visar transkription i realtid medan du talar"
     },
     "legacy": "Äldre",
-    "downloadFailed": "Nedladdningen misslyckades"
+    "downloadFailed": "Nedladdningen misslyckades",
+    "checkFailed": "Kunde inte kontrollera modellens status",
+    "loadFailed": "Kunde inte läsa in modellen",
+    "switchFailed": "Kunde inte byta modell",
+    "statusTitle": "Modellstatus: {{estado}}"
   },
   "settings": {
     "modelSettings": {
@@ -692,7 +696,12 @@
     "copy": "Kopiera",
     "clear": "Rensa",
     "noOptionsFound": "Inga alternativ hittades",
-    "retry": "Försök igen"
+    "retry": "Försök igen",
+    "play": "Spela upp",
+    "pause": "Pausa",
+    "seek": "Uppspelningsposition",
+    "moreInfo": "Mer information",
+    "selectOption": "Välj ett alternativ…"
   },
   "accessibility": {
     "permissionsDescription": "Abrax behöver behörighet för hjälpmedel för att kunna skriva transkriberad text.",
@@ -972,5 +981,9 @@
     "max": "Maximize",
     "close": "Close",
     "tray": "Send to tray"
+  },
+  "soundPicker": {
+    "custom": "Anpassad",
+    "preview": "Lyssna på temat (start och stopp)"
   }
 }

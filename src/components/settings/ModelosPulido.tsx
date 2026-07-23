@@ -62,11 +62,15 @@ export const ModelosPulido: React.FC = React.memo(() => {
 
   const cancelar = (id: string) => void commands.cancelarDescargaCorreccion(id);
   const borrar = async (id: string) => {
-    await commands.eliminarModeloCorreccion(id);
+    setError(null);
+    const res = await commands.eliminarModeloCorreccion(id);
+    if (res.status === "error") setError(res.error);
     recargar();
   };
   const elegir = async (id: string | null) => {
-    await commands.seleccionarModeloCorreccion(id);
+    setError(null);
+    const res = await commands.seleccionarModeloCorreccion(id);
+    if (res.status === "error") setError(res.error);
     recargar();
   };
 

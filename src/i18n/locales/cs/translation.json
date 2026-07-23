@@ -161,7 +161,11 @@
     "cancel": "Zrušit",
     "cancelDownload": "Zrušit stahování",
     "legacy": "Zastaralé",
-    "downloadFailed": "Stažení selhalo"
+    "downloadFailed": "Stažení selhalo",
+    "checkFailed": "Stav modelu se nepodařilo ověřit",
+    "loadFailed": "Model se nepodařilo načíst",
+    "switchFailed": "Model se nepodařilo přepnout",
+    "statusTitle": "Stav modelu: {{estado}}"
   },
   "settings": {
     "modelSettings": {
@@ -692,7 +696,12 @@
     "copy": "Kopírovat",
     "clear": "Vymazat",
     "noOptionsFound": "Nenalezeny žádné možnosti",
-    "retry": "Zkusit znovu"
+    "retry": "Zkusit znovu",
+    "play": "Přehrát",
+    "pause": "Pozastavit",
+    "seek": "Pozice přehrávání",
+    "moreInfo": "Více informací",
+    "selectOption": "Vyberte možnost…"
   },
   "accessibility": {
     "permissionsDescription": "Abrax potřebuje oprávnění usnadnění přístupu, aby mohlo psát přepsaný text.",
@@ -972,5 +981,9 @@
     "max": "Maximize",
     "close": "Close",
     "tray": "Send to tray"
+  },
+  "soundPicker": {
+    "custom": "Vlastní",
+    "preview": "Poslechnout motiv (start a stop)"
   }
 }

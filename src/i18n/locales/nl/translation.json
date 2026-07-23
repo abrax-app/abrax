@@ -161,7 +161,11 @@
       "translate": "Vertalen",
       "streaming": "Toont live transcriptie tijdens het spreken"
     },
-    "downloadFailed": "Download mislukt"
+    "downloadFailed": "Download mislukt",
+    "checkFailed": "Kon de modelstatus niet controleren",
+    "loadFailed": "Kon het model niet laden",
+    "switchFailed": "Kon niet van model wisselen",
+    "statusTitle": "Modelstatus: {{estado}}"
   },
   "settings": {
     "modelSettings": {
@@ -695,7 +699,12 @@
     "copy": "Kopiëren",
     "clear": "Wissen",
     "noOptionsFound": "Geen opties gevonden",
-    "retry": "Opnieuw proberen"
+    "retry": "Opnieuw proberen",
+    "play": "Afspelen",
+    "pause": "Pauzeren",
+    "seek": "Afspeelpositie",
+    "moreInfo": "Meer informatie",
+    "selectOption": "Kies een optie…"
   },
   "accessibility": {
     "permissionsDescription": "Abrax heeft toegankelijkheidsmachtigingen nodig om getranscribeerde tekst te kunnen typen.",
@@ -972,5 +981,9 @@
     "max": "Maximize",
     "close": "Close",
     "tray": "Send to tray"
+  },
+  "soundPicker": {
+    "custom": "Aangepast",
+    "preview": "Thema beluisteren (start en stop)"
   }
 }

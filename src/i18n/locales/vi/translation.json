@@ -161,7 +161,11 @@
     "cancel": "Hủy",
     "cancelDownload": "Hủy tải xuống",
     "legacy": "Cũ",
-    "downloadFailed": "Tải xuống thất bại"
+    "downloadFailed": "Tải xuống thất bại",
+    "checkFailed": "Không thể kiểm tra trạng thái mô hình",
+    "loadFailed": "Không thể tải mô hình",
+    "switchFailed": "Không thể đổi mô hình",
+    "statusTitle": "Trạng thái mô hình: {{estado}}"
   },
   "settings": {
     "modelSettings": {
@@ -692,7 +696,12 @@
     "copy": "Sao chép",
     "clear": "Xóa",
     "noOptionsFound": "Không tìm thấy tùy chọn",
-    "retry": "Thử lại"
+    "retry": "Thử lại",
+    "play": "Phát",
+    "pause": "Tạm dừng",
+    "seek": "Vị trí phát",
+    "moreInfo": "Thông tin thêm",
+    "selectOption": "Chọn một tùy chọn…"
   },
   "accessibility": {
     "permissionsDescription": "Abrax cần quyền truy cập để gõ văn bản đã chuyển đổi.",
@@ -972,5 +981,9 @@
     "max": "Maximize",
     "close": "Close",
     "tray": "Send to tray"
+  },
+  "soundPicker": {
+    "custom": "Tùy chỉnh",
+    "preview": "Nghe thử chủ đề âm thanh (bắt đầu và kết thúc)"
   }
 }

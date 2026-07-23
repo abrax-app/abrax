@@ -161,7 +161,11 @@
       "streaming": "מציג תמלול חי תוך כדי דיבור"
     },
     "legacy": "מדור קודם",
-    "downloadFailed": "ההורדה נכשלה"
+    "downloadFailed": "ההורדה נכשלה",
+    "checkFailed": "לא ניתן היה לבדוק את מצב המודל",
+    "loadFailed": "לא ניתן היה לטעון את המודל",
+    "switchFailed": "לא ניתן היה להחליף מודל",
+    "statusTitle": "מצב המודל: {{estado}}"
   },
   "settings": {
     "modelSettings": {
@@ -692,7 +696,12 @@
     "copy": "העתק",
     "clear": "נקה",
     "noOptionsFound": "לא נמצאו אפשרויות",
-    "retry": "נסה שוב"
+    "retry": "נסה שוב",
+    "play": "נגן",
+    "pause": "השהה",
+    "seek": "מיקום הניגון",
+    "moreInfo": "מידע נוסף",
+    "selectOption": "בחרו אפשרות…"
   },
   "accessibility": {
     "permissionsDescription": "Abrax צריך הרשאות נגישות כדי להקליד את הטקסט המתומלל.",
@@ -972,5 +981,9 @@
     "max": "Maximize",
     "close": "Close",
     "tray": "Send to tray"
+  },
+  "soundPicker": {
+    "custom": "מותאם אישית",
+    "preview": "האזנה לערכת הצליל (התחלה וסיום)"
   }
 }

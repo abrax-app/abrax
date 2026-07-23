@@ -161,7 +161,11 @@
       "translate": "Translate",
       "streaming": "Shows live transcription as you speak"
     },
-    "downloadFailed": "Download failed"
+    "downloadFailed": "Download failed",
+    "checkFailed": "Couldn't check the model status",
+    "loadFailed": "Couldn't load the model",
+    "switchFailed": "Couldn't switch models",
+    "statusTitle": "Model status: {{estado}}"
   },
   "settings": {
     "modelSettings": {
@@ -695,7 +699,12 @@
     "copy": "Copy",
     "clear": "Clear",
     "noOptionsFound": "No options found",
-    "retry": "Retry"
+    "retry": "Retry",
+    "play": "Play",
+    "pause": "Pause",
+    "seek": "Playback position",
+    "moreInfo": "More information",
+    "selectOption": "Select an option…"
   },
   "accessibility": {
     "permissionsDescription": "Abrax needs accessibility permissions to type transcribed text.",
@@ -972,5 +981,9 @@
     "max": "Maximize",
     "close": "Close",
     "tray": "Send to tray"
+  },
+  "soundPicker": {
+    "custom": "Custom",
+    "preview": "Preview sound theme (start and stop)"
   }
 }

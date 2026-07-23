@@ -161,7 +161,11 @@
     "cancel": "Отмена",
     "cancelDownload": "Отменить загрузку",
     "legacy": "Устаревшее",
-    "downloadFailed": "Ошибка загрузки"
+    "downloadFailed": "Ошибка загрузки",
+    "checkFailed": "Не удалось проверить состояние модели",
+    "loadFailed": "Не удалось загрузить модель",
+    "switchFailed": "Не удалось сменить модель",
+    "statusTitle": "Состояние модели: {{estado}}"
   },
   "settings": {
     "modelSettings": {
@@ -692,7 +696,12 @@
     "copy": "Копировать",
     "clear": "Очистить",
     "noOptionsFound": "Вариантов не найдено",
-    "retry": "Повторить"
+    "retry": "Повторить",
+    "play": "Воспроизвести",
+    "pause": "Пауза",
+    "seek": "Позиция воспроизведения",
+    "moreInfo": "Подробнее",
+    "selectOption": "Выберите вариант…"
   },
   "accessibility": {
     "permissionsDescription": "Abrax необходимы разрешения на доступ для ввода расшифрованного текста.",
@@ -972,5 +981,9 @@
     "max": "Maximize",
     "close": "Close",
     "tray": "Send to tray"
+  },
+  "soundPicker": {
+    "custom": "Пользовательский",
+    "preview": "Прослушать тему (старт и стоп)"
   }
 }

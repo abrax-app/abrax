@@ -161,7 +161,11 @@
     "cancel": "Abbrechen",
     "cancelDownload": "Download abbrechen",
     "legacy": "Veraltet",
-    "downloadFailed": "Download fehlgeschlagen"
+    "downloadFailed": "Download fehlgeschlagen",
+    "checkFailed": "Modellstatus konnte nicht geprüft werden",
+    "loadFailed": "Modell konnte nicht geladen werden",
+    "switchFailed": "Modellwechsel fehlgeschlagen",
+    "statusTitle": "Modellstatus: {{estado}}"
   },
   "settings": {
     "modelSettings": {
@@ -692,7 +696,12 @@
     "copy": "Kopieren",
     "clear": "Leeren",
     "noOptionsFound": "Keine Optionen gefunden",
-    "retry": "Erneut versuchen"
+    "retry": "Erneut versuchen",
+    "play": "Wiedergeben",
+    "pause": "Pausieren",
+    "seek": "Wiedergabeposition",
+    "moreInfo": "Weitere Informationen",
+    "selectOption": "Option auswählen…"
   },
   "accessibility": {
     "permissionsDescription": "Abrax benötigt Bedienungshilfen-Berechtigungen, um transkribierten Text einzugeben.",
@@ -972,5 +981,9 @@
     "max": "Maximize",
     "close": "Close",
     "tray": "Send to tray"
+  },
+  "soundPicker": {
+    "custom": "Benutzerdefiniert",
+    "preview": "Klangthema anhören (Start und Stopp)"
   }
 }

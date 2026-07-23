@@ -161,7 +161,11 @@
     "cancel": "Скасувати",
     "cancelDownload": "Скасувати завантаження",
     "legacy": "Застаріле",
-    "downloadFailed": "Помилка завантаження"
+    "downloadFailed": "Помилка завантаження",
+    "checkFailed": "Не вдалося перевірити стан моделі",
+    "loadFailed": "Не вдалося завантажити модель",
+    "switchFailed": "Не вдалося змінити модель",
+    "statusTitle": "Стан моделі: {{estado}}"
   },
   "settings": {
     "modelSettings": {
@@ -692,7 +696,12 @@
     "copy": "Копіювати",
     "clear": "Очистити",
     "noOptionsFound": "Опцій не знайдено",
-    "retry": "Повторити"
+    "retry": "Повторити",
+    "play": "Відтворити",
+    "pause": "Пауза",
+    "seek": "Позиція відтворення",
+    "moreInfo": "Докладніше",
+    "selectOption": "Виберіть варіант…"
   },
   "accessibility": {
     "permissionsDescription": "Abrax потребує дозволи доступності для введення транскрибованого тексту.",
@@ -972,5 +981,9 @@
     "max": "Maximize",
     "close": "Close",
     "tray": "Send to tray"
+  },
+  "soundPicker": {
+    "custom": "Власний",
+    "preview": "Прослухати тему (старт і стоп)"
   }
 }

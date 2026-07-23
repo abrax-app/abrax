@@ -319,13 +319,15 @@ pub fn change_autostart_setting(app: AppHandle, enabled: bool) -> Result<(), Str
     settings.autostart_enabled = enabled;
     settings::write_settings(&app, settings);
 
-    // Apply the autostart setting immediately
+    // Apply the autostart setting immediately. El fallo se propaga: antes se
+    // tragaba con `let _ =` y el toggle mentía (hallado en revisión).
     let autostart_manager = app.autolaunch();
-    if enabled {
-        let _ = autostart_manager.enable();
+    let resultado = if enabled {
+        autostart_manager.enable()
     } else {
-        let _ = autostart_manager.disable();
-    }
+        autostart_manager.disable()
+    };
+    resultado.map_err(|e| format!("autostart: {e}"))?;
 
     Ok(())
 }
@@ -556,9 +558,13 @@ pub fn change_post_process_enabled_setting(app: AppHandle, enabled: bool) -> Res
         .cloned()
     {
         if enabled {
-            let _ = register_shortcut(&app, binding);
-        } else {
-            let _ = unregister_shortcut(&app, binding);
+            // Un fallo aquí deja el toggle encendido con el atajo muerto:
+            // como mínimo debe quedar rastro (antes era `let _ =`).
+            if let Err(e) = register_shortcut(&app, binding) {
+                warn!("No se pudo registrar el atajo de post-proceso: {e}");
+            }
+        } else if let Err(e) = unregister_shortcut(&app, binding) {
+            warn!("No se pudo des-registrar el atajo de post-proceso: {e}");
         }
     }
 

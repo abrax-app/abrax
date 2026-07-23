@@ -235,23 +235,24 @@ async cambiarMemoriaActiva(activa: boolean) : Promise<Result<null, string>> {
 }
 },
 /**
- * Activa o desactiva el aprendizaje en el sitio.
- */
-async cambiarMemoriaEnSitio(activa: boolean) : Promise<Result<null, string>> {
-    try {
-    return { status: "ok", data: await TAURI_INVOKE("cambiar_memoria_en_sitio", { activa }) };
-} catch (e) {
-    if(e instanceof Error) throw e;
-    else return { status: "error", error: e  as any };
-}
-},
-/**
  * Reemplaza la lista de pares aprendidos (olvidar individual o total desde
  * la UI de Ajustes).
  */
 async actualizarMemoriaCorrecciones(pares: ParMemoria[]) : Promise<Result<null, string>> {
     try {
     return { status: "ok", data: await TAURI_INVOKE("actualizar_memoria_correcciones", { pares }) };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+/**
+ * Activa o desactiva el aprendizaje en el sitio (releer el campo enfocado al
+ * empezar un dictado).
+ */
+async cambiarMemoriaEnSitio(activa: boolean) : Promise<Result<null, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("cambiar_memoria_en_sitio", { activa }) };
 } catch (e) {
     if(e instanceof Error) throw e;
     else return { status: "error", error: e  as any };

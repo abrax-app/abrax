@@ -161,7 +161,11 @@
     "cancel": "Cancelar",
     "cancelDownload": "Cancelar descarga",
     "legacy": "Heredado",
-    "downloadFailed": "La descarga falló"
+    "downloadFailed": "La descarga falló",
+    "checkFailed": "No se pudo comprobar el estado del modelo",
+    "loadFailed": "No se pudo cargar el modelo",
+    "switchFailed": "No se pudo cambiar de modelo",
+    "statusTitle": "Estado del modelo: {{estado}}"
   },
   "settings": {
     "modelSettings": {
@@ -692,7 +696,12 @@
     "copy": "Copiar",
     "clear": "Limpiar",
     "noOptionsFound": "No se encontraron opciones",
-    "retry": "Reintentar"
+    "retry": "Reintentar",
+    "play": "Reproducir",
+    "pause": "Pausar",
+    "seek": "Posición de reproducción",
+    "moreInfo": "Más información",
+    "selectOption": "Selecciona una opción…"
   },
   "accessibility": {
     "permissionsDescription": "Abrax necesita permisos de accesibilidad para escribir texto transcrito.",
@@ -972,5 +981,9 @@
     "max": "Maximizar",
     "close": "Cerrar",
     "tray": "Enviar a la bandeja"
+  },
+  "soundPicker": {
+    "custom": "Personalizado",
+    "preview": "Escuchar el tema (inicio y fin)"
   }
 }

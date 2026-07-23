@@ -161,7 +161,11 @@
       "streaming": "يعرض النسخ المباشر أثناء التحدث"
     },
     "legacy": "قديم",
-    "downloadFailed": "فشل التنزيل"
+    "downloadFailed": "فشل التنزيل",
+    "checkFailed": "تعذّر التحقق من حالة النموذج",
+    "loadFailed": "تعذّر تحميل النموذج",
+    "switchFailed": "تعذّر تبديل النموذج",
+    "statusTitle": "حالة النموذج: {{estado}}"
   },
   "settings": {
     "general": {
@@ -692,7 +696,12 @@
     "copy": "نسخ",
     "clear": "مسح",
     "noOptionsFound": "لم يتم العثور على خيارات",
-    "retry": "إعادة المحاولة"
+    "retry": "إعادة المحاولة",
+    "play": "تشغيل",
+    "pause": "إيقاف مؤقت",
+    "seek": "موضع التشغيل",
+    "moreInfo": "مزيد من المعلومات",
+    "selectOption": "اختر خيارًا…"
   },
   "accessibility": {
     "permissionsDescription": ".يحتاج Abrax إلى أذونات إمكانية الوصول لكتابة النص المفرغ",
@@ -972,5 +981,9 @@
     "max": "Maximize",
     "close": "Close",
     "tray": "Send to tray"
+  },
+  "soundPicker": {
+    "custom": "مخصص",
+    "preview": "الاستماع إلى النغمة (بداية ونهاية)"
   }
 }
