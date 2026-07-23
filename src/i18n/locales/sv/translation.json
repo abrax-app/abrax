@@ -441,7 +441,9 @@
         "description": "ABRAX lär sig när du rättar en transkription i Historiken: ta bort ett ord, skriv det rätta, och nästa gång skrivs det korrekt. Allt lokalt.",
         "empty": "Inga inlärda rättelser ännu. Redigera en transkription i Historiken (pennikonen) så lär sig ABRAX av dina ändringar.",
         "forget": "Glöm denna rättelse",
-        "clearAll": "Glöm allt"
+        "clearAll": "Glöm allt",
+        "enSitioTitle": "Lär där du dikterar",
+        "enSitioDescription": "När du börjar diktera läser ABRAX om fältet du skriver i (via hjälpmedel, 100 % lokalt) och lär sig av de rättelser du gjorde där i förra dikteringen. Inget från fältet sparas eller lämnar din enhet."
       }
     },
     "postProcessing": {

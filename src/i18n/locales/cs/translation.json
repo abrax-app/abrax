@@ -441,7 +441,9 @@
         "description": "ABRAX se učí, když opravíte přepis v Historii: smažte slovo, napište správné a příště bude napsáno správně. Vše lokálně.",
         "empty": "Zatím žádné naučené opravy. Upravte přepis v Historii (ikona tužky) a ABRAX se z vašich změn naučí.",
         "forget": "Zapomenout tuto opravu",
-        "clearAll": "Zapomenout vše"
+        "clearAll": "Zapomenout vše",
+        "enSitioTitle": "Učit se tam, kde diktuješ",
+        "enSitioDescription": "Při zahájení diktátu ABRAX znovu přečte pole, do kterého píšeš (přes zpřístupnění, 100% lokálně), a učí se z oprav, které jsi tam u předchozího diktátu udělal. Nic z pole se neukládá ani neopouští zařízení."
       }
     },
     "postProcessing": {

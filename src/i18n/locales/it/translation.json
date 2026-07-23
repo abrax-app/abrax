@@ -441,7 +441,9 @@
         "description": "ABRAX impara quando correggi una trascrizione nella Cronologia: cancella una parola, scrivi quella giusta e la prossima volta verrà scritta correttamente. Tutto in locale.",
         "empty": "Nessuna correzione appresa. Modifica una trascrizione nella Cronologia (icona matita) e ABRAX imparerà dalle tue modifiche.",
         "forget": "Dimentica questa correzione",
-        "clearAll": "Dimentica tutto"
+        "clearAll": "Dimentica tutto",
+        "enSitioTitle": "Impara dove detti",
+        "enSitioDescription": "All'avvio di una dettatura, ABRAX rilegge il campo in cui stai scrivendo (via accessibilità, 100% locale) e impara dalle correzioni che vi hai fatto alla dettatura precedente. Nulla del campo viene salvato né lascia il tuo dispositivo."
       }
     },
     "postProcessing": {

@@ -528,6 +528,17 @@ impl ShortcutAction for TranscribeAction {
         // no hay nada sonando.
         let _ = app.state::<Arc<TtsManager>>().stop();
 
+        // Memoria en el sitio: en este instante el foco sigue en el campo
+        // donde el usuario dicta — releerlo (accesibilidad, local) y aprender
+        // de las correcciones que hizo sobre el dictado anterior. En hilo
+        // aparte: la lectura COM no debe retrasar el inicio de la grabación.
+        {
+            let app_memoria = app.clone();
+            std::thread::spawn(move || {
+                crate::memoria_en_sitio::aprender_del_campo(&app_memoria);
+            });
+        }
+
         // Load ASR model and VAD model in parallel
         let kickoff_started = Instant::now();
         tm.initiate_model_load();
@@ -878,11 +889,20 @@ impl ShortcutAction for TranscribeAction {
                                         return;
                                     }
 
+                                    let texto_para_memoria = final_text.clone();
                                     match crate::clipboard::paste(final_text, ah_clone.clone()) {
-                                        Ok(()) => debug!(
-                                            "Text pasted successfully in {:?}",
-                                            paste_time.elapsed()
-                                        ),
+                                        Ok(()) => {
+                                            debug!(
+                                                "Text pasted successfully in {:?}",
+                                                paste_time.elapsed()
+                                            );
+                                            // Memoria en el sitio: recordar QUÉ
+                                            // se tipeó y DÓNDE, para aprender de
+                                            // las correcciones al próximo dictado.
+                                            crate::memoria_en_sitio::registrar_dictado(
+                                                &texto_para_memoria,
+                                            );
+                                        }
                                         Err(e) => {
                                             error!("Failed to paste transcription: {}", e);
                                             crate::user_alerts::alert(

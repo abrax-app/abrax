@@ -124,6 +124,7 @@ const settingUpdaters: {
   custom_replacements: (value) =>
     commands.updateCustomReplacements(value as CustomReplacement[]),
   memoria_activa: (value) => commands.cambiarMemoriaActiva(value as boolean),
+  memoria_en_sitio: (value) => commands.cambiarMemoriaEnSitio(value as boolean),
   memoria_correcciones: (value) =>
     commands.actualizarMemoriaCorrecciones(value as ParMemoria[]),
   custom_filler_words: (value) =>

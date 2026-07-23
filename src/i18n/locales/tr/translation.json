@@ -441,7 +441,9 @@
         "description": "ABRAX, Geçmiş'te bir transkripsiyonu düzelttiğinizde öğrenir: bir kelimeyi silin, doğrusunu yazın; bir dahaki sefere doğru yazılır. Tamamen yerel.",
         "empty": "Henüz öğrenilmiş düzeltme yok. Geçmiş'te bir transkripsiyonu düzenleyin (kalem simgesi), ABRAX değişikliklerinizden öğrensin.",
         "forget": "Bu düzeltmeyi unut",
-        "clearAll": "Hepsini unut"
+        "clearAll": "Hepsini unut",
+        "enSitioTitle": "Dikte ettiğin yerde öğren",
+        "enSitioDescription": "Dikteye başladığında ABRAX yazdığın alanı yeniden okur (erişilebilirlik üzerinden, %100 yerel) ve önceki diktede orada yaptığın düzeltmelerden öğrenir. Alandaki hiçbir şey saklanmaz ve cihazından çıkmaz."
       }
     },
     "postProcessing": {

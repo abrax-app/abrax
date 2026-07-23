@@ -441,7 +441,9 @@
         "description": "O ABRAX aprende quando você corrige uma transcrição no Histórico: apague uma palavra, digite a correta e na próxima vez ela sai certa. Tudo local.",
         "empty": "Ainda não há correções aprendidas. Edite uma transcrição no Histórico (ícone de lápis) e o ABRAX aprenderá com suas mudanças.",
         "forget": "Esquecer esta correção",
-        "clearAll": "Esquecer tudo"
+        "clearAll": "Esquecer tudo",
+        "enSitioTitle": "Aprender onde você dita",
+        "enSitioDescription": "Ao iniciar um ditado, o ABRAX relê o campo onde você está escrevendo (via acessibilidade, 100% local) e aprende com as correções que você fez ali no ditado anterior. Nada do campo é guardado nem sai do seu aparelho."
       }
     },
     "postProcessing": {

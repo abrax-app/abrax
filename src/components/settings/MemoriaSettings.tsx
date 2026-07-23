@@ -42,6 +42,16 @@ export const MemoriaSettings: React.FC<MemoriaSettingsProps> = React.memo(
           descriptionMode={descriptionMode}
           grouped={grouped}
         />
+        <ToggleSwitch
+          checked={activa && (getSetting("memoria_en_sitio") ?? true)}
+          onChange={(value) => updateSetting("memoria_en_sitio", value)}
+          disabled={!activa}
+          isUpdating={isUpdating("memoria_en_sitio")}
+          label={t("settings.advanced.memoria.enSitioTitle")}
+          description={t("settings.advanced.memoria.enSitioDescription")}
+          descriptionMode={descriptionMode}
+          grouped={grouped}
+        />
         <div
           className={`px-4 p-2 ${grouped ? "" : "rounded-lg border border-mid-gray/20"} space-y-1`}
         >

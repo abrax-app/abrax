@@ -441,7 +441,9 @@
         "description": "ABRAX aprende cuando corriges una transcripción en el Historial: si borras una palabra y escribes la correcta, la próxima vez la escribe bien. Todo local.",
         "empty": "Aún no hay correcciones aprendidas. Edita una transcripción en el Historial (icono de lápiz) y ABRAX aprenderá de tus cambios.",
         "forget": "Olvidar esta corrección",
-        "clearAll": "Olvidar todo"
+        "clearAll": "Olvidar todo",
+        "enSitioTitle": "Aprender donde dictas",
+        "enSitioDescription": "Al empezar un dictado, ABRAX relee el campo donde estás escribiendo (por accesibilidad, 100% local) y aprende de las correcciones que hiciste ahí sobre el dictado anterior. Nada del campo se guarda ni sale de tu equipo."
       }
     },
     "postProcessing": {

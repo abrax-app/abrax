@@ -441,7 +441,9 @@
         "description": "ABRAX leert wanneer je een transcriptie in de Geschiedenis corrigeert: verwijder een woord, typ het juiste, en de volgende keer wordt het goed geschreven. Alles lokaal.",
         "empty": "Nog geen geleerde correcties. Bewerk een transcriptie in de Geschiedenis (potlood-icoon) en ABRAX leert van je wijzigingen.",
         "forget": "Deze correctie vergeten",
-        "clearAll": "Alles vergeten"
+        "clearAll": "Alles vergeten",
+        "enSitioTitle": "Leren waar je dicteert",
+        "enSitioDescription": "Bij het starten van een dictaat leest ABRAX het veld waarin je schrijft opnieuw (via toegankelijkheid, 100% lokaal) en leert van de correcties die je daar op het vorige dictaat maakte. Niets uit het veld wordt opgeslagen of verlaat je apparaat."
       }
     },
     "postProcessing": {

@@ -15,6 +15,7 @@ mod input;
 mod llm_client;
 mod managers;
 mod memoria;
+mod memoria_en_sitio;
 mod overlay;
 pub mod portable;
 mod prompt_compiler;
@@ -592,6 +593,7 @@ pub fn run(cli_args: CliArgs) {
             commands::memoria::editar_transcripcion,
             commands::memoria::cambiar_memoria_activa,
             commands::memoria::actualizar_memoria_correcciones,
+            commands::memoria::cambiar_memoria_en_sitio,
             commands::audio::probar_microfono,
             signal_handle::trigger_transcription,
             commands::settings::change_start_hidden_setting,
@@ -724,6 +726,7 @@ pub fn run(cli_args: CliArgs) {
             managers::transcription::TranscriptWordsEvent,
             user_alerts::UserAlertEvent,
             commands::discos::MudanzaProgreso,
+            memoria_en_sitio::MemoriaAprendida,
         ]);
 
     #[cfg(debug_assertions)] // <- Only export on non-release builds

@@ -79,6 +79,17 @@ pub fn cambiar_memoria_activa(app: AppHandle, activa: bool) -> Result<(), String
     Ok(())
 }
 
+/// Activa o desactiva el aprendizaje en el sitio (releer el campo enfocado al
+/// empezar un dictado).
+#[tauri::command]
+#[specta::specta]
+pub fn cambiar_memoria_en_sitio(app: AppHandle, activa: bool) -> Result<(), String> {
+    let mut settings = get_settings(&app);
+    settings.memoria_en_sitio = activa;
+    write_settings(&app, settings);
+    Ok(())
+}
+
 /// Reemplaza la lista de pares aprendidos (olvidar individual o total desde
 /// la UI de Ajustes).
 #[tauri::command]

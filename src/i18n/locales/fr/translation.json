@@ -441,7 +441,9 @@
         "description": "ABRAX apprend quand vous corrigez une transcription dans l'Historique : supprimez un mot, tapez le bon, et la prochaine fois il sera écrit correctement. Tout en local.",
         "empty": "Aucune correction apprise pour l'instant. Modifiez une transcription dans l'Historique (icône crayon) et ABRAX apprendra de vos changements.",
         "forget": "Oublier cette correction",
-        "clearAll": "Tout oublier"
+        "clearAll": "Tout oublier",
+        "enSitioTitle": "Apprendre là où vous dictez",
+        "enSitioDescription": "Au début d'une dictée, ABRAX relit le champ où vous écrivez (via l'accessibilité, 100 % local) et apprend des corrections que vous y avez faites à la dictée précédente. Rien du champ n'est conservé ni ne quitte votre appareil."
       }
     },
     "postProcessing": {

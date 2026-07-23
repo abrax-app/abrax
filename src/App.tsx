@@ -124,6 +124,23 @@ function App() {
     };
   }, [t]);
 
+  // Memoria en el sitio: cuando ABRAX aprende de una corrección hecha donde
+  // se dicta, se celebra con el mismo toast del aprendizaje por Historial.
+  useEffect(() => {
+    const unlisten = events.memoriaAprendida.listen((event) => {
+      const pares = event.payload.pares;
+      if (pares.length === 0) return;
+      toast.success(
+        t("settings.history.edit.learned", {
+          pares: pares.map((p) => `«${p.de} → ${p.a}»`).join(", "),
+        }),
+      );
+    });
+    return () => {
+      unlisten.then((fn) => fn());
+    };
+  }, [t]);
+
   const revealMainWindowForPermissions = async () => {
     try {
       await commands.showMainWindowCommand();

@@ -441,7 +441,9 @@
         "description": "ABRAX learns when you fix a transcription in History: delete a word, type the right one, and next time it gets written correctly. All local.",
         "empty": "No learned corrections yet. Edit a transcription in History (pencil icon) and ABRAX will learn from your changes.",
         "forget": "Forget this correction",
-        "clearAll": "Forget all"
+        "clearAll": "Forget all",
+        "enSitioTitle": "Learn where you dictate",
+        "enSitioDescription": "When you start dictating, ABRAX re-reads the field you're writing in (via accessibility, 100% local) and learns from the corrections you made there to the previous dictation. Nothing from the field is stored or leaves your device."
       }
     },
     "postProcessing": {

@@ -441,7 +441,9 @@
         "description": "ABRAX lernt, wenn du eine Transkription im Verlauf korrigierst: Wort löschen, das richtige tippen — beim nächsten Mal wird es korrekt geschrieben. Alles lokal.",
         "empty": "Noch keine gelernten Korrekturen. Bearbeite eine Transkription im Verlauf (Stift-Symbol) und ABRAX lernt aus deinen Änderungen.",
         "forget": "Diese Korrektur vergessen",
-        "clearAll": "Alles vergessen"
+        "clearAll": "Alles vergessen",
+        "enSitioTitle": "Lernen, wo du diktierst",
+        "enSitioDescription": "Beim Start eines Diktats liest ABRAX das Feld, in dem du schreibst, erneut (per Bedienungshilfen, 100 % lokal) und lernt aus den Korrekturen, die du dort am vorherigen Diktat gemacht hast. Nichts davon wird gespeichert oder verlässt dein Gerät."
       }
     },
     "postProcessing": {

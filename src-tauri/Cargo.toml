@@ -138,6 +138,10 @@ windows = { version = "0.61.3", features = [
   "Win32_System_Variant",
   "Win32_Foundation",
   "Win32_UI_WindowsAndMessaging",
+  # Memoria en el sitio: leer el campo de texto enfocado vía UI Automation
+  # (100% local) para aprender de las correcciones hechas donde se dicta.
+  "Win32_UI_Accessibility",
+  "Win32_System_Com",
   # [TTS] Lectura de VRAM dedicada por adaptador (DXGI) para la detección de
   # hardware: wgpu no expone la VRAM total, así que en Windows se consulta
   # `IDXGIAdapter1::GetDesc1().DedicatedVideoMemory` como best-effort.

@@ -441,7 +441,9 @@
         "description": "ABRAX học khi bạn sửa bản ghi trong Lịch sử: xóa một từ, gõ từ đúng, và lần sau nó sẽ được viết đúng. Tất cả đều cục bộ.",
         "empty": "Chưa có sửa lỗi nào được học. Chỉnh sửa bản ghi trong Lịch sử (biểu tượng bút chì) và ABRAX sẽ học từ thay đổi của bạn.",
         "forget": "Quên sửa lỗi này",
-        "clearAll": "Quên tất cả"
+        "clearAll": "Quên tất cả",
+        "enSitioTitle": "Học ngay nơi bạn đọc chính tả",
+        "enSitioDescription": "Khi bắt đầu đọc chính tả, ABRAX đọc lại ô bạn đang viết (qua trợ năng, 100% cục bộ) và học từ những sửa đổi bạn đã làm ở đó với lần đọc trước. Không có gì trong ô được lưu hay rời khỏi thiết bị."
       }
     },
     "postProcessing": {

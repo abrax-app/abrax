@@ -441,7 +441,9 @@
         "description": "ABRAX uczy się, gdy poprawiasz transkrypcję w Historii: usuń słowo, wpisz właściwe, a następnym razem zostanie zapisane poprawnie. Wszystko lokalnie.",
         "empty": "Brak nauczonych poprawek. Edytuj transkrypcję w Historii (ikona ołówka), a ABRAX nauczy się z Twoich zmian.",
         "forget": "Zapomnij tę poprawkę",
-        "clearAll": "Zapomnij wszystko"
+        "clearAll": "Zapomnij wszystko",
+        "enSitioTitle": "Ucz się tam, gdzie dyktujesz",
+        "enSitioDescription": "Przy rozpoczęciu dyktowania ABRAX ponownie odczytuje pole, w którym piszesz (przez ułatwienia dostępu, w 100% lokalnie), i uczy się z poprawek, które tam wprowadziłeś do poprzedniego dyktanda. Nic z pola nie jest zapisywane ani nie opuszcza urządzenia."
       }
     },
     "postProcessing": {

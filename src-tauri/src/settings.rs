@@ -503,6 +503,11 @@ pub struct AppSettings {
     /// frase en el post-proceso. Todo local.
     #[serde(default = "default_memoria_activa")]
     pub memoria_activa: bool,
+    /// Aprender también EN EL SITIO: al empezar un dictado se relee el campo
+    /// enfocado (accesibilidad, local) y se aprende de las correcciones que el
+    /// usuario hizo ahí sobre el dictado anterior.
+    #[serde(default = "default_memoria_activa")]
+    pub memoria_en_sitio: bool,
     #[serde(default)]
     pub memoria_correcciones: Vec<crate::memoria::ParMemoria>,
     /// Proyecto activo del Diccionario Vivo (F5.3): ABRAX aprende la jerga
@@ -1079,6 +1084,7 @@ pub fn get_default_settings() -> AppSettings {
         custom_words: default_custom_words(),
         custom_replacements: Vec::new(),
         memoria_activa: default_memoria_activa(),
+        memoria_en_sitio: default_memoria_activa(),
         memoria_correcciones: Vec::new(),
         dictionary_project: None,
         model_unload_timeout: ModelUnloadTimeout::default(),

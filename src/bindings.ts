@@ -235,6 +235,17 @@ async cambiarMemoriaActiva(activa: boolean) : Promise<Result<null, string>> {
 }
 },
 /**
+ * Activa o desactiva el aprendizaje en el sitio.
+ */
+async cambiarMemoriaEnSitio(activa: boolean) : Promise<Result<null, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("cambiar_memoria_en_sitio", { activa }) };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+/**
  * Reemplaza la lista de pares aprendidos (olvidar individual o total desde
  * la UI de Ajustes).
  */
@@ -1289,6 +1300,7 @@ async installOnlineRuntime() : Promise<Result<null, string>> {
 
 export const events = __makeEvents__<{
 historyUpdatePayload: HistoryUpdatePayload,
+memoriaAprendida: MemoriaAprendida,
 mudanzaProgreso: MudanzaProgreso,
 streamPhaseEvent: StreamPhaseEvent,
 streamTextEvent: StreamTextEvent,
@@ -1296,6 +1308,7 @@ transcriptWordsEvent: TranscriptWordsEvent,
 userAlertEvent: UserAlertEvent
 }>({
 historyUpdatePayload: "history-update-payload",
+memoriaAprendida: "memoria-aprendida",
 mudanzaProgreso: "mudanza-progreso",
 streamPhaseEvent: "stream-phase-event",
 streamTextEvent: "stream-text-event",
@@ -1366,7 +1379,13 @@ custom_replacements?: CustomReplacement[];
  * del usuario en el Historial. Se aplican como reemplazo exacto por
  * frase en el post-proceso. Todo local.
  */
-memoria_activa?: boolean; memoria_correcciones?: ParMemoria[]; 
+memoria_activa?: boolean; 
+/**
+ * Aprender también EN EL SITIO: al empezar un dictado se relee el campo
+ * enfocado (accesibilidad, local) y se aprende de las correcciones que el
+ * usuario hizo ahí sobre el dictado anterior.
+ */
+memoria_en_sitio?: boolean; memoria_correcciones?: ParMemoria[]; 
 /**
  * Proyecto activo del Diccionario Vivo (F5.3): ABRAX aprende la jerga
  * del código indexándolo localmente. El índice vive en el datadir;
@@ -1608,6 +1627,11 @@ reset_bindings: string[] }
 export type KeyboardImplementation = "tauri" | "handy_keys"
 export type LLMPrompt = { id: string; name: string; prompt: string }
 export type LogLevel = "trace" | "debug" | "info" | "warn" | "error"
+/**
+ * Evento hacia la UI cuando el aprendizaje en el sitio suma pares (para el
+ * toast «ABRAX aprendió …»).
+ */
+export type MemoriaAprendida = { pares: ParMemoria[] }
 export type ModelInfo = { id: string; name: string; description: string; filename: string; source: ModelSource; size_mb: number; is_downloaded: boolean; is_downloading: boolean; partial_size: number; is_directory: boolean; engine_type: EngineType; accuracy_score: number; speed_score: number; supports_translation: boolean; is_recommended: boolean; supported_languages: string[]; supports_language_selection: boolean; is_custom: boolean; supports_streaming: boolean; supports_language_detection: boolean }
 /**
  * Where a model comes from and how Abrax obtains it — the routing discriminant
