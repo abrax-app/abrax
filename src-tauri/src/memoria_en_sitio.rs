@@ -65,6 +65,10 @@ pub fn registrar_dictado(texto: &str) {
         return;
     }
     let proceso = pid_ventana_en_foco();
+    debug!(
+        "en sitio: dictado registrado ({} palabras, pid {proceso})",
+        texto.split_whitespace().count()
+    );
     *ULTIMO.lock().unwrap() = Some(UltimoDictado {
         texto: texto.to_string(),
         proceso,
@@ -84,19 +88,34 @@ pub fn aprender_del_campo(app: &AppHandle) {
         let guardia = ULTIMO.lock().unwrap();
         match guardia.as_ref() {
             Some(u) if u.cuando.elapsed() <= VIGENCIA => (u.texto.clone(), u.proceso),
-            _ => return,
+            Some(_) => {
+                debug!("en sitio: dictado previo vencido (> {VIGENCIA:?})");
+                return;
+            }
+            None => {
+                debug!("en sitio: sin dictado previo registrado");
+                return;
+            }
         }
     };
     // Mismo destino: si el foco está en otra aplicación, la edición no es
     // atribuible al dictado anterior.
-    if proceso_previo == 0 || pid_ventana_en_foco() != proceso_previo {
+    let proceso_actual = pid_ventana_en_foco();
+    if proceso_previo == 0 || proceso_actual != proceso_previo {
+        debug!("en sitio: foco en otra app (pid {proceso_actual} ≠ {proceso_previo})");
         return;
     }
     let Some(campo) = leer_texto_enfocado() else {
+        debug!("en sitio: el campo enfocado no expone texto por accesibilidad");
         return;
     };
+    debug!(
+        "en sitio: campo leído ({} caracteres), comparando con el último dictado",
+        campo.chars().count()
+    );
     let pares = comparar_con_campo(&texto_previo, &campo);
     if pares.is_empty() {
+        debug!("en sitio: sin correcciones aprendibles (intacto, sin coincidencia o puertas)");
         return;
     }
     let mut s = get_settings(app);
@@ -189,8 +208,24 @@ fn pid_ventana_en_foco() -> u32 {
 
 /// Texto del control enfocado vía UI Automation (TextPattern con fallback a
 /// ValuePattern). Best-effort: cualquier fallo devuelve None y no se aprende.
+///
+/// Chromium/Electron (navegadores, VS Code/Cursor, Discord) construyen su
+/// árbol de accesibilidad RECIÉN cuando detectan un cliente UIA: la primera
+/// consulta puede llegar vacía y a la vez despertarlo. Por eso se reintenta
+/// una vez tras una pausa corta.
 #[cfg(windows)]
 fn leer_texto_enfocado() -> Option<String> {
+    match leer_texto_enfocado_una_vez() {
+        Some(t) if !t.trim().is_empty() => Some(t),
+        _ => {
+            std::thread::sleep(Duration::from_millis(250));
+            leer_texto_enfocado_una_vez()
+        }
+    }
+}
+
+#[cfg(windows)]
+fn leer_texto_enfocado_una_vez() -> Option<String> {
     use windows::core::Interface;
     use windows::Win32::System::Com::{
         CoCreateInstance, CoInitializeEx, CLSCTX_INPROC_SERVER, COINIT_APARTMENTTHREADED,

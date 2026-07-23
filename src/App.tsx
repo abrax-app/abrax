@@ -125,7 +125,9 @@ function App() {
   }, [t]);
 
   // Memoria en el sitio: cuando ABRAX aprende de una corrección hecha donde
-  // se dicta, se celebra con el mismo toast del aprendizaje por Historial.
+  // se dicta, se celebra con el mismo toast del aprendizaje por Historial y
+  // se refresca el store (la escritura fue backend-side, sin evento de
+  // settings) para que la sección Memoria muestre el par al instante.
   useEffect(() => {
     const unlisten = events.memoriaAprendida.listen((event) => {
       const pares = event.payload.pares;
@@ -135,6 +137,7 @@ function App() {
           pares: pares.map((p) => `«${p.de} → ${p.a}»`).join(", "),
         }),
       );
+      void useSettingsStore.getState().refreshSettings();
     });
     return () => {
       unlisten.then((fn) => fn());

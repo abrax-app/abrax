@@ -97,19 +97,23 @@ pub fn aprender_de_edicion(original: &str, editado: &str) -> Vec<(String, String
 
     // Recorrido completo del diff (colas incluidas): cada región contigua de
     // desacuerdo entre dos anclas de igualdad se agrupa en (borrados,
-    // insertados) = candidato a sustitución.
+    // insertados) = candidato a sustitución, con sus anclas vecinas (la
+    // palabra igual anterior y la siguiente) para el rescate contextual.
     let mut pares = Vec::new();
     let (mut del, mut ins): (Vec<&str>, Vec<&str>) = (Vec::new(), Vec::new());
+    let mut ancla_previa: Option<&str> = None;
     let (mut i, mut j) = (0usize, 0usize);
     loop {
         let igual = i < n && j < m && a[i] == b[j];
         if igual || (i == n && j == m) {
-            registrar_candidato(&mut pares, &del, &ins);
+            let ancla_siguiente = if igual { Some(a[i]) } else { None };
+            registrar_candidato(&mut pares, &del, &ins, ancla_previa, ancla_siguiente);
             del.clear();
             ins.clear();
             if i == n && j == m {
                 break;
             }
+            ancla_previa = Some(a[i]);
             i += 1;
             j += 1;
         } else if j == m || (i < n && dp[i + 1][j] >= dp[i][j + 1]) {
@@ -124,7 +128,13 @@ pub fn aprender_de_edicion(original: &str, editado: &str) -> Vec<(String, String
     pares
 }
 
-fn registrar_candidato(pares: &mut Vec<(String, String)>, del: &[&str], ins: &[&str]) {
+fn registrar_candidato(
+    pares: &mut Vec<(String, String)>,
+    del: &[&str],
+    ins: &[&str],
+    ancla_previa: Option<&str>,
+    ancla_siguiente: Option<&str>,
+) {
     if del.is_empty() || ins.is_empty() {
         return; // inserción o borrado puro: contenido, no corrección
     }
@@ -148,6 +158,35 @@ fn registrar_candidato(pares: &mut Vec<(String, String)>, del: &[&str], ins: &[&
     }
     if let Some(par) = pasa_puertas(del, ins) {
         pares.push(par);
+        return;
+    }
+    // Rescate contextual («me borré» → «no borré»): una sustitución 1:1 de
+    // PALABRITAS (ambos lados con clave ≤ 3) no puede aprenderse sola
+    // (reemplazar cada «me» sería veneno) pero sí como frase con su palabra
+    // ancla vecina — dispara únicamente en ese contexto exacto. Es la clase
+    // real de confusiones del oído del motor: me/no, te/té, si/sí, la/las.
+    // Un lado largo («que» → «cuando») es edición de contenido y NO se
+    // rescata: el ancla no debe diluir esa puerta.
+    if del.len() == 1 && ins.len() == 1 {
+        let corta = |w: &str| {
+            let n = build_match_key(w).chars().count();
+            (1..=3).contains(&n)
+        };
+        if !corta(del[0]) || !corta(ins[0]) {
+            return;
+        }
+        let ancla_util = |w: &str| build_match_key(w).chars().count() >= CLAVE_MIN;
+        if let Some(sig) = ancla_siguiente.filter(|w| ancla_util(w)) {
+            if let Some(par) = pasa_puertas(&[del[0], sig], &[ins[0], sig]) {
+                pares.push(par);
+                return;
+            }
+        }
+        if let Some(prev) = ancla_previa.filter(|w| ancla_util(w)) {
+            if let Some(par) = pasa_puertas(&[prev, del[0]], &[prev, ins[0]]) {
+                pares.push(par);
+            }
+        }
     }
 }
 
@@ -331,6 +370,42 @@ mod tests {
                 ("vite".to_string(), "Vite".to_string())
             ]
         );
+    }
+
+    #[test]
+    fn rescata_palabra_comun_con_su_ancla_siguiente() {
+        // Caso real reportado: dijo «no borré», el motor puso «me borré».
+        // «me»→«no» solo sería veneno; con el ancla queda contextual y seguro.
+        let pares = aprender_de_edicion(
+            "dije que me borré el archivo ayer",
+            "dije que no borré el archivo ayer",
+        );
+        assert_eq!(
+            pares,
+            vec![("me borré".to_string(), "no borré".to_string())]
+        );
+    }
+
+    #[test]
+    fn rescata_palabra_corta_con_su_ancla_previa() {
+        // Corrección al final del texto: no hay ancla siguiente, se usa la
+        // previa («tomar te» → «tomar té»).
+        let pares = aprender_de_edicion("quiero tomar te", "quiero tomar té");
+        assert_eq!(
+            pares,
+            vec![("tomar te".to_string(), "tomar té".to_string())]
+        );
+    }
+
+    #[test]
+    fn el_rescate_no_reabre_las_ediciones_de_contenido() {
+        // «lunes»→«martes» está vetado por similitud (contenido), y el ancla
+        // NO debe diluir esa puerta.
+        assert!(aprender_de_edicion(
+            "la reunión es el lunes temprano",
+            "la reunión es el martes temprano"
+        )
+        .is_empty());
     }
 
     #[test]
