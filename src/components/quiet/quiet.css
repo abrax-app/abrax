@@ -33,10 +33,17 @@
   left: 0;
   /* Escala TODO con el tamaño de la ventana: el contenido se diseña sobre 718px
      de ancho y se hace zoom para llenar, manteniendo las proporciones en
-     cualquier resolución (--q-zoom = innerWidth / 718, lo fija QuietShell). */
-  width: calc(100% / var(--q-zoom, 1));
-  height: calc(100% / var(--q-zoom, 1));
-  zoom: var(--q-zoom, 1);
+     cualquier resolución. El zoom se calcula EN CSS (100vw / 718px) y el
+     tamaño es 100% A SECAS: dentro de un elemento con zoom los porcentajes ya
+     llegan divididos por el zoom (100% ≡ 718px de diseño), así que dividir
+     otra vez —lo que hacía la versión anterior, en JS— dejaba el panel
+     clavado en 718px físicos: agrandar la ventana solo agrandaba la letra
+     dentro de un panel que no crecía. Si el motor no soporta dividir
+     longitudes en calc(), queda zoom 1 (sin escala, usable). */
+  --q-zoom: 1;
+  width: 100%;
+  height: 100%;
+  zoom: var(--q-zoom);
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -52,6 +59,12 @@
     Helvetica,
     Arial,
     sans-serif;
+}
+
+@supports (zoom: calc(100vw / 718px)) {
+  .q-panel {
+    --q-zoom: calc(100vw / 718px);
+  }
 }
 
 /* ── barra superior: arrastre + controles de ventana ── */

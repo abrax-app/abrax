@@ -52,20 +52,14 @@ export const QuietShell: React.FC = () => {
   const [view, setView] = useState<QView>("escuchar");
   const [grabando, setGrabando] = useState(false);
   const [entries, setEntries] = useState<HistoryEntry[]>([]);
+  // Tras cambiar a Quiet en caliente la ventana conserva el marco nativo hasta
+  // reiniciar; mientras tanto los botones −/□/× propios duplicarían los del
+  // marco, así que se ocultan (queda solo el de bandeja, que el marco no tiene).
+  const [conMarco, setConMarco] = useState(false);
 
-  // Escala proporcional: TODO el contenido (fuentes, esfera, espaciados) se
-  // ajusta con el tamaño de la ventana. Se diseña sobre una base de 718px de
-  // ancho y se hace zoom para llenar, así mantiene las mismas proporciones en
-  // cualquier resolución (y al redimensionar).
-  useEffect(() => {
-    const el = document.getElementById("quiet-stage");
-    if (!el) return;
-    const apply = () =>
-      el.style.setProperty("--q-zoom", String(window.innerWidth / 718));
-    apply();
-    window.addEventListener("resize", apply);
-    return () => window.removeEventListener("resize", apply);
-  }, []);
+  // La escala proporcional del panel (--q-zoom) vive en quiet.css como
+  // calc(100vw / 718px): en CSS no puede quedar obsoleta tras un resize,
+  // que era el bug de la versión JS con listener.
 
   // ── esfera del hero (motor canvas 2D que respira; reacciona al dictado) ──
   const cvRef = useRef<HTMLCanvasElement>(null);
@@ -145,6 +139,19 @@ export const QuietShell: React.FC = () => {
   );
   const win = getCurrentWindow();
 
+  useEffect(() => {
+    let vivo = true;
+    getCurrentWindow()
+      .isDecorated()
+      .then((v) => {
+        if (vivo) setConMarco(v);
+      })
+      .catch(() => {});
+    return () => {
+      vivo = false;
+    };
+  }, [settings?.ui_shell]);
+
   const nav: {
     id: QView;
     icon: LucideIcon;
@@ -176,31 +183,35 @@ export const QuietShell: React.FC = () => {
                 <ArrowDownToLine size={14} />
               </button>
             )}
-            <button
-              type="button"
-              aria-label={t("quiet.min")}
-              title={t("quiet.min")}
-              onClick={() => void win.minimize()}
-            >
-              <Minus size={15} />
-            </button>
-            <button
-              type="button"
-              aria-label={t("quiet.max")}
-              title={t("quiet.max")}
-              onClick={() => void win.toggleMaximize().catch(() => {})}
-            >
-              <Square size={11} />
-            </button>
-            <button
-              type="button"
-              className="q-close"
-              aria-label={t("quiet.close")}
-              title={t("quiet.close")}
-              onClick={() => void win.hide()}
-            >
-              <X size={15} />
-            </button>
+            {!conMarco && (
+              <>
+                <button
+                  type="button"
+                  aria-label={t("quiet.min")}
+                  title={t("quiet.min")}
+                  onClick={() => void win.minimize()}
+                >
+                  <Minus size={15} />
+                </button>
+                <button
+                  type="button"
+                  aria-label={t("quiet.max")}
+                  title={t("quiet.max")}
+                  onClick={() => void win.toggleMaximize().catch(() => {})}
+                >
+                  <Square size={11} />
+                </button>
+                <button
+                  type="button"
+                  className="q-close"
+                  aria-label={t("quiet.close")}
+                  title={t("quiet.close")}
+                  onClick={() => void win.hide()}
+                >
+                  <X size={15} />
+                </button>
+              </>
+            )}
           </div>
         </div>
 
