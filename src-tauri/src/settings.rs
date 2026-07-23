@@ -290,6 +290,7 @@ impl ModelUnloadTimeout {
 #[derive(Serialize, Deserialize, Debug, Clone, Copy, PartialEq, Eq, Type)]
 #[serde(rename_all = "snake_case")]
 pub enum SoundTheme {
+    Abrax,
     Marimba,
     Pop,
     Custom,
@@ -298,6 +299,7 @@ pub enum SoundTheme {
 impl SoundTheme {
     fn as_str(&self) -> &'static str {
         match self {
+            SoundTheme::Abrax => "abrax",
             SoundTheme::Marimba => "marimba",
             SoundTheme::Pop => "pop",
             SoundTheme::Custom => "custom",
@@ -733,7 +735,7 @@ fn default_audio_feedback_volume() -> f32 {
 }
 
 fn default_sound_theme() -> SoundTheme {
-    SoundTheme::Marimba
+    SoundTheme::Abrax
 }
 
 fn default_theme() -> Theme {
