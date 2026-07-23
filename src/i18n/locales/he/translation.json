@@ -925,7 +925,13 @@
     "removible": "· removable",
     "espacio": "{{libre}} GB free of {{total}} GB",
     "volverPorDefecto": "Back to the original folder",
-    "avisoNoMueve": "New downloads will go to this folder. Already-downloaded models stay where they were; if they don't show up, go back to the original folder or download them again here."
+    "avisoNoMueve": "New downloads will go to this folder. Already-downloaded models stay where they were; if they don't show up, go back to the original folder or download them again here.",
+    "moverPregunta": "להעביר את המודלים שכבר הורדו ({{gb}} GB) לתיקייה החדשה?",
+    "moverAhora": "העבר עכשיו",
+    "soloNuevas": "הורדות חדשות בלבד",
+    "cancelar": "ביטול",
+    "moviendo": "מעביר את {{archivo}}…",
+    "moverError": "לא ניתן היה להשלים את ההעברה: {{detalle}}. שום דבר לא אבד: מה שלא הועבר נשאר בתיקייה הקודמת."
   },
   "quiet": {
     "nav": {

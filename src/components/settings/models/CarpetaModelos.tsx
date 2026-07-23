@@ -3,23 +3,39 @@ import { useTranslation } from "react-i18next";
 import { HardDrive } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { useSettings } from "@/hooks/useSettings";
-import { commands } from "@/bindings";
-import type { CarpetaModelos as Carpeta, DiscoInfo } from "@/bindings";
+import { useModelStore } from "@/stores/modelStore";
+import { commands, events } from "@/bindings";
+import type {
+  CarpetaModelos as Carpeta,
+  DiscoInfo,
+  ModelInfo,
+  MudanzaProgreso,
+} from "@/bindings";
 import { bytesAGb } from "@/lib/utils/format";
 
 /**
  * Selector de dónde viven los modelos (transcripción y Pulido comparten la
  * elección). Muestra la carpeta actual y los discos con su espacio libre; al
- * elegir uno, las DESCARGAS NUEVAS van a `<disco>/Abrax/models`. Los modelos ya
- * descargados se quedan donde están (esta fase no mueve archivos): se avisa
- * para que no parezca que "desaparecieron".
+ * elegir uno, las DESCARGAS NUEVAS van a `<disco>/Abrax/models`. Si ya hay
+ * modelos descargados, ofrece mudarlos a la carpeta nueva con progreso; la
+ * mudanza es segura (copia → verifica → borra) y lo no movido queda intacto.
  */
 export const CarpetaModelos: React.FC = React.memo(() => {
   const { t } = useTranslation();
   const { settings, updateSetting } = useSettings();
+  const models = useModelStore((s) => s.models);
   const [carpeta, setCarpeta] = useState<Carpeta | null>(null);
   const [discos, setDiscos] = useState<DiscoInfo[]>([]);
   const [abierto, setAbierto] = useState(false);
+  // Destino elegido a la espera de la decisión mover / solo nuevas.
+  const [pendiente, setPendiente] = useState<{ destino: string | null } | null>(
+    null,
+  );
+  const [moviendo, setMoviendo] = useState<MudanzaProgreso | null>(null);
+  const [errorMudanza, setErrorMudanza] = useState<string | null>(null);
+
+  const descargados = models.filter((m: ModelInfo) => m.is_downloaded);
+  const descargadosMb = descargados.reduce((acc, m) => acc + m.size_mb, 0);
 
   const recargar = useCallback(() => {
     void commands.obtenerCarpetaModelos().then(setCarpeta);
@@ -30,7 +46,58 @@ export const CarpetaModelos: React.FC = React.memo(() => {
     recargar();
   }, [recargar, settings?.models_dir]);
 
-  const elegirDisco = (d: DiscoInfo) => {
+  useEffect(() => {
+    const off = events.mudanzaProgreso.listen((event) => {
+      const p = event.payload;
+      if (p.estado === "progreso") {
+        setMoviendo(p);
+      } else if (p.estado === "listo") {
+        setMoviendo(null);
+        recargar();
+      } else {
+        setMoviendo(null);
+        setErrorMudanza(p.detalle);
+        recargar();
+      }
+    });
+    return () => {
+      void off.then((f) => f());
+    };
+  }, [recargar]);
+
+  const aplicar = async (destino: string | null, mover: boolean) => {
+    setPendiente(null);
+    setAbierto(false);
+    setErrorMudanza(null);
+    if (mover) {
+      setMoviendo({
+        estado: "progreso",
+        archivo: "",
+        hechos_bytes: 0,
+        total_bytes: 0,
+        detalle: "",
+      });
+    }
+    const res = await commands.cambiarCarpetaModelos(destino, mover);
+    if (res.status === "error") {
+      setMoviendo(null);
+      setErrorMudanza(res.error);
+      return;
+    }
+    // El backend ya escribió el ajuste; esto solo sincroniza el store local
+    // (mismo valor, escritura idempotente).
+    updateSetting("models_dir", destino);
+  };
+
+  const elegir = (destino: string | null) => {
+    if (descargados.length === 0) {
+      void aplicar(destino, false);
+    } else {
+      setPendiente({ destino });
+    }
+  };
+
+  const rutaEnDisco = (d: DiscoInfo) => {
     const sep =
       d.punto_montaje.includes("\\") || d.punto_montaje.includes(":")
         ? "\\"
@@ -38,16 +105,15 @@ export const CarpetaModelos: React.FC = React.memo(() => {
     const base = d.punto_montaje.endsWith(sep)
       ? d.punto_montaje.slice(0, -1)
       : d.punto_montaje;
-    updateSetting("models_dir", `${base}${sep}Abrax${sep}models`);
-    setAbierto(false);
-  };
-
-  const volverPorDefecto = () => {
-    updateSetting("models_dir", null);
-    setAbierto(false);
+    return `${base}${sep}Abrax${sep}models`;
   };
 
   if (!carpeta) return null;
+
+  const pctMudanza =
+    moviendo && moviendo.total_bytes > 0
+      ? Math.min(100, (moviendo.hechos_bytes / moviendo.total_bytes) * 100)
+      : 0;
 
   return (
     <div className="rounded-md border border-black/10 dark:border-white/10 p-3 text-xs space-y-2">
@@ -64,19 +130,20 @@ export const CarpetaModelos: React.FC = React.memo(() => {
         <Button
           variant="secondary"
           size="sm"
+          disabled={moviendo !== null}
           onClick={() => setAbierto(!abierto)}
         >
           {t("carpetaModelos.cambiar")}
         </Button>
       </div>
 
-      {abierto && (
+      {abierto && !pendiente && moviendo === null && (
         <div className="space-y-1">
           {discos.map((d) => (
             <button
               key={d.punto_montaje}
               type="button"
-              onClick={() => elegirDisco(d)}
+              onClick={() => elegir(rutaEnDisco(d))}
               className="w-full flex items-center justify-between gap-2 rounded px-2 py-1.5 hover:bg-black/5 dark:hover:bg-white/10 text-left"
             >
               <span className="truncate">
@@ -97,14 +164,72 @@ export const CarpetaModelos: React.FC = React.memo(() => {
             </button>
           ))}
           {carpeta.personalizada && (
-            <Button variant="ghost" size="sm" onClick={volverPorDefecto}>
+            <Button variant="ghost" size="sm" onClick={() => elegir(null)}>
               {t("carpetaModelos.volverPorDefecto")}
             </Button>
           )}
         </div>
       )}
 
-      {carpeta.personalizada && (
+      {pendiente && (
+        <div className="space-y-2" aria-live="polite">
+          <div>
+            {t("carpetaModelos.moverPregunta", {
+              gb: (descargadosMb / 1024).toFixed(1),
+            })}
+          </div>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="secondary"
+              size="sm"
+              onClick={() => void aplicar(pendiente.destino, true)}
+            >
+              {t("carpetaModelos.moverAhora")}
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => void aplicar(pendiente.destino, false)}
+            >
+              {t("carpetaModelos.soloNuevas")}
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setPendiente(null)}
+            >
+              {t("carpetaModelos.cancelar")}
+            </Button>
+          </div>
+        </div>
+      )}
+
+      {moviendo !== null && (
+        <div className="space-y-1" aria-live="polite">
+          <div className="flex items-center justify-between gap-2">
+            <span className="truncate">
+              {t("carpetaModelos.moviendo", { archivo: moviendo.archivo })}
+            </span>
+            <span className="opacity-60 tabular-nums whitespace-nowrap">
+              {pctMudanza.toFixed(0)}%
+            </span>
+          </div>
+          <div className="h-1 rounded bg-black/10 dark:bg-white/10 overflow-hidden">
+            <div
+              className="h-full bg-current transition-[width] duration-200"
+              style={{ width: `${pctMudanza}%` }}
+            />
+          </div>
+        </div>
+      )}
+
+      {errorMudanza && (
+        <div className="text-red-600 dark:text-red-400" role="alert">
+          {t("carpetaModelos.moverError", { detalle: errorMudanza })}
+        </div>
+      )}
+
+      {carpeta.personalizada && moviendo === null && (
         <div className="opacity-70" aria-live="polite">
           {t("carpetaModelos.avisoNoMueve")}
         </div>

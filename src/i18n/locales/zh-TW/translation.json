@@ -925,7 +925,13 @@
     "removible": "· removable",
     "espacio": "{{libre}} GB free of {{total}} GB",
     "volverPorDefecto": "Back to the original folder",
-    "avisoNoMueve": "New downloads will go to this folder. Already-downloaded models stay where they were; if they don't show up, go back to the original folder or download them again here."
+    "avisoNoMueve": "New downloads will go to this folder. Already-downloaded models stay where they were; if they don't show up, go back to the original folder or download them again here.",
+    "moverPregunta": "要把已下載的模型（{{gb}} GB）移到新資料夾嗎？",
+    "moverAhora": "立即移動",
+    "soloNuevas": "僅新下載",
+    "cancelar": "取消",
+    "moviendo": "正在移動 {{archivo}}…",
+    "moverError": "移動未能完成：{{detalle}}。沒有任何遺失：未移動的內容仍在原本的資料夾中。"
   },
   "quiet": {
     "nav": {

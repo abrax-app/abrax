@@ -196,6 +196,20 @@ async obtenerCarpetaModelos() : Promise<CarpetaModelos> {
     return await TAURI_INVOKE("obtener_carpeta_modelos");
 },
 /**
+ * Cambia la carpeta de modelos y, si `mover`, muda lo ya descargado a la
+ * nueva. La mudanza corre en un hilo aparte y reporta por `modelos-mudanza`;
+ * el comando vuelve apenas queda lanzada. `destino: None` vuelve a la carpeta
+ * por defecto.
+ */
+async cambiarCarpetaModelos(destino: string | null, mover: boolean) : Promise<Result<null, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("cambiar_carpeta_modelos", { destino, mover }) };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+/**
  * Graba unos segundos con el micrófono configurado (o el default del sistema),
  * SIN VAD y sin tocar el pipeline de dictado, y devuelve nivel + veredicto +
  * el WAV para reproducir. Es la respuesta a "¿qué está escuchando ABRAX de
@@ -1238,12 +1252,14 @@ async installOnlineRuntime() : Promise<Result<null, string>> {
 
 export const events = __makeEvents__<{
 historyUpdatePayload: HistoryUpdatePayload,
+mudanzaProgreso: MudanzaProgreso,
 streamPhaseEvent: StreamPhaseEvent,
 streamTextEvent: StreamTextEvent,
 transcriptWordsEvent: TranscriptWordsEvent,
 userAlertEvent: UserAlertEvent
 }>({
 historyUpdatePayload: "history-update-payload",
+mudanzaProgreso: "mudanza-progreso",
 streamPhaseEvent: "stream-phase-event",
 streamTextEvent: "stream-text-event",
 transcriptWordsEvent: "transcript-words-event",
@@ -1623,6 +1639,11 @@ export type ModoLectura =
  * como markdown (que degrada bien a prosa plana).
  */
 "auto"
+/**
+ * Progreso de la mudanza de modelos (evento `mudanza-progreso`).
+ * `estado` es `"progreso"`, `"listo"` o `"error"` (con `detalle`).
+ */
+export type MudanzaProgreso = { estado: string; archivo: string; hechos_bytes: number; total_bytes: number; detalle: string }
 /**
  * Una unidad de lectura: el panel habla `texto_hablable` con la voz `voz` y
  * resalta las líneas `linea_inicio..=linea_fin` (1-based) del documento.

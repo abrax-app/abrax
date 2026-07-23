@@ -925,7 +925,13 @@
     "removible": "· removable",
     "espacio": "{{libre}} GB free of {{total}} GB",
     "volverPorDefecto": "Back to the original folder",
-    "avisoNoMueve": "New downloads will go to this folder. Already-downloaded models stay where they were; if they don't show up, go back to the original folder or download them again here."
+    "avisoNoMueve": "New downloads will go to this folder. Already-downloaded models stay where they were; if they don't show up, go back to the original folder or download them again here.",
+    "moverPregunta": "Mover os modelos já baixados ({{gb}} GB) para a nova pasta?",
+    "moverAhora": "Mover agora",
+    "soloNuevas": "Somente novos downloads",
+    "cancelar": "Cancelar",
+    "moviendo": "Movendo {{archivo}}…",
+    "moverError": "Não foi possível concluir a mudança: {{detalle}}. Nada se perdeu: o que não foi movido continua na pasta anterior."
   },
   "quiet": {
     "nav": {

@@ -925,7 +925,13 @@
     "removible": "· removable",
     "espacio": "{{libre}} GB free of {{total}} GB",
     "volverPorDefecto": "Back to the original folder",
-    "avisoNoMueve": "New downloads will go to this folder. Already-downloaded models stay where they were; if they don't show up, go back to the original folder or download them again here."
+    "avisoNoMueve": "New downloads will go to this folder. Already-downloaded models stay where they were; if they don't show up, go back to the original folder or download them again here.",
+    "moverPregunta": "Flytta redan nedladdade modeller ({{gb}} GB) till den nya mappen?",
+    "moverAhora": "Flytta nu",
+    "soloNuevas": "Endast nya nedladdningar",
+    "cancelar": "Avbryt",
+    "moviendo": "Flyttar {{archivo}}…",
+    "moverError": "Flytten kunde inte slutföras: {{detalle}}. Inget gick förlorat: det som inte flyttades finns kvar i den tidigare mappen."
   },
   "quiet": {
     "nav": {

@@ -587,6 +587,7 @@ pub fn run(cli_args: CliArgs) {
             commands::correccion_modelos::seleccionar_modelo_correccion,
             commands::discos::listar_discos,
             commands::discos::obtener_carpeta_modelos,
+            commands::discos::cambiar_carpeta_modelos,
             commands::audio::probar_microfono,
             signal_handle::trigger_transcription,
             commands::settings::change_start_hidden_setting,
@@ -718,6 +719,7 @@ pub fn run(cli_args: CliArgs) {
             managers::transcription::StreamPhaseEvent,
             managers::transcription::TranscriptWordsEvent,
             user_alerts::UserAlertEvent,
+            commands::discos::MudanzaProgreso,
         ]);
 
     #[cfg(debug_assertions)] // <- Only export on non-release builds

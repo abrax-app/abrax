@@ -925,7 +925,13 @@
     "removible": "· removable",
     "espacio": "{{libre}} GB free of {{total}} GB",
     "volverPorDefecto": "Back to the original folder",
-    "avisoNoMueve": "New downloads will go to this folder. Already-downloaded models stay where they were; if they don't show up, go back to the original folder or download them again here."
+    "avisoNoMueve": "New downloads will go to this folder. Already-downloaded models stay where they were; if they don't show up, go back to the original folder or download them again here.",
+    "moverPregunta": "Перемістити вже завантажені моделі ({{gb}} ГБ) до нової папки?",
+    "moverAhora": "Перемістити зараз",
+    "soloNuevas": "Лише нові завантаження",
+    "cancelar": "Скасувати",
+    "moviendo": "Переміщення {{archivo}}…",
+    "moverError": "Не вдалося завершити переміщення: {{detalle}}. Нічого не втрачено: те, що не перемістилося, залишилося в попередній папці."
   },
   "quiet": {
     "nav": {

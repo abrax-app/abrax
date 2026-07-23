@@ -925,7 +925,13 @@
     "removible": "· removable",
     "espacio": "{{libre}} GB free of {{total}} GB",
     "volverPorDefecto": "Back to the original folder",
-    "avisoNoMueve": "New downloads will go to this folder. Already-downloaded models stay where they were; if they don't show up, go back to the original folder or download them again here."
+    "avisoNoMueve": "New downloads will go to this folder. Already-downloaded models stay where they were; if they don't show up, go back to the original folder or download them again here.",
+    "moverPregunta": "Reeds gedownloade modellen ({{gb}} GB) naar de nieuwe map verplaatsen?",
+    "moverAhora": "Nu verplaatsen",
+    "soloNuevas": "Alleen nieuwe downloads",
+    "cancelar": "Annuleren",
+    "moviendo": "{{archivo}} verplaatsen…",
+    "moverError": "De verplaatsing kon niet worden voltooid: {{detalle}}. Er is niets verloren gegaan: wat niet verplaatst is, staat nog in de vorige map."
   },
   "quiet": {
     "nav": {

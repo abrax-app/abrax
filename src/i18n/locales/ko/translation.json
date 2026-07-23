@@ -925,7 +925,13 @@
     "removible": "· removable",
     "espacio": "{{libre}} GB free of {{total}} GB",
     "volverPorDefecto": "Back to the original folder",
-    "avisoNoMueve": "New downloads will go to this folder. Already-downloaded models stay where they were; if they don't show up, go back to the original folder or download them again here."
+    "avisoNoMueve": "New downloads will go to this folder. Already-downloaded models stay where they were; if they don't show up, go back to the original folder or download them again here.",
+    "moverPregunta": "이미 다운로드한 모델({{gb}} GB)을 새 폴더로 옮길까요?",
+    "moverAhora": "지금 이동",
+    "soloNuevas": "새 다운로드만",
+    "cancelar": "취소",
+    "moviendo": "{{archivo}} 이동 중…",
+    "moverError": "이동을 완료하지 못했습니다: {{detalle}}. 잃어버린 것은 없습니다. 옮겨지지 않은 항목은 이전 폴더에 그대로 있습니다."
   },
   "quiet": {
     "nav": {

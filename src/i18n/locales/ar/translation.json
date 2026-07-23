@@ -925,7 +925,13 @@
     "removible": "· removable",
     "espacio": "{{libre}} GB free of {{total}} GB",
     "volverPorDefecto": "Back to the original folder",
-    "avisoNoMueve": "New downloads will go to this folder. Already-downloaded models stay where they were; if they don't show up, go back to the original folder or download them again here."
+    "avisoNoMueve": "New downloads will go to this folder. Already-downloaded models stay where they were; if they don't show up, go back to the original folder or download them again here.",
+    "moverPregunta": "هل تريد نقل النماذج التي تم تنزيلها ({{gb}} غيغابايت) إلى المجلد الجديد؟",
+    "moverAhora": "انقل الآن",
+    "soloNuevas": "التنزيلات الجديدة فقط",
+    "cancelar": "إلغاء",
+    "moviendo": "جارٍ نقل {{archivo}}…",
+    "moverError": "تعذّر إكمال النقل: {{detalle}}. لم يُفقد شيء: ما لم يُنقل ما زال في المجلد السابق."
   },
   "quiet": {
     "nav": {

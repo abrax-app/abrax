@@ -925,7 +925,13 @@
     "removible": "· extraíble",
     "espacio": "{{libre}} GB libres de {{total}} GB",
     "volverPorDefecto": "Volver a la carpeta original",
-    "avisoNoMueve": "Las descargas nuevas irán a esta carpeta. Los modelos ya descargados se quedan donde estaban; si no aparecen, vuelve a la carpeta original o descárgalos de nuevo aquí."
+    "avisoNoMueve": "Las descargas nuevas irán a esta carpeta. Los modelos ya descargados se quedan donde estaban; si no aparecen, vuelve a la carpeta original o descárgalos de nuevo aquí.",
+    "moverPregunta": "¿Mover los modelos ya descargados ({{gb}} GB) a la carpeta nueva?",
+    "moverAhora": "Mover ahora",
+    "soloNuevas": "Solo descargas nuevas",
+    "cancelar": "Cancelar",
+    "moviendo": "Moviendo {{archivo}}…",
+    "moverError": "No se pudo completar la mudanza: {{detalle}}. Nada se perdió: lo que no alcanzó a moverse sigue en la carpeta anterior."
   },
   "quiet": {
     "nav": {
