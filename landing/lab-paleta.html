@@ -1,0 +1,403 @@
+<!doctype html>
+<html lang="es-419">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ABRAX · Lab de paleta — la bola manda</title>
+    <style>
+      /* Lab de desarrollo — direcciones de paleta sobre la ESFERA REAL.
+         La regla: si la bola no queda bien con los colores, no sirve. */
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        height: 100%;
+      }
+      body {
+        margin: 0;
+        background: #05060f;
+        color: #c9d4e0;
+        font-family:
+          ui-monospace, "Cascadia Code", "JetBrains Mono", Menlo, Consolas,
+          monospace;
+        overflow: hidden;
+      }
+      #escena {
+        position: fixed;
+        inset: 0;
+      }
+      #esfera {
+        width: 100%;
+        height: 100%;
+        display: block;
+      }
+
+      header.lab {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 5;
+        padding: 18px 24px;
+        pointer-events: none;
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        gap: 16px;
+      }
+      header.lab h1 {
+        font-size: 12px;
+        letter-spacing: 0.24em;
+        text-transform: uppercase;
+        margin: 0;
+        color: #fff;
+      }
+      header.lab p {
+        margin: 0;
+        font-size: 11px;
+        color: #6b7688;
+      }
+      #estado {
+        font-size: 10px;
+        color: #6b7688;
+      }
+
+      .controles {
+        position: fixed;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 5;
+        padding: 16px 24px 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        align-items: center;
+        background: linear-gradient(transparent, rgba(5, 6, 15, 0.88) 40%);
+      }
+      .paletas {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+      .paletas button {
+        font-family: inherit;
+        font-size: 10.5px;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: #c9d4e0;
+        background: rgba(11, 13, 28, 0.85);
+        border: 1px solid #1c2140;
+        border-radius: 999px;
+        padding: 9px 16px;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .paletas button .sw {
+        display: inline-flex;
+        gap: 3px;
+      }
+      .paletas button .sw i {
+        width: 11px;
+        height: 11px;
+        border-radius: 50%;
+        display: block;
+      }
+      .paletas button[aria-pressed="true"] {
+        border-color: #fff;
+        color: #fff;
+      }
+      .paletas button:focus-visible {
+        outline: 2px solid #fff;
+        outline-offset: 3px;
+      }
+
+      /* muestra de UI que se retiñe con la paleta elegida */
+      .muestra {
+        display: flex;
+        gap: 14px;
+        align-items: center;
+        flex-wrap: wrap;
+        justify-content: center;
+        --acento: #2fd9ff;
+        --vivo: #f23dc4;
+        --boton: #6b46e5;
+        --boton-texto: #fff;
+      }
+      .lema {
+        font-size: 12px;
+        letter-spacing: 0.3em;
+        color: #fff;
+        margin: 0;
+      }
+      .lema em {
+        font-style: normal;
+        color: var(--acento);
+      }
+      .btn {
+        font-family: inherit;
+        font-size: 10.5px;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        font-weight: 700;
+        border-radius: 9px;
+        padding: 10px 18px;
+        border: none;
+        cursor: pointer;
+        background: var(--boton);
+        color: var(--boton-texto);
+      }
+      .rec {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        font-size: 10px;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: var(--vivo);
+        border: 1px solid var(--vivo);
+        border-radius: 999px;
+        padding: 5px 12px;
+      }
+      .rec::before {
+        content: "";
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: var(--vivo);
+      }
+      .hexes {
+        font-size: 9.5px;
+        color: #6b7688;
+        letter-spacing: 0.08em;
+      }
+      #btnMic {
+        font-family: inherit;
+        font-size: 10px;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: #c9d4e0;
+        background: none;
+        border: 1px solid #1c2140;
+        border-radius: 999px;
+        padding: 7px 14px;
+        cursor: pointer;
+      }
+      #btnMic.activo {
+        border-color: #fff;
+        color: #fff;
+      }
+      #btnMic:focus-visible {
+        outline: 2px solid #fff;
+        outline-offset: 3px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="escena"><canvas id="esfera" aria-hidden="true"></canvas></div>
+
+    <header class="lab">
+      <h1>Lab de paleta · la bola manda</h1>
+      <p>teclas 1–4 cambian la paleta · receta Firma oficial</p>
+      <span id="estado" aria-live="polite"></span>
+    </header>
+
+    <div class="controles">
+      <div class="muestra" id="muestra">
+        <p class="lema">« DI LA <em>PALABRA</em>. »</p>
+        <button class="btn" type="button">Descargar Abrax</button>
+        <span class="rec">Grabando</span>
+        <span class="hexes" id="hexes"></span>
+      </div>
+      <div
+        class="paletas"
+        role="group"
+        aria-label="Dirección de paleta"
+        id="paletas"
+      ></div>
+      <button id="btnMic" type="button">
+        🎤 Háblale (mic local, no sale de aquí)
+      </button>
+    </div>
+
+    <script src="vendor/three.min.js"></script>
+    <script src="js/esfera.js"></script>
+    <script>
+      (function () {
+        "use strict";
+
+        /* Paleta carmesí propuesta (tokens de Antonio):
+           fondo #080506 · superficie #15090C · primario #A30D2D ·
+           secundario #E11D48 · brillo #FB7185 · metálico #C7A7A7 ·
+           texto #FFF5F6 / #BFA3A8.
+           Tres mapeos de esos tokens a los stops de la bola (a=frío exterior,
+           b=cálido exterior, c=corazón) + la v1 de referencia. */
+        var UI_CARMESI = {
+          acento: "#fb7185",
+          vivo: "#e11d48",
+          boton: "#a30d2d",
+          botonTexto: "#fff5f6",
+        };
+        var DIRECCIONES = [
+          {
+            id: "v1",
+            nombre: "Actual",
+            esfera: {
+              a: "#2fd9ff",
+              b: "#8b5cf6",
+              c: "#f23dc4",
+              fondo: "#05060f",
+              nucleo: "#c8f0ff",
+            },
+            ui: {
+              acento: "#2fd9ff",
+              vivo: "#f23dc4",
+              boton: "#6b46e5",
+              botonTexto: "#ffffff",
+            },
+          },
+          {
+            id: "r1",
+            nombre: "Carmesí",
+            esfera: {
+              a: "#fb7185",
+              b: "#a30d2d",
+              c: "#e11d48",
+              fondo: "#080506",
+              nucleo: "#fff5f6",
+            },
+            ui: UI_CARMESI,
+          },
+          {
+            id: "r2",
+            nombre: "Metálico",
+            esfera: {
+              a: "#c7a7a7",
+              b: "#a30d2d",
+              c: "#fb7185",
+              fondo: "#080506",
+              nucleo: "#fff5f6",
+            },
+            ui: UI_CARMESI,
+          },
+          {
+            id: "r3",
+            nombre: "Vino profundo",
+            esfera: {
+              a: "#e11d48",
+              b: "#15090c",
+              c: "#fb7185",
+              fondo: "#080506",
+              nucleo: "#fff5f6",
+            },
+            ui: UI_CARMESI,
+          },
+        ];
+
+        var muestra = document.getElementById("muestra");
+        var hexes = document.getElementById("hexes");
+        var grupo = document.getElementById("paletas");
+        var botones = [];
+
+        function aplicar(dir) {
+          ESFERA.setPaleta(dir.esfera);
+          document.body.style.background = dir.esfera.fondo || "#05060f";
+          muestra.style.setProperty("--acento", dir.ui.acento);
+          muestra.style.setProperty("--vivo", dir.ui.vivo);
+          muestra.style.setProperty("--boton", dir.ui.boton);
+          muestra.style.setProperty("--boton-texto", dir.ui.botonTexto);
+          hexes.textContent =
+            dir.esfera.a.toUpperCase() +
+            " · " +
+            dir.esfera.b.toUpperCase() +
+            " · " +
+            dir.esfera.c.toUpperCase();
+          botones.forEach(function (b) {
+            b.setAttribute(
+              "aria-pressed",
+              b.dataset.id === dir.id ? "true" : "false",
+            );
+          });
+        }
+
+        DIRECCIONES.forEach(function (dir, i) {
+          var b = document.createElement("button");
+          b.type = "button";
+          b.dataset.id = dir.id;
+          b.setAttribute("aria-pressed", i === 0 ? "true" : "false");
+          var sw = dir.esfera;
+          b.innerHTML =
+            '<span class="sw" aria-hidden="true">' +
+            '<i style="background:' +
+            sw.a +
+            '"></i>' +
+            '<i style="background:' +
+            sw.b +
+            '"></i>' +
+            '<i style="background:' +
+            sw.c +
+            '"></i>' +
+            "</span>" +
+            (i + 1) +
+            " · " +
+            dir.nombre;
+          b.addEventListener("click", function () {
+            aplicar(dir);
+          });
+          grupo.appendChild(b);
+          botones.push(b);
+        });
+
+        document.addEventListener("keydown", function (e) {
+          var n = parseInt(e.key, 10);
+          if (n >= 1 && n <= DIRECCIONES.length) aplicar(DIRECCIONES[n - 1]);
+        });
+
+        ESFERA.init({
+          canvas: document.getElementById("esfera"),
+          contenedor: document.getElementById("escena"),
+          distancia: 3.4,
+          onEstado: function (txt) {
+            document.getElementById("estado").textContent = txt;
+          },
+        });
+
+        /* receta Firma oficial (la de index.html) + arranque cuando el motor esté listo */
+        var esperar = setInterval(function () {
+          if (!ESFERA.getPaleta()) return;
+          clearInterval(esperar);
+          ESFERA.tune({
+            nucleo: 0.55,
+            halo: 0.55,
+            interior: 1,
+            anillo: 0,
+            cruzados: 0,
+            blanco: 0.4,
+            organico: 0.15,
+            ruido: 0.1,
+            ruidoEscala: 2,
+            ruidoVel: 0.55,
+            venas: 0,
+            venaEscala: 3,
+            giro: 0.7,
+          });
+          if (ESFERA.iniciarFeed) ESFERA.iniciarFeed(900);
+          aplicar(DIRECCIONES[0]);
+        }, 120);
+
+        var btnMic = document.getElementById("btnMic");
+        btnMic.addEventListener("click", async function () {
+          var activo = await ESFERA.toggleMic();
+          btnMic.textContent = activo
+            ? "⏹ Detener micrófono"
+            : "🎤 Háblale (mic local, no sale de aquí)";
+          btnMic.classList.toggle("activo", activo);
+        });
+      })();
+    </script>
+  </body>
+</html>

@@ -283,10 +283,15 @@ void main(){
 }
 `;
 
-  /* colores de marca: cian #2FD9FF · violeta #8B5CF6 · magenta #F23DC4 */
+  /* colores de marca por uniform (defaults = paleta v1: cian #2FD9FF ·
+     violeta #8B5CF6 · magenta #F23DC4). Se cambian con ESFERA.setPaleta. */
   const FRAG = `
 precision mediump float;
 uniform float uBlanco;
+uniform vec3 uStopA;
+uniform vec3 uStopB;
+uniform vec3 uStopC;
+uniform vec3 uVena;
 varying float vEnergy;
 varying float vWarm;
 varying float vShade;
@@ -300,12 +305,9 @@ void main(){
   float alpha = exp(-d*3.2) * 0.9;
 
   float t = clamp((vWorld.x + vWorld.y)*0.30 + 0.5, 0.0, 1.0);
-  vec3 cian    = vec3(0.184, 0.851, 1.000);
-  vec3 violeta = vec3(0.545, 0.361, 0.965);
-  vec3 magenta = vec3(0.949, 0.239, 0.769);
   vec3 blanco  = vec3(1.00, 0.97, 0.99);
-  vec3 exterior = mix(violeta, cian, t);
-  vec3 col = mix(magenta, exterior, smoothstep(0.18, 0.70, vRR));
+  vec3 exterior = mix(uStopB, uStopA, t);
+  vec3 col = mix(uStopC, exterior, smoothstep(0.18, 0.70, vRR));
   col = mix(blanco, col, smoothstep(0.02, 0.16, vRR));
   col *= vShade;
   col = mix(col, vec3(1.0, 0.62, 0.42), vWarm*0.5);
@@ -314,9 +316,9 @@ void main(){
   float limbo = smoothstep(0.80, 0.97, vRR);
   col += exterior * limbo * 0.28;
 
-  /* las venas tiñen a cian luminoso y suben el brillo del punto */
+  /* las venas tiñen al claro de la paleta y suben el brillo del punto */
   float vn = clamp(vVena, 0.0, 1.0);
-  col = mix(col, vec3(0.58, 0.92, 1.0), vn * 0.85);
+  col = mix(col, uVena, vn * 0.85);
   gl_FragColor = vec4(col * (0.42 + vEnergy*0.70 + vn*0.55), alpha);
 }
 `;
@@ -662,7 +664,9 @@ void main(){
       polvo.material.opacity =
         (0.13 + audio.rms * 0.1 + llenado * 0.05) * ajusteInterior;
       polvo.visible = ajusteInterior > 0.01;
-      polvo.rotation.z = -t * (reducirMotion ? 0.004 : 0.03); /* contra-remolino sutil del polvo */
+      polvo.rotation.z =
+        -t *
+        (reducirMotion ? 0.004 : 0.03); /* contra-remolino sutil del polvo */
     }
     if (anillo1) {
       /* sin opacidad = sin draw call: visible solo si la perilla lo pide */
@@ -889,7 +893,9 @@ void main(){
           hz = c.home[k * 3 + 2];
         const push = reducirMotion
           ? Math.exp(-edad * 0.9) * 0.04 /* asentamiento sin vibración */
-          : Math.exp(-edad * 0.6) * 0.14 * Math.sin(edad * 6 + c.rnd[k] * 6.28) +
+          : Math.exp(-edad * 0.6) *
+              0.14 *
+              Math.sin(edad * 6 + c.rnd[k] * 6.28) +
             Math.exp(-edad * 0.9) * 0.12;
         const r = 1.0 + push;
         arr[k * 3] = hx * r;
@@ -1045,7 +1051,13 @@ void main(){
        traseros pero se funde con el universo en vez de leerse como hoyo */
     interiorMat = new THREE.ShaderMaterial({
       side: THREE.BackSide,
-      uniforms: { uInterior: { value: 1 } },
+      uniforms: {
+        uInterior: { value: 1 },
+        /* tintes oscuros del gradiente interior (defaults = paleta v1) */
+        uIntB: { value: new THREE.Color(0.09, 0.058, 0.18) },
+        uIntA: { value: new THREE.Color(0.028, 0.08, 0.125) },
+        uBorde: { value: new THREE.Color(0.02, 0.024, 0.059) },
+      },
       vertexShader: `
         varying vec3 vN;
         void main(){
@@ -1054,6 +1066,9 @@ void main(){
         }`,
       fragmentShader: `
         uniform float uInterior;
+        uniform vec3 uIntB;
+        uniform vec3 uIntA;
+        uniform vec3 uBorde;
         varying vec3 vN;
         void main(){
           float fondo = abs(vN.z);                              /* 1 = centro del cuenco, 0 = borde */
@@ -1067,11 +1082,8 @@ void main(){
           float h = fract((q.x + q.y) * q.x);
           if (h < velo) discard;
           float t = clamp((vN.x + vN.y) * 0.5 + 0.5, 0.0, 1.0); /* diagonal de marca en pantalla */
-          vec3 borde   = vec3(0.020, 0.024, 0.059);             /* tinta */
-          vec3 violeta = vec3(0.090, 0.058, 0.180);
-          vec3 cian    = vec3(0.028, 0.080, 0.125);
-          vec3 centro  = mix(violeta, cian, t) * uInterior;
-          vec3 col = borde + centro * pow(fondo, 1.5);
+          vec3 centro  = mix(uIntB, uIntA, t) * uInterior;
+          vec3 col = uBorde + centro * pow(fondo, 1.5);
           gl_FragColor = vec4(col, 1.0);
         }`,
     });
@@ -1124,6 +1136,10 @@ void main(){
       uRuidoVel: { value: 1 },
       uVenas: { value: 0 },
       uVenaEsc: { value: 3.0 },
+      uStopA: { value: new THREE.Color(0.184, 0.851, 1.0) },
+      uStopB: { value: new THREE.Color(0.545, 0.361, 0.965) },
+      uStopC: { value: new THREE.Color(0.949, 0.239, 0.769) },
+      uVena: { value: new THREE.Color(0.58, 0.92, 1.0) },
       uBands: { value: new Float32Array(BANDAS) },
     };
     materialPuntos = new THREE.ShaderMaterial({
@@ -1135,7 +1151,8 @@ void main(){
       depthTest: true,
       transparent: true,
     });
-    uniforms.uBands.value = audio.bandas; /* referencia fija, se llena in-place */
+    uniforms.uBands.value =
+      audio.bandas; /* referencia fija, se llena in-place */
     texChispa = texturaRadial(150, 220, 255, 1.0);
 
     /* polvo interior: partículas tenues llenando el volumen (denso hacia el
@@ -1202,9 +1219,33 @@ void main(){
     anillo1 = crearAnillo(1.38, 190, 0x7fd4ff, 0.042);
     anillo2 = crearAnillo(1.62, 150, 0xa98bff, 0.05);
     [
-      { r: 1.5, n: 170, color: 0x8fd8ff, tam: 0.04, rx: -0.95, ry: 0.85, vel: 0.085 },
-      { r: 1.56, n: 160, color: 0xc59bff, tam: 0.045, rx: 0.35, ry: 1.45, vel: -0.06 },
-      { r: 1.68, n: 140, color: 0xf28bd8, tam: 0.05, rx: 1.85, ry: -0.55, vel: 0.048 },
+      {
+        r: 1.5,
+        n: 170,
+        color: 0x8fd8ff,
+        tam: 0.04,
+        rx: -0.95,
+        ry: 0.85,
+        vel: 0.085,
+      },
+      {
+        r: 1.56,
+        n: 160,
+        color: 0xc59bff,
+        tam: 0.045,
+        rx: 0.35,
+        ry: 1.45,
+        vel: -0.06,
+      },
+      {
+        r: 1.68,
+        n: 140,
+        color: 0xf28bd8,
+        tam: 0.05,
+        rx: 1.85,
+        ry: -0.55,
+        vel: 0.048,
+      },
     ].forEach(function (d) {
       const p = crearAnillo(d.r, d.n, d.color, d.tam);
       p.rotation.x = d.rx;
@@ -1283,6 +1324,61 @@ void main(){
     },
     getFps() {
       return fpsProm;
+    },
+    /* paleta en vivo: {a, b, c, fondo?, nucleo?} en hex — a = frío/exterior,
+       b = cálido/exterior, c = corazón; fondo = escenario (clear color + borde
+       del interior); nucleo = tinte del glow central. Deriva venas, gradiente
+       interior, polvo y halo. Sin argumentos no hace nada; default = v1. */
+    setPaleta(p) {
+      if (!listo || !p) return;
+      const a = new THREE.Color(p.a || "#2fd9ff");
+      const b = new THREE.Color(p.b || "#8b5cf6");
+      const c = new THREE.Color(p.c || "#f23dc4");
+      const blancoRef = new THREE.Color(1, 1, 1);
+      uniforms.uStopA.value.copy(a);
+      uniforms.uStopB.value.copy(b);
+      uniforms.uStopC.value.copy(c);
+      uniforms.uVena.value.copy(a.clone().lerp(blancoRef, 0.45));
+      if (interiorMat) {
+        interiorMat.uniforms.uIntA.value.copy(a.clone().multiplyScalar(0.14));
+        interiorMat.uniforms.uIntB.value.copy(b.clone().multiplyScalar(0.17));
+      }
+      if (polvo) polvo.material.color.copy(b.clone().lerp(blancoRef, 0.15));
+      if (haloRosa) {
+        const halo = c.clone().lerp(blancoRef, 0.3);
+        if (haloRosa.material.map) haloRosa.material.map.dispose();
+        haloRosa.material.map = texturaRadial(
+          Math.round(halo.r * 255),
+          Math.round(halo.g * 255),
+          Math.round(halo.b * 255),
+          0.45,
+        );
+        haloRosa.material.needsUpdate = true;
+      }
+      if (p.fondo) {
+        const f = new THREE.Color(p.fondo);
+        if (renderer) renderer.setClearColor(f, 1);
+        if (interiorMat) interiorMat.uniforms.uBorde.value.copy(f);
+      }
+      if (p.nucleo && nucleoGlow) {
+        const n = new THREE.Color(p.nucleo);
+        if (nucleoGlow.material.map) nucleoGlow.material.map.dispose();
+        nucleoGlow.material.map = texturaRadial(
+          Math.round(n.r * 255),
+          Math.round(n.g * 255),
+          Math.round(n.b * 255),
+          0.9,
+        );
+        nucleoGlow.material.needsUpdate = true;
+      }
+    },
+    getPaleta() {
+      if (!listo) return null;
+      return {
+        a: "#" + uniforms.uStopA.value.getHexString(),
+        b: "#" + uniforms.uStopB.value.getHexString(),
+        c: "#" + uniforms.uStopC.value.getHexString(),
+      };
     },
     /* afinado en vivo: {nucleo, halo, blanco, organico, giro} — todos 0..~1.5,
        1 = como el prototipo. Pensado para el laboratorio (lab-esfera.html). */
