@@ -923,7 +923,11 @@ pub fn run(cli_args: CliArgs) {
                     .inner_size(w, h)
                     .min_inner_size(min_w, min_h)
                     .resizable(true)
-                    .maximizable(matches!(settings.ui_shell, settings::UiShell::Quiet))
+                    // Retro dimensiona su propia ventana (estilo Winamp) y no
+                    // ofrece maximizar; Clásico y Quiet sí trabajan a pantalla
+                    // completa. Nota: el cambio de shell en caliente ajusta esto
+                    // con setMaximizable() desde el selector.
+                    .maximizable(!matches!(settings.ui_shell, settings::UiShell::Retro))
                     // La ventana SIEMPRE está en la barra de tareas: el botón de
                     // "minimizar normal" necesita una entrada en la barra para
                     // poder volver. La bandeja es una vía ADICIONAL (botón

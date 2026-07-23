@@ -295,8 +295,9 @@
 
 /* ── vistas de sección (hospedan settings reales) ── */
 .q-sec {
+  /* Pegadas a la izquierda (sin margin auto): con la ventana grande o
+     maximizada el contenido queda junto a la sidebar, no flotando al centro. */
   max-width: 780px;
-  margin: 0 auto;
   padding: 6px 26px 44px;
 }
 .q-ajustes {

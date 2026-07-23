@@ -35,10 +35,15 @@ export const ShellSelector: React.FC<ShellSelectorProps> = React.memo(
     const handleShellChange = (value: string) => {
       const shell = value as UiShell;
       // Preview inmediato: aplica el atributo data-shell y ajusta el marco al
-      // vuelo (la transparencia se completa al reiniciar).
+      // vuelo (la transparencia se completa al reiniciar). Maximizar se
+      // habilita/deshabilita aquí también: la ventana pudo crearse con otro
+      // shell (p. ej. arrancó en Clásico cuando Clásico no era maximizable) y
+      // el botón □ quedaría muerto hasta reiniciar.
       applyShell(shell);
       try {
-        void getCurrentWindow().setDecorations(shell === "classic");
+        const win = getCurrentWindow();
+        void win.setDecorations(shell === "classic");
+        void win.setMaximizable(shell !== "retro");
       } catch {
         // Ventana no disponible (p. ej. fuera de Tauri): sin preview de marco.
       }
