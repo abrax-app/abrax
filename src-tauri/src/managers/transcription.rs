@@ -1268,7 +1268,7 @@ impl TranscriptionManager {
         esfera_linger_from(drained, Instant::now())
     }
 
-    pub fn transcribe(&self, audio: Vec<f32>) -> Result<String> {
+    pub fn transcribe(&self, mut audio: Vec<f32>) -> Result<String> {
         #[cfg(debug_assertions)]
         if std::env::var("HANDY_FORCE_TRANSCRIPTION_FAILURE").is_ok() {
             return Err(anyhow::anyhow!(
@@ -1288,6 +1288,18 @@ impl TranscriptionManager {
             debug!("Empty audio vector");
             self.maybe_unload_immediately("empty audio");
             return Ok(String::new());
+        }
+
+        // AGC: con micrófonos que entregan poco nivel (las apps de llamadas lo
+        // compensan con su propio AGC, nosotros recibimos la señal cruda) el
+        // motor degenera en bucles de repetición. Solo actúa bajo la zona sana
+        // del veredicto del micrófono; con nivel sano es un no-op.
+        let ganancia = crate::audio_toolkit::normalizar_nivel_para_stt(&mut audio);
+        if ganancia > 1.0 {
+            info!(
+                "Nivel de entrada bajo: AGC aplicó {:.1}x antes de transcribir",
+                ganancia
+            );
         }
 
         // Check if model is loaded, if not try to load it
@@ -1782,6 +1794,11 @@ fn post_process_transcription_text(
     settings: &AppSettings,
     custom_words_already_prompted: bool,
 ) -> String {
+    // 0. Salida degenerada del motor (bucles de repetición con audio casi
+    //    inaudible): se recorta ANTES de cualquier otro paso — jamás debe
+    //    llegar al editor del usuario una ristra de «qqqq…».
+    let raw = crate::audio_toolkit::recortar_repeticion_degenerada(&raw);
+
     // 1. Reemplazos exactos del Diccionario Vivo (F5.1): intención explícita
     //    del usuario, van primero para que el fuzzy no toque sus tokens.
     let replacement_pairs: Vec<(String, String)> = settings

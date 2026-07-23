@@ -11,7 +11,7 @@ pub use audio::{
 };
 pub use text::{
     apply_custom_replacements, apply_custom_words, apply_dictionary_fuzzy, apply_multi_token_join,
-    build_match_key, filter_transcription_output,
+    build_match_key, filter_transcription_output, recortar_repeticion_degenerada,
 };
-pub use utils::get_cpal_host;
+pub use utils::{get_cpal_host, normalizar_nivel_para_stt};
 pub use vad::{SileroVad, VoiceActivityDetector};

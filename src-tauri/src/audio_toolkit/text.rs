@@ -550,6 +550,73 @@ pub fn filter_transcription_output(
     filtered.trim().to_string()
 }
 
+/// Racha de un mismo carácter a partir de la cual la salida es basura del
+/// motor, no prosa: ni «jajaja» ni «1111» ni puntos suspensivos llegan a 10
+/// iguales seguidos.
+const RACHA_CARACTER_MAX: usize = 10;
+/// Repeticiones consecutivas de una misma palabra a partir de las cuales se
+/// colapsa a una sola («que que que…» del bucle de Whisper).
+const RACHA_PALABRA_MAX: usize = 4;
+
+/// Recorta la salida degenerada del motor de STT.
+///
+/// Con audio casi inaudible, Whisper (y familia) entra en bucles de
+/// repetición: «Quiero que ll» seguido de miles de «q». Eso jamás debe
+/// tipearse en el editor del usuario. Dos cortes deterministas:
+/// rachas del mismo carácter más largas que [`RACHA_CARACTER_MAX`] se
+/// eliminan enteras (la racha es basura, no prosa), y una misma palabra
+/// repetida consecutivamente más de [`RACHA_PALABRA_MAX`] veces se colapsa a
+/// una. Texto legítimo («jajaja», «1111», «ll») queda intacto por los
+/// umbrales. Si todo era degenerado, devuelve vacío y el dictado no tipea
+/// nada.
+pub fn recortar_repeticion_degenerada(text: &str) -> String {
+    // 1) Rachas de un mismo carácter (dentro o fuera de "palabras"). Las de
+    //    espacios se conservan: eliminarlas juntaría las palabras vecinas (el
+    //    colapso de espacios múltiples ya ocurre aguas abajo).
+    let mut sin_rachas = String::with_capacity(text.len());
+    let mut racha = String::new();
+    let mut anterior: Option<char> = None;
+    let conservar = |racha: &str| {
+        racha.chars().count() <= RACHA_CARACTER_MAX
+            || racha.chars().next().is_some_and(char::is_whitespace)
+    };
+    for c in text.chars() {
+        if anterior == Some(c) {
+            racha.push(c);
+        } else {
+            if conservar(&racha) {
+                sin_rachas.push_str(&racha);
+            }
+            racha.clear();
+            racha.push(c);
+            anterior = Some(c);
+        }
+    }
+    if conservar(&racha) {
+        sin_rachas.push_str(&racha);
+    }
+
+    // 2) Una misma palabra repetida N veces seguidas se colapsa a una.
+    let palabras: Vec<&str> = sin_rachas.split_whitespace().collect();
+    let mut kept: Vec<&str> = Vec::with_capacity(palabras.len());
+    let mut i = 0;
+    while i < palabras.len() {
+        let clave = build_match_key(palabras[i]);
+        let mut j = i + 1;
+        while j < palabras.len() && !clave.is_empty() && build_match_key(palabras[j]) == clave {
+            j += 1;
+        }
+        if j - i > RACHA_PALABRA_MAX {
+            kept.push(palabras[i]);
+        } else {
+            kept.extend(&palabras[i..j]);
+        }
+        i = j;
+    }
+
+    kept.join(" ").trim().to_string()
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -969,5 +1036,36 @@ mod tests {
         let custom_words = vec!["R&D".to_string()];
         let result = apply_custom_words(text, &custom_words, 0.18);
         assert_eq!(result, "send it to R&D for review");
+    }
+
+    #[test]
+    fn recorte_elimina_racha_de_un_caracter() {
+        // El caso real reportado: bucle de Whisper con audio casi inaudible.
+        let text = format!("Quiero que ll {}", "q".repeat(4000));
+        assert_eq!(recortar_repeticion_degenerada(&text), "Quiero que ll");
+    }
+
+    #[test]
+    fn recorte_colapsa_palabra_repetida() {
+        let text = "y entonces que que que que que que que que sigue";
+        assert_eq!(recortar_repeticion_degenerada(text), "y entonces que sigue");
+    }
+
+    #[test]
+    fn recorte_respeta_prosa_legitima() {
+        for text in [
+            "jajaja qué risa",
+            "el año 1111 fue raro",
+            "la llave y el valle...",
+            "sí sí sí, de acuerdo",
+        ] {
+            assert_eq!(recortar_repeticion_degenerada(text), text);
+        }
+    }
+
+    #[test]
+    fn recorte_de_todo_degenerado_devuelve_vacio() {
+        let text = "q".repeat(500);
+        assert_eq!(recortar_repeticion_degenerada(&text), "");
     }
 }
