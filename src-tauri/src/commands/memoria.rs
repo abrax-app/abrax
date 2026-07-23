@@ -21,9 +21,19 @@ pub async fn editar_transcripcion(
     id: i64,
     texto: String,
 ) -> Result<Vec<ParMemoria>, String> {
+    // Overrides bidi (U+202A–U+202E, U+2066–U+2069): invisibles y capaces de
+    // reordenar visualmente lo que la app tipea después. Se quitan; ZWJ y
+    // demás formato legítimo de scripts complejos se conserva.
+    let texto: String = texto
+        .chars()
+        .filter(|c| !matches!(c, '\u{202A}'..='\u{202E}' | '\u{2066}'..='\u{2069}'))
+        .collect();
     let texto = texto.trim().to_string();
     if texto.is_empty() {
         return Err("el texto editado no puede quedar vacío".into());
+    }
+    if texto.chars().count() > 20_000 {
+        return Err("el texto editado es demasiado largo".into());
     }
 
     let entrada = history_manager
@@ -57,4 +67,29 @@ pub async fn editar_transcripcion(
         .map_err(|e| e.to_string())?;
 
     Ok(aprendidos)
+}
+
+/// Activa o desactiva la Memoria de correcciones.
+#[tauri::command]
+#[specta::specta]
+pub fn cambiar_memoria_activa(app: AppHandle, activa: bool) -> Result<(), String> {
+    let mut settings = get_settings(&app);
+    settings.memoria_activa = activa;
+    write_settings(&app, settings);
+    Ok(())
+}
+
+/// Reemplaza la lista de pares aprendidos (olvidar individual o total desde
+/// la UI de Ajustes).
+#[tauri::command]
+#[specta::specta]
+pub fn actualizar_memoria_correcciones(
+    app: AppHandle,
+    pares: Vec<ParMemoria>,
+) -> Result<(), String> {
+    let mut settings = get_settings(&app);
+    settings.memoria_correcciones = pares;
+    settings.memoria_correcciones.truncate(memoria::MAX_PARES);
+    write_settings(&app, settings);
+    Ok(())
 }

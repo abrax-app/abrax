@@ -590,6 +590,8 @@ pub fn run(cli_args: CliArgs) {
             commands::discos::obtener_carpeta_modelos,
             commands::discos::cambiar_carpeta_modelos,
             commands::memoria::editar_transcripcion,
+            commands::memoria::cambiar_memoria_activa,
+            commands::memoria::actualizar_memoria_correcciones,
             commands::audio::probar_microfono,
             signal_handle::trigger_transcription,
             commands::settings::change_start_hidden_setting,

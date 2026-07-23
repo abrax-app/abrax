@@ -1808,21 +1808,6 @@ fn post_process_transcription_text(
         .collect();
     let replaced = crate::audio_toolkit::apply_custom_replacements(&raw, &replacement_pairs);
 
-    // 1.5 Memoria de correcciones: pares aprendidos de las ediciones del
-    //     usuario en el Historial. Exactos y por frase — después de los
-    //     reemplazos explícitos (la configuración manual gana) y antes de
-    //     cualquier capa difusa.
-    let replaced = if settings.memoria_activa && !settings.memoria_correcciones.is_empty() {
-        let pares: Vec<(String, String)> = settings
-            .memoria_correcciones
-            .iter()
-            .map(|p| (p.de.clone(), p.a.clone()))
-            .collect();
-        crate::audio_toolkit::apply_exact_phrase_replacements(&replaced, &pares)
-    } else {
-        replaced
-    };
-
     // 2. Corrección difusa de custom words (salvo que ya viajaran como prompt).
     let corrected = if !settings.custom_words.is_empty() && !custom_words_already_prompted {
         apply_custom_words(
@@ -1839,11 +1824,26 @@ fn post_process_transcription_text(
     let with_dictionary = crate::dictionary::apply_active(&corrected, settings);
 
     // 4. Muletillas, tartamudeos y espacios.
-    filter_transcription_output(
+    let filtered = filter_transcription_output(
         &with_dictionary,
         &settings.app_language,
         &settings.custom_filler_words,
-    )
+    );
+
+    // 5. Memoria de correcciones — al FINAL a propósito: los pares se
+    //    aprenden diffeando el texto FINAL del Historial, así que deben
+    //    aplicarse en ese mismo espacio (y así corrigen también los errores
+    //    de las capas difusas anteriores) — hallado en revisión.
+    if settings.memoria_activa && !settings.memoria_correcciones.is_empty() {
+        let pares: Vec<(String, String)> = settings
+            .memoria_correcciones
+            .iter()
+            .map(|p| (p.de.clone(), p.a.clone()))
+            .collect();
+        crate::audio_toolkit::apply_exact_phrase_replacements(&filtered, &pares)
+    } else {
+        filtered
+    }
 }
 
 /// Decide a transcribe-cpp run's task + translation target from settings.

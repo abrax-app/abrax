@@ -5,6 +5,7 @@ import type {
   AppSettings as Settings,
   AudioDevice,
   CustomReplacement,
+  ParMemoria,
   TranscribeAcceleratorSetting,
   OrtAcceleratorSetting,
 } from "@/bindings";
@@ -122,6 +123,9 @@ const settingUpdaters: {
   custom_words: (value) => commands.updateCustomWords(value as string[]),
   custom_replacements: (value) =>
     commands.updateCustomReplacements(value as CustomReplacement[]),
+  memoria_activa: (value) => commands.cambiarMemoriaActiva(value as boolean),
+  memoria_correcciones: (value) =>
+    commands.actualizarMemoriaCorrecciones(value as ParMemoria[]),
   custom_filler_words: (value) =>
     commands.updateCustomFillerWords(value as string[] | null),
   word_correction_threshold: (value) =>

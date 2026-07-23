@@ -46,6 +46,10 @@ static IDENTIFIER_RE: Lazy<regex::Regex> =
 /// Un token protegido jamás se corrige hacia un término del diccionario:
 /// aquí vive la defensa de "ruta", "uso", "casa"…
 const STOPLIST_ES: &[&str] = &[
+    // «si»/«no» cubren también «sí» (build_match_key pliega la tilde): la
+    // memoria de correcciones no debe aprender orígenes hechos de estas.
+    "si",
+    "no",
     "los",
     "las",
     "una",

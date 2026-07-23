@@ -59,7 +59,7 @@ export const MemoriaSettings: React.FC<MemoriaSettingsProps> = React.memo(
                   <span className="text-text/60 line-through decoration-text/30 break-all">
                     {par.de}
                   </span>
-                  <MoveRight className="w-3.5 h-3.5 shrink-0 text-text/40" />
+                  <MoveRight className="w-3.5 h-3.5 shrink-0 text-text/40 rtl:-scale-x-100" />
                   <span className="font-medium break-all">{par.a}</span>
                   {(par.veces ?? 1) > 1 && (
                     <span className="text-xs text-text/40 whitespace-nowrap">

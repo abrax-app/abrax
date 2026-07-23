@@ -37,16 +37,27 @@ const MAX_TOKENS_TEXTO: usize = 1200;
 /// («a», «el») son demasiado ambiguas para reemplazo global.
 const CLAVE_MIN: usize = 3;
 /// Distancia Levenshtein normalizada máxima entre claves para aceptar el par.
-const SIMILITUD_MAX: f64 = 0.75;
+/// 0.5 admite las correcciones reales de ortografía/oído («taury»→«Tauri»,
+/// «portavapeles»→«portapapeles») y rechaza sustituciones de contenido entre
+/// palabras distintas («lunes»→«martes» da 0.67) — hallado en revisión.
+const SIMILITUD_MAX: f64 = 0.5;
 
 /// Un par aprendido: cuando el dictado produzca `de`, escribir `a`.
-#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Type)]
+#[derive(Serialize, Deserialize, Clone, PartialEq, Type)]
 pub struct ParMemoria {
     pub de: String,
     pub a: String,
     /// Veces que el usuario confirmó esta corrección (re-aprendizajes).
     #[serde(default = "una")]
     pub veces: u32,
+}
+
+/// Los pares provienen de dictados del usuario: por la regla de privacidad
+/// (no loguear contenido sensible) el Debug de AppSettings no debe volcarlos.
+impl std::fmt::Debug for ParMemoria {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "ParMemoria(«redactado», veces: {})", self.veces)
+    }
 }
 
 fn una() -> u32 {
@@ -117,30 +128,65 @@ fn registrar_candidato(pares: &mut Vec<(String, String)>, del: &[&str], ins: &[&
     if del.is_empty() || ins.is_empty() {
         return; // inserción o borrado puro: contenido, no corrección
     }
+    // Dos correcciones adyacentes sin ancla entre medio («taury vite» →
+    // «Tauri Vite») llegan como UNA región: si los lados quedan alineados
+    // 1:1 y CADA sustitución pasa las puertas por sí sola, se aprenden como
+    // pares independientes (aplican también por separado) — hallado en
+    // revisión. Si alguna no pasa, se cae a la evaluación por frase.
+    if del.len() == ins.len() && del.len() > 1 {
+        let individuales: Vec<(String, String)> = del
+            .iter()
+            .zip(ins.iter())
+            .filter(|(d, i)| d != i)
+            .filter_map(|(d, i)| pasa_puertas(&[d], &[i]))
+            .collect();
+        let distintos = del.iter().zip(ins.iter()).filter(|(d, i)| d != i).count();
+        if !individuales.is_empty() && individuales.len() == distintos {
+            pares.extend(individuales);
+            return;
+        }
+    }
+    if let Some(par) = pasa_puertas(del, ins) {
+        pares.push(par);
+    }
+}
+
+/// Evalúa un candidato (borrados, insertados) contra todas las puertas de
+/// seguridad; devuelve el par si es una corrección aprendible.
+fn pasa_puertas(del: &[&str], ins: &[&str]) -> Option<(String, String)> {
     if del.len() > MAX_TOKENS_LADO || ins.len() > MAX_TOKENS_LADO {
-        return; // edición larga: contenido, no corrección
+        return None; // edición larga: contenido, no corrección
     }
     let de = del.join(" ");
     let a = ins.join(" ");
     if de == a {
-        return;
+        return None;
     }
     let clave_de = build_match_key(&de);
     let clave_a = build_match_key(&a);
     if clave_de.chars().count() < CLAVE_MIN {
-        return; // origen demasiado corto/ambiguo para reemplazo global
+        return None; // origen demasiado corto/ambiguo para reemplazo global
     }
-    if del.len() == 1 && is_stopword(&build_match_key(del[0])) {
-        return; // «de», «que», «the»…: reemplazarlas globalmente es veneno
+    if del.iter().all(|w| is_stopword(&build_match_key(w))) {
+        // Origen hecho SOLO de palabras comunes («que», «por qué», «si no»):
+        // reemplazarlo globalmente es veneno, y además sería irreversible por
+        // edición (la corrección inversa también caería en esta puerta). Si el
+        // usuario de verdad lo quiere, tiene los Reemplazos manuales.
+        return None;
+    }
+    if clave_de.chars().all(|c| c.is_ascii_digit()) || clave_a.chars().all(|c| c.is_ascii_digit()) {
+        // Cifras («100»→«1000») son contenido, nunca ortografía del motor:
+        // aprenderlas reescribiría todo número futuro — hallado en revisión.
+        return None;
     }
     if clave_de != clave_a {
         let distancia = levenshtein(&clave_de, &clave_a) as f64;
         let largo = clave_de.chars().count().max(clave_a.chars().count()) as f64;
         if largo == 0.0 || distancia / largo > SIMILITUD_MAX {
-            return; // sin parecido: el usuario reescribió la idea, no corrigió
+            return None; // sin parecido: el usuario reescribió la idea, no corrigió
         }
     }
-    pares.push((de, a));
+    Some((de, a))
 }
 
 /// Incorpora pares recién aprendidos a la lista persistida y devuelve los
@@ -217,6 +263,15 @@ mod tests {
     }
 
     #[test]
+    fn no_aprende_frases_de_solo_palabras_comunes() {
+        // «por qué» → «porque»: claves normalizadas idénticas y ambos tokens
+        // en la stoplist — sin esta puerta se aprendería un par global
+        // venenoso e irreversible por edición (hallado en revisión).
+        assert!(aprender_de_edicion("no sé por qué vino", "no sé porque vino").is_empty());
+        assert!(aprender_de_edicion("dime si no llega", "dime sino llega").is_empty());
+    }
+
+    #[test]
     fn no_aprende_reescrituras_sin_parecido() {
         assert!(aprender_de_edicion(
             "manda el archivo al servidor",
@@ -242,6 +297,33 @@ mod tests {
             "instala taury y corre el vite",
             "instala Tauri y corre el Vite",
         );
+        assert_eq!(
+            pares,
+            vec![
+                ("taury".to_string(), "Tauri".to_string()),
+                ("vite".to_string(), "Vite".to_string())
+            ]
+        );
+    }
+
+    #[test]
+    fn no_aprende_sustituciones_de_contenido() {
+        // Reagendar no es corregir al motor: lev(lunes, martes) = 0.67 > 0.5.
+        assert!(
+            aprender_de_edicion("la reunión es el lunes", "la reunión es el martes").is_empty()
+        );
+    }
+
+    #[test]
+    fn no_aprende_cifras() {
+        assert!(aprender_de_edicion("cuesta 100 pesos", "cuesta 1000 pesos").is_empty());
+    }
+
+    #[test]
+    fn correcciones_adyacentes_se_aprenden_por_separado() {
+        // Sin ancla entre medio, el diff las agrupa: deben salir como pares
+        // independientes para aplicar también por separado.
+        let pares = aprender_de_edicion("instala taury vite ahora", "instala Tauri Vite ahora");
         assert_eq!(
             pares,
             vec![

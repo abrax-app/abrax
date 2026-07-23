@@ -20,6 +20,7 @@ import {
   type HistoryUpdatePayload,
 } from "@/bindings";
 import { useOsType } from "@/hooks/useOsType";
+import { useSettingsStore } from "@/stores/settingsStore";
 import { formatDateTime } from "@/lib/utils/dateFormat";
 import { AudioPlayer } from "../../ui/AudioPlayer";
 import { Button } from "../../ui/Button";
@@ -33,6 +34,8 @@ const IconButton: React.FC<{
   children: React.ReactNode;
 }> = ({ onClick, title, disabled, active, children }) => (
   <button
+    type="button"
+    aria-label={title}
     onClick={onClick}
     disabled={disabled}
     className={`p-1.5 rounded-md flex items-center justify-center transition-colors cursor-pointer disabled:cursor-not-allowed disabled:text-text/20 ${
@@ -337,6 +340,7 @@ const HistoryEntryComponent: React.FC<HistoryEntryProps> = ({
   retryTranscription,
 }) => {
   const { t, i18n } = useTranslation();
+  const refreshSettings = useSettingsStore((s) => s.refreshSettings);
   const [showCopied, setShowCopied] = useState(false);
   const [retrying, setRetrying] = useState(false);
   const [compilerOpen, setCompilerOpen] = useState(false);
@@ -370,6 +374,9 @@ const HistoryEntryComponent: React.FC<HistoryEntryProps> = ({
             pares: pares.map((p) => `«${p.de} → ${p.a}»`).join(", "),
           }),
         );
+        // Los pares se persisten backend-side sin evento: refrescar para que
+        // la sección Memoria (Ajustes → Avanzado) los muestre al instante.
+        void refreshSettings();
       } else {
         toast.success(t("settings.history.edit.saved"));
       }
@@ -437,7 +444,7 @@ const HistoryEntryComponent: React.FC<HistoryEntryProps> = ({
           </IconButton>
           <IconButton
             onClick={() => setCompilerOpen(true)}
-            disabled={!hasTranscription || retrying}
+            disabled={!hasTranscription || retrying || editing}
             title={t("settings.history.compiler.action")}
           >
             <Wand2 width={16} height={16} />
@@ -467,7 +474,7 @@ const HistoryEntryComponent: React.FC<HistoryEntryProps> = ({
           </IconButton>
           <IconButton
             onClick={handleRetranscribe}
-            disabled={retrying}
+            disabled={retrying || editing}
             title={t("settings.history.retranscribe")}
           >
             <RotateCcw
@@ -482,7 +489,7 @@ const HistoryEntryComponent: React.FC<HistoryEntryProps> = ({
           </IconButton>
           <IconButton
             onClick={handleDeleteEntry}
-            disabled={retrying}
+            disabled={retrying || editing}
             title={t("settings.history.delete")}
           >
             <Trash2 width={16} height={16} />
@@ -496,6 +503,7 @@ const HistoryEntryComponent: React.FC<HistoryEntryProps> = ({
             value={draft}
             onChange={(e) => setDraft(e.target.value)}
             disabled={saving}
+            maxLength={10000}
             autoFocus
             rows={Math.min(8, Math.max(2, draft.split("\n").length))}
             className="w-full text-sm bg-background border border-mid-gray/30 rounded-md p-2 resize-y focus:outline-none focus:border-logo-primary/60"
