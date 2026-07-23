@@ -257,7 +257,8 @@
         "history": "履歴",
         "experimental": "実験的",
         "dictionary": "リビング辞書",
-        "correccion": "ローカル補正"
+        "correccion": "ローカル補正",
+        "memoria": "メモリー"
       },
       "experimentalToggle": {
         "label": "実験的な機能",
@@ -434,6 +435,13 @@
         "add": "追加",
         "remove": "{{word}} を削除",
         "duplicate": "「{{word}}」の置換は既に存在します"
+      },
+      "memoria": {
+        "title": "修正メモリー",
+        "description": "履歴で文字起こしを修正すると ABRAX が学習します。単語を消して正しい語を入力すれば、次回から正しく書かれます。すべてローカルです。",
+        "empty": "学習した修正はまだありません。履歴で文字起こしを編集（鉛筆アイコン）すると、ABRAX が変更から学習します。",
+        "forget": "この修正を忘れる",
+        "clearAll": "すべて忘れる"
       }
     },
     "postProcessing": {
@@ -513,6 +521,15 @@
         "compiled": "コンパイル済みプロンプト",
         "copy": "プロンプトをコピー",
         "error": "プロンプトをコンパイルできませんでした"
+      },
+      "edit": {
+        "action": "文字起こしを編集",
+        "save": "保存",
+        "cancel": "キャンセル",
+        "hint": "保存すると、メモリーが修正を学習します。",
+        "saved": "文字起こしを更新しました。",
+        "learned": "メモリー: {{pares}} を学習しました",
+        "error": "編集を保存できませんでした。"
       }
     },
     "debug": {

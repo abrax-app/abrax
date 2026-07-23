@@ -257,7 +257,8 @@
         "history": "Historia",
         "experimental": "Eksperymentalne",
         "dictionary": "Żywy słownik",
-        "correccion": "Korekta lokalna"
+        "correccion": "Korekta lokalna",
+        "memoria": "Pamięć"
       },
       "experimentalToggle": {
         "label": "Funkcje Eksperymentalne",
@@ -434,6 +435,13 @@
         "add": "Dodaj",
         "remove": "Usuń {{word}}",
         "duplicate": "Zamiana dla \"{{word}}\" już istnieje"
+      },
+      "memoria": {
+        "title": "Pamięć poprawek",
+        "description": "ABRAX uczy się, gdy poprawiasz transkrypcję w Historii: usuń słowo, wpisz właściwe, a następnym razem zostanie zapisane poprawnie. Wszystko lokalnie.",
+        "empty": "Brak nauczonych poprawek. Edytuj transkrypcję w Historii (ikona ołówka), a ABRAX nauczy się z Twoich zmian.",
+        "forget": "Zapomnij tę poprawkę",
+        "clearAll": "Zapomnij wszystko"
       }
     },
     "postProcessing": {
@@ -513,6 +521,15 @@
         "compiled": "Skompilowany prompt",
         "copy": "Kopiuj prompt",
         "error": "Nie udało się skompilować promptu"
+      },
+      "edit": {
+        "action": "Edytuj transkrypcję",
+        "save": "Zapisz",
+        "cancel": "Anuluj",
+        "hint": "Przy zapisie Pamięć uczy się Twoich poprawek.",
+        "saved": "Transkrypcja zaktualizowana.",
+        "learned": "Pamięć: nauczono {{pares}}",
+        "error": "Nie udało się zapisać edycji."
       }
     },
     "debug": {

@@ -257,7 +257,8 @@
         "history": "Geschiedenis",
         "experimental": "Experimenteel",
         "dictionary": "Levend woordenboek",
-        "correccion": "Lokale correctie"
+        "correccion": "Lokale correctie",
+        "memoria": "Geheugen"
       },
       "experimentalToggle": {
         "label": "Experimentele functies",
@@ -434,6 +435,13 @@
         "add": "Toevoegen",
         "remove": "{{word}} verwijderen",
         "duplicate": "Er bestaat al een vervanging voor \"{{word}}\""
+      },
+      "memoria": {
+        "title": "Correctiegeheugen",
+        "description": "ABRAX leert wanneer je een transcriptie in de Geschiedenis corrigeert: verwijder een woord, typ het juiste, en de volgende keer wordt het goed geschreven. Alles lokaal.",
+        "empty": "Nog geen geleerde correcties. Bewerk een transcriptie in de Geschiedenis (potlood-icoon) en ABRAX leert van je wijzigingen.",
+        "forget": "Deze correctie vergeten",
+        "clearAll": "Alles vergeten"
       }
     },
     "postProcessing": {
@@ -513,6 +521,15 @@
         "compiled": "Gecompileerde prompt",
         "copy": "Prompt kopiëren",
         "error": "De prompt kon niet worden gecompileerd"
+      },
+      "edit": {
+        "action": "Transcriptie bewerken",
+        "save": "Opslaan",
+        "cancel": "Annuleren",
+        "hint": "Bij het opslaan leert het Geheugen je correcties.",
+        "saved": "Transcriptie bijgewerkt.",
+        "learned": "Geheugen: geleerd {{pares}}",
+        "error": "De bewerking kon niet worden opgeslagen."
       }
     },
     "debug": {

@@ -257,7 +257,8 @@
         "history": "Historie",
         "experimental": "Experimentální",
         "dictionary": "Živý slovník",
-        "correccion": "Místní korekce"
+        "correccion": "Místní korekce",
+        "memoria": "Paměť"
       },
       "experimentalToggle": {
         "label": "Experimentální funkce",
@@ -434,6 +435,13 @@
         "add": "Přidat",
         "remove": "Odebrat {{word}}",
         "duplicate": "Náhrada pro \"{{word}}\" již existuje"
+      },
+      "memoria": {
+        "title": "Paměť oprav",
+        "description": "ABRAX se učí, když opravíte přepis v Historii: smažte slovo, napište správné a příště bude napsáno správně. Vše lokálně.",
+        "empty": "Zatím žádné naučené opravy. Upravte přepis v Historii (ikona tužky) a ABRAX se z vašich změn naučí.",
+        "forget": "Zapomenout tuto opravu",
+        "clearAll": "Zapomenout vše"
       }
     },
     "postProcessing": {
@@ -513,6 +521,15 @@
         "compiled": "Zkompilovaný prompt",
         "copy": "Kopírovat prompt",
         "error": "Prompt se nepodařilo zkompilovat"
+      },
+      "edit": {
+        "action": "Upravit přepis",
+        "save": "Uložit",
+        "cancel": "Zrušit",
+        "hint": "Při uložení se Paměť naučí vaše opravy.",
+        "saved": "Přepis aktualizován.",
+        "learned": "Paměť: naučeno {{pares}}",
+        "error": "Úpravu se nepodařilo uložit."
       }
     },
     "debug": {

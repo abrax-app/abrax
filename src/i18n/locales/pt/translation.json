@@ -257,7 +257,8 @@
         "history": "Histórico",
         "experimental": "Experimental",
         "dictionary": "Dicionário vivo",
-        "correccion": "Correção local"
+        "correccion": "Correção local",
+        "memoria": "Memória"
       },
       "experimentalToggle": {
         "label": "Recursos Experimentais",
@@ -434,6 +435,13 @@
         "add": "Adicionar",
         "remove": "Remover {{word}}",
         "duplicate": "Já existe uma substituição para \"{{word}}\""
+      },
+      "memoria": {
+        "title": "Memória de correções",
+        "description": "O ABRAX aprende quando você corrige uma transcrição no Histórico: apague uma palavra, digite a correta e na próxima vez ela sai certa. Tudo local.",
+        "empty": "Ainda não há correções aprendidas. Edite uma transcrição no Histórico (ícone de lápis) e o ABRAX aprenderá com suas mudanças.",
+        "forget": "Esquecer esta correção",
+        "clearAll": "Esquecer tudo"
       }
     },
     "postProcessing": {
@@ -513,6 +521,15 @@
         "compiled": "Prompt compilado",
         "copy": "Copiar prompt",
         "error": "Não foi possível compilar o prompt"
+      },
+      "edit": {
+        "action": "Editar transcrição",
+        "save": "Salvar",
+        "cancel": "Cancelar",
+        "hint": "Ao salvar, a Memória aprende suas correções.",
+        "saved": "Transcrição atualizada.",
+        "learned": "Memória: aprendi {{pares}}",
+        "error": "Não foi possível salvar a edição."
       }
     },
     "debug": {

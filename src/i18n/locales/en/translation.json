@@ -257,7 +257,8 @@
         "history": "History",
         "experimental": "Experimental",
         "dictionary": "Living dictionary",
-        "correccion": "Local correction"
+        "correccion": "Local correction",
+        "memoria": "Memory"
       },
       "experimentalToggle": {
         "label": "Experimental Features",
@@ -434,6 +435,13 @@
         "add": "Add",
         "remove": "Remove {{word}}",
         "duplicate": "A replacement for \"{{word}}\" already exists"
+      },
+      "memoria": {
+        "title": "Correction memory",
+        "description": "ABRAX learns when you fix a transcription in History: delete a word, type the right one, and next time it gets written correctly. All local.",
+        "empty": "No learned corrections yet. Edit a transcription in History (pencil icon) and ABRAX will learn from your changes.",
+        "forget": "Forget this correction",
+        "clearAll": "Forget all"
       }
     },
     "postProcessing": {
@@ -513,6 +521,15 @@
         "compiled": "Compiled prompt",
         "copy": "Copy prompt",
         "error": "The prompt couldn't be compiled"
+      },
+      "edit": {
+        "action": "Edit transcription",
+        "save": "Save",
+        "cancel": "Cancel",
+        "hint": "When you save, Memory learns your corrections.",
+        "saved": "Transcription updated.",
+        "learned": "Memory: learned {{pares}}",
+        "error": "Couldn't save the edit."
       }
     },
     "debug": {

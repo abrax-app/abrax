@@ -257,7 +257,8 @@
         "history": "Geçmiş",
         "experimental": "Deneysel",
         "dictionary": "Canlı sözlük",
-        "correccion": "Yerel düzeltme"
+        "correccion": "Yerel düzeltme",
+        "memoria": "Bellek"
       },
       "experimentalToggle": {
         "label": "Deneysel Özellikler",
@@ -434,6 +435,13 @@
         "add": "Ekle",
         "remove": "{{word}} kaldır",
         "duplicate": "\"{{word}}\" için zaten bir değiştirme var"
+      },
+      "memoria": {
+        "title": "Düzeltme belleği",
+        "description": "ABRAX, Geçmiş'te bir transkripsiyonu düzelttiğinizde öğrenir: bir kelimeyi silin, doğrusunu yazın; bir dahaki sefere doğru yazılır. Tamamen yerel.",
+        "empty": "Henüz öğrenilmiş düzeltme yok. Geçmiş'te bir transkripsiyonu düzenleyin (kalem simgesi), ABRAX değişikliklerinizden öğrensin.",
+        "forget": "Bu düzeltmeyi unut",
+        "clearAll": "Hepsini unut"
       }
     },
     "postProcessing": {
@@ -513,6 +521,15 @@
         "compiled": "Derlenmiş prompt",
         "copy": "Promptu kopyala",
         "error": "Prompt derlenemedi"
+      },
+      "edit": {
+        "action": "Transkripsiyonu düzenle",
+        "save": "Kaydet",
+        "cancel": "İptal",
+        "hint": "Kaydettiğinizde Bellek düzeltmelerinizi öğrenir.",
+        "saved": "Transkripsiyon güncellendi.",
+        "learned": "Bellek: öğrenildi {{pares}}",
+        "error": "Düzenleme kaydedilemedi."
       }
     },
     "debug": {

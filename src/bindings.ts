@@ -927,6 +927,18 @@ async getAudioFilePath(fileName: string) : Promise<Result<string, string>> {
     else return { status: "error", error: e  as any };
 }
 },
+/**
+ * Guarda el texto editado de una entrada del Historial y, si la Memoria está
+ * activa, aprende de la diferencia. Devuelve los pares aprendidos.
+ */
+async editarTranscripcion(id: number, texto: string) : Promise<Result<ParMemoria[], string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("editar_transcripcion", { id, texto }) };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
 async deleteHistoryEntry(id: number) : Promise<Result<null, string>> {
     try {
     return { status: "ok", data: await TAURI_INVOKE("delete_history_entry", { id }) };
@@ -1323,7 +1335,14 @@ whats_new_last_seen_version?: string; selected_model?: string; onboarding_comple
  * token exacto "Ruth" (case-sensitive) — colisión con "ruta" imposible
  * por diseño. Es la vía inmune del Diccionario Vivo.
  */
-custom_replacements?: CustomReplacement[]; 
+custom_replacements?: CustomReplacement[];
+/**
+ * Memoria de correcciones: pares `de → a` aprendidos de las ediciones
+ * del usuario en el Historial. Se aplican como reemplazo exacto por
+ * frase en el post-proceso. Todo local.
+ */
+memoria_activa?: boolean;
+memoria_correcciones?: ParMemoria[];
 /**
  * Proyecto activo del Diccionario Vivo (F5.3): ABRAX aprende la jerga
  * del código indexándolo localmente. El índice vive en el datadir;
@@ -1644,6 +1663,14 @@ export type ModoLectura =
  * `estado` es `"progreso"`, `"listo"` o `"error"` (con `detalle`).
  */
 export type MudanzaProgreso = { estado: string; archivo: string; hechos_bytes: number; total_bytes: number; detalle: string }
+/**
+ * Un par aprendido: cuando el dictado produzca `de`, escribir `a`.
+ */
+export type ParMemoria = { de: string; a: string;
+/**
+ * Veces que el usuario confirmó esta corrección (re-aprendizajes).
+ */
+veces?: number }
 /**
  * Una unidad de lectura: el panel habla `texto_hablable` con la voz `voz` y
  * resalta las líneas `linea_inicio..=linea_fin` (1-based) del documento.

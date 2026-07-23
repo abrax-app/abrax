@@ -14,6 +14,7 @@ mod helpers;
 mod input;
 mod llm_client;
 mod managers;
+mod memoria;
 mod overlay;
 pub mod portable;
 mod prompt_compiler;
@@ -588,6 +589,7 @@ pub fn run(cli_args: CliArgs) {
             commands::discos::listar_discos,
             commands::discos::obtener_carpeta_modelos,
             commands::discos::cambiar_carpeta_modelos,
+            commands::memoria::editar_transcripcion,
             commands::audio::probar_microfono,
             signal_handle::trigger_transcription,
             commands::settings::change_start_hidden_setting,

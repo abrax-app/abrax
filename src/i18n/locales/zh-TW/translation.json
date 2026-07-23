@@ -257,7 +257,8 @@
         "history": "歷史",
         "experimental": "實驗性",
         "dictionary": "活字典",
-        "correccion": "本地校正"
+        "correccion": "本地校正",
+        "memoria": "記憶"
       },
       "experimentalToggle": {
         "label": "實驗性功能",
@@ -434,6 +435,13 @@
         "add": "新增",
         "remove": "移除 {{word}}",
         "duplicate": "「{{word}}」的替換已存在"
+      },
+      "memoria": {
+        "title": "糾正記憶",
+        "description": "當你在歷史記錄中修正轉寫時，ABRAX 會學習：刪掉一個詞並輸入正確的詞，下次就會寫對。全部在本機進行。",
+        "empty": "還沒有學到的糾正。在歷史記錄中編輯轉寫（鉛筆圖示），ABRAX 會從你的修改中學習。",
+        "forget": "忘記此糾正",
+        "clearAll": "全部忘記"
       }
     },
     "postProcessing": {
@@ -513,6 +521,15 @@
         "compiled": "編譯後的提示詞",
         "copy": "複製提示詞",
         "error": "無法編譯提示詞"
+      },
+      "edit": {
+        "action": "編輯轉寫",
+        "save": "儲存",
+        "cancel": "取消",
+        "hint": "儲存時，記憶會學習你的糾正。",
+        "saved": "轉寫已更新。",
+        "learned": "記憶：已學會 {{pares}}",
+        "error": "無法儲存編輯。"
       }
     },
     "debug": {

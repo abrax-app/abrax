@@ -257,7 +257,8 @@
         "history": "Lịch sử",
         "experimental": "Thử nghiệm",
         "dictionary": "Từ điển sống",
-        "correccion": "Sửa lỗi cục bộ"
+        "correccion": "Sửa lỗi cục bộ",
+        "memoria": "Bộ nhớ"
       },
       "experimentalToggle": {
         "label": "Tính năng thử nghiệm",
@@ -434,6 +435,13 @@
         "add": "Thêm",
         "remove": "Xóa {{word}}",
         "duplicate": "Đã tồn tại thay thế cho \"{{word}}\""
+      },
+      "memoria": {
+        "title": "Bộ nhớ sửa lỗi",
+        "description": "ABRAX học khi bạn sửa bản ghi trong Lịch sử: xóa một từ, gõ từ đúng, và lần sau nó sẽ được viết đúng. Tất cả đều cục bộ.",
+        "empty": "Chưa có sửa lỗi nào được học. Chỉnh sửa bản ghi trong Lịch sử (biểu tượng bút chì) và ABRAX sẽ học từ thay đổi của bạn.",
+        "forget": "Quên sửa lỗi này",
+        "clearAll": "Quên tất cả"
       }
     },
     "postProcessing": {
@@ -513,6 +521,15 @@
         "compiled": "Prompt đã biên dịch",
         "copy": "Sao chép prompt",
         "error": "Không thể biên dịch prompt"
+      },
+      "edit": {
+        "action": "Chỉnh sửa bản ghi",
+        "save": "Lưu",
+        "cancel": "Hủy",
+        "hint": "Khi lưu, Bộ nhớ sẽ học các sửa lỗi của bạn.",
+        "saved": "Đã cập nhật bản ghi.",
+        "learned": "Bộ nhớ: đã học {{pares}}",
+        "error": "Không thể lưu chỉnh sửa."
       }
     },
     "debug": {

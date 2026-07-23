@@ -211,11 +211,7 @@ fn mudar_contenido(
     Ok(hechos)
 }
 
-fn mover_entrada(
-    src: &Path,
-    dst: &Path,
-    avance: &mut dyn FnMut(u64),
-) -> std::io::Result<()> {
+fn mover_entrada(src: &Path, dst: &Path, avance: &mut dyn FnMut(u64)) -> std::io::Result<()> {
     let tam = tamano_recursivo(src)?;
     // Mismo volumen: renombrar es instantáneo y no consume espacio extra.
     if !dst.exists() && fs::rename(src, dst).is_ok() {
@@ -248,11 +244,7 @@ fn mover_entrada(
     Ok(())
 }
 
-fn copiar_con_progreso(
-    src: &Path,
-    dst: &Path,
-    avance: &mut dyn FnMut(u64),
-) -> std::io::Result<()> {
+fn copiar_con_progreso(src: &Path, dst: &Path, avance: &mut dyn FnMut(u64)) -> std::io::Result<()> {
     let mut lector = fs::File::open(src)?;
     let mut escritor = fs::File::create(dst)?;
     let mut buf = vec![0u8; 8 * 1024 * 1024];
@@ -349,8 +341,7 @@ mod tests {
         // Resto de una mudanza anterior interrumpida, ya completo en destino.
         escribir(&destino.path().join("modelo.gguf"), b"abcdefgh");
 
-        let movidos =
-            mudar_contenido(origen.path(), destino.path(), &mut |_, _, _| {}).unwrap();
+        let movidos = mudar_contenido(origen.path(), destino.path(), &mut |_, _, _| {}).unwrap();
 
         assert_eq!(movidos, 8);
         assert_eq!(fs::read_dir(origen.path()).unwrap().count(), 0);

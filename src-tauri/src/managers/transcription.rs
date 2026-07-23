@@ -1808,6 +1808,21 @@ fn post_process_transcription_text(
         .collect();
     let replaced = crate::audio_toolkit::apply_custom_replacements(&raw, &replacement_pairs);
 
+    // 1.5 Memoria de correcciones: pares aprendidos de las ediciones del
+    //     usuario en el Historial. Exactos y por frase — después de los
+    //     reemplazos explícitos (la configuración manual gana) y antes de
+    //     cualquier capa difusa.
+    let replaced = if settings.memoria_activa && !settings.memoria_correcciones.is_empty() {
+        let pares: Vec<(String, String)> = settings
+            .memoria_correcciones
+            .iter()
+            .map(|p| (p.de.clone(), p.a.clone()))
+            .collect();
+        crate::audio_toolkit::apply_exact_phrase_replacements(&replaced, &pares)
+    } else {
+        replaced
+    };
+
     // 2. Corrección difusa de custom words (salvo que ya viajaran como prompt).
     let corrected = if !settings.custom_words.is_empty() && !custom_words_already_prompted {
         apply_custom_words(

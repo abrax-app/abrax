@@ -5,6 +5,7 @@ import {
   Check,
   Copy,
   FolderOpen,
+  Pencil,
   RotateCcw,
   Star,
   Trash2,
@@ -339,8 +340,46 @@ const HistoryEntryComponent: React.FC<HistoryEntryProps> = ({
   const [showCopied, setShowCopied] = useState(false);
   const [retrying, setRetrying] = useState(false);
   const [compilerOpen, setCompilerOpen] = useState(false);
+  const [editing, setEditing] = useState(false);
+  const [draft, setDraft] = useState("");
+  const [saving, setSaving] = useState(false);
 
   const hasTranscription = entry.transcription_text.trim().length > 0;
+
+  const startEditing = () => {
+    setDraft(entry.transcription_text);
+    setEditing(true);
+  };
+
+  // Guardar la edición aprende en la Memoria de correcciones: el backend
+  // diffea original vs editado y devuelve los pares aprendidos.
+  const saveEdit = async () => {
+    const texto = draft.trim();
+    if (!texto || saving) return;
+    setSaving(true);
+    try {
+      const result = await commands.editarTranscripcion(entry.id, texto);
+      if (result.status !== "ok") {
+        throw new Error(String(result.error));
+      }
+      setEditing(false);
+      const pares = result.data;
+      if (pares.length > 0) {
+        toast.success(
+          t("settings.history.edit.learned", {
+            pares: pares.map((p) => `«${p.de} → ${p.a}»`).join(", "),
+          }),
+        );
+      } else {
+        toast.success(t("settings.history.edit.saved"));
+      }
+    } catch (error) {
+      console.error("Failed to save edited transcription:", error);
+      toast.error(t("settings.history.edit.error"));
+    } finally {
+      setSaving(false);
+    }
+  };
 
   const handleLoadAudio = useCallback(
     () => getAudioUrl(entry.file_name),
@@ -404,6 +443,13 @@ const HistoryEntryComponent: React.FC<HistoryEntryProps> = ({
             <Wand2 width={16} height={16} />
           </IconButton>
           <IconButton
+            onClick={startEditing}
+            disabled={!hasTranscription || retrying || editing}
+            title={t("settings.history.edit.action")}
+          >
+            <Pencil width={16} height={16} />
+          </IconButton>
+          <IconButton
             onClick={onToggleSaved}
             disabled={retrying}
             active={entry.saved}
@@ -444,34 +490,71 @@ const HistoryEntryComponent: React.FC<HistoryEntryProps> = ({
         </div>
       </div>
 
-      <p
-        className={`italic text-sm pb-2 ${
-          retrying
-            ? ""
-            : hasTranscription
-              ? "text-text/90 select-text cursor-text whitespace-pre-wrap break-words"
-              : "text-text/40"
-        }`}
-        style={
-          retrying
-            ? { animation: "transcribe-pulse 3s ease-in-out infinite" }
-            : undefined
-        }
-      >
-        {retrying && (
-          <style>{`
+      {editing && (
+        <div className="flex flex-col gap-2 pb-2">
+          <textarea
+            value={draft}
+            onChange={(e) => setDraft(e.target.value)}
+            disabled={saving}
+            autoFocus
+            rows={Math.min(8, Math.max(2, draft.split("\n").length))}
+            className="w-full text-sm bg-background border border-mid-gray/30 rounded-md p-2 resize-y focus:outline-none focus:border-logo-primary/60"
+            aria-label={t("settings.history.edit.action")}
+          />
+          <div className="flex items-center gap-2">
+            <Button
+              variant="primary"
+              size="sm"
+              onClick={saveEdit}
+              disabled={saving || !draft.trim()}
+            >
+              {t("settings.history.edit.save")}
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setEditing(false)}
+              disabled={saving}
+            >
+              {t("settings.history.edit.cancel")}
+            </Button>
+            <span className="text-xs text-text/40">
+              {t("settings.history.edit.hint")}
+            </span>
+          </div>
+        </div>
+      )}
+
+      {!editing && (
+        <p
+          className={`italic text-sm pb-2 ${
+            retrying
+              ? ""
+              : hasTranscription
+                ? "text-text/90 select-text cursor-text whitespace-pre-wrap break-words"
+                : "text-text/40"
+          }`}
+          style={
+            retrying
+              ? { animation: "transcribe-pulse 3s ease-in-out infinite" }
+              : undefined
+          }
+        >
+          {retrying && (
+            <style>{`
             @keyframes transcribe-pulse {
               0%, 100% { color: color-mix(in srgb, var(--color-text) 40%, transparent); }
               50% { color: color-mix(in srgb, var(--color-text) 90%, transparent); }
             }
           `}</style>
-        )}
-        {retrying
-          ? t("settings.history.transcribing")
-          : hasTranscription
-            ? entry.transcription_text
-            : t("settings.history.transcriptionFailed")}
-      </p>
+          )}
+          {retrying
+            ? t("settings.history.transcribing")
+            : hasTranscription
+              ? entry.transcription_text
+              : t("settings.history.transcriptionFailed")}
+        </p>
+      )}
 
       <AudioPlayer onLoadRequest={handleLoadAudio} className="w-full" />
 

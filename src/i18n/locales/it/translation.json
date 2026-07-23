@@ -257,7 +257,8 @@
         "history": "Cronologia",
         "experimental": "Sperimentale",
         "dictionary": "Dizionario vivo",
-        "correccion": "Correzione locale"
+        "correccion": "Correzione locale",
+        "memoria": "Memoria"
       },
       "experimentalToggle": {
         "label": "Funzionalità Sperimentali",
@@ -434,6 +435,13 @@
         "add": "Aggiungi",
         "remove": "Rimuovi {{word}}",
         "duplicate": "Esiste già una sostituzione per \"{{word}}\""
+      },
+      "memoria": {
+        "title": "Memoria delle correzioni",
+        "description": "ABRAX impara quando correggi una trascrizione nella Cronologia: cancella una parola, scrivi quella giusta e la prossima volta verrà scritta correttamente. Tutto in locale.",
+        "empty": "Nessuna correzione appresa. Modifica una trascrizione nella Cronologia (icona matita) e ABRAX imparerà dalle tue modifiche.",
+        "forget": "Dimentica questa correzione",
+        "clearAll": "Dimentica tutto"
       }
     },
     "postProcessing": {
@@ -513,6 +521,15 @@
         "compiled": "Prompt compilato",
         "copy": "Copia prompt",
         "error": "Impossibile compilare il prompt"
+      },
+      "edit": {
+        "action": "Modifica trascrizione",
+        "save": "Salva",
+        "cancel": "Annulla",
+        "hint": "Al salvataggio, la Memoria impara le tue correzioni.",
+        "saved": "Trascrizione aggiornata.",
+        "learned": "Memoria: apprese {{pares}}",
+        "error": "Impossibile salvare la modifica."
       }
     },
     "debug": {

@@ -257,7 +257,8 @@
         "history": "历史",
         "experimental": "实验性",
         "dictionary": "活字典",
-        "correccion": "本地校正"
+        "correccion": "本地校正",
+        "memoria": "记忆"
       },
       "experimentalToggle": {
         "label": "实验性功能",
@@ -434,6 +435,13 @@
         "add": "添加",
         "remove": "移除 {{word}}",
         "duplicate": "\"{{word}}\" 的替换已存在"
+      },
+      "memoria": {
+        "title": "纠正记忆",
+        "description": "当你在历史记录中修正转写时，ABRAX 会学习：删掉一个词并输入正确的词，下次就会写对。全部在本地进行。",
+        "empty": "还没有学到的纠正。在历史记录中编辑转写（铅笔图标），ABRAX 会从你的修改中学习。",
+        "forget": "忘记此纠正",
+        "clearAll": "全部忘记"
       }
     },
     "postProcessing": {
@@ -513,6 +521,15 @@
         "compiled": "编译后的提示词",
         "copy": "复制提示词",
         "error": "无法编译提示词"
+      },
+      "edit": {
+        "action": "编辑转写",
+        "save": "保存",
+        "cancel": "取消",
+        "hint": "保存时，记忆会学习你的纠正。",
+        "saved": "转写已更新。",
+        "learned": "记忆：已学会 {{pares}}",
+        "error": "无法保存编辑。"
       }
     },
     "debug": {

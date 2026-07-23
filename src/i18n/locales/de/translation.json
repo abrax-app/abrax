@@ -257,7 +257,8 @@
         "history": "Verlauf",
         "experimental": "Experimentell",
         "dictionary": "Lebendiges Wörterbuch",
-        "correccion": "Lokale Korrektur"
+        "correccion": "Lokale Korrektur",
+        "memoria": "Gedächtnis"
       },
       "experimentalToggle": {
         "label": "Experimentelle Funktionen",
@@ -434,6 +435,13 @@
         "add": "Hinzufügen",
         "remove": "{{word}} entfernen",
         "duplicate": "Eine Ersetzung für \"{{word}}\" existiert bereits"
+      },
+      "memoria": {
+        "title": "Korrektur-Gedächtnis",
+        "description": "ABRAX lernt, wenn du eine Transkription im Verlauf korrigierst: Wort löschen, das richtige tippen — beim nächsten Mal wird es korrekt geschrieben. Alles lokal.",
+        "empty": "Noch keine gelernten Korrekturen. Bearbeite eine Transkription im Verlauf (Stift-Symbol) und ABRAX lernt aus deinen Änderungen.",
+        "forget": "Diese Korrektur vergessen",
+        "clearAll": "Alles vergessen"
       }
     },
     "postProcessing": {
@@ -513,6 +521,15 @@
         "compiled": "Kompilierter Prompt",
         "copy": "Prompt kopieren",
         "error": "Der Prompt konnte nicht kompiliert werden"
+      },
+      "edit": {
+        "action": "Transkription bearbeiten",
+        "save": "Speichern",
+        "cancel": "Abbrechen",
+        "hint": "Beim Speichern lernt das Gedächtnis deine Korrekturen.",
+        "saved": "Transkription aktualisiert.",
+        "learned": "Gedächtnis: gelernt {{pares}}",
+        "error": "Die Bearbeitung konnte nicht gespeichert werden."
       }
     },
     "debug": {

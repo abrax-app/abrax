@@ -41,7 +41,7 @@ pub fn build_match_key(word: &str) -> String {
 }
 
 /// Núcleo de un token sin su puntuación adyacente (prefijo/sufijo).
-fn token_core(word: &str) -> &str {
+pub fn token_core(word: &str) -> &str {
     let (prefix, suffix) = extract_punctuation(word);
     &word[prefix.len()..word.len() - suffix.len()]
 }
@@ -68,6 +68,49 @@ pub fn apply_custom_replacements(text: &str, replacements: &[(String, String)]) 
         })
         .collect::<Vec<_>>()
         .join(" ")
+}
+
+/// Reemplazos exactos por FRASE de tokens (memoria de correcciones): una
+/// ventana de N tokens consecutivos cuyos núcleos (sin puntuación adyacente)
+/// coinciden EXACTOS y case-sensitive con `from` partido por espacios se
+/// reemplaza por `to`, conservando la puntuación de los bordes. Las frases
+/// más largas ganan y la puntuación de cierre en tokens intermedios rompe la
+/// ventana (no se cruza una coma). Mismo contrato anti-colisión que
+/// [`apply_custom_replacements`], generalizado a frases.
+pub fn apply_exact_phrase_replacements(text: &str, pairs: &[(String, String)]) -> String {
+    if pairs.is_empty() {
+        return text.to_string();
+    }
+    let compiled: Vec<(Vec<&str>, &str)> = pairs
+        .iter()
+        .map(|(f, t)| (f.split_whitespace().collect::<Vec<_>>(), t.as_str()))
+        .filter(|(f, _)| !f.is_empty())
+        .collect();
+    let mut orden: Vec<usize> = (0..compiled.len()).collect();
+    orden.sort_by_key(|&i| std::cmp::Reverse(compiled[i].0.len()));
+
+    let words: Vec<&str> = text.split_whitespace().collect();
+    let mut out: Vec<String> = Vec::with_capacity(words.len());
+    let mut i = 0;
+    'outer: while i < words.len() {
+        for &pi in &orden {
+            let (ftoks, to) = &compiled[pi];
+            let n = ftoks.len();
+            if i + n <= words.len()
+                && (0..n).all(|j| token_core(words[i + j]) == ftoks[j])
+                && (0..n.saturating_sub(1)).all(|j| extract_punctuation(words[i + j]).1.is_empty())
+            {
+                let (prefix, _) = extract_punctuation(words[i]);
+                let (_, suffix) = extract_punctuation(words[i + n - 1]);
+                out.push(format!("{prefix}{to}{suffix}"));
+                i += n;
+                continue 'outer;
+            }
+        }
+        out.push(words[i].to_string());
+        i += 1;
+    }
+    out.join(" ")
 }
 
 /// Join multi-token (F5.4) — el killer Spanglish del Diccionario Vivo.
@@ -1036,6 +1079,54 @@ mod tests {
         let custom_words = vec!["R&D".to_string()];
         let result = apply_custom_words(text, &custom_words, 0.18);
         assert_eq!(result, "send it to R&D for review");
+    }
+
+    #[test]
+    fn frase_exacta_reemplaza_una_palabra_conservando_puntuacion() {
+        let pares = vec![("ábrax".to_string(), "Abrax".to_string())];
+        assert_eq!(
+            apply_exact_phrase_replacements("abre ábrax, por favor", &pares),
+            "abre Abrax, por favor"
+        );
+    }
+
+    #[test]
+    fn frase_exacta_reemplaza_multi_token() {
+        let pares = vec![("use auth store".to_string(), "useAuthStore".to_string())];
+        assert_eq!(
+            apply_exact_phrase_replacements("importa use auth store aquí", &pares),
+            "importa useAuthStore aquí"
+        );
+    }
+
+    #[test]
+    fn frase_exacta_es_case_sensitive_y_no_toca_otros_tokens() {
+        let pares = vec![("Ruth".to_string(), "rut".to_string())];
+        assert_eq!(
+            apply_exact_phrase_replacements("la ruta de Ruth", &pares),
+            "la ruta de rut"
+        );
+    }
+
+    #[test]
+    fn frase_exacta_no_cruza_puntuacion_intermedia() {
+        let pares = vec![("use auth store".to_string(), "useAuthStore".to_string())];
+        assert_eq!(
+            apply_exact_phrase_replacements("no lo use, auth store aparte", &pares),
+            "no lo use, auth store aparte"
+        );
+    }
+
+    #[test]
+    fn frase_exacta_la_mas_larga_gana() {
+        let pares = vec![
+            ("auth".to_string(), "Auth".to_string()),
+            ("use auth store".to_string(), "useAuthStore".to_string()),
+        ];
+        assert_eq!(
+            apply_exact_phrase_replacements("el use auth store listo", &pares),
+            "el useAuthStore listo"
+        );
     }
 
     #[test]

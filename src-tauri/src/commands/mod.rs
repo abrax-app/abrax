@@ -6,6 +6,7 @@ pub mod discos;
 // [ESCUCHA]
 pub mod escucha;
 pub mod history;
+pub mod memoria;
 pub mod models;
 pub mod settings;
 pub mod transcription;

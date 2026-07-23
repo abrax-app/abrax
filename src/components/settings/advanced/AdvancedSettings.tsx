@@ -4,6 +4,7 @@ import { ShowOverlay } from "../ShowOverlay";
 import { ModelUnloadTimeoutSetting } from "../ModelUnloadTimeout";
 import { CustomWords } from "../CustomWords";
 import { CustomFillerWords } from "../CustomFillerWords";
+import { MemoriaSettings } from "../MemoriaSettings";
 import { CustomReplacements } from "../CustomReplacements";
 import { CorreccionSettings } from "../CorreccionSettings";
 import { DictionarySettings } from "../DictionarySettings";
@@ -54,6 +55,10 @@ export const AdvancedSettings: React.FC = () => {
         <CustomWords descriptionMode="tooltip" grouped />
         <CustomFillerWords descriptionMode="tooltip" grouped />
         <AppendTrailingSpace descriptionMode="tooltip" grouped={true} />
+      </SettingsGroup>
+
+      <SettingsGroup title={t("settings.advanced.groups.memoria")}>
+        <MemoriaSettings descriptionMode="tooltip" grouped />
       </SettingsGroup>
 
       <SettingsGroup title={t("settings.advanced.groups.correccion")}>

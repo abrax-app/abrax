@@ -257,7 +257,8 @@
         "history": "Historik",
         "experimental": "Experimentellt",
         "dictionary": "Levande ordbok",
-        "correccion": "Lokal korrigering"
+        "correccion": "Lokal korrigering",
+        "memoria": "Minne"
       },
       "experimentalToggle": {
         "label": "Experimentella funktioner",
@@ -434,6 +435,13 @@
         "add": "Lägg till",
         "remove": "Ta bort {{word}}",
         "duplicate": "En ersättning för \"{{word}}\" finns redan"
+      },
+      "memoria": {
+        "title": "Rättelseminne",
+        "description": "ABRAX lär sig när du rättar en transkription i Historiken: ta bort ett ord, skriv det rätta, och nästa gång skrivs det korrekt. Allt lokalt.",
+        "empty": "Inga inlärda rättelser ännu. Redigera en transkription i Historiken (pennikonen) så lär sig ABRAX av dina ändringar.",
+        "forget": "Glöm denna rättelse",
+        "clearAll": "Glöm allt"
       }
     },
     "postProcessing": {
@@ -513,6 +521,15 @@
         "compiled": "Kompilerad prompt",
         "copy": "Kopiera prompt",
         "error": "Prompten kunde inte kompileras"
+      },
+      "edit": {
+        "action": "Redigera transkription",
+        "save": "Spara",
+        "cancel": "Avbryt",
+        "hint": "När du sparar lär sig Minnet dina rättelser.",
+        "saved": "Transkription uppdaterad.",
+        "learned": "Minne: lärde sig {{pares}}",
+        "error": "Redigeringen kunde inte sparas."
       }
     },
     "debug": {

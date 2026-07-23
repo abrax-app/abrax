@@ -498,6 +498,13 @@ pub struct AppSettings {
     /// por diseño. Es la vía inmune del Diccionario Vivo.
     #[serde(default)]
     pub custom_replacements: Vec<CustomReplacement>,
+    /// Memoria de correcciones: pares `de → a` aprendidos de las ediciones
+    /// del usuario en el Historial. Se aplican como reemplazo exacto por
+    /// frase en el post-proceso. Todo local.
+    #[serde(default = "default_memoria_activa")]
+    pub memoria_activa: bool,
+    #[serde(default)]
+    pub memoria_correcciones: Vec<crate::memoria::ParMemoria>,
     /// Proyecto activo del Diccionario Vivo (F5.3): ABRAX aprende la jerga
     /// del código indexándolo localmente. El índice vive en el datadir;
     /// nada sale del equipo.
@@ -700,6 +707,10 @@ fn default_vad_enabled() -> bool {
 
 fn default_debug_mode() -> bool {
     false
+}
+
+fn default_memoria_activa() -> bool {
+    true
 }
 
 fn default_log_level() -> LogLevel {
@@ -1067,6 +1078,8 @@ pub fn get_default_settings() -> AppSettings {
         log_level: default_log_level(),
         custom_words: default_custom_words(),
         custom_replacements: Vec::new(),
+        memoria_activa: default_memoria_activa(),
+        memoria_correcciones: Vec::new(),
         dictionary_project: None,
         model_unload_timeout: ModelUnloadTimeout::default(),
         word_correction_threshold: default_word_correction_threshold(),

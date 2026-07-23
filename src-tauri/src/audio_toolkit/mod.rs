@@ -10,8 +10,9 @@ pub use audio::{
     VadPolicy,
 };
 pub use text::{
-    apply_custom_replacements, apply_custom_words, apply_dictionary_fuzzy, apply_multi_token_join,
-    build_match_key, filter_transcription_output, recortar_repeticion_degenerada,
+    apply_custom_replacements, apply_custom_words, apply_dictionary_fuzzy,
+    apply_exact_phrase_replacements, apply_multi_token_join, build_match_key,
+    filter_transcription_output, recortar_repeticion_degenerada, token_core,
 };
 pub use utils::{get_cpal_host, normalizar_nivel_para_stt};
 pub use vad::{SileroVad, VoiceActivityDetector};
