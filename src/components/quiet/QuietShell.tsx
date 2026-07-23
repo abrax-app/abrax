@@ -57,9 +57,9 @@ export const QuietShell: React.FC = () => {
   // marco, así que se ocultan (queda solo el de bandeja, que el marco no tiene).
   const [conMarco, setConMarco] = useState(false);
 
-  // La escala proporcional del panel (--q-zoom) vive en quiet.css como
-  // calc(100vw / 718px): en CSS no puede quedar obsoleta tras un resize,
-  // que era el bug de la versión JS con listener.
+  // Quiet no escala su contenido: tamaños fijos como el shell Clásico, y al
+  // agrandar/maximizar la ventana solo se ve más espacio (contenido centrado
+  // por max-width en quiet.css). El zoom proporcional se quitó a pedido.
 
   // ── esfera del hero (motor canvas 2D que respira; reacciona al dictado) ──
   const cvRef = useRef<HTMLCanvasElement>(null);
