@@ -239,6 +239,17 @@ fn pasa_puertas(del: &[&str], ins: &[&str]) -> Option<(String, String)> {
 pub fn incorporar(nuevos: Vec<(String, String)>, lista: &mut Vec<ParMemoria>) -> Vec<ParMemoria> {
     let mut tocados = Vec::new();
     for (de, a) in nuevos {
+        // Gesto de DES-aprendizaje: si el candidato es exactamente el inverso
+        // de un par existente, el usuario está deshaciendo nuestra corrección
+        // (la memoria puso «hola», él volvió a escribir «helo»). Se retira el
+        // par y NO se aprende el reverso: aprender «hola → helo» tras el
+        // deshacer envenenaría una palabra común — hallado por el usuario.
+        // Si de verdad quiere el reverso, otra corrección posterior (ya sin
+        // el par presente) lo enseña por el camino normal.
+        if let Some(pos) = lista.iter().position(|p| p.de == a && p.a == de) {
+            lista.remove(pos);
+            continue;
+        }
         lista.retain(|p| p.de != a);
         if let Some(pos) = lista.iter().position(|p| p.de == de) {
             let mut par = lista.remove(pos);
@@ -428,14 +439,42 @@ mod tests {
     }
 
     #[test]
-    fn incorporar_retira_el_par_inverso() {
+    fn revertir_una_correccion_la_desaprende_sin_ensenar_el_reverso() {
+        // Escenario del usuario: la memoria tiene «helo → hola»; él deshace
+        // la corrección en su texto (borra «hola», escribe «helo»). El diff
+        // produce el candidato inverso (hola → helo): el par debe RETIRARSE y
+        // el reverso NO debe aprenderse (envenenaría «hola» para siempre).
+        let mut lista = Vec::new();
+        incorporar(vec![("helo".into(), "hola".into())], &mut lista);
+        let tocados = incorporar(vec![("hola".into(), "helo".into())], &mut lista);
+        assert!(lista.is_empty(), "el par debió des-aprenderse: {lista:?}");
+        assert!(tocados.is_empty(), "deshacer no es aprender");
+    }
+
+    #[test]
+    fn tras_desaprender_se_puede_ensenar_el_reverso_de_verdad() {
+        // Segunda intención explícita: sin el par presente, la corrección
+        // inversa sí se aprende por el camino normal.
+        let mut lista = Vec::new();
+        incorporar(vec![("helo".into(), "hola".into())], &mut lista);
+        incorporar(vec![("hola".into(), "helo".into())], &mut lista); // deshace
+        incorporar(vec![("hola".into(), "helo".into())], &mut lista); // enseña
+        assert_eq!(lista.len(), 1);
+        assert_eq!(lista[0].de, "hola");
+        assert_eq!(lista[0].a, "helo");
+    }
+
+    #[test]
+    fn incorporar_retira_el_par_con_mismo_destino_sin_ser_inverso_exacto() {
+        // La regla anti-cadenas sigue viva para el caso NO inverso: al enseñar
+        // «Roth → Ruth», el viejo «Ruth → Root» se retira (su origen coincide
+        // con el destino nuevo y encadenaría Roth→Ruth→Root); no es el gesto
+        // de deshacer porque los pares no son inversos exactos.
         let mut lista = Vec::new();
         incorporar(vec![("Ruth".into(), "Root".into())], &mut lista);
-        // El usuario ahora enseña lo contrario: el par viejo debe retirarse.
-        incorporar(vec![("Root".into(), "Ruth".into())], &mut lista);
+        incorporar(vec![("Roth".into(), "Ruth".into())], &mut lista);
         assert_eq!(lista.len(), 1);
-        assert_eq!(lista[0].de, "Root");
-        assert_eq!(lista[0].a, "Ruth");
+        assert_eq!(lista[0].de, "Roth");
     }
 
     #[test]
