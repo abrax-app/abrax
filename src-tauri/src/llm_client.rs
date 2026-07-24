@@ -59,6 +59,53 @@ struct ChatMessageResponse {
     content: Option<String>,
 }
 
+// Anthropic's native Messages API requires `max_tokens`. A dictation cleanup
+// returns text of roughly the input's length, so a bounded ceiling is plenty and
+// keeps a runaway response from stalling the demo.
+const ANTHROPIC_MAX_TOKENS: u32 = 8192;
+
+/// Request body for Anthropic's native Messages API (`POST /v1/messages`).
+/// Unlike the OpenAI-compatible providers, `system` is a top-level field and the
+/// reply comes back as `content: [{type,text}]`, not `choices[]`.
+#[derive(Debug, Serialize)]
+struct AnthropicMessagesRequest {
+    model: String,
+    max_tokens: u32,
+    messages: Vec<ChatMessage>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    system: Option<String>,
+}
+
+#[derive(Debug, Deserialize)]
+struct AnthropicMessagesResponse {
+    #[serde(default)]
+    content: Vec<AnthropicContentBlock>,
+}
+
+#[derive(Debug, Deserialize)]
+struct AnthropicContentBlock {
+    #[serde(rename = "type")]
+    block_type: String,
+    #[serde(default)]
+    text: Option<String>,
+}
+
+/// Concatenate the text of every `text` block, ignoring thinking/tool blocks.
+/// Returns None when the reply carries no usable text.
+fn extract_anthropic_text(resp: &AnthropicMessagesResponse) -> Option<String> {
+    let text: String = resp
+        .content
+        .iter()
+        .filter(|b| b.block_type == "text")
+        .filter_map(|b| b.text.as_deref())
+        .collect();
+    if text.trim().is_empty() {
+        None
+    } else {
+        Some(text)
+    }
+}
+
 /// Build headers for API requests based on provider type
 fn build_headers(provider: &PostProcessProvider, api_key: &str) -> Result<HeaderMap, String> {
     let mut headers = HeaderMap::new();
@@ -147,6 +194,15 @@ pub async fn send_chat_completion_with_schema(
     reasoning_effort: Option<String>,
     reasoning: Option<ReasoningConfig>,
 ) -> Result<Option<String>, String> {
+    // Anthropic's native API is the Messages API (`/v1/messages`), not OpenAI's
+    // `/chat/completions`. Route it to the correct endpoint and wire shape.
+    // (The `anthropic` provider declares `supports_structured_output = false`, so
+    // `json_schema`/`reasoning*` do not apply on this path.)
+    if provider.id == "anthropic" {
+        return send_anthropic_messages(provider, &api_key, model, user_content, system_prompt)
+            .await;
+    }
+
     let base_url = provider.base_url.trim_end_matches('/');
     let url = format!("{}/chat/completions", base_url);
 
@@ -219,6 +275,61 @@ pub async fn send_chat_completion_with_schema(
         .and_then(|choice| choice.message.content.clone()))
 }
 
+/// Send a request to Anthropic's native Messages API. Anthropic exposes no
+/// OpenAI-compatible `/chat/completions` endpoint, so the `anthropic` provider
+/// must be routed here rather than through the OpenAI path.
+async fn send_anthropic_messages(
+    provider: &PostProcessProvider,
+    api_key: &str,
+    model: &str,
+    user_content: String,
+    system_prompt: Option<String>,
+) -> Result<Option<String>, String> {
+    let base_url = provider.base_url.trim_end_matches('/');
+    let url = format!("{}/messages", base_url);
+
+    debug!("Sending Anthropic Messages request to: {}", url);
+
+    // create_client already sets `x-api-key` + `anthropic-version` for this provider.
+    let client = create_client(provider, api_key)?;
+
+    let request_body = AnthropicMessagesRequest {
+        model: model.to_string(),
+        max_tokens: ANTHROPIC_MAX_TOKENS,
+        messages: vec![ChatMessage {
+            role: "user".to_string(),
+            content: user_content,
+        }],
+        system: system_prompt,
+    };
+
+    let response = client
+        .post(&url)
+        .json(&request_body)
+        .send()
+        .await
+        .map_err(|e| format!("HTTP request failed: {}", e))?;
+
+    let status = response.status();
+    if !status.is_success() {
+        let error_text = response
+            .text()
+            .await
+            .unwrap_or_else(|_| "Failed to read error response".to_string());
+        return Err(format!(
+            "API request failed with status {}: {}",
+            status, error_text
+        ));
+    }
+
+    let completion: AnthropicMessagesResponse = response
+        .json()
+        .await
+        .map_err(|e| format!("Failed to parse API response: {}", e))?;
+
+    Ok(extract_anthropic_text(&completion))
+}
+
 /// Fetch available models from an OpenAI-compatible API
 /// Returns a list of model IDs
 pub async fn fetch_models(
@@ -277,4 +388,70 @@ pub async fn fetch_models(
     }
 
     Ok(models)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn anthropic_request_uses_messages_api_shape() {
+        let req = AnthropicMessagesRequest {
+            model: "claude-haiku-4-5".to_string(),
+            max_tokens: ANTHROPIC_MAX_TOKENS,
+            messages: vec![ChatMessage {
+                role: "user".to_string(),
+                content: "hola".to_string(),
+            }],
+            system: Some("Eres un corrector de dictado.".to_string()),
+        };
+        let v = serde_json::to_value(&req).unwrap();
+        assert_eq!(v["model"], "claude-haiku-4-5");
+        assert_eq!(v["max_tokens"], ANTHROPIC_MAX_TOKENS);
+        assert_eq!(v["system"], "Eres un corrector de dictado.");
+        assert_eq!(v["messages"][0]["role"], "user");
+        assert_eq!(v["messages"][0]["content"], "hola");
+        // Nothing OpenAI-shaped leaks into the Anthropic body.
+        assert!(v.get("response_format").is_none());
+        assert!(v.get("choices").is_none());
+    }
+
+    #[test]
+    fn anthropic_request_omits_system_when_absent() {
+        let req = AnthropicMessagesRequest {
+            model: "m".to_string(),
+            max_tokens: 8192,
+            messages: vec![ChatMessage {
+                role: "user".to_string(),
+                content: "x".to_string(),
+            }],
+            system: None,
+        };
+        let v = serde_json::to_value(&req).unwrap();
+        assert!(v.get("system").is_none());
+    }
+
+    #[test]
+    fn extracts_and_concatenates_text_blocks() {
+        let resp: AnthropicMessagesResponse = serde_json::from_str(
+            r#"{"content":[{"type":"text","text":"hola"},{"type":"text","text":" mundo"}]}"#,
+        )
+        .unwrap();
+        assert_eq!(extract_anthropic_text(&resp).as_deref(), Some("hola mundo"));
+    }
+
+    #[test]
+    fn ignores_non_text_blocks() {
+        let resp: AnthropicMessagesResponse = serde_json::from_str(
+            r#"{"content":[{"type":"thinking","thinking":"..."},{"type":"text","text":"solo esto"}]}"#,
+        )
+        .unwrap();
+        assert_eq!(extract_anthropic_text(&resp).as_deref(), Some("solo esto"));
+    }
+
+    #[test]
+    fn empty_content_yields_none() {
+        let resp: AnthropicMessagesResponse = serde_json::from_str(r#"{"content":[]}"#).unwrap();
+        assert!(extract_anthropic_text(&resp).is_none());
+    }
 }
