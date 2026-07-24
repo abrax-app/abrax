@@ -34,6 +34,9 @@ Estado consolidado al **2026-07-12**. Toda afirmación de este documento está r
 | **F14 (P3)** — versión de respaldo falsa ("0.1.2") si fallaba la lectura de versión                        | `3a1e1c8`             | Fallback vacío; sin datos inventados                                                   |
 | **R13 (P3)** — comandos IPC que fallarían al ser invocados                                                 | `c661c45`             | Eliminados junto con C1 (no tenían llamadores)                                         |
 | Marca visible remanente (título de ventana, tooltip de bandeja, CLI, icono interno)                        | `2a2e6a3`             | Barrido de la palabra en todo el árbol + arranque real                                 |
+| **BYOK (post-proceso)** — el proveedor Anthropic fallaba: usaba `/chat/completions` estilo OpenAI en vez de la Messages API nativa (`/v1/messages`, `max_tokens`, `system` top-level, `content[].text`) | `c8325dc`             | Tests unitarios de forma de petición y parseo de respuesta (5, en verde). E2E con key real de Anthropic pendiente |
+
+*Documentación: se añade `docs/PRIVACY.md` (modelo de datos y privacidad; declara S2 keys en claro, S4, S6, S8, S10 con evidencia archivo:línea) — `9fb77c3`.*
 
 ## 4. Funciones nuevas o liberadas
 
