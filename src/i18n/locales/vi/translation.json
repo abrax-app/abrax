@@ -348,6 +348,7 @@
       "clipboardHandling": {
         "title": "Xử lý Clipboard",
         "description": "Không sửa đổi Clipboard giữ nguyên nội dung clipboard hiện tại sau khi chuyển đổi. Sao chép vào Clipboard để lại kết quả chuyển đổi trong clipboard sau khi dán.",
+        "lockedByPasteMethod": "Locked by the paste method: pasting through the clipboard already leaves the transcription there. Choose Direct or None if you want your clipboard left untouched.",
         "options": {
           "dontModify": "Không sửa đổi Clipboard",
           "copyToClipboard": "Sao chép vào Clipboard"

@@ -20,6 +20,7 @@ import { ApiKeyField } from "../PostProcessingSettingsApi/ApiKeyField";
 import { ModelSelect } from "../PostProcessingSettingsApi/ModelSelect";
 import { usePostProcessProviderState } from "../PostProcessingSettingsApi/usePostProcessProviderState";
 import { ShortcutInput } from "../ShortcutInput";
+import { PostProcessingToggle } from "../PostProcessingToggle";
 import { useSettings } from "../../../hooks/useSettings";
 
 const PostProcessingSettingsApiComponent: React.FC = () => {
@@ -424,11 +425,19 @@ export const PostProcessingSettingsPrompts = React.memo(
 );
 PostProcessingSettingsPrompts.displayName = "PostProcessingSettingsPrompts";
 
+/**
+ * El interruptor del post-proceso vivía en el grupo Experimental de Ajustes →
+ * Avanzado, que se retiró. Ahora vive aquí, en su propia sección: por eso la
+ * pestaña se muestra siempre en la barra lateral (ver `SECTIONS_CONFIG`) —
+ * si siguiera oculta tras `post_process_enabled` no habría forma de encenderlo.
+ */
 export const PostProcessingSettings: React.FC = () => {
   const { t } = useTranslation();
 
   return (
     <div className="max-w-3xl w-full mx-auto space-y-6">
+      <PostProcessingToggle descriptionMode="tooltip" />
+
       <SettingsGroup title={t("settings.postProcessing.hotkey.title")}>
         <ShortcutInput
           shortcutId="transcribe_with_post_process"

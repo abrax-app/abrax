@@ -348,6 +348,7 @@
       "clipboardHandling": {
         "title": "Робота з буфером обміну",
         "description": "Не змінювати буфер обміну зберігає поточний вміст буфера після транскрипції. Копіювати в буфер обміну залишає результат транскрипції в буфері після вставки.",
+        "lockedByPasteMethod": "Locked by the paste method: pasting through the clipboard already leaves the transcription there. Choose Direct or None if you want your clipboard left untouched.",
         "options": {
           "dontModify": "Не змінювати буфер обміну",
           "copyToClipboard": "Копіювати в буфер обміну"

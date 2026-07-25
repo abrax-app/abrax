@@ -604,6 +604,26 @@ fn should_send_auto_submit(auto_submit: bool, paste_method: PasteMethod) -> bool
     auto_submit && paste_method != PasteMethod::None
 }
 
+/// El manejo del portapapeles va atado al método de pegado.
+///
+/// Pegar por portapapeles ya escribe el texto ahí para poder mandar el atajo;
+/// dejarlo en «no modificar» solo sirve para restaurar lo anterior y deja al
+/// usuario sin el dictado en el portapapeles justo cuando acaba de pasar por
+/// él. Con esos métodos la app fija «copiar al portapapeles» y la UI lo enseña
+/// bloqueado. Directo, ninguno y script externo no tocan el portapapeles, así
+/// que ahí el ajuste sigue siendo del usuario.
+fn effective_clipboard_handling(
+    paste_method: PasteMethod,
+    configured: ClipboardHandling,
+) -> ClipboardHandling {
+    match paste_method {
+        PasteMethod::CtrlV | PasteMethod::CtrlShiftV | PasteMethod::ShiftInsert => {
+            ClipboardHandling::CopyToClipboard
+        }
+        PasteMethod::Direct | PasteMethod::None | PasteMethod::ExternalScript => configured,
+    }
+}
+
 pub fn paste(text: String, app_handle: AppHandle) -> Result<(), String> {
     let settings = get_settings(&app_handle);
     let paste_method = settings.paste_method;
@@ -670,7 +690,9 @@ pub fn paste(text: String, app_handle: AppHandle) -> Result<(), String> {
     }
 
     // After pasting, optionally copy to clipboard based on settings
-    if settings.clipboard_handling == ClipboardHandling::CopyToClipboard {
+    if effective_clipboard_handling(paste_method, settings.clipboard_handling)
+        == ClipboardHandling::CopyToClipboard
+    {
         let clipboard = app_handle.clipboard();
         clipboard
             .write_text(&text)
@@ -701,5 +723,39 @@ mod tests {
         assert!(should_send_auto_submit(true, PasteMethod::Direct));
         assert!(should_send_auto_submit(true, PasteMethod::CtrlShiftV));
         assert!(should_send_auto_submit(true, PasteMethod::ShiftInsert));
+    }
+
+    #[test]
+    fn clipboard_paste_forces_copy_to_clipboard() {
+        for method in [
+            PasteMethod::CtrlV,
+            PasteMethod::CtrlShiftV,
+            PasteMethod::ShiftInsert,
+        ] {
+            assert_eq!(
+                effective_clipboard_handling(method, ClipboardHandling::DontModify),
+                ClipboardHandling::CopyToClipboard,
+                "{:?} pega a través del portapapeles: no puede quedarse en «no modificar»",
+                method
+            );
+        }
+    }
+
+    #[test]
+    fn non_clipboard_paste_keeps_the_configured_handling() {
+        for method in [
+            PasteMethod::Direct,
+            PasteMethod::None,
+            PasteMethod::ExternalScript,
+        ] {
+            assert_eq!(
+                effective_clipboard_handling(method, ClipboardHandling::DontModify),
+                ClipboardHandling::DontModify
+            );
+            assert_eq!(
+                effective_clipboard_handling(method, ClipboardHandling::CopyToClipboard),
+                ClipboardHandling::CopyToClipboard
+            );
+        }
     }
 }

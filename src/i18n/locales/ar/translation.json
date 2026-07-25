@@ -327,6 +327,7 @@
       "clipboardHandling": {
         "title": "التعامل مع الحافظة",
         "description": ".'عدم تعديل الحافظة' يحافظ على محتويات حافظتك الحالية بعد التفريغ. 'نسخ إلى الحافظة' يترك نتيجة التفريغ في حافظتك بعد اللصق",
+        "lockedByPasteMethod": "Locked by the paste method: pasting through the clipboard already leaves the transcription there. Choose Direct or None if you want your clipboard left untouched.",
         "options": {
           "dontModify": "عدم تعديل الحافظة",
           "copyToClipboard": "نسخ إلى الحافظة"

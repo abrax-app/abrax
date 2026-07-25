@@ -348,6 +348,7 @@
       "clipboardHandling": {
         "title": "Klembordbeheer",
         "description": "'Klembord niet aanpassen' behoudt je huidige klembordinhoud na een transcriptie. 'Kopiëren naar klembord' laat de getranscribeerde tekst achter op je klembord.",
+        "lockedByPasteMethod": "Locked by the paste method: pasting through the clipboard already leaves the transcription there. Choose Direct or None if you want your clipboard left untouched.",
         "options": {
           "dontModify": "Klembord niet aanpassen",
           "copyToClipboard": "Kopiëren naar klembord"

@@ -348,6 +348,7 @@
       "clipboardHandling": {
         "title": "התנהגות הלוח",
         "description": "אל תשנה את הלוח ישמור על תוכן הלוח הנוכחי שלך אחרי התמלול. העתק ללוח ישאיר את תוצאת התמלול בלוח אחרי ההדבקה.",
+        "lockedByPasteMethod": "Locked by the paste method: pasting through the clipboard already leaves the transcription there. Choose Direct or None if you want your clipboard left untouched.",
         "options": {
           "dontModify": "אל תשנה את הלוח",
           "copyToClipboard": "העתק ללוח"

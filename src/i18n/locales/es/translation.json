@@ -348,6 +348,7 @@
       "clipboardHandling": {
         "title": "Manejo del Portapapeles",
         "description": "No Modificar Portapapeles conserva el contenido actual de tu portapapeles después de la transcripción. Copiar al Portapapeles deja el resultado de la transcripción en tu portapapeles después de pegar.",
+        "lockedByPasteMethod": "Fijado por el método de pegado: pegar por el portapapeles ya deja ahí la transcripción. Elige Directo o Ninguno si quieres conservar tu portapapeles.",
         "options": {
           "dontModify": "No Modificar Portapapeles",
           "copyToClipboard": "Copiar al Portapapeles"

@@ -348,6 +348,7 @@
       "clipboardHandling": {
         "title": "Hantering av urklipp",
         "description": "Ändra inte urklipp bevarar ditt nuvarande urklippsinnehåll efter transkription. Kopiera till urklipp lämnar transkriptionsresultatet i ditt urklipp efter att ha klistrat in.",
+        "lockedByPasteMethod": "Locked by the paste method: pasting through the clipboard already leaves the transcription there. Choose Direct or None if you want your clipboard left untouched.",
         "options": {
           "dontModify": "Ändra inte urklipp",
           "copyToClipboard": "Kopiera till urklipp"

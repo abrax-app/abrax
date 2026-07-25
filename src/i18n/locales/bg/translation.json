@@ -348,6 +348,7 @@
       "clipboardHandling": {
         "title": "Работа с клипборда",
         "description": "„Без промяна на клипборда“ запазва съдържанието на клипборда след транскрипция. „Копиране в клипборда“ оставя резултата в клипборда след поставяне.",
+        "lockedByPasteMethod": "Locked by the paste method: pasting through the clipboard already leaves the transcription there. Choose Direct or None if you want your clipboard left untouched.",
         "options": {
           "dontModify": "Без промяна на клипборда",
           "copyToClipboard": "Копиране в клипборда"

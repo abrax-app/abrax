@@ -348,6 +348,7 @@
       "clipboardHandling": {
         "title": "Обработка буфера обмена",
         "description": "Функция «Не изменять буфер обмена» сохраняет текущее содержимое буфера обмена после транскрипции. Копировать в буфер обмена оставляет результат транскрипции в буфере обмена после вставки.",
+        "lockedByPasteMethod": "Locked by the paste method: pasting through the clipboard already leaves the transcription there. Choose Direct or None if you want your clipboard left untouched.",
         "options": {
           "dontModify": "Не изменять буфер обмена",
           "copyToClipboard": "Копировать в буфер обмена"

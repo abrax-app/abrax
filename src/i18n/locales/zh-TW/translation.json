@@ -348,6 +348,7 @@
       "clipboardHandling": {
         "title": "剪貼簿處理",
         "description": "不修改剪貼簿將在轉錄後保留目前剪貼簿內容。複製到剪貼簿會在貼上後將轉錄結果留在剪貼簿中",
+        "lockedByPasteMethod": "Locked by the paste method: pasting through the clipboard already leaves the transcription there. Choose Direct or None if you want your clipboard left untouched.",
         "options": {
           "dontModify": "不修改剪貼簿",
           "copyToClipboard": "複製到剪貼簿"
