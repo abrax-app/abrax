@@ -11,7 +11,9 @@
 
 mod handler;
 pub mod handy_keys;
-mod tauri_impl;
+// `pub` para que el fallback de Secure Input (macOS) pueda registrar en sombra
+// por la vía Carbon del plugin de Tauri, inmune a los CGEventTaps.
+pub mod tauri_impl;
 
 use log::{error, info, warn};
 use serde::Serialize;

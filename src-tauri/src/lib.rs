@@ -19,6 +19,7 @@ mod memoria_en_sitio;
 mod overlay;
 pub mod portable;
 mod prompt_compiler;
+mod secure_input;
 mod settings;
 mod shortcut;
 mod signal_handle;
@@ -673,6 +674,8 @@ pub fn run(cli_args: CliArgs) {
             commands::settings::get_available_accelerators,
             shortcut::handy_keys::start_handy_keys_recording,
             shortcut::handy_keys::stop_handy_keys_recording,
+            secure_input::get_secure_input_status,
+            secure_input::run_keyboard_diagnostic,
             show_main_window_command,
             commands::cancel_operation,
             commands::is_portable,
@@ -1020,6 +1023,12 @@ pub fn run(cli_args: CliArgs) {
             app.manage(TranscriptionCoordinator::new(app_handle.clone()));
 
             initialize_core_logic(&app_handle);
+
+            // Monitor de Secure Input (macOS): detecta el estado que deja los
+            // CGEventTaps sin KeyDown/KeyUp y activa el registro en sombra por
+            // la vía Carbon para que el atajo siga disparando. En el resto de
+            // plataformas es un no-op. Ver secure_input.rs y upstream #1578.
+            secure_input::init(&app_handle);
 
             // Diccionario Vivo: cargar el índice del proyecto activo (no-op
             // si está apagado o no hay índice en el datadir).
