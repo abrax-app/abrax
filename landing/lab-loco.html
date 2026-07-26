@@ -1,0 +1,419 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>LAB LOCO · esfera sin límites</title>
+    <meta name="robots" content="noindex" />
+    <link rel="icon" type="image/svg+xml" href="assets/abrax-favicon.svg" />
+    <style>
+      :root {
+        --cian: #2fd9ff;
+        --violeta: #8b5cf6;
+        --magenta: #f23dc4;
+        --tinta: #05060f;
+        --panel: #0b0d1c;
+        --texto: #c9d4e0;
+        --suave: #8a94a6;
+        --borde: #3a1c40;
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+      }
+      html,
+      body {
+        height: 100%;
+        background: var(--tinta);
+        color: var(--texto);
+        font-family: ui-monospace, "Cascadia Code", "JetBrains Mono", Menlo,
+          Consolas, monospace;
+        overflow: hidden;
+      }
+      #escena {
+        position: fixed;
+        inset: 0;
+      }
+      #esfera {
+        width: 100%;
+        height: 100%;
+        display: block;
+        cursor: grab;
+      }
+      #esfera.arrastrando {
+        cursor: grabbing;
+      }
+      .panel {
+        position: fixed;
+        top: 16px;
+        right: 16px;
+        z-index: 10;
+        width: 300px;
+        max-height: calc(100vh - 32px);
+        overflow-y: auto;
+        background: rgba(20, 8, 24, 0.88);
+        backdrop-filter: blur(10px);
+        border: 1px solid var(--borde);
+        border-radius: 14px;
+        padding: 18px;
+      }
+      .panel h1 {
+        font-size: 12px;
+        letter-spacing: 0.24em;
+        text-transform: uppercase;
+        color: #fff;
+      }
+      .panel h1::before {
+        content: "◈ ";
+        color: var(--magenta);
+      }
+      .panel .sub {
+        font-size: 10px;
+        color: var(--suave);
+        letter-spacing: 0.08em;
+        margin: 6px 0 14px;
+      }
+      .ctrl {
+        margin-bottom: 13px;
+      }
+      .ctrl label {
+        display: flex;
+        justify-content: space-between;
+        font-size: 10.5px;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--suave);
+        margin-bottom: 5px;
+      }
+      .ctrl label b {
+        color: var(--magenta);
+        font-weight: 600;
+      }
+      .ctrl input[type="range"] {
+        width: 100%;
+        accent-color: var(--magenta);
+      }
+      .fila-botones {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin: 14px 0;
+      }
+      button,
+      select {
+        font-family: inherit;
+        font-size: 10.5px;
+        letter-spacing: 0.1em;
+        color: var(--texto);
+        background: rgba(242, 61, 196, 0.08);
+        border: 1px solid rgba(242, 61, 196, 0.4);
+        border-radius: 8px;
+        padding: 8px 12px;
+        cursor: pointer;
+      }
+      button:hover {
+        background: rgba(242, 61, 196, 0.18);
+      }
+      button.preset {
+        border-color: rgba(139, 92, 246, 0.5);
+        background: rgba(139, 92, 246, 0.1);
+      }
+      button.activo {
+        border-color: var(--cian);
+        background: rgba(47, 217, 255, 0.12);
+      }
+      #valores {
+        font-size: 10.5px;
+        line-height: 1.7;
+        color: var(--magenta);
+        background: var(--tinta);
+        border: 1px solid var(--borde);
+        border-radius: 8px;
+        padding: 10px 12px;
+        white-space: pre;
+        user-select: all;
+      }
+      .nota {
+        font-size: 9.5px;
+        color: var(--suave);
+        margin-top: 10px;
+        letter-spacing: 0.06em;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="escena"><canvas id="esfera"></canvas></div>
+
+    <aside class="panel" aria-label="Controles del laboratorio loco">
+      <h1>Lab LOCO</h1>
+      <p class="sub">
+        Motor clonado, sin cinturón de seguridad. Nada de aquí toca la landing.
+      </p>
+
+      <div class="ctrl">
+        <label>Luz del núcleo <b id="v-nucleo">0.50</b></label>
+        <input id="s-nucleo" type="range" min="0" max="5" step="0.05" value="0.5" />
+      </div>
+      <div class="ctrl">
+        <label>Halo rosado <b id="v-halo">0.65</b></label>
+        <input id="s-halo" type="range" min="0" max="5" step="0.05" value="0.65" />
+      </div>
+      <div class="ctrl">
+        <label>Luz interior <b id="v-interior">1.10</b></label>
+        <input id="s-interior" type="range" min="0" max="5" step="0.05" value="1.1" />
+      </div>
+      <div class="ctrl">
+        <label>Anillos del isotipo <b id="v-anillo">0.70</b></label>
+        <input id="s-anillo" type="range" min="0" max="1.5" step="0.05" value="0.7" />
+      </div>
+      <div class="ctrl">
+        <label>Anillos cruzados <b id="v-cruzados">0.00</b></label>
+        <input id="s-cruzados" type="range" min="0" max="1.5" step="0.05" value="0" />
+      </div>
+      <div class="ctrl">
+        <label>Picos blancos <b id="v-blanco">0.40</b></label>
+        <input id="s-blanco" type="range" min="0" max="5" step="0.05" value="0.4" />
+      </div>
+      <div class="ctrl">
+        <label>Orgánico (bultos) <b id="v-organico">0.30</b></label>
+        <input id="s-organico" type="range" min="0" max="4" step="0.05" value="0.3" />
+      </div>
+      <div class="ctrl">
+        <label>Ruido (estructura) <b id="v-ruido">0.34</b></label>
+        <input id="s-ruido" type="range" min="0" max="2.4" step="0.02" value="0.34" />
+      </div>
+      <div class="ctrl">
+        <label>Escala del ruido <b id="v-ruidoEscala">2.20</b></label>
+        <input id="s-ruidoEscala" type="range" min="0.2" max="15" step="0.1" value="2.2" />
+      </div>
+      <div class="ctrl">
+        <label>Velocidad del ruido <b id="v-ruidoVel">0.90</b></label>
+        <input id="s-ruidoVel" type="range" min="0" max="10" step="0.1" value="0.9" />
+      </div>
+      <div class="ctrl">
+        <label>Venas (filamentos) <b id="v-venas">0.00</b></label>
+        <input id="s-venas" type="range" min="0" max="5" step="0.05" value="0" />
+      </div>
+      <div class="ctrl">
+        <label>Escala de venas <b id="v-venaEscala">3.00</b></label>
+        <input id="s-venaEscala" type="range" min="0.3" max="20" step="0.1" value="3" />
+      </div>
+      <div class="ctrl">
+        <label>Velocidad de giro <b id="v-giro">0.90</b></label>
+        <input id="s-giro" type="range" min="0" max="10" step="0.1" value="0.9" />
+      </div>
+      <div class="ctrl">
+        <label>Sensibilidad <b id="v-sens">1.00</b></label>
+        <input id="s-sens" type="range" min="0.05" max="6" step="0.05" value="1" />
+      </div>
+
+      <div class="fila-botones">
+        <button class="preset" id="btnBase">Firma ABRAX</button>
+        <button class="preset" id="btnSinAnillos">Sin anillos</button>
+        <button class="preset" id="btnArmilar">Armilar</button>
+      </div>
+      <div class="fila-botones">
+        <button class="preset" id="btnCaos">CAOS TOTAL</button>
+        <button class="preset" id="btnGelatina">Gelatina</button>
+        <button class="preset" id="btnErizo">Erizo eléctrico</button>
+      </div>
+      <div class="fila-botones">
+        <button id="btnMic">🎤 Hablar</button>
+        <button id="btnFeed">Dictado</button>
+        <button id="btnVaciar">Vaciar</button>
+        <select id="selCalidad" aria-label="Calidad">
+          <option value="auto" selected>Auto</option>
+          <option value="alta">Alta</option>
+          <option value="media">Media</option>
+          <option value="baja">Baja</option>
+        </select>
+      </div>
+      <p class="sub" id="estado" role="status">modo demo</p>
+
+      <div id="valores">{}</div>
+      <p class="nota">
+        Si algo te gusta de verdad, copia el JSON y lo domesticamos en el lab
+        serio. Si el navegador llora, baja la calidad.
+      </p>
+    </aside>
+
+    <script src="vendor/three.min.js"></script>
+    <script src="js/esfera-loca.js"></script>
+    <script>
+      (function () {
+        "use strict";
+        ESFERA.init({
+          canvas: document.getElementById("esfera"),
+          contenedor: document.getElementById("escena"),
+          distancia: 3.4,
+          onEstado: function (txt) {
+            document.getElementById("estado").textContent = txt;
+          },
+        });
+
+        const claves = [
+          "nucleo",
+          "halo",
+          "interior",
+          "anillo",
+          "cruzados",
+          "blanco",
+          "organico",
+          "ruido",
+          "ruidoEscala",
+          "ruidoVel",
+          "venas",
+          "venaEscala",
+          "giro",
+        ];
+        function leerSliders() {
+          const o = {};
+          claves.forEach(function (k) {
+            o[k] = parseFloat(document.getElementById("s-" + k).value);
+          });
+          return o;
+        }
+        function pintarValores() {
+          const o = leerSliders();
+          claves.forEach(function (k) {
+            document.getElementById("v-" + k).textContent = o[k].toFixed(2);
+          });
+          const s = parseFloat(document.getElementById("s-sens").value);
+          document.getElementById("v-sens").textContent = s.toFixed(2);
+          document.getElementById("valores").textContent = JSON.stringify(
+            o,
+            null,
+            1,
+          );
+        }
+        function aplicar() {
+          ESFERA.tune(leerSliders());
+          ESFERA.setSensitivity(
+            parseFloat(document.getElementById("s-sens").value),
+          );
+          pintarValores();
+        }
+        claves.concat(["sens"]).forEach(function (k) {
+          document.getElementById("s-" + k).addEventListener("input", aplicar);
+        });
+        function ponerSliders(o) {
+          Object.keys(o).forEach(function (k) {
+            const s = document.getElementById("s-" + k);
+            if (s) s.value = o[k];
+          });
+          aplicar();
+        }
+
+        const FIRMA = {
+          nucleo: 0.55,
+          halo: 0.6,
+          interior: 1,
+          anillo: 0.7,
+          cruzados: 0,
+          blanco: 0.5,
+          organico: 0.22,
+          ruido: 0.15,
+          ruidoEscala: 2,
+          ruidoVel: 0.7,
+          venas: 0,
+          venaEscala: 3,
+          giro: 0.8,
+          sens: 1,
+        };
+        document
+          .getElementById("btnBase")
+          .addEventListener("click", () => ponerSliders(FIRMA));
+        document
+          .getElementById("btnSinAnillos")
+          .addEventListener("click", () =>
+            ponerSliders(Object.assign({}, FIRMA, { anillo: 0, cruzados: 0 })),
+          );
+        document
+          .getElementById("btnArmilar")
+          .addEventListener("click", () =>
+            ponerSliders(
+              Object.assign({}, FIRMA, { anillo: 0.5, cruzados: 0.75 }),
+            ),
+          );
+        document.getElementById("btnCaos").addEventListener("click", () =>
+          ponerSliders({
+            nucleo: 2.2,
+            halo: 2.5,
+            interior: 3,
+            anillo: 1.4,
+            cruzados: 1.3,
+            blanco: 2,
+            organico: 2.5,
+            ruido: 1.6,
+            ruidoEscala: 6,
+            ruidoVel: 6,
+            venas: 2.5,
+            venaEscala: 8,
+            giro: 5,
+            sens: 3,
+          }),
+        );
+        document.getElementById("btnGelatina").addEventListener("click", () =>
+          ponerSliders({
+            nucleo: 0.4,
+            halo: 1.2,
+            interior: 1.6,
+            anillo: 0.3,
+            cruzados: 0.15,
+            blanco: 0.3,
+            organico: 3.5,
+            ruido: 0.9,
+            ruidoEscala: 1.1,
+            ruidoVel: 2.5,
+            venas: 0,
+            venaEscala: 3,
+            giro: 0.4,
+            sens: 1.4,
+          }),
+        );
+        document.getElementById("btnErizo").addEventListener("click", () =>
+          ponerSliders({
+            nucleo: 0.8,
+            halo: 0.4,
+            interior: 0.6,
+            anillo: 0,
+            cruzados: 0.8,
+            blanco: 1.6,
+            organico: 0.5,
+            ruido: 1.8,
+            ruidoEscala: 12,
+            ruidoVel: 1.2,
+            venas: 3,
+            venaEscala: 15,
+            giro: 1.5,
+            sens: 2,
+          }),
+        );
+
+        const btnMic = document.getElementById("btnMic");
+        btnMic.addEventListener("click", async function () {
+          const activo = await ESFERA.toggleMic();
+          btnMic.textContent = activo ? "⏹ Detener" : "🎤 Hablar";
+          btnMic.classList.toggle("activo", activo);
+        });
+        let feed = false;
+        const btnFeed = document.getElementById("btnFeed");
+        btnFeed.addEventListener("click", function () {
+          feed = !feed;
+          if (feed) ESFERA.iniciarFeed(600);
+          else ESFERA.detenerFeed();
+          btnFeed.textContent = feed ? "● …" : "Dictado";
+          btnFeed.classList.toggle("activo", feed);
+        });
+        document
+          .getElementById("btnVaciar")
+          .addEventListener("click", () => ESFERA.vaciarPalabras());
+        document
+          .getElementById("selCalidad")
+          .addEventListener("change", (e) => ESFERA.setQuality(e.target.value));
+
+        document.getElementById("btnSinAnillos").click();
+      })();
+    </script>
+  </body>
+</html>
