@@ -1,7 +1,7 @@
 /**
  * esferaHome — motor de la esfera del home orbital (canvas 2D, liviano).
  *
- * Puerto fiel del prototipo `assets/prototipos/abrax_mockup_app_v6.html`: una
+ * Puerto fiel del prototipo `abrax_mockup_app_v6.html` (prototipo fuera del repo): una
  * vista polar de puntos que respira, un anillo orbital con física de "sector
  * dominante" (los puntos migran hacia el nodo enfocado) y un núcleo que late.
  * Al abrir una sección la esfera se abre como iris (los puntos migran al borde

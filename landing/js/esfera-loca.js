@@ -1,6 +1,6 @@
 /* ═══════════════════════════════════════════════════════════════════════
    ESFERA «palabras vivas» · FORK LOCO con REBRAND: el isotipo hecho carne
-   Origen: assets/prototipos/esfera_con_palabras.html (prototipo aprobado).
+   Origen: esfera_con_palabras.html (prototipo aprobado, fuera del repo).
    Cambios respecto al prototipo:
    - init({canvas,...}) con tamaño de contenedor + ResizeObserver (antes fullscreen).
    - Sin UI propia: el estado se notifica por callback onEstado(texto).

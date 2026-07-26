@@ -1,7 +1,7 @@
 /*
  * ESFERA «flor cósmica» — motor de render del overlay de grabación.
  *
- * Port del prototipo aprobado `assets/prototipos/esfera_v2_elegante.html`
+ * Port del prototipo aprobado `esfera_v2_elegante.html` (prototipo fuera del repo)
  * (dirección de arte del 11/07, BLK-002): mismos shaders, misma geometría de
  * anillos concéntricos, mismo suavizado de audio. Se retira todo lo que no
  * pertenece a un overlay: chrome de UI, modos demo/micrófono (el espectro

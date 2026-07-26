@@ -13,7 +13,6 @@ scripts/            utilidades de desarrollo (checks de i18n/nix, generador del 
 tests/              spec de Playwright (smoke del dev server)
 docs/               documentación técnica y decisiones
 landing/            página web estática (independiente de la app)
-assets/prototipos/  mockups HTML históricos de diseño (no entran al build)
 .github/workflows/  CI (tests, calidad, nix, playwright, build/release)
 .nix / nix/         empaquetado Nix para Linux (heredado, autocontenido)
 ```
