@@ -295,7 +295,7 @@
       },
       "showTrayIcon": {
         "label": "트레이 아이콘 표시",
-        "description": "시스템 트레이에 Abrax 아이콘을 표시합니다."
+        "description": "시스템 트레이에 Abrax 아이콘을 표시합니다. 표시하지 않으면 창을 닫을 때 Abrax가 완전히 종료됩니다(macOS에서는 Dock에 남습니다)."
       },
       "overlay": {
         "style": {

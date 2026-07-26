@@ -295,7 +295,7 @@
       },
       "showTrayIcon": {
         "label": "Taskleistensymbol anzeigen",
-        "description": "Das Abrax-Symbol in der Taskleiste anzeigen."
+        "description": "Das Abrax-Symbol in der Taskleiste anzeigen. Ohne es wird Abrax durch Schließen des Fensters vollständig beendet (unter macOS bleibt es im Dock)."
       },
       "overlay": {
         "style": {

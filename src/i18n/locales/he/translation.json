@@ -295,7 +295,7 @@
       },
       "showTrayIcon": {
         "label": "הצג אייקון במגש",
-        "description": "הצג את האייקון של Abrax במגש המערכת."
+        "description": "הצג את האייקון של Abrax במגש המערכת. בלעדיו, סגירת החלון סוגרת את Abrax לגמרי (ב-macOS הוא נשאר ב-Dock)."
       },
       "overlay": {
         "style": {

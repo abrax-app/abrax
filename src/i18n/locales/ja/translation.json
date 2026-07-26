@@ -295,7 +295,7 @@
       },
       "showTrayIcon": {
         "label": "トレイアイコンを表示",
-        "description": "システムトレイに Abrax のアイコンを表示します。"
+        "description": "システムトレイに Abrax のアイコンを表示します。 非表示にすると、ウィンドウを閉じたときに Abrax が完全に終了します（macOS では Dock に残ります）。"
       },
       "overlay": {
         "style": {

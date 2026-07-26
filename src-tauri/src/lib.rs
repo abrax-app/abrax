@@ -1057,7 +1057,68 @@ pub fn run(cli_args: CliArgs) {
         .on_window_event(|window, event| match event {
             tauri::WindowEvent::CloseRequested { api, .. } => {
                 api.prevent_close();
-                let _res = window.hide();
+
+                // `on_window_event` es GLOBAL a todas las ventanas, y el overlay de
+                // grabación es una ventana más. Solo la PRINCIPAL decide el destino
+                // de la app: el overlay conserva exactamente lo de siempre
+                // (ocultarse), para que un cierre llegado del gestor de ventanas no
+                // pueda apagar Abrax por la puerta de atrás. Hoy nada en el repo le
+                // pide cerrarse, así que esto es una guarda preventiva.
+                if window.label() != "main" {
+                    let _ = window.hide();
+                    return;
+                }
+
+                // Sin bandeja, ocultar la ventana deja a Abrax vivo y SIN NINGUNA
+                // superficie: no hay icono, `hide()` saca también la entrada de la barra
+                // de tareas, y el único `app.exit(0)` de toda la app cuelga del menú
+                // de la bandeja. Es decir: ni se vuelve ni se sale. En ese caso la X
+                // cierra Abrax, que es lo coherente — sin bandeja no hay dónde
+                // esconderse. Es el mismo invariante que el arranque ya aplica más
+                // arriba ("Without a tray icon, the dock is the only way back in").
+                //
+                // Se conserva `prevent_close()` y se sale por `app.exit(0)` A
+                // PROPÓSITO: dejar que la ventana se destruya NO garantiza que el
+                // proceso muera, porque `recording_overlay` se crea siempre y nunca
+                // se destruye. Con "main" destruida y el proceso vivo,
+                // `show_main_window` quedaría roto para siempre y se perderían las
+                // dos vías de rescate (bandeja y single-instance) — justo el estado
+                // que este arreglo evita. Salir por `exit(0)` además corre el
+                // teardown de RunEvent::Exit (descarga del modelo, stop del sidecar).
+                //
+                // macOS queda FUERA: allí cerrar con la bandeja apagada conserva el
+                // icono del Dock y `RunEvent::Reopen` devuelve la ventana (ver el
+                // bloque de abajo), así que ya hay vuelta y el comportamiento actual
+                // es el idiomático del sistema.
+                #[cfg(not(target_os = "macos"))]
+                {
+                    let settings = get_settings(window.app_handle());
+                    let tray_available =
+                        settings.show_tray_icon && !window.app_handle().state::<CliArgs>().no_tray;
+                    if !tray_available {
+                        log::info!("Cierre sin bandeja disponible: se sale de Abrax");
+                        // Salir con el silencio de «silenciar al grabar» puesto lo
+                        // dejaría pegado A NIVEL DE SISTEMA: no se deshace solo, ni
+                        // reiniciando Abrax. Es idempotente, así que no estorba
+                        // cuando no había nada silenciado.
+                        window
+                            .app_handle()
+                            .state::<Arc<AudioRecordingManager>>()
+                            .remove_mute();
+                        // Ocultar ANTES de salir: `exit(0)` no es inmediato — encola
+                        // la salida y el teardown (descarga del modelo, stop del
+                        // sidecar) corre después, con el bucle de eventos ocupado.
+                        // Sin esto la ventana se queda congelada en pantalla hasta
+                        // que el proceso muere de verdad.
+                        let _ = window.hide();
+                        window.app_handle().exit(0);
+                        return;
+                    }
+                }
+
+                if let Err(e) = window.hide() {
+                    log::error!("Failed to hide main window on close: {}", e);
+                }
 
                 #[cfg(target_os = "macos")]
                 {

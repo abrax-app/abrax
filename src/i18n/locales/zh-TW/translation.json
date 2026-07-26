@@ -295,7 +295,7 @@
       },
       "showTrayIcon": {
         "label": "顯示系統匣圖示",
-        "description": "在系統匣中顯示 Abrax 圖示"
+        "description": "在系統匣中顯示 Abrax 圖示 不顯示時，關閉視窗會完全結束 Abrax（在 macOS 上會保留在 Dock 中）。"
       },
       "overlay": {
         "style": {

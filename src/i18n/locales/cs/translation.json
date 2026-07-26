@@ -295,7 +295,7 @@
       },
       "showTrayIcon": {
         "label": "Zobrazit ikonu v systémové liště",
-        "description": "Zobrazit ikonu Abrax v systémové liště."
+        "description": "Zobrazit ikonu Abrax v systémové liště. Bez ní zavření okna Abrax úplně ukončí (v macOS zůstane v Docku)."
       },
       "overlay": {
         "style": {

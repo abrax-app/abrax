@@ -295,7 +295,7 @@
       },
       "showTrayIcon": {
         "label": "Pictogram in systeemvak tonen",
-        "description": "Toon het Abrax-pictogram in het systeemvak."
+        "description": "Toon het Abrax-pictogram in het systeemvak. Zonder dit sluit het venster Abrax volledig af (op macOS blijft het in het Dock)."
       },
       "overlay": {
         "style": {

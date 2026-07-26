@@ -295,7 +295,7 @@
       },
       "showTrayIcon": {
         "label": "Mostrar ícone na bandeja",
-        "description": "Exibir o ícone do Abrax na bandeja do sistema."
+        "description": "Exibir o ícone do Abrax na bandeja do sistema. Sem ele, fechar a janela encerra o Abrax por completo (no macOS ele fica no Dock)."
       },
       "overlay": {
         "style": {

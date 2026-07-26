@@ -9,6 +9,7 @@ import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { listen } from "@tauri-apps/api/event";
 import { getCurrentWindow } from "@tauri-apps/api/window";
+import { cerrarDesdeShell } from "@/lib/utils/ventana";
 import { LogicalSize } from "@tauri-apps/api/dpi";
 import { relaunch } from "@tauri-apps/plugin-process";
 import {
@@ -390,7 +391,7 @@ export const RetroShell: React.FC = () => {
           type="button"
           title="Cerrar"
           aria-label="Cerrar"
-          onClick={() => void win.hide()}
+          onClick={() => cerrarDesdeShell(win)}
         >
           <X size={12} aria-hidden="true" />
         </button>

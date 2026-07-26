@@ -274,7 +274,7 @@
       },
       "showTrayIcon": {
         "label": "إظهار أيقونة شريط النظام",
-        "description": ".عرض أيقونة Abrax في شريط النظام"
+        "description": ".عرض أيقونة Abrax في شريط النظام بدونه، إغلاق النافذة يُنهي Abrax تمامًا (في macOS يبقى في الـ Dock)."
       },
       "overlay": {
         "style": {

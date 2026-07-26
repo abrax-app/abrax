@@ -295,7 +295,7 @@
       },
       "showTrayIcon": {
         "label": "Afficher l'icône de la barre",
-        "description": "Afficher l'icône de Abrax dans la barre système."
+        "description": "Afficher l'icône de Abrax dans la barre système. Sans elle, fermer la fenêtre quitte complètement Abrax (sur macOS, il reste dans le Dock)."
       },
       "overlay": {
         "style": {

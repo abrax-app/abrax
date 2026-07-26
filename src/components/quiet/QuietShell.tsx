@@ -18,6 +18,7 @@ import {
 import AbraxLogo from "../icons/AbraxLogo";
 import { useSettings } from "@/hooks/useSettings";
 import { useOsType } from "@/hooks/useOsType";
+import { cerrarDesdeShell } from "@/lib/utils/ventana";
 import { formatKeyCombination } from "@/lib/utils/keyboard";
 import { commands, type HistoryEntry } from "@/bindings";
 import { GeneralSettings, HistorySettings, ModelsSettings } from "../settings";
@@ -206,7 +207,7 @@ export const QuietShell: React.FC = () => {
                   className="q-close"
                   aria-label={t("quiet.close")}
                   title={t("quiet.close")}
-                  onClick={() => void win.hide()}
+                  onClick={() => cerrarDesdeShell(win)}
                 >
                   <X size={15} />
                 </button>

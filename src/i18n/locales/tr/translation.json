@@ -295,7 +295,7 @@
       },
       "showTrayIcon": {
         "label": "Tepsi simgesini göster",
-        "description": "Abrax simgesini sistem tepsisinde göster."
+        "description": "Abrax simgesini sistem tepsisinde göster. Simge olmadan pencereyi kapatmak Abrax'ı tamamen kapatır (macOS'ta Dock'ta kalır)."
       },
       "overlay": {
         "style": {

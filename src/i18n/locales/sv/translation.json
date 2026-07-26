@@ -295,7 +295,7 @@
       },
       "showTrayIcon": {
         "label": "Visa ikon i systemfältet",
-        "description": "Visa Abrax-ikonen i systemfältet."
+        "description": "Visa Abrax-ikonen i systemfältet. Utan den avslutas Abrax helt när du stänger fönstret (på macOS ligger den kvar i Dock)."
       },
       "overlay": {
         "style": {

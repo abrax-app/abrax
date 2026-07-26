@@ -295,7 +295,7 @@
       },
       "showTrayIcon": {
         "label": "Hiển thị biểu tượng khay",
-        "description": "Hiển thị biểu tượng Abrax trong khay hệ thống."
+        "description": "Hiển thị biểu tượng Abrax trong khay hệ thống. Không có biểu tượng này, đóng cửa sổ sẽ thoát hẳn Abrax (trên macOS ứng dụng vẫn ở Dock)."
       },
       "overlay": {
         "style": {

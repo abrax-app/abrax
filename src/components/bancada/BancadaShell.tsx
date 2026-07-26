@@ -32,6 +32,7 @@ import { toast } from "sonner";
 import AbraxLogo from "../icons/AbraxLogo";
 import { useSettings } from "@/hooks/useSettings";
 import { useOsType } from "@/hooks/useOsType";
+import { cerrarDesdeShell } from "@/lib/utils/ventana";
 import { formatKeyCombination } from "@/lib/utils/keyboard";
 import { applyUiTheme } from "@/lib/utils/theme";
 import { commands, events, type UiTheme } from "@/bindings";
@@ -772,7 +773,7 @@ export const BancadaShell: React.FC = () => {
             className="bnc-close"
             aria-label={t("bancada.close")}
             title={t("bancada.close")}
-            onClick={() => void win.hide()}
+            onClick={() => cerrarDesdeShell(win)}
           >
             <X size={15} />
           </button>

@@ -295,7 +295,7 @@
       },
       "showTrayIcon": {
         "label": "显示托盘图标",
-        "description": "在系统托盘中显示 Abrax 图标。"
+        "description": "在系统托盘中显示 Abrax 图标。 不显示时，关闭窗口会完全退出 Abrax（在 macOS 上会保留在程序坞中）。"
       },
       "overlay": {
         "style": {

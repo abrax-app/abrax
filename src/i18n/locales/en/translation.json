@@ -295,7 +295,7 @@
       },
       "showTrayIcon": {
         "label": "Show Tray Icon",
-        "description": "Display the Abrax icon in the system tray."
+        "description": "Show the Abrax icon in the system tray. Without it, closing the window quits Abrax entirely (on macOS it stays in the Dock)."
       },
       "overlay": {
         "style": {

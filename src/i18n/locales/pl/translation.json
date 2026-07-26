@@ -295,7 +295,7 @@
       },
       "showTrayIcon": {
         "label": "Pokaż ikonę w zasobniku",
-        "description": "Wyświetlaj ikonę Abrax w zasobniku systemowym."
+        "description": "Wyświetlaj ikonę Abrax w zasobniku systemowym. Bez niej zamknięcie okna całkowicie kończy działanie Abrax (w macOS pozostaje w Docku)."
       },
       "overlay": {
         "style": {
