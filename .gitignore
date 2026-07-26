@@ -73,3 +73,9 @@ docs/CODE_AUDIT.md
 .agents/
 docs/skills-claude/
 skills-lock.json
+
+# Bytecode de Python. Los servidores de voz viven en src-tauri/resources/tts/,
+# que el bundle empaqueta entero (`resources/**/*`): sin esto, los .pyc del
+# intérprete local viajan dentro del instalador.
+__pycache__/
+*.pyc
