@@ -257,7 +257,9 @@ pub fn change_capture_system_audio_setting(app: AppHandle, enabled: bool) -> Res
     settings::write_settings(&app, settings);
     // El dispositivo cambia (mic <-> salida loopback): invalida la caché para que
     // la próxima grabación re-resuelva.
-    if let Some(rm) = app.try_state::<std::sync::Arc<crate::managers::audio::AudioRecordingManager>>() {
+    if let Some(rm) =
+        app.try_state::<std::sync::Arc<crate::managers::audio::AudioRecordingManager>>()
+    {
         rm.invalidate_device_cache();
     }
     Ok(())
