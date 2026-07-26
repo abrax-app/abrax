@@ -54,15 +54,26 @@ Par de claves minisign **nuevo** ya generado (2026-07-11):
 - Clave privada: **fuera del repo**, en `handy-rebrand-claude-code-kit/.secrets-abrax/abrax-updater.key`
   (sin contraseña; para producción, regenerar con contraseña). **Nunca** commitear.
 
+**`bundle.createUpdaterArtifacts` está en `false`** (2026-07-26). Con la pubkey
+presente y ese flag en `true`, `tauri build` intenta firmar los artefactos del
+updater al final del empaquetado y, si no encuentra `TAURI_SIGNING_PRIVATE_KEY`,
+**sale con código 1 — después de haber generado los instaladores**. Los binarios
+quedan completos y usables, pero un job de CI lo lee como fracaso: no publica el
+release y quema la cuota igual (los runners de macOS cuentan ×10). Con el updater
+apagado esos artefactos no los puede usar nadie, así que no se generan.
+
 Para reactivar el auto-update al publicar:
 
 1. El owner/repo definitivo es `github.com/abrax-app/abrax` (organización
    `abrax-app`); `plugins.updater.endpoints` ya apunta ahí.
-2. En CI, exportar `TAURI_SIGNING_PRIVATE_KEY` (contenido de la clave privada) y
-   `TAURI_SIGNING_PRIVATE_KEY_PASSWORD`.
-3. `bun run tauri build` firma los artefactos y genera `latest.json`.
-4. Publicar `latest.json` + artefactos en el endpoint.
-5. Poner `update_checks_enabled` por defecto en `true` solo cuando el canal exista.
+2. **Volver a poner `bundle.createUpdaterArtifacts` en `true`** en
+   `src-tauri/tauri.conf.json`. Sin esto no se generan `.sig` ni `latest.json`.
+3. En CI, exportar `TAURI_SIGNING_PRIVATE_KEY` (contenido de la clave privada) y
+   `TAURI_SIGNING_PRIVATE_KEY_PASSWORD`. **Los pasos 2 y 3 van juntos**: el flag
+   en `true` sin la clave en el entorno es exactamente el fallo descrito arriba.
+4. `bun run tauri build` firma los artefactos y genera `latest.json`.
+5. Publicar `latest.json` + artefactos en el endpoint.
+6. Poner `update_checks_enabled` por defecto en `true` solo cuando el canal exista.
 
 ## Firma
 
