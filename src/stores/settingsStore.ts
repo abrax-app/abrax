@@ -120,6 +120,12 @@ const settingUpdaters: {
     commands.updateRecordingRetentionPeriod(value as string),
   translate_to_english: (value) =>
     commands.changeTranslateToEnglishSetting(value as boolean),
+  diarization_enabled: (value) =>
+    commands.changeDiarizationEnabledSetting(value as boolean),
+  diarization_num_speakers: (value) =>
+    commands.changeDiarizationNumSpeakersSetting(value as number),
+  capture_system_audio: (value) =>
+    commands.changeCaptureSystemAudioSetting(value as boolean),
   selected_language: (value) =>
     commands.changeSelectedLanguageSetting(value as string),
   overlay_position: (value) =>

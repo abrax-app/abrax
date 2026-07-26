@@ -304,6 +304,30 @@ async changeTranslateToEnglishSetting(enabled: boolean) : Promise<Result<null, s
     else return { status: "error", error: e  as any };
 }
 },
+async changeDiarizationEnabledSetting(enabled: boolean) : Promise<Result<null, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("change_diarization_enabled_setting", { enabled }) };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+async changeDiarizationNumSpeakersSetting(num: number) : Promise<Result<null, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("change_diarization_num_speakers_setting", { num }) };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+async changeCaptureSystemAudioSetting(enabled: boolean) : Promise<Result<null, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("change_capture_system_audio_setting", { enabled }) };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
 async changeSelectedLanguageSetting(language: string) : Promise<Result<null, string>> {
     try {
     return { status: "ok", data: await TAURI_INVOKE("change_selected_language_setting", { language }) };
@@ -1323,7 +1347,12 @@ userAlertEvent: "user-alert-event"
 
 /** user-defined types **/
 
-export type AlertKind = "recording_permission_denied" | "recording_no_device" | "recording" | "transcription" | "paste" | "model_load" | "model_download"
+export type AlertKind = "recording_permission_denied" | "recording_no_device" | 
+/**
+ * La grabación no capturó audio (0 muestras): mic mudo/desconectado, o
+ * «Audio del sistema» activo pero sin nada sonando.
+ */
+"recording_no_audio" | "recording" | "transcription" | "paste" | "model_load" | "model_download"
 export type AmbiguityWarning = { 
 /**
  * El término vago tal como apareció en el dictado.
@@ -1399,6 +1428,24 @@ dictionary_project?: DictionaryProject | null; model_unload_timeout?: ModelUnloa
  * loopback si está, o solo reglas). Opcional por diseño.
  */
 correccion_modelo_local?: string | null; experimental_enabled?: boolean; lazy_stream_close?: boolean; keyboard_implementation?: KeyboardImplementation; show_tray_icon?: boolean; paste_delay_ms?: number; paste_delay_after_ms?: number; typing_tool?: TypingTool; external_script_path?: string | null; custom_filler_words?: string[] | null; transcribe_accelerator?: TranscribeAcceleratorSetting; ort_accelerator?: OrtAcceleratorSetting; transcribe_gpu_device?: number; extra_recording_buffer_ms?: number; vad_enabled?: boolean; 
+/**
+ * Diarización de hablantes (offline): etiqueta la transcripción con
+ * `[Hablante N]` cuando hay varias voces. Opt-in (cuesta CPU y requiere los
+ * modelos ONNX de diarización). Por defecto apagada.
+ */
+diarization_enabled?: boolean; 
+/**
+ * Pista de número de hablantes para la diarización. `0` = auto (detecta solo,
+ * menos fiable same-mic); `N>=1` = fuerza EXACTAMENTE N hablantes (la vía más
+ * fiable cuando el usuario sabe cuántas voces hay).
+ */
+diarization_num_speakers?: number; 
+/**
+ * Captura el AUDIO DEL SISTEMA (loopback del dispositivo de salida) en vez del
+ * micrófono — para transcribir reuniones online (Teams/Zoom/Meet) donde las
+ * voces salen por los parlantes, no entran por el mic. Off = micrófono normal.
+ */
+capture_system_audio?: boolean; 
 /**
  * Which recording overlay to show: None / Minimal / Live. Streaming mode is
  * not gated on this — that follows model capability. Migrated from the old
@@ -1825,15 +1872,15 @@ export type TypingTool = "auto" | "wtype" | "kwtype" | "dotool" | "ydotool" | "x
  * shell never hardcodes color. The frameless/transparent chrome is decided at
  * window build time, so switching shells takes full effect on the next launch.
  */
-export type UiShell = "classic" | "retro" | "quiet"
+export type UiShell = "classic" | "retro" | "quiet" | "bancada"
 /**
  * Color palette for the whole UI, orthogonal to [`Theme`] (light/dark).
  * `Abrax` is the brand palette (cyan/violet/magenta); `Imperial` is a
- * gold/amber/red palette that is dark by design, so it forces dark mode
- * while active (the stored [`Theme`] is preserved and applies again on
- * switching back).
+ * gold/amber/red palette and `Escuderia` a racing red/black/white palette,
+ * both dark by design, so they force dark mode while active (the stored
+ * [`Theme`] is preserved and applies again on switching back).
  */
-export type UiTheme = "abrax" | "imperial"
+export type UiTheme = "abrax" | "imperial" | "escuderia"
 export type UserAlertEvent = { kind: AlertKind; 
 /**
  * Mensaje técnico (error de motor/red/dispositivo); nunca texto dictado.

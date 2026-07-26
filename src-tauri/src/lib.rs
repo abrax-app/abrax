@@ -524,6 +524,24 @@ fn run_headless_transcription(app: &AppHandle, args: &CliArgs) -> i32 {
         }
         times_ms.push(t.elapsed().as_millis() as u64);
     }
+
+    // Diarización opt-in (env ABRAX_DIARIZE): prueba el pipeline completo desde el
+    // binario reusando la MISMA función del flujo de dictado (actions.rs).
+    if std::env::var("ABRAX_DIARIZE").is_ok() {
+        let words = tm.take_last_words().unwrap_or_default();
+        eprintln!("\n=== DIARIZACIÓN ({} palabras con tiempo) ===", words.len());
+        let mdir = std::env::var("ABRAX_DIARIZE_MODELS").unwrap_or_else(|_| "C:\\dp".to_string());
+        let num_speakers = std::env::var("ABRAX_DIARIZE_SPEAKERS")
+            .ok()
+            .and_then(|v| v.trim().parse::<usize>().ok())
+            .filter(|&n| n >= 1);
+        let meeting = std::env::var("ABRAX_DIARIZE_MEETING").is_ok();
+        match crate::actions::diarize_and_label(&samples, &words, std::path::Path::new(&mdir), num_speakers, meeting) {
+            Some(labeled) => println!("\n{}", labeled),
+            None => eprintln!("(sin resultado — ¿modelo no-whisper sin tiempos, o modelos de diarización ausentes?)"),
+        }
+    }
+
     let best_ms = times_ms.iter().copied().min().unwrap_or(0);
     let rtf = if best_ms > 0 {
         audio_secs / (best_ms as f64 / 1000.0)
@@ -603,6 +621,9 @@ pub fn run(cli_args: CliArgs) {
             commands::settings::change_start_hidden_setting,
             commands::settings::change_autostart_setting,
             commands::settings::change_translate_to_english_setting,
+            commands::settings::change_diarization_enabled_setting,
+            commands::settings::change_diarization_num_speakers_setting,
+            commands::settings::change_capture_system_audio_setting,
             commands::settings::change_selected_language_setting,
             commands::settings::change_overlay_position_setting,
             commands::settings::change_overlay_style_setting,
@@ -923,6 +944,9 @@ pub fn run(cli_args: CliArgs) {
                         (600.0, 500.0),
                     )
                 }
+                // Bancada: consola de garaje rectangular (panel fijo, no una
+                // silueta custom): tamaño cómodo para instrumentos + pestañas.
+                (true, settings::UiShell::Bancada) => ((840.0, 600.0), (720.0, 540.0)),
                 _ => ((680.0, 570.0), (680.0, 570.0)),
             };
 

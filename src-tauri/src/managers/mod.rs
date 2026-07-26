@@ -1,4 +1,5 @@
 pub mod audio;
+pub mod diarization;
 // [ESCUCHA]
 pub mod escucha;
 pub mod gguf_meta;

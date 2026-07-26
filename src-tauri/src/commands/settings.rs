@@ -96,6 +96,7 @@ pub fn change_ui_theme_setting(app: AppHandle, ui_theme: String) -> Result<(), S
     let parsed = match ui_theme.as_str() {
         "abrax" => UiTheme::Abrax,
         "imperial" => UiTheme::Imperial,
+        "escuderia" => UiTheme::Escuderia,
         other => {
             warn!("Invalid ui theme '{}', defaulting to abrax", other);
             UiTheme::Abrax
@@ -123,6 +124,7 @@ pub fn change_ui_shell_setting(app: AppHandle, ui_shell: String) -> Result<(), S
         "classic" => UiShell::Classic,
         "retro" => UiShell::Retro,
         "quiet" => UiShell::Quiet,
+        "bancada" => UiShell::Bancada,
         other => {
             warn!("Invalid ui shell '{}', defaulting to classic", other);
             UiShell::Classic
@@ -191,12 +193,13 @@ pub fn change_esfera_modo_setting(app: AppHandle, esfera_modo: String) -> Result
     Ok(())
 }
 
-/// Light/dark mode the window chrome should actually show: Imperial is dark by
-/// design and forces dark regardless of the stored [`Theme`], which stays
-/// untouched and governs again when the palette returns to Abrax.
+/// Light/dark mode the window chrome should actually show: Imperial and
+/// Escuderia are dark by design and force dark regardless of the stored
+/// [`Theme`], which stays untouched and governs again when the palette
+/// returns to Abrax.
 pub fn effective_window_theme(settings: &AppSettings) -> Theme {
     match settings.ui_theme {
-        UiTheme::Imperial => Theme::Dark,
+        UiTheme::Imperial | UiTheme::Escuderia => Theme::Dark,
         UiTheme::Abrax => settings.theme,
     }
 }
@@ -225,6 +228,38 @@ pub fn change_translate_to_english_setting(app: AppHandle, enabled: bool) -> Res
     let mut settings = settings::get_settings(&app);
     settings.translate_to_english = enabled;
     settings::write_settings(&app, settings);
+    Ok(())
+}
+
+#[tauri::command]
+#[specta::specta]
+pub fn change_diarization_enabled_setting(app: AppHandle, enabled: bool) -> Result<(), String> {
+    let mut settings = settings::get_settings(&app);
+    settings.diarization_enabled = enabled;
+    settings::write_settings(&app, settings);
+    Ok(())
+}
+
+#[tauri::command]
+#[specta::specta]
+pub fn change_diarization_num_speakers_setting(app: AppHandle, num: u32) -> Result<(), String> {
+    let mut settings = settings::get_settings(&app);
+    settings.diarization_num_speakers = num;
+    settings::write_settings(&app, settings);
+    Ok(())
+}
+
+#[tauri::command]
+#[specta::specta]
+pub fn change_capture_system_audio_setting(app: AppHandle, enabled: bool) -> Result<(), String> {
+    let mut settings = settings::get_settings(&app);
+    settings.capture_system_audio = enabled;
+    settings::write_settings(&app, settings);
+    // El dispositivo cambia (mic <-> salida loopback): invalida la caché para que
+    // la próxima grabación re-resuelva.
+    if let Some(rm) = app.try_state::<std::sync::Arc<crate::managers::audio::AudioRecordingManager>>() {
+        rm.invalidate_device_cache();
+    }
     Ok(())
 }
 

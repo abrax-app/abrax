@@ -399,7 +399,8 @@ pub async fn probar_microfono(app: AppHandle, duracion_ms: u32) -> Result<Prueba
         };
 
         let mut rec = AudioRecorder::new().map_err(|e| format!("Recorder: {e}"))?;
-        rec.open(device).map_err(|e| format!("Micrófono: {e}"))?;
+        rec.open(device, None)
+            .map_err(|e| format!("Micrófono: {e}"))?;
         rec.start(VadPolicy::Disabled)
             .map_err(|e| format!("Inicio de captura: {e}"))?;
         std::thread::sleep(std::time::Duration::from_millis(u64::from(duracion)));

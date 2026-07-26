@@ -14,6 +14,7 @@ import Onboarding, { AccessibilityOnboarding } from "./components/onboarding";
 import { Sidebar, SidebarSection, SECTIONS_CONFIG } from "./components/Sidebar";
 import { RetroShell } from "./components/retro/RetroShell";
 import { QuietShell } from "./components/quiet/QuietShell";
+import { BancadaShell } from "./components/bancada/BancadaShell";
 import { WhatsNewGate } from "./components/whats-new";
 import { useSettings } from "./hooks/useSettings";
 import { useSettingsStore } from "./stores/settingsStore";
@@ -269,6 +270,13 @@ function App() {
     content = (
       <div dir={direction}>
         <QuietShell />
+      </div>
+    );
+  } else if (settings?.ui_shell === "bancada") {
+    // Shell bancada: consola de garaje / banco de pruebas (shell F1).
+    content = (
+      <div dir={direction}>
+        <BancadaShell />
       </div>
     );
   } else {

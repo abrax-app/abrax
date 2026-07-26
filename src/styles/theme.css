@@ -131,3 +131,41 @@
   --esfera-palabra-tech: #f2c41d; /* oro imperial para términos técnicos */
   --esfera-palabra-suave: #ffe6b0; /* ámbar claro para términos llanos */
 }
+
+/* ============================================================
+   Paleta ESCUDERÍA — rojo de carreras sobre negro, blanca de texto. Oscura
+   por diseño (el JS fuerza data-theme="dark"; de ahí el segundo selector, cuya
+   especificidad 0-3-0 gana a los overrides [data-theme] de App.css). Acento de
+   marca rojo #EE3F2C; el negro se mantiene como base (near-black para sostener
+   la elevación de superficies del log). Solo re-apunta color; la geometría de
+   orbital/retro NO vive aquí.
+   ============================================================ */
+:root[data-ui-theme="escuderia"],
+:root[data-ui-theme="escuderia"][data-theme="dark"] {
+  --color-text: #f4f5f7; /* blanco frío */
+  --color-background: #0a0a0c; /* negro (near-black: deja respirar el log) */
+  --color-logo-primary: #ee3f2c; /* rojo de marca */
+  --color-logo-stroke: #f4f5f7;
+  --color-brand-cyan: #ee3f2c; /* el acento del tagline sigue al acento1 */
+  --color-background-ui: #ee3f2c;
+  --color-mid-gray: #8a8a92; /* gris neutro */
+  --color-on-accent: #ffffff; /* blanco sobre el rojo (como el botón del diseño) */
+
+  --lockup-stop-a: #ff6a4a;
+  --lockup-stop-b: #ee3f2c;
+  --lockup-stop-c: #c0271a;
+
+  --esfera-stop-a: #ff7a5c; /* exterior frío → coral claro */
+  --esfera-stop-b: #ee3f2c; /* exterior cálido → rojo base */
+  --esfera-stop-c: #a01c10; /* anillo interior → rojo profundo */
+  --esfera-blanco: #fff5f3; /* blanco cálido */
+  --esfera-nucleo-grabando: #ff4a36; /* rojo caliente */
+  --esfera-nucleo-transcribiendo: #ff9d7a; /* coral claro */
+  --esfera-nucleo-procesando: #e8552e; /* rojo-naranja */
+  --esfera-halo: #ff6a4a;
+  --esfera-glow: #ffd9cc; /* brillo cálido */
+  --esfera-fondo: #0a0a0c;
+  --esfera-fondo-claro: #1a0b08; /* rojo muy oscuro en el centro del radial */
+  --esfera-palabra-tech: #ff8a5a; /* coral para términos técnicos */
+  --esfera-palabra-suave: #ffcbb8; /* durazno claro para términos llanos */
+}

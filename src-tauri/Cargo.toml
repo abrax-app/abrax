@@ -84,6 +84,11 @@ sysinfo = { version = "0.33", default-features = false, features = ["disk"] }
 # Canary, Cohere). Per-platform backend features are added in the target tables.
 transcribe-rs = { version = "0.3.8", features = ["onnx"] }
 transcribe-cpp = { version = "0.1.2", default-features = false }
+# Diarización de hablantes (offline): reusa el ONNX Runtime (ort) que ya trae
+# transcribe-rs — MISMA versión, default-features=false → Cargo unifica sin bajar
+# un segundo onnxruntime ni tocar el linkado por ORT_LIB_LOCATION. (rustfft, para
+# el fbank, ya está arriba — lo usa el espectro.)
+ort = { version = "=2.0.0-rc.12", default-features = false }
 handy-keys = "0.3.0"
 ferrous-opencc = "0.2.3"
 clap = { version = "4", features = ["derive"] }

@@ -18,6 +18,8 @@ export const alertTitleKey = (kind: AlertKind): string => {
       return "errors.micPermissionDeniedTitle";
     case "recording_no_device":
       return "errors.noInputDeviceTitle";
+    case "recording_no_audio":
+      return "errors.recordingNoAudioTitle";
     case "recording":
       return "errors.recordingFailedTitle";
     case "transcription":

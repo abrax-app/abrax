@@ -149,7 +149,11 @@ impl AudioRecorder {
         self
     }
 
-    pub fn open(&mut self, device: Option<Device>) -> Result<(), Box<dyn std::error::Error>> {
+    pub fn open(
+        &mut self,
+        device: Option<Device>,
+        loopback: Option<Device>,
+    ) -> Result<(), Box<dyn std::error::Error>> {
         if self.worker_handle.is_some() {
             return Ok(()); // already open
         }
@@ -167,6 +171,7 @@ impl AudioRecorder {
         };
 
         let thread_device = device.clone();
+        let loopback_dev = loopback; // se mueve al worker; None = sin mezcla
         let vad = self.vad.clone();
         // Move the optional level callback into the worker thread
         let level_cb = self.level_cb.clone();
@@ -281,6 +286,21 @@ impl AudioRecorder {
                     // Timestamp for the play()-returned -> first-samples gap the
                     // init handshake can't see (hardware dependent).
                     let stream_running_at = Instant::now();
+                    // Loopback opcional: abre el AUDIO DEL SISTEMA y lo mezcla con
+                    // la mic (reloj maestro). Best-effort: si falla, sigue con mic.
+                    let (system_buffer, _loopback_stream) = match loopback_dev {
+                        Some(lb) => match open_loopback_tap(&lb) {
+                            Ok((s, buf)) => {
+                                log::info!("Audio del sistema (loopback) mezclado con la mic");
+                                (Some(buf), Some(s))
+                            }
+                            Err(e) => {
+                                log::warn!("Audio del sistema (loopback) no disponible: {e}");
+                                (None, None)
+                            }
+                        },
+                        None => (None, None),
+                    };
                     // Keep the stream alive while we process samples.
                     run_consumer(
                         sample_rate,
@@ -292,8 +312,10 @@ impl AudioRecorder {
                         spectrum_gate,
                         stop_flag,
                         stream_running_at,
+                        system_buffer,
                     );
                     drop(stream);
+                    drop(_loopback_stream);
                 }
                 Err(error_message) => {
                     // A failed open may mean the cached config went stale
@@ -432,17 +454,27 @@ impl AudioRecorder {
         // in run_consumer() downsample to 16kHz. This avoids forcing hardware into
         // a non-native rate which can cause issues on some devices (Bluetooth
         // codecs, certain ALSA drivers, etc.).
-        let default_config = device.default_input_config()?;
+        // Config nativa del dispositivo. Para AUDIO DEL SISTEMA (loopback) el
+        // dispositivo es de SALIDA (render): no expone config de INPUT, así que se
+        // usa la de OUTPUT — cpal captura el loopback con el formato de render.
+        let default_config = match device.default_input_config() {
+            Ok(c) => c,
+            Err(_) => device.default_output_config()?,
+        };
         let target_rate = default_config.sample_rate();
 
-        // Try to find the best sample format at the device's default rate
-        let supported_configs = match device.supported_input_configs() {
-            Ok(configs) => configs,
-            Err(e) => {
-                log::warn!("Could not enumerate input configs ({e}), using device default");
-                return Ok(default_config);
-            }
-        };
+        // Enumera las configs soportadas (input normal; output si es loopback).
+        let supported_configs: Vec<cpal::SupportedStreamConfigRange> =
+            match device.supported_input_configs() {
+                Ok(configs) => configs.collect(),
+                Err(_) => match device.supported_output_configs() {
+                    Ok(configs) => configs.collect(),
+                    Err(e) => {
+                        log::warn!("Could not enumerate configs ({e}), using device default");
+                        return Ok(default_config);
+                    }
+                },
+            };
         let mut best_config: Option<cpal::SupportedStreamConfigRange> = None;
 
         for config_range in supported_configs {
@@ -496,6 +528,92 @@ pub fn is_no_input_device_error(error_message: &str) -> bool {
 }
 
 #[allow(clippy::too_many_arguments)]
+/// Suma el audio del sistema (loopback, ya en 16 kHz mono) sobre un frame de la
+/// mic, muestra a muestra con clamp. `None` si no hay captura de sistema activa —
+/// en ese caso el frame de la mic queda intacto (path core sin tocar). La mic es
+/// el reloj maestro: consumimos del buffer del sistema al ritmo de la mic.
+fn mix_system(
+    frame: &[f32],
+    system_buffer: &Option<Arc<Mutex<std::collections::VecDeque<f32>>>>,
+) -> Option<Vec<f32>> {
+    let buf = system_buffer.as_ref()?;
+    let mut q = buf.lock().ok()?;
+    if q.is_empty() {
+        return None;
+    }
+    let mut out = frame.to_vec();
+    for x in out.iter_mut() {
+        match q.pop_front() {
+            Some(s) => *x = (*x + s).clamp(-1.0, 1.0),
+            None => break,
+        }
+    }
+    Some(out)
+}
+
+/// Abre el dispositivo de SALIDA en modo loopback (cpal WASAPI lo activa solo al
+/// abrir input sobre un render endpoint) y lo resamplea a 16 kHz mono en un buffer
+/// compartido y ACOTADO (~0.5 s, descarta lo viejo para no desincronizar). El
+/// stream devuelto hay que mantenerlo vivo; el hilo filler termina cuando el
+/// stream se cierra (el canal se cae). Best-effort: si falla, se sigue con mic.
+fn open_loopback_tap(
+    device: &cpal::Device,
+) -> Result<
+    (cpal::Stream, Arc<Mutex<std::collections::VecDeque<f32>>>),
+    Box<dyn std::error::Error>,
+> {
+    let config = AudioRecorder::get_preferred_config(device)?;
+    let rate = config.sample_rate().0;
+    let channels = config.channels() as usize;
+    let (tx, rx) = mpsc::channel::<AudioChunk>();
+    let never_stop = Arc::new(AtomicBool::new(false));
+    let stream = match config.sample_format() {
+        cpal::SampleFormat::U8 => {
+            AudioRecorder::build_stream::<u8>(device, &config, tx, channels, never_stop)
+        }
+        cpal::SampleFormat::I8 => {
+            AudioRecorder::build_stream::<i8>(device, &config, tx, channels, never_stop)
+        }
+        cpal::SampleFormat::I16 => {
+            AudioRecorder::build_stream::<i16>(device, &config, tx, channels, never_stop)
+        }
+        cpal::SampleFormat::I32 => {
+            AudioRecorder::build_stream::<i32>(device, &config, tx, channels, never_stop)
+        }
+        cpal::SampleFormat::F32 => {
+            AudioRecorder::build_stream::<f32>(device, &config, tx, channels, never_stop)
+        }
+        f => return Err(format!("loopback: formato no soportado {f:?}").into()),
+    }?;
+    stream.play()?;
+    let buf = Arc::new(Mutex::new(std::collections::VecDeque::<f32>::new()));
+    let buf_fill = buf.clone();
+    std::thread::spawn(move || {
+        let mut rs = FrameResampler::new(
+            rate as usize,
+            constants::WHISPER_SAMPLE_RATE as usize,
+            Duration::from_millis(30),
+        );
+        const CAP: usize = constants::WHISPER_SAMPLE_RATE as usize / 2; // ~0.5 s
+        loop {
+            match rx.recv() {
+                Ok(AudioChunk::Samples(raw)) => {
+                    rs.push(&raw, &mut |frame: &[f32]| {
+                        if let Ok(mut q) = buf_fill.lock() {
+                            q.extend(frame.iter().copied());
+                            while q.len() > CAP {
+                                q.pop_front();
+                            }
+                        }
+                    });
+                }
+                Ok(AudioChunk::EndOfStream) | Err(_) => break,
+            }
+        }
+    });
+    Ok((stream, buf))
+}
+
 fn run_consumer(
     in_sample_rate: u32,
     vad: Option<VadConfig>,
@@ -506,6 +624,7 @@ fn run_consumer(
     spectrum_gate: Option<Arc<AtomicBool>>,
     stop_flag: Arc<AtomicBool>,
     stream_running_at: Instant,
+    system_buffer: Option<Arc<Mutex<std::collections::VecDeque<f32>>>>,
 ) {
     let mut frame_resampler = FrameResampler::new(
         in_sample_rate as usize,
@@ -560,10 +679,16 @@ fn run_consumer(
         vad: &Option<VadConfig>,
         audio_cb: &Option<AudioFrameCallback>,
         out_buf: &mut Vec<f32>,
+        system_buffer: &Option<Arc<Mutex<std::collections::VecDeque<f32>>>>,
     ) {
         if !recording {
             return;
         }
+
+        // Mezcla del audio del sistema (loopback) sobre la mic (si «Audio sistema»
+        // está activo); si no, el frame de la mic queda intacto.
+        let mixed = mix_system(samples, system_buffer);
+        let samples = mixed.as_deref().unwrap_or(samples);
 
         let mut emit = |buf: &[f32]| {
             out_buf.extend_from_slice(buf);
@@ -643,6 +768,7 @@ fn run_consumer(
                                 &vad,
                                 &audio_cb,
                                 &mut processed_samples,
+                                &system_buffer,
                             )
                         });
                     }
@@ -662,6 +788,7 @@ fn run_consumer(
                                         &vad,
                                         &audio_cb,
                                         &mut processed_samples,
+                                        &system_buffer,
                                     )
                                 });
                             }
@@ -681,6 +808,7 @@ fn run_consumer(
                             &vad,
                             &audio_cb,
                             &mut processed_samples,
+                            &system_buffer,
                         )
                     });
 
@@ -739,6 +867,7 @@ fn run_consumer(
                 &vad,
                 &audio_cb,
                 &mut processed_samples,
+                &system_buffer,
             )
         });
 

@@ -30,6 +30,7 @@ dependencies = [
  "log",
  "natural",
  "once_cell",
+ "ort",
  "pollster",
  "pulldown-cmark",
  "regex",
