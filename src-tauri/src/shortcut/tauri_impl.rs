@@ -15,6 +15,12 @@ use super::handler::handle_shortcut_event;
 
 /// Initialize shortcuts using Tauri's global-shortcut plugin
 pub fn init_shortcuts(app: &AppHandle) {
+    // Auto-sanado (antes de registrar): cura configs peligrosas heredadas —
+    // p. ej. un `transcribe = "up"` — que secuestrarían el teclado. Es la misma
+    // red que en handy_keys; imprescindible aquí porque Tauri es el default en
+    // Linux y el destino del fallback HandyKeys→Tauri.
+    super::sanear_bindings_peligrosos(app);
+
     let default_bindings = settings::get_default_settings().bindings;
     let user_settings = settings::load_or_create_app_settings(app);
 

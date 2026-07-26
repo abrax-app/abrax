@@ -299,10 +299,159 @@ pub fn change_keyboard_implementation_setting(
 // ============================================================================
 
 /// Validate a shortcut for a specific implementation
+/// Rechaza atajos globales que secuestrarían el uso normal del teclado: una sola
+/// tecla SIN modificador que sirve para escribir o navegar (flechas, espacio,
+/// enter, tab, retroceso/suprimir, inicio/fin/página, o una letra o dígito
+/// suelto). Registradas como atajo global con push-to-talk, cada pulsación
+/// normal de esa tecla dispara un dictado en toda la máquina — es exactamente el
+/// fallo de un binding `transcribe = "up"`, donde cada flecha arriba tecleaba
+/// texto en el campo enfocado.
+///
+/// Se permiten: cualquier combinación con modificador (`ctrl+space`), las teclas
+/// de función sueltas (`F1`–`F24`) y los modificadores solos (push-to-talk con
+/// un modificador). Solo se examina la tecla suelta; combinaciones raras las
+/// resuelve el parser de cada implementación.
+const MENSAJE_ATAJO_INSEGURO: &str =
+    "Esa tecla sola secuestraría su función normal en todo el sistema. Combínala con Ctrl, \
+     Alt o Shift (p. ej. Ctrl+Espacio), o usa una tecla de función (F1–F12).";
+
+fn es_atajo_global_seguro(raw: &str) -> Result<(), String> {
+    const MODIFICADORES: &[&str] = &[
+        "ctrl", "control", "alt", "option", "opt", "altgr", "shift", "cmd", "command", "super",
+        "win", "windows", "meta", "hyper",
+    ];
+
+    // La tecla '+' literal se perdería al partir por '+'; trátala aparte.
+    if raw.trim() == "+" {
+        return Err(MENSAJE_ATAJO_INSEGURO.to_string());
+    }
+
+    let tokens: Vec<String> = raw
+        .split('+')
+        .map(|t| t.trim().to_ascii_lowercase())
+        .filter(|t| !t.is_empty())
+        .collect();
+
+    // Con modificador (o solo modificadores) es seguro; sin tokens lo maneja la
+    // comprobación de "vacío" de cada implementación.
+    if tokens.is_empty() || tokens.iter().any(|t| MODIFICADORES.contains(&t.as_str())) {
+        return Ok(());
+    }
+
+    // Sin modificador: solo se examina la tecla suelta (combos raros sin
+    // modificador los resuelve el parser de cada implementación).
+    if tokens.len() != 1 {
+        return Ok(());
+    }
+    let k = tokens[0].as_str();
+
+    // Teclas de función sueltas (F1–F24): seguras como atajo global.
+    let es_funcion = k
+        .strip_prefix('f')
+        .and_then(|n| n.parse::<u8>().ok())
+        .map(|n| (1..=24).contains(&n))
+        .unwrap_or(false);
+    if es_funcion {
+        return Ok(());
+    }
+
+    // Peligrosa = cualquier tecla de UN carácter (letra, dígito o puntuación:
+    // - . , / ; = ` [ ] ' \ …, y no-ASCII), o del teclado numérico, o de
+    // navegación/edición. Todas se usan a diario para escribir o moverse, así que
+    // como atajo global con push-to-talk secuestrarían el teclado.
+    let un_caracter = k.chars().count() == 1;
+    let numpad = k.starts_with("numpad ")
+        || matches!(
+            k,
+            "keypad0"
+                | "keypad1"
+                | "keypad2"
+                | "keypad3"
+                | "keypad4"
+                | "keypad5"
+                | "keypad6"
+                | "keypad7"
+                | "keypad8"
+                | "keypad9"
+                | "keypaddecimal"
+                | "keypad."
+        );
+    let nav_o_edicion = matches!(
+        k,
+        "up" | "down"
+            | "left"
+            | "right"
+            | "arrowup"
+            | "arrowdown"
+            | "arrowleft"
+            | "arrowright"
+            | "space"
+            | "spacebar"
+            | "enter"
+            | "return"
+            | "tab"
+            | "backspace"
+            | "delete"
+            | "del"
+            | "home"
+            | "end"
+            | "pageup"
+            | "pagedown"
+            | "pgup"
+            | "pgdn"
+    );
+    if un_caracter || numpad || nav_o_edicion {
+        return Err(MENSAJE_ATAJO_INSEGURO.to_string());
+    }
+    Ok(())
+}
+
+/// Restablece a su valor por defecto cualquier atajo GUARDADO que secuestraría el
+/// teclado (ver [`es_atajo_global_seguro`]) y persiste el cambio una sola vez. Se
+/// llama al arrancar por CUALQUIER implementación (handy_keys y tauri) y en el
+/// fallback, para curar configs peligrosas heredadas de versiones sin la
+/// validación de `change_binding`. `cancel` se salta (se registra aparte).
+fn sanear_bindings_peligrosos(app: &AppHandle) {
+    let defaults = settings::get_default_settings().bindings;
+    let mut s = settings::load_or_create_app_settings(app);
+    let mut sanados: Vec<String> = Vec::new();
+
+    for (id, binding) in s.bindings.clone() {
+        if id == "cancel" {
+            continue;
+        }
+        if es_atajo_global_seguro(&binding.current_binding).is_ok() {
+            continue;
+        }
+        let Some(def) = defaults.get(&id) else {
+            continue;
+        };
+        info!(
+            "Atajo '{}' ('{}') es inseguro como atajo global; se restablece a '{}'.",
+            id, binding.current_binding, def.current_binding
+        );
+        let mut sano = binding.clone();
+        sano.current_binding = def.current_binding.clone();
+        s.bindings.insert(id.clone(), sano);
+        sanados.push(id);
+    }
+
+    if !sanados.is_empty() {
+        settings::write_settings(app, s);
+        info!(
+            "Atajos restablecidos por seguridad al arrancar: {:?}",
+            sanados
+        );
+    }
+}
+
 fn validate_shortcut_for_implementation(
     raw: &str,
     implementation: KeyboardImplementation,
 ) -> Result<(), String> {
+    // Guarda transversal (ambas implementaciones): fuera teclas sueltas que
+    // secuestran el teclado. Va antes del parser específico.
+    es_atajo_global_seguro(raw)?;
     match implementation {
         KeyboardImplementation::Tauri => tauri_impl::validate_shortcut(raw),
         KeyboardImplementation::HandyKeys => handy_keys::validate_shortcut(raw),
@@ -434,4 +583,77 @@ fn initialize_handy_keys_with_rollback(app: &AppHandle) -> Result<bool, String> 
 
     // init_shortcuts already registered shortcuts
     Ok(true)
+}
+
+#[cfg(test)]
+mod tests_atajo_seguro {
+    use super::es_atajo_global_seguro;
+
+    #[test]
+    fn rechaza_teclas_sueltas_de_uso_corriente() {
+        for k in [
+            "up",
+            "down",
+            "left",
+            "right",
+            "space",
+            "enter",
+            "tab",
+            "backspace",
+            "delete",
+            "home",
+            "end",
+            "pageup",
+            "a",
+            "z",
+            "0",
+            "9",
+            "UP",
+            "Space",
+            // Puntuación/OEM suelta (el backtick es un PTT clásico):
+            "-",
+            ".",
+            ",",
+            "/",
+            ";",
+            "=",
+            "`",
+            "[",
+            "]",
+            "'",
+            "\\",
+            "+", // se perdería en split('+'); tratada aparte
+            "§",
+            // Teclado numérico:
+            "keypad5",
+            "keypaddecimal",
+            "numpad 5",
+        ] {
+            assert!(
+                es_atajo_global_seguro(k).is_err(),
+                "'{k}' debería rechazarse como atajo global"
+            );
+        }
+    }
+
+    #[test]
+    fn acepta_combinaciones_funciones_y_modificadores_solos() {
+        for k in [
+            "ctrl+space",
+            "ctrl+shift+space",
+            "alt+up",  // con modificador, la flecha ya es segura
+            "ctrl+-",  // con modificador, la puntuación ya es segura
+            "alt+.",   // idem
+            "shift+`", // idem
+            "option+space",
+            "f1",
+            "f8",
+            "f12",
+            "f24",
+            "ctrl", // modificador solo (push-to-talk)
+            "shift",
+        ] {
+            assert!(es_atajo_global_seguro(k).is_ok(), "'{k}' debería aceptarse");
+        }
+    }
 }

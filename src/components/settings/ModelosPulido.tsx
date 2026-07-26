@@ -47,17 +47,29 @@ export const ModelosPulido: React.FC = React.memo(() => {
   }, []);
 
   const descargar = async (id: string) => {
+    // Guarda local: el estado `descargando` que decide si se ve el botón viene
+    // del backend, y `recargar()` puede resolver ANTES de que la descarga se
+    // registre allí — dejando el botón clicable un instante. Con esto la
+    // segunda pulsación no hace nada (el backend también se protege).
+    if (progreso[id] !== undefined) return;
     setError(null);
     setProgreso((p) => ({ ...p, [id]: 0 }));
     recargar();
-    const res = await commands.descargarModeloCorreccion(id);
-    setProgreso((p) => {
-      const q = { ...p };
-      delete q[id];
-      return q;
-    });
-    if (res.status === "error") setError(res.error);
-    recargar();
+    try {
+      const res = await commands.descargarModeloCorreccion(id);
+      if (res.status === "error") setError(res.error);
+    } catch (e) {
+      // Si el invoke se rechaza (no solo devuelve error), igual hay que limpiar
+      // el progreso local — si no, el botón quedaría deshabilitado para siempre.
+      setError(String(e));
+    } finally {
+      setProgreso((p) => {
+        const q = { ...p };
+        delete q[id];
+        return q;
+      });
+      recargar();
+    }
   };
 
   const cancelar = (id: string) => void commands.cancelarDescargaCorreccion(id);
@@ -80,6 +92,10 @@ export const ModelosPulido: React.FC = React.memo(() => {
 
       {modelos.map(({ modelo: m, descargado, descargando, seleccionado }) => {
         const pct = progreso[m.id] ?? 0;
+        // En curso = lo dice el backend O ya se pulsó aquí. Lo segundo es
+        // inmediato y cierra la ventana en la que el botón seguía clicable
+        // mientras el backend aún no registraba la descarga.
+        const enCurso = descargando || progreso[m.id] !== undefined;
         return (
           <div
             key={m.id}
@@ -102,7 +118,7 @@ export const ModelosPulido: React.FC = React.memo(() => {
             <div className="opacity-70 mt-1">{m.descripcion}</div>
 
             <div className="mt-2 flex items-center gap-2">
-              {descargando ? (
+              {enCurso ? (
                 <>
                   <div className="flex-1 h-1.5 rounded bg-black/10 dark:bg-white/10 overflow-hidden">
                     <div
