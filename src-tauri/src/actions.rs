@@ -976,7 +976,13 @@ impl ShortcutAction for TranscribeAction {
                                         let base = transcription.clone();
                                         // Diariza en un hilo bloqueante (carga ONNX + inferencia).
                                         tauri::async_runtime::spawn_blocking(move || {
-                                            diarize_and_label(&ds, &words, &dir, num_speakers, meeting)
+                                            diarize_and_label(
+                                                &ds,
+                                                &words,
+                                                &dir,
+                                                num_speakers,
+                                                meeting,
+                                            )
                                         })
                                         .await
                                         .ok()

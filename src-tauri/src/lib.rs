@@ -529,7 +529,10 @@ fn run_headless_transcription(app: &AppHandle, args: &CliArgs) -> i32 {
     // binario reusando la MISMA función del flujo de dictado (actions.rs).
     if std::env::var("ABRAX_DIARIZE").is_ok() {
         let words = tm.take_last_words().unwrap_or_default();
-        eprintln!("\n=== DIARIZACIÓN ({} palabras con tiempo) ===", words.len());
+        eprintln!(
+            "\n=== DIARIZACIÓN ({} palabras con tiempo) ===",
+            words.len()
+        );
         let mdir = std::env::var("ABRAX_DIARIZE_MODELS").unwrap_or_else(|_| "C:\\dp".to_string());
         let num_speakers = std::env::var("ABRAX_DIARIZE_SPEAKERS")
             .ok()

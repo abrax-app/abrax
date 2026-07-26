@@ -1025,8 +1025,31 @@ pub const SETTINGS_STORE_PATH: &str = "settings_store.json";
 pub fn get_default_settings() -> AppSettings {
     #[cfg(target_os = "windows")]
     let default_shortcut = "ctrl+space";
+    // macOS: SOLO MODIFICADORES, a propósito. Cuando cualquier proceso activa
+    // Secure Event Input (un campo de contraseña enfocado, el "Secure Keyboard
+    // Entry" de Terminal, un `loginwindow` colgado), los CGEventTaps dejan de
+    // recibir KeyDown/KeyUp pero los FlagsChanged siguen llegando. Un atajo CON
+    // tecla (el viejo `option+space`) muere ahí en silencio: ni dispara ni avisa.
+    // Uno de solo modificadores es inmune por diseño.
+    //
+    // Se eligió Control+Option, y no otro par, porque: (a) macOS no reserva ⌃⌥
+    // para ninguna acción de texto o navegación del día a día — a diferencia de
+    // ⌘⌥ (forzar salida, pestañas, inspector) o ⇧⌘ (deshacer, buscar); (b) son
+    // dos modificadores, no uno suelto, así que no se pulsa por accidente; y
+    // (c) están juntos en el borde izquierdo, cómodos de sostener con una mano
+    // mientras se dicta. Ojo al elegir alternativas: handy-keys empareja los
+    // modificadores por SUBCONJUNTO, así que un atajo de solo modificadores se
+    // dispara con CUALQUIER acorde que los contenga — por eso no sirven pares
+    // que se usan como prefijo (⌥⇧+flechas selecciona por palabra, y activaría
+    // el dictado en cada selección).
+    //
+    // Salvedad conocida: ⌃⌥ es la "tecla VO" de VoiceOver. Quien lo use tendrá
+    // que reasignar el atajo (VoiceOver viene desactivado de fábrica).
+    //
+    // Solo afecta a instalaciones nuevas: las configuraciones existentes
+    // conservan su `current_binding` y no se tocan.
     #[cfg(target_os = "macos")]
-    let default_shortcut = "option+space";
+    let default_shortcut = "ctrl+option";
     #[cfg(target_os = "linux")]
     let default_shortcut = "ctrl+space";
     #[cfg(not(any(target_os = "windows", target_os = "macos", target_os = "linux")))]
@@ -1384,6 +1407,41 @@ mod tests {
 
     fn default_settings_json() -> serde_json::Value {
         serde_json::to_value(get_default_settings()).unwrap()
+    }
+
+    /// En macOS el atajo de dictado por defecto tiene que ser de SOLO
+    /// modificadores. Con Secure Event Input activo los CGEventTaps dejan de
+    /// entregar KeyDown/KeyUp y un atajo con tecla muere en silencio; los
+    /// FlagsChanged siguen llegando, así que los de solo modificadores sobreviven.
+    /// Este test existe para que nadie vuelva a poner una tecla en el default
+    /// sin darse cuenta de lo que cuesta.
+    #[test]
+    #[cfg(target_os = "macos")]
+    fn macos_default_transcribe_shortcut_is_modifier_only() {
+        const MODIFICADORES: &[&str] = &[
+            "ctrl", "control", "alt", "option", "opt", "shift", "cmd", "command", "super", "fn",
+        ];
+        let settings = get_default_settings();
+        let atajo = &settings.bindings.get("transcribe").unwrap().default_binding;
+
+        let tokens: Vec<String> = atajo
+            .split('+')
+            .map(|t| t.trim().to_ascii_lowercase())
+            .filter(|t| !t.is_empty())
+            .collect();
+
+        assert!(
+            tokens.len() >= 2,
+            "el default de macOS debe llevar al menos dos modificadores para no \
+             dispararse por accidente; es {atajo:?}"
+        );
+        for t in &tokens {
+            assert!(
+                MODIFICADORES.contains(&t.as_str()),
+                "{atajo:?} lleva la tecla {t:?}: con Secure Input activo el atajo \
+                 dejaría de funcionar en silencio"
+            );
+        }
     }
 
     /// Every field must survive a partial store: a missing key must never fail

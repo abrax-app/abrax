@@ -558,10 +558,8 @@ fn mix_system(
 /// stream se cierra (el canal se cae). Best-effort: si falla, se sigue con mic.
 fn open_loopback_tap(
     device: &cpal::Device,
-) -> Result<
-    (cpal::Stream, Arc<Mutex<std::collections::VecDeque<f32>>>),
-    Box<dyn std::error::Error>,
-> {
+) -> Result<(cpal::Stream, Arc<Mutex<std::collections::VecDeque<f32>>>), Box<dyn std::error::Error>>
+{
     let config = AudioRecorder::get_preferred_config(device)?;
     let rate = config.sample_rate().0;
     let channels = config.channels() as usize;

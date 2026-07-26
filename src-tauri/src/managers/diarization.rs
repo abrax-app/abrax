@@ -335,9 +335,8 @@ fn mel_filters() -> Vec<Vec<f32>> {
 fn povey_window() -> Vec<f32> {
     (0..FRAME_LEN)
         .map(|n| {
-            (0.5 - 0.5
-                * (2.0 * std::f32::consts::PI * n as f32 / (FRAME_LEN - 1) as f32).cos())
-            .powf(0.85)
+            (0.5 - 0.5 * (2.0 * std::f32::consts::PI * n as f32 / (FRAME_LEN - 1) as f32).cos())
+                .powf(0.85)
         })
         .collect()
 }
@@ -366,7 +365,14 @@ fn fbank(x: &[f32], fb: &[Vec<f32>], win: &[f32], fft: &dyn Fft<f32>) -> Vec<Vec
         let pow: Vec<f32> = buf[..nb].iter().map(|c| c.norm_sqr()).collect();
         frames.push(
             fb.iter()
-                .map(|f| f.iter().zip(&pow).map(|(a, b)| a * b).sum::<f32>().max(1e-10).ln())
+                .map(|f| {
+                    f.iter()
+                        .zip(&pow)
+                        .map(|(a, b)| a * b)
+                        .sum::<f32>()
+                        .max(1e-10)
+                        .ln()
+                })
                 .collect(),
         );
         i += FRAME_SHIFT;
