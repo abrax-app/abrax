@@ -689,6 +689,7 @@
       "linux": "תן גישה למיקרופון דרך הגדרות השמע או הפרטיות במערכת שלך."
     },
     "noInputDeviceTitle": "לא נמצא מיקרופון",
+    "recordingNoAudioTitle": "No audio detected",
     "noInputDevice": "לא זוהה התקן קלט שמע. חבר מיקרופון או אוזנייה ונסה שוב.",
     "recordingFailed": "הפעלת ההקלטה נכשלה: {{error}}",
     "modelLoadFailed": "טעינת המודל נכשלה: {{model}}",

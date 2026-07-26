@@ -259,6 +259,23 @@ impl AudioRecordingManager {
         *self.cached_device.lock().unwrap() = None;
     }
 
+    /// Dispositivo de SALIDA por defecto para capturar el audio del sistema en
+    /// loopback (cpal WASAPI activa loopback al abrir input sobre un render
+    /// endpoint) — se MEZCLA con la mic cuando «Audio sistema» está activo. Sin
+    /// caché: re-resuelve el default actual cada vez.
+    fn get_loopback_device(&self, settings: &AppSettings) -> Option<cpal::Device> {
+        if !settings.capture_system_audio {
+            return None;
+        }
+        use cpal::traits::HostTrait;
+        let dev = crate::audio_toolkit::get_cpal_host().default_output_device();
+        debug!(
+            "device resolve: AUDIO DEL SISTEMA (loopback, para mezclar) -> salida por defecto (found={})",
+            dev.is_some()
+        );
+        dev
+    }
+
     fn get_effective_microphone_device(&self, settings: &AppSettings) -> Option<cpal::Device> {
         let device_name = match self.desired_device_name(settings) {
             Some(name) => name,
@@ -389,6 +406,8 @@ impl AudioRecordingManager {
         let settings = get_settings(&self.app_handle);
         let resolve_started = Instant::now();
         let selected_device = self.get_effective_microphone_device(&settings);
+        // Loopback del sistema para MEZCLAR con la mic (None si «Audio sistema» off).
+        let loopback_device = self.get_loopback_device(&settings);
         let resolve_elapsed = resolve_started.elapsed();
 
         // Ensure VAD is loaded if it wasn't for whatever reason
@@ -399,14 +418,14 @@ impl AudioRecordingManager {
         let open_started = Instant::now();
         let mut recorder_opt = self.recorder.lock().unwrap();
         if let Some(rec) = recorder_opt.as_mut() {
-            if let Err(first_err) = rec.open(selected_device.clone()) {
+            if let Err(first_err) = rec.open(selected_device.clone(), loopback_device.clone()) {
                 // A cached device or config may have gone stale (unplugged,
                 // rate/format changed). Re-resolve from a fresh enumeration and
                 // retry once before surfacing the error.
                 warn!("Recorder open failed ({first_err}); re-resolving device and retrying once");
                 self.invalidate_device_cache();
                 let fresh_device = self.get_effective_microphone_device(&settings);
-                rec.open(fresh_device)
+                rec.open(fresh_device, loopback_device.clone())
                     .map_err(|e| anyhow::anyhow!("Failed to open recorder: {}", e))?;
             }
         }

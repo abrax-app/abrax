@@ -29,6 +29,9 @@ const MAX_RECENT: usize = 20;
 pub enum AlertKind {
     RecordingPermissionDenied,
     RecordingNoDevice,
+    /// La grabación no capturó audio (0 muestras): mic mudo/desconectado, o
+    /// «Audio del sistema» activo pero sin nada sonando.
+    RecordingNoAudio,
     Recording,
     Transcription,
     Paste,
@@ -85,6 +88,7 @@ pub fn alert(app: &AppHandle, kind: AlertKind, detail: Option<String>) {
         let body = match kind {
             AlertKind::RecordingPermissionDenied
             | AlertKind::RecordingNoDevice
+            | AlertKind::RecordingNoAudio
             | AlertKind::Recording => strings.error_recording,
             AlertKind::Transcription => strings.error_transcription,
             AlertKind::Paste => strings.error_paste,

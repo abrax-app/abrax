@@ -689,6 +689,7 @@
       "linux": "在系统的声音或隐私设置中授予麦克风访问权限。"
     },
     "noInputDeviceTitle": "未找到麦克风",
+    "recordingNoAudioTitle": "No audio detected",
     "noInputDevice": "未检测到音频输入设备。请连接麦克风或耳机后重试。",
     "recordingFailed": "录音启动失败: {{error}}",
     "modelLoadFailed": "加载模型失败: {{model}}",

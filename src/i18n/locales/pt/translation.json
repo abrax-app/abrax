@@ -689,6 +689,7 @@
       "linux": "Conceda o acesso ao microfone nas configurações de som ou privacidade do seu sistema."
     },
     "noInputDeviceTitle": "Nenhum microfone encontrado",
+    "recordingNoAudioTitle": "No audio detected",
     "noInputDevice": "Nenhum dispositivo de entrada de áudio foi detectado. Conecte um microfone ou fone de ouvido e tente novamente.",
     "recordingFailed": "Falha ao iniciar a gravação: {{error}}",
     "modelLoadFailed": "Falha ao carregar o modelo: {{model}}",

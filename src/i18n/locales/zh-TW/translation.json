@@ -689,6 +689,7 @@
       "linux": "在系統的聲音或隱私設定中授予麥克風存取權限。"
     },
     "noInputDeviceTitle": "找不到麥克風",
+    "recordingNoAudioTitle": "No audio detected",
     "noInputDevice": "未偵測到音訊輸入裝置。請連接麥克風或耳機後重試。",
     "recordingFailed": "錄音啟動失敗: {{error}}",
     "modelLoadFailed": "載入模型失敗: {{model}}",
