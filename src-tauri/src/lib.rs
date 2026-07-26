@@ -910,6 +910,9 @@ pub fn run(cli_args: CliArgs) {
                         (600.0, 500.0),
                     )
                 }
+                // Bancada: consola de garaje rectangular (panel fijo, no una
+                // silueta custom): tamaño cómodo para instrumentos + pestañas.
+                (true, settings::UiShell::Bancada) => ((840.0, 600.0), (720.0, 540.0)),
                 _ => ((680.0, 570.0), (680.0, 570.0)),
             };
 

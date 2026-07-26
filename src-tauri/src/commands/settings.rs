@@ -123,6 +123,7 @@ pub fn change_ui_shell_setting(app: AppHandle, ui_shell: String) -> Result<(), S
         "classic" => UiShell::Classic,
         "retro" => UiShell::Retro,
         "quiet" => UiShell::Quiet,
+        "bancada" => UiShell::Bancada,
         other => {
             warn!("Invalid ui shell '{}', defaulting to classic", other);
             UiShell::Classic

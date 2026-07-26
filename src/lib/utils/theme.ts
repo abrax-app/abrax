@@ -33,17 +33,25 @@ const UI_THEME_STORAGE_KEY = "abrax.palette";
 const SHELL_STORAGE_KEY = "abrax.shell";
 
 export const THEME_OPTIONS: Theme[] = ["system", "light", "dark"];
-export const UI_THEME_OPTIONS: UiTheme[] = ["abrax", "imperial"];
-export const UI_SHELL_OPTIONS: UiShell[] = ["classic", "retro", "quiet"];
+export const UI_THEME_OPTIONS: UiTheme[] = ["abrax", "imperial", "escuderia"];
+export const UI_SHELL_OPTIONS: UiShell[] = [
+  "classic",
+  "retro",
+  "quiet",
+  "bancada",
+];
 
 const isTheme = (value: unknown): value is Theme =>
   value === "system" || value === "light" || value === "dark";
 
 const isUiTheme = (value: unknown): value is UiTheme =>
-  value === "abrax" || value === "imperial";
+  value === "abrax" || value === "imperial" || value === "escuderia";
 
 const isUiShell = (value: unknown): value is UiShell =>
-  value === "classic" || value === "retro" || value === "quiet";
+  value === "classic" ||
+  value === "retro" ||
+  value === "quiet" ||
+  value === "bancada";
 
 /**
  * Apply a mode + palette pair to a document root. Pure DOM: no persistence.
@@ -61,11 +69,16 @@ export const applyAppearanceToRoot = (
     root.dataset.uiTheme = uiTheme;
   }
   // Dark by design → forzar modo oscuro mientras estén activos:
-  //  - Imperial (paleta oscura por diseño).
-  //  - Quiet (shell de identidad "siempre oscuro": sus componentes embebidos
-  //    —historial/ajustes— usan los tokens base, y sin esto seguirían el tema
-  //    ambiente (p. ej. claro), pintando tarjetas claras sobre el negro de Quiet).
-  const forceDark = uiTheme === "imperial" || getStoredShell() === "quiet";
+  //  - Imperial y Escudería (paletas oscuras por diseño).
+  //  - Quiet y Bancada (shells de identidad "siempre oscuro": sus componentes
+  //    embebidos —historial/ajustes— usan los tokens base, y sin esto seguirían
+  //    el tema ambiente (p. ej. claro), pintando tarjetas claras sobre su negro).
+  const shell = getStoredShell();
+  const forceDark =
+    uiTheme === "imperial" ||
+    uiTheme === "escuderia" ||
+    shell === "quiet" ||
+    shell === "bancada";
   const effective: Theme = forceDark ? "dark" : theme;
   if (effective === "system") {
     delete root.dataset.theme;

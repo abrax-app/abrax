@@ -348,13 +348,14 @@ pub enum UiShell {
     Classic,
     Retro,
     Quiet,
+    Bancada,
 }
 
 impl UiShell {
     /// Whether this shell wants a frameless, transparent window. `Classic`
     /// keeps the native decorated chrome; `Retro` and `Quiet` paint their own.
     pub fn wants_transparency(self) -> bool {
-        matches!(self, UiShell::Retro | UiShell::Quiet)
+        matches!(self, UiShell::Retro | UiShell::Quiet | UiShell::Bancada)
     }
 }
 
