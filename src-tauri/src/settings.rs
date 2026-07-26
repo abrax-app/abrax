@@ -1043,8 +1043,15 @@ pub fn get_default_settings() -> AppSettings {
     // que se usan como prefijo (⌥⇧+flechas selecciona por palabra, y activaría
     // el dictado en cada selección).
     //
-    // Salvedad conocida: ⌃⌥ es la "tecla VO" de VoiceOver. Quien lo use tendrá
-    // que reasignar el atajo (VoiceOver viene desactivado de fábrica).
+    // Salvedades conocidas, SIN VERIFICAR todavía en un Mac real:
+    //  - ⌃⌥ es la "tecla VO" de VoiceOver. Quien lo use tendrá que reasignar el
+    //    atajo (VoiceOver viene desactivado de fábrica).
+    //  - Por el emparejamiento por subconjunto, ⌃⌥⌘ —frecuente en herramientas
+    //    de desarrollo, Xcode entre ellas— TAMBIÉN dispara este atajo. Si en
+    //    uso real resultan falsos disparos, la salida es volver a un atajo con
+    //    tecla y fusionar el fallback de `secure_input` (rama
+    //    `feat/macos-secure-input`), que es lo que lo hace viable.
+    // El paso 6 del checklist de QA en Mac decide entre las dos vías.
     //
     // Solo afecta a instalaciones nuevas: las configuraciones existentes
     // conservan su `current_binding` y no se tocan.
