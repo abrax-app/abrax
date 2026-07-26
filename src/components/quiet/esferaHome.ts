@@ -1,8 +1,8 @@
 /**
- * esferaHome — motor de la esfera del home orbital (canvas 2D, liviano).
+ * esferaHome — motor de la esfera del inicio del shell Quiet (canvas 2D, liviano).
  *
  * Puerto fiel del prototipo `abrax_mockup_app_v6.html` (prototipo fuera del repo): una
- * vista polar de puntos que respira, un anillo orbital con física de "sector
+ * vista polar de puntos que respira, un anillo en órbita con física de "sector
  * dominante" (los puntos migran hacia el nodo enfocado) y un núcleo que late.
  * Al abrir una sección la esfera se abre como iris (los puntos migran al borde
  * y el interior queda libre para el contenido).
@@ -32,7 +32,7 @@ export type EsferaHandle = {
 
 type RGB = [number, number, number];
 
-export type OrbitalPalette = {
+export type PaletaHome = {
   c1: RGB; // stop-a (frío / oro)
   c2: RGB; // stop-b (cálido / ámbar)
   c3: RGB; // stop-c (anillo interior / rojo)
@@ -42,7 +42,7 @@ export type OrbitalPalette = {
   recGlow: string; // halo del núcleo al grabar
 };
 
-const FALLBACK: OrbitalPalette = {
+const FALLBACK: PaletaHome = {
   c1: [51, 191, 255],
   c2: [115, 38, 217],
   c3: [255, 64, 204],
@@ -76,10 +76,10 @@ function parseColor(raw: string): RGB | null {
 
 const rgba = (c: RGB, a: number) => `rgba(${c[0]},${c[1]},${c[2]},${a})`;
 
-/** Lee la paleta orbital desde los tokens CSS de la raíz (o de un root dado). */
-export function readOrbitalPalette(
+/** Lee la paleta de la esfera del inicio desde los tokens CSS de la raíz (o de un root dado). */
+export function readPaletaHome(
   root: HTMLElement = document.documentElement,
-): OrbitalPalette {
+): PaletaHome {
   const cs = getComputedStyle(root);
   const get = (token: string, fb: RGB): RGB =>
     parseColor(cs.getPropertyValue(token)) ?? fb;
@@ -112,7 +112,7 @@ const mix = (a: RGB, b: RGB, k: number): RGB => [
  * abajo-izquierda), leído de la paleta. Exportado para que los nodos del menú
  * usen exactamente la misma fórmula que el anillo, y todo retiñe junto.
  */
-export function colorDeg(deg: number, pal: OrbitalPalette): string {
+export function colorDeg(deg: number, pal: PaletaHome): string {
   const t = (Math.sin(((deg - 45) * Math.PI) / 180) + 1) / 2;
   const [a, b, k] =
     t > 0.5
@@ -126,7 +126,7 @@ const SZ = 740;
 const C = SZ / 2;
 const RMAX = 252; // radio de la esfera
 const RAP = 210; // radio del iris abierto
-const R_ORB = 300; // radio del anillo orbital
+const R_ORB = 300; // radio del anillo en órbita
 const N_ORB = 176;
 
 type Punto = { rr: number; r: number; a: number; fase: number; col: string };
@@ -143,7 +143,7 @@ export function montarEsfera(cv: HTMLCanvasElement): EsferaHandle {
   cv.height = SZ;
   const reducido = matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-  let pal = readOrbitalPalette();
+  let pal = readPaletaHome();
   let grabando = false;
   let aper = 0;
   let aperObj = 0;
@@ -178,7 +178,7 @@ export function montarEsfera(cv: HTMLCanvasElement): EsferaHandle {
     }
   }
 
-  // Semilla del anillo orbital.
+  // Semilla del anillo en órbita.
   const orbPts: OrbPunto[] = [];
   for (let i = 0; i < N_ORB; i++) {
     const ang = (i * 360) / N_ORB;
@@ -232,7 +232,7 @@ export function montarEsfera(cv: HTMLCanvasElement): EsferaHandle {
       ctx.fillRect(x - 1, y - 1, 2, 2);
     }
 
-    // Anillo orbital con física de sector dominante.
+    // Anillo en órbita con física de sector dominante.
     const objetivo = sector;
     for (const p of orbPts) {
       const fObj =
@@ -294,7 +294,7 @@ export function montarEsfera(cv: HTMLCanvasElement): EsferaHandle {
       sector = deg;
     },
     setPalette: () => {
-      pal = readOrbitalPalette();
+      pal = readPaletaHome();
       reColor();
     },
     destroy: () => {

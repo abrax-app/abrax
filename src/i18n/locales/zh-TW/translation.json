@@ -810,7 +810,7 @@
   },
   "shell": {
     "title": "視窗外觀",
-    "description": "選擇 Abrax 視窗的外形。「經典」是一般的設定視窗；Orbital 會將應用程式變成漂浮的球體；Retro 是復古播放器風格的外觀。視窗外框會在 Abrax 重新啟動後完成套用。",
+    "description": "選擇 Abrax 視窗的外形。經典是標準的設定視窗；Quiet 是首頁帶有球體的極簡深色面板。視窗邊框會在重新啟動 Abrax 後完全更新。",
     "options": {
       "classic": "經典",
       "retro": "Retro",

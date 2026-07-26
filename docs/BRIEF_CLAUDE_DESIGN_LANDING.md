@@ -69,7 +69,7 @@ funcione como destino de esa revelación.
 3. **Funciones** — Dictado local (Whisper/Parakeet, filtro de muletillas es-419) · Escucha (TTS
    con voz de prosa y voz de código) · Diccionario Vivo (indexa tu repo: «use auth store» →
    `useAuthStore`) · Compilador de prompts (CONTEXTO/TAREA/REQUISITOS/FORMATO, sin LLM) ·
-   3 shells de ventana (Clásico/Orbital/Retro) · 2 paletas (ABRAX/IMPERIAL).
+   2 formas de ventana (Clásico/Quiet) · 2 paletas (ABRAX/IMPERIAL).
 4. **Privacidad** — qué es local, qué es opcional online (opt-in), qué no se recopila, cómo borrar.
 5. **Demo interactiva de audio** — placeholder; el micrófono NUNCA se pide automáticamente.
 6. **Compatibilidad** — macOS/Windows/Linux con limitaciones honestas.

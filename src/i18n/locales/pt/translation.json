@@ -810,7 +810,7 @@
   },
   "shell": {
     "title": "Forma da janela",
-    "description": "Escolha a forma da janela do Abrax. Clássico é a janela de ajustes de sempre; Orbital transforma o app numa esfera flutuante; Retro é um skin de reprodutor clássico. A moldura da janela termina de ser aplicada ao reiniciar o Abrax.",
+    "description": "Escolha a forma da janela do Abrax. Clássica é a janela de configurações padrão; Quiet é um painel escuro minimalista com a esfera na tela inicial. A moldura da janela termina de atualizar quando você reinicia o Abrax.",
     "options": {
       "classic": "Clássico",
       "retro": "Retro",

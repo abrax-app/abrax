@@ -810,7 +810,7 @@
   },
   "shell": {
     "title": "Forma de la ventana",
-    "description": "Elige la forma de la ventana de Abrax. Clásico es la ventana de ajustes estándar; Retro es una skin estilo reproductor clásico; Quiet es un panel minimalista oscuro. El marco de la ventana termina de actualizarse al reiniciar Abrax.",
+    "description": "Elige la forma de la ventana de Abrax. Clásico es la ventana de ajustes estándar; Quiet es un panel minimalista oscuro con la esfera en el inicio. El marco de la ventana termina de actualizarse al reiniciar Abrax.",
     "options": {
       "classic": "Clásico",
       "retro": "Retro",

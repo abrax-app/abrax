@@ -810,7 +810,7 @@
   },
   "shell": {
     "title": "Kształt okna",
-    "description": "Wybierz kształt okna Abrax. Klasyczny to standardowe okno ustawień; Orbital zmienia aplikację w pływającą sferę; Retro to skórka klasycznego odtwarzacza. Ramka okna zostanie w pełni zastosowana po ponownym uruchomieniu Abrax.",
+    "description": "Wybierz kształt okna Abrax. Klasyczne to standardowe okno ustawień; Quiet to minimalistyczny ciemny panel ze sferą na ekranie głównym. Ramka okna zaktualizuje się w pełni po ponownym uruchomieniu Abrax.",
     "options": {
       "classic": "Klasyczny",
       "retro": "Retro",

@@ -810,7 +810,7 @@
   },
   "shell": {
     "title": "Forma della finestra",
-    "description": "Scegli la forma della finestra di Abrax. Classica è la finestra delle impostazioni di sempre; Orbitale trasforma l'app in una sfera fluttuante; Retro è uno skin da lettore classico. La cornice della finestra completa l'aggiornamento al riavvio di Abrax.",
+    "description": "Scegli la forma della finestra di Abrax. Classica è la finestra delle impostazioni standard; Quiet è un pannello scuro minimalista con la sfera nella schermata iniziale. La cornice della finestra completa l'aggiornamento al riavvio di Abrax.",
     "options": {
       "classic": "Classica",
       "retro": "Retro",

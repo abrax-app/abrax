@@ -810,7 +810,7 @@
   },
   "shell": {
     "title": "Pencere biçimi",
-    "description": "Abrax penceresinin biçimini seç. Klasik, her zamanki ayarlar penceresidir; Orbital uygulamayı yüzen bir küreye dönüştürür; Retro klasik bir oynatıcı görünümüdür. Pencere çerçevesi, Abrax yeniden başlatıldığında güncellenmesini tamamlar.",
+    "description": "Abrax penceresinin biçimini seç. Klasik, standart ayarlar penceresidir; Quiet ise ana ekranında küre bulunan minimalist koyu bir paneldir. Pencere çerçevesi Abrax'ı yeniden başlattığında tamamen güncellenir.",
     "options": {
       "classic": "Klasik",
       "retro": "Retro",

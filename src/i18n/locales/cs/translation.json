@@ -810,7 +810,7 @@
   },
   "shell": {
     "title": "Tvar okna",
-    "description": "Vyberte tvar okna aplikace Abrax. Klasický je běžné okno nastavení; Orbital promění aplikaci v plovoucí kouli; Retro je skin klasického přehrávače. Změna rámečku okna se dokončí po restartu Abrax.",
+    "description": "Vyberte podobu okna Abrax. Klasické je standardní okno nastavení; Quiet je minimalistický tmavý panel se sférou na úvodní obrazovce. Rámeček okna se plně aktualizuje po restartu Abrax.",
     "options": {
       "classic": "Klasický",
       "retro": "Retro",

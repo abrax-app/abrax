@@ -1234,7 +1234,7 @@ h2::before {
   flex: 1;
 }
 .mini-duo .mini-captura img {
-  aspect-ratio: 850 / 714; /* orbital y retro alinean sus bases */
+  aspect-ratio: 850 / 714; /* las capturas en pareja alinean sus bases */
   object-fit: cover;
 }
 

@@ -23,7 +23,7 @@ Parámetro de desarrollo: `?sin-acto` salta la portada (útil para QA y capturas
   y carga three.js + motor **en diferido** (idle) para no bloquear el pintado.
 - `js/esfera.js` — motor de la esfera «palabras vivas»: audio-reactiva
   (demo/micrófono/datos externos), palabras que vuelan y se disuelven,
-  interior con fundido granulado, ruido orgánico, limbo, anillos orbitales
+  interior con fundido granulado, ruido orgánico, limbo, anillos en órbita
   opcionales (apagados por defecto) y API `tune()/getTune()`. Respeta
   `prefers-reduced-motion` en todas las capas y se pausa fuera del viewport.
 - `js/cuadraditos.js` — transición de revelado (retícula radial con flashes

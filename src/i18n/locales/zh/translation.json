@@ -810,7 +810,7 @@
   },
   "shell": {
     "title": "窗口外形",
-    "description": "选择 Abrax 窗口的外形。经典是标准的设置窗口；Orbital 会把应用变成悬浮的球体；Retro 是经典播放器皮肤。窗口边框会在 Abrax 重启后完成更新。",
+    "description": "选择 Abrax 窗口的外形。经典是标准的设置窗口；Quiet 是首页带有球体的极简深色面板。窗口边框会在重启 Abrax 后完全更新。",
     "options": {
       "classic": "经典",
       "retro": "Retro",

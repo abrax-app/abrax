@@ -810,7 +810,7 @@
   },
   "shell": {
     "title": "Fensterform",
-    "description": "Wähle die Form des Abrax-Fensters. Klassisch ist das gewohnte Einstellungsfenster; Orbital verwandelt die App in eine schwebende Kugel; Retro ist ein klassischer Player-Skin. Der Fensterrahmen wird beim Neustart von Abrax vollständig übernommen.",
+    "description": "Wähle die Form des Abrax-Fensters. Klassisch ist das gewohnte Einstellungsfenster; Quiet ist ein minimalistisches dunkles Panel mit der Sphäre auf der Startseite. Der Fensterrahmen wird beim Neustart von Abrax vollständig übernommen.",
     "options": {
       "classic": "Klassisch",
       "retro": "Retro",

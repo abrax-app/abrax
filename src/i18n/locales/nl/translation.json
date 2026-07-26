@@ -810,7 +810,7 @@
   },
   "shell": {
     "title": "Venstervorm",
-    "description": "Kies de vorm van het Abrax-venster. Klassiek is het standaard instellingenvenster; Orbital verandert de app in een zwevende bol; Retro is een skin van een klassieke speler. Het vensterkader wordt volledig bijgewerkt zodra Abrax opnieuw opstart.",
+    "description": "Kies de vorm van het Abrax-venster. Klassiek is het standaard instellingenvenster; Quiet is een minimalistisch donker paneel met de sfeer op het startscherm. Het vensterkader wordt volledig bijgewerkt nadat je Abrax opnieuw start.",
     "options": {
       "classic": "Klassiek",
       "retro": "Retro",

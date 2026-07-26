@@ -39,7 +39,7 @@
 
   /* Esfera del overlay: stops del degradado, núcleos de estado y escenario.
      El motor (overlay/esfera/engine.ts) los lee por getComputedStyle al
-     montar; cualquier shell (clásico, orbital, retro) que redefina estos
+     montar; cualquier shell (clásico, Quiet…) que redefina estos
      tokens re-tiñe la esfera sin tocar el motor. Valores = prototipo v2. */
   --esfera-stop-a: #33bfff; /* exterior frío */
   --esfera-stop-b: #7326d9; /* exterior cálido */
@@ -100,7 +100,7 @@
    Paleta IMPERIAL — oscura por diseño (data-theme="dark" viene forzado por
    el JS, de ahí el segundo selector: su especificidad 0-3-0 gana a los
    overrides [data-theme] de App.css). Solo re-apunta color; la geometría y
-   los sabores visuales de orbital/retro (grilla, brackets) NO viven aquí.
+   los sabores visuales propios de cada shell (grilla, brackets) NO viven aquí.
    ============================================================ */
 :root[data-ui-theme="imperial"],
 :root[data-ui-theme="imperial"][data-theme="dark"] {
@@ -138,7 +138,7 @@
    especificidad 0-3-0 gana a los overrides [data-theme] de App.css). Acento de
    marca rojo #EE3F2C; el negro se mantiene como base (near-black para sostener
    la elevación de superficies del log). Solo re-apunta color; la geometría de
-   orbital/retro NO vive aquí.
+   cada shell NO vive aquí.
    ============================================================ */
 :root[data-ui-theme="escuderia"],
 :root[data-ui-theme="escuderia"][data-theme="dark"] {

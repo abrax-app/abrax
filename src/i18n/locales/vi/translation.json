@@ -810,7 +810,7 @@
   },
   "shell": {
     "title": "Kiểu cửa sổ",
-    "description": "Chọn hình dạng cửa sổ Abrax. Cổ điển là cửa sổ cài đặt tiêu chuẩn; Orbital biến ứng dụng thành một quả cầu nổi; Retro là giao diện kiểu trình phát cổ điển. Khung cửa sổ sẽ hoàn tất cập nhật khi Abrax khởi động lại.",
+    "description": "Chọn hình dạng cửa sổ Abrax. Cổ điển là cửa sổ cài đặt tiêu chuẩn; Quiet là bảng tối tối giản với quả cầu ở màn hình chính. Khung cửa sổ sẽ cập nhật xong khi bạn khởi động lại Abrax.",
     "options": {
       "classic": "Cổ điển",
       "retro": "Retro",

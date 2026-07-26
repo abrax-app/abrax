@@ -2,7 +2,7 @@
 
 Aplicables con `ESFERA.tune({...})` en cualquiera de los dos laboratorios
 (`lab-esfera.html` motor serio · `lab-loco.html` fork). El motor serio incluye
-limbo y anillos orbitales **apagados por defecto** (`anillo: 0`); el fork los
+limbo y anillos en órbita **apagados por defecto** (`anillo: 0`); el fork los
 trae encendidos de fábrica y sin topes de seguridad.
 
 ## Firma ABRAX — con anillos (2026-07-19)

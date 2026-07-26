@@ -810,7 +810,7 @@
   },
   "shell": {
     "title": "Forme de la fenêtre",
-    "description": "Choisissez la forme de la fenêtre d'Abrax. Classique est la fenêtre de réglages habituelle ; Orbital transforme l'application en une sphère flottante ; Rétro est un habillage de lecteur classique. Le cadre de la fenêtre finit de s'appliquer au redémarrage d'Abrax.",
+    "description": "Choisis la forme de la fenêtre d'Abrax. Classique est la fenêtre de réglages habituelle ; Quiet est un panneau sombre minimaliste avec la sphère sur son écran d'accueil. Le cadre de la fenêtre finit de s'appliquer au redémarrage d'Abrax.",
     "options": {
       "classic": "Classique",
       "retro": "Rétro",

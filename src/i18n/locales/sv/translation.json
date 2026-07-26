@@ -810,7 +810,7 @@
   },
   "shell": {
     "title": "Fönsterform",
-    "description": "Välj formen på Abrax-fönstret. Klassisk är det vanliga inställningsfönstret; Orbital förvandlar appen till en svävande sfär; Retro är ett skal i klassisk spelarstil. Fönsterramen uppdateras färdigt när Abrax startar om.",
+    "description": "Välj formen på Abrax-fönstret. Klassisk är det vanliga inställningsfönstret; Quiet är en minimalistisk mörk panel med sfären på startsidan. Fönsterramen uppdateras helt när du startar om Abrax.",
     "options": {
       "classic": "Klassisk",
       "retro": "Retro",

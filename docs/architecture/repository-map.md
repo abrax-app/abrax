@@ -44,7 +44,8 @@ landing/            página web estática (independiente de la app)
 | ------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `App.tsx` + `components/Sidebar.tsx`       | Shell clásico y tabla de secciones de la app.                                                                                                             |
 | `components/settings/`                     | Páginas de ajustes (general, modelos, historial, avanzado, corrección, escucha…).                                                                         |
-| `components/orbital/`, `components/retro/` | Shells alternativos completos de la UI.                                                                                                                   |
+| `components/quiet/`                        | Shell Quiet: panel minimalista con inicio, esfera y últimas transcripciones.                                                                              |
+| `components/retro/`, `components/bancada/` | Shells alternativos completos, **fuera del selector de la interfaz** (ver CHANGELOG_REBRAND).                                                             |
 | `overlay/`                                 | Overlay de grabación y motor WebGL de la esfera (`overlay/esfera/engine.ts`).                                                                             |
 | `stores/`, `hooks/`                        | Estado (Zustand) y acceso a settings/modelos.                                                                                                             |
 | `i18n/locales/`                            | 22 locales con paridad verificada (`bun run check:translations`). **Anclado al build Rust**: `build.rs` genera las traducciones de la bandeja desde aquí. |

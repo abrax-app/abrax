@@ -80,8 +80,8 @@ interface SparkCluster {
  * Paleta de la esfera, leída de los tokens CSS de la raíz (theme.css):
  * stops del degradado de la membrana, núcleos por estado y colores del
  * escenario. La paleta activa (`data-ui-theme`) redefine los tokens y la
- * esfera se re-tiñe sin tocar el motor — cualquier shell (clásico, orbital,
- * retro) reutiliza esta inyección tal cual. Los respaldos son los valores
+ * esfera se re-tiñe sin tocar el motor — cualquier shell reutiliza esta
+ * inyección tal cual. Los respaldos son los valores
  * del prototipo v2 (paleta ABRAX).
  *
  * Cada color es un entero 0xRRGGBB en sRGB crudo: el shader consume los
@@ -601,7 +601,7 @@ export class EsferaEngine {
    * Re-tiñe la esfera en caliente (membrana, núcleos, halo y escenario).
    * El overlay monta un motor nuevo por sesión de dictado, así que la vía
    * normal es el constructor; esta entrada queda lista para shells que
-   * cambien de paleta con el motor vivo (orbital/retro).
+   * cambien de paleta con el motor vivo.
    */
   setPalette(palette: EsferaPalette) {
     if (this.disposed) return;

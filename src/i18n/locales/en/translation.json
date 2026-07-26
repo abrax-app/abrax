@@ -810,7 +810,7 @@
   },
   "shell": {
     "title": "Window shell",
-    "description": "Choose the shape of the Abrax window. Classic is the standard settings window; Retro is a classic-player skin; Quiet is a minimalist dark panel. The window frame finishes updating when Abrax restarts.",
+    "description": "Choose the shape of the Abrax window. Classic is the standard settings window; Quiet is a minimalist dark panel with the sphere on its home screen. The window frame finishes updating when you restart Abrax.",
     "options": {
       "classic": "Classic",
       "retro": "Retro",
