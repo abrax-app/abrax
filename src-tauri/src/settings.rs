@@ -582,6 +582,21 @@ pub struct AppSettings {
     pub extra_recording_buffer_ms: u64,
     #[serde(default = "default_vad_enabled")]
     pub vad_enabled: bool,
+    /// Diarización de hablantes (offline): etiqueta la transcripción con
+    /// `[Hablante N]` cuando hay varias voces. Opt-in (cuesta CPU y requiere los
+    /// modelos ONNX de diarización). Por defecto apagada.
+    #[serde(default)]
+    pub diarization_enabled: bool,
+    /// Pista de número de hablantes para la diarización. `0` = auto (detecta solo,
+    /// menos fiable same-mic); `N>=1` = fuerza EXACTAMENTE N hablantes (la vía más
+    /// fiable cuando el usuario sabe cuántas voces hay).
+    #[serde(default)]
+    pub diarization_num_speakers: u32,
+    /// Captura el AUDIO DEL SISTEMA (loopback del dispositivo de salida) en vez del
+    /// micrófono — para transcribir reuniones online (Teams/Zoom/Meet) donde las
+    /// voces salen por los parlantes, no entran por el mic. Off = micrófono normal.
+    #[serde(default)]
+    pub capture_system_audio: bool,
     /// Which recording overlay to show: None / Minimal / Live. Streaming mode is
     /// not gated on this — that follows model capability. Migrated from the old
     /// `overlay_position` (position `none` → style `None`).
@@ -1106,6 +1121,9 @@ pub fn get_default_settings() -> AppSettings {
         transcribe_gpu_device: default_transcribe_gpu_device(),
         extra_recording_buffer_ms: 0,
         vad_enabled: default_vad_enabled(),
+        diarization_enabled: false,
+        diarization_num_speakers: 0,
+        capture_system_audio: false,
         overlay_style: default_overlay_style(),
         esfera_modo: default_esfera_modo(),
         // [ESCUCHA]

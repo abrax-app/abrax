@@ -331,6 +331,20 @@ pub struct TranscriptionManager {
     /// de éxito para retener el overlay lo justo y que las últimas palabras
     /// completen su ciclo antes del fade.
     esfera_words_drained_at: Arc<Mutex<Option<Instant>>>,
+    /// Timestamps por palabra del ÚLTIMO transcribe() (motor whisper /
+    /// transcribe-cpp), para la diarización offline. Canal lateral: se puebla en
+    /// el arm TranscribeCpp y lo consume la ruta de dictado (actions.rs) tras
+    /// transcribir. `None` si el motor no da tiempos por palabra.
+    last_words: Arc<Mutex<Option<Vec<TimedWord>>>>,
+}
+
+/// Una palabra transcrita con sus tiempos, en ms sobre el MISMO buffer de audio
+/// que ve el modelo. Base para alinear texto ↔ hablante en la diarización.
+#[derive(Clone, Debug)]
+pub struct TimedWord {
+    pub text: String,
+    pub t0_ms: i64,
+    pub t1_ms: i64,
 }
 
 impl TranscriptionManager {
@@ -352,6 +366,7 @@ impl TranscriptionManager {
             active_stream_worker: Arc::new(AtomicU64::new(0)),
             active_engine_lease: Arc::new(AtomicU64::new(0)),
             esfera_words_drained_at: Arc::new(Mutex::new(None)),
+            last_words: Arc::new(Mutex::new(None)),
         };
 
         // Start the idle watcher
@@ -1268,6 +1283,12 @@ impl TranscriptionManager {
         esfera_linger_from(drained, Instant::now())
     }
 
+    /// Consume los timestamps por palabra del último `transcribe()` (canal
+    /// lateral para la diarización). Se vacía al leerlos.
+    pub fn take_last_words(&self) -> Option<Vec<TimedWord>> {
+        self.last_words.lock().ok().and_then(|mut g| g.take())
+    }
+
     pub fn transcribe(&self, audio: Vec<f32>) -> Result<String> {
         #[cfg(debug_assertions)]
         if std::env::var("HANDY_FORCE_TRANSCRIPTION_FAILURE").is_ok() {
@@ -1278,6 +1299,11 @@ impl TranscriptionManager {
 
         // Update last activity timestamp
         self.touch_activity();
+
+        // Limpia los tiempos del dictado anterior (canal lateral de diarización).
+        if let Ok(mut g) = self.last_words.lock() {
+            *g = None;
+        }
 
         let st = std::time::Instant::now();
         let audio_len = audio.len();
@@ -1416,6 +1442,10 @@ impl TranscriptionManager {
                             language: run_plan.language,
                             target_language: run_plan.target_language,
                             family,
+                            // NO forzamos granularidad: el default (Auto) pide los
+                            // tiempos que el modelo soporte (algunos backends rechazan
+                            // Word con "unsupported timestamp granularity"). Se
+                            // capturan abajo para la diarización offline.
                             ..Default::default()
                         };
 
@@ -1428,7 +1458,36 @@ impl TranscriptionManager {
 
                         session
                             .run(&audio, &run_options)
-                            .map(|t| t.text)
+                            .map(|t| {
+                                // Canal lateral para diarización: usa PALABRAS si el
+                                // modelo las dio; si no, cae a SEGMENTOS (soportados
+                                // por casi todos). Ambos traen t0_ms/t1_ms + texto.
+                                let timed: Vec<TimedWord> = if !t.words.is_empty() {
+                                    t.words
+                                        .iter()
+                                        .map(|w| TimedWord {
+                                            text: w.text.clone(),
+                                            t0_ms: w.t0_ms,
+                                            t1_ms: w.t1_ms,
+                                        })
+                                        .collect()
+                                } else {
+                                    t.segments
+                                        .iter()
+                                        .map(|s| TimedWord {
+                                            text: s.text.clone(),
+                                            t0_ms: s.t0_ms,
+                                            t1_ms: s.t1_ms,
+                                        })
+                                        .collect()
+                                };
+                                if !timed.is_empty() {
+                                    if let Ok(mut g) = self.last_words.lock() {
+                                        *g = Some(timed);
+                                    }
+                                }
+                                t.text
+                            })
                             .map_err(|e| {
                                 anyhow::anyhow!("transcribe-cpp transcription failed: {}", e)
                             })

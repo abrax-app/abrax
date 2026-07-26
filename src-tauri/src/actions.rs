@@ -18,7 +18,7 @@ use crate::tray::{change_tray_icon, TrayIconState};
 use crate::utils;
 use crate::TranscriptionCoordinator;
 use ferrous_opencc::{config::BuiltinConfig, OpenCC};
-use log::{debug, error, warn};
+use log::{debug, error, info, warn};
 use once_cell::sync::Lazy;
 use std::collections::HashMap;
 use std::future::Future;
@@ -72,6 +72,115 @@ fn build_system_prompt(prompt_template: &str) -> String {
 /// transcription".
 fn is_blank_transcription(transcription: &str) -> bool {
     transcription.trim().is_empty()
+}
+
+/// Diarización opt-in (env `ABRAX_DIARIZE`): corre el diarizador sobre el buffer
+/// 16 kHz y devuelve el texto con prefijos `[Hablante N]`, alineando cada palabra
+/// de whisper (canal lateral de Fase 1) con el hablante por máximo solapamiento
+/// temporal. `None` si no hay palabras con tiempo o fallan los modelos.
+/// Carpeta de los modelos ONNX de diarización: `ABRAX_DIARIZE_MODELS` si está
+/// (dev), si no `<app_data_dir>/diarization`.
+pub(crate) fn diarization_models_dir(ah: &AppHandle) -> std::path::PathBuf {
+    if let Ok(d) = std::env::var("ABRAX_DIARIZE_MODELS") {
+        return std::path::PathBuf::from(d);
+    }
+    ah.path()
+        .app_data_dir()
+        .map(|d| d.join("diarization"))
+        .unwrap_or_else(|_| std::path::PathBuf::from("diarization"))
+}
+
+pub(crate) fn diarize_and_label(
+    samples: &[f32],
+    words: &[crate::managers::transcription::TimedWord],
+    models_dir: &std::path::Path,
+    num_speakers: Option<usize>,
+    meeting: bool,
+) -> Option<String> {
+    if words.is_empty() {
+        return None;
+    }
+    let mut diar = match crate::managers::diarization::Diarizer::new(
+        &models_dir.join("seg.onnx"),
+        &models_dir.join("emb.onnx"),
+    ) {
+        Ok(d) => d,
+        Err(e) => {
+            warn!("diarización: no se pudieron cargar los modelos: {}", e);
+            return None;
+        }
+    };
+    match diar.diarize(samples, num_speakers, meeting) {
+        Ok(segs) if !segs.is_empty() => {
+            let speakers = segs
+                .iter()
+                .map(|s| s.speaker)
+                .collect::<std::collections::BTreeSet<_>>()
+                .len();
+            info!(
+                "diarización: {} hablante(s) en {} segmento(s), {} palabra(s) (pista={:?})",
+                speakers,
+                segs.len(),
+                words.len(),
+                num_speakers
+            );
+            Some(label_by_speaker(words, &segs))
+        }
+        Ok(_) => {
+            warn!("diarización: sin segmentos de hablante; se usa el texto sin etiquetar");
+            None
+        }
+        Err(e) => {
+            warn!("diarización falló: {}", e);
+            None
+        }
+    }
+}
+
+/// Formatea milisegundos (desde el inicio de la grabación) como `MM:SS`.
+fn fmt_ms(ms: i64) -> String {
+    let total = (ms.max(0) / 1000) as u64;
+    format!("{:02}:{:02}", total / 60, total % 60)
+}
+
+/// Antepone `[MM:SS] [Hablante N]` en cada cambio de turno (marca de minuto estilo
+/// minuta de reunión): por cada palabra elige el hablante con mayor solapamiento
+/// temporal.
+fn label_by_speaker(
+    words: &[crate::managers::transcription::TimedWord],
+    segs: &[crate::managers::diarization::SpeakerSegment],
+) -> String {
+    let speaker_at = |t0: i64, t1: i64| -> usize {
+        let (mut best, mut best_ov) = (0usize, 0i64);
+        for s in segs {
+            let ov = (t1.min(s.t1_ms) - t0.max(s.t0_ms)).max(0);
+            if ov > best_ov {
+                best_ov = ov;
+                best = s.speaker;
+            }
+        }
+        best
+    };
+    let mut out = String::new();
+    let mut cur: Option<usize> = None;
+    for w in words {
+        let txt = w.text.trim();
+        if txt.is_empty() {
+            continue;
+        }
+        let spk = speaker_at(w.t0_ms, w.t1_ms).max(1);
+        if Some(spk) != cur {
+            if !out.is_empty() {
+                out.push_str("\n\n");
+            }
+            out.push_str(&format!("[{}] [Hablante {}] ", fmt_ms(w.t0_ms), spk));
+            cur = Some(spk);
+        } else if !out.ends_with(char::is_whitespace) {
+            out.push(' ');
+        }
+        out.push_str(txt);
+    }
+    out
 }
 
 async fn complete_unless_cancelled<F, C>(operation: F, is_cancelled: C) -> Option<F::Output>
@@ -560,14 +669,20 @@ impl ShortcutAction for TranscribeAction {
             .as_ref()
             .map(|m| m.supports_streaming)
             .unwrap_or(false);
+        // Mantener el streaming en vivo SIEMPRE que el modelo lo soporte (texto +
+        // PAL/MIN en tiempo real, aunque Hablantes esté activo). La diarización
+        // necesita timestamps por palabra que el streaming no da; se resuelven
+        // RE-TRANSCRIBIENDO el buffer en batch AL FINALIZAR (ver el bloque de
+        // diarización en `Ok(transcription)`), sin sacrificar el preview en vivo.
+        let use_streaming = model_supports_streaming;
         let vad_policy = if !settings.vad_enabled {
             VadPolicy::Disabled
-        } else if model_supports_streaming {
+        } else if use_streaming {
             VadPolicy::Streaming
         } else {
             VadPolicy::Offline
         };
-        if model_supports_streaming {
+        if use_streaming {
             tm.start_stream();
         }
         let plan_elapsed = plan_started.elapsed();
@@ -577,7 +692,7 @@ impl ShortcutAction for TranscribeAction {
         // pill instead of an oversized transparent live window.
         let overlay_started = Instant::now();
         match settings.overlay_style {
-            OverlayStyle::Live if model_supports_streaming => show_streaming_overlay(app),
+            OverlayStyle::Live if use_streaming => show_streaming_overlay(app),
             OverlayStyle::Live | OverlayStyle::Minimal | OverlayStyle::Esfera => {
                 show_recording_overlay(app)
             }
@@ -727,6 +842,19 @@ impl ShortcutAction for TranscribeAction {
 
                 if samples.is_empty() {
                     debug!("Recording produced no audio samples; skipping persistence");
+                    // Aviso al usuario: no llegó audio. Si estaba en «Audio del
+                    // sistema», casi seguro no había nada sonando (ese modo escucha
+                    // los parlantes, no el micrófono) — mensaje distinto por caso.
+                    let detail = if get_settings(&ah).capture_system_audio {
+                        "No se detectó audio del sistema. ¿Está sonando la reunión? El chip «Audio sistema» escucha lo que suena en tu PC, no tu micrófono."
+                    } else {
+                        "No se detectó audio del micrófono. Revisá que esté conectado, con permiso y sin silenciar."
+                    };
+                    crate::user_alerts::alert(
+                        &ah,
+                        crate::user_alerts::AlertKind::RecordingNoAudio,
+                        Some(detail.to_string()),
+                    );
                     // Tear down any streaming worker so its channel doesn't leak
                     // and block the next start_stream.
                     tm.cancel_stream();
@@ -746,6 +874,16 @@ impl ShortcutAction for TranscribeAction {
                     // Transcribe concurrently with WAV save. If a live stream was
                     // running, finalize it and use its text (all audio was already
                     // fed to the stream); otherwise batch-transcribe the samples.
+                    // Diarización opt-in (setting `diarization_enabled`, o env
+                    // ABRAX_DIARIZE para dev/CLI): clona el buffer ANTES de que
+                    // transcribe() lo consuma, para poder diarizarlo después.
+                    let diar_samples = if get_settings(&ah).diarization_enabled
+                        || std::env::var("ABRAX_DIARIZE").is_ok()
+                    {
+                        Some(samples.clone())
+                    } else {
+                        None
+                    };
                     let transcription_time = Instant::now();
                     // `streamed` marks text that came from a live stream, whose
                     // words the streaming path already fed to the Esfera overlay
@@ -796,6 +934,47 @@ impl ShortcutAction for TranscribeAction {
 
                     match transcription_result {
                         Ok(transcription) => {
+                            // Diarización (opt-in): etiqueta el texto por hablante al
+                            // SOLTAR (el preview en vivo ya se mostró vía streaming).
+                            // Necesita timestamps por palabra, que solo da el batch; si
+                            // veníamos de streaming, `last_words` está vacío, así que
+                            // RE-TRANSCRIBIMOS el buffer en batch aquí para obtenerlos.
+                            let transcription = match diar_samples {
+                                Some(ds) => {
+                                    let mut words = tm.take_last_words().unwrap_or_default();
+                                    if words.is_empty() {
+                                        // Path streaming (o motor sin canal lateral de
+                                        // tiempos): re-transcribe en batch para poblar
+                                        // last_words. El overlay ya muestra «trabajando».
+                                        let _ = tm.transcribe(ds.clone());
+                                        words = tm.take_last_words().unwrap_or_default();
+                                    }
+                                    if words.is_empty() {
+                                        transcription
+                                    } else {
+                                        let dir = diarization_models_dir(&ah);
+                                        let s = get_settings(&ah);
+                                        // Pista de nº de hablantes: 0 = auto, N = TOPE.
+                                        let num_speakers = match s.diarization_num_speakers {
+                                            0 => None,
+                                            n => Some(n as usize),
+                                        };
+                                        // Modo reunión (audio del sistema) → segmentación
+                                        // fina para captar voces breves de la reunión.
+                                        let meeting = s.capture_system_audio;
+                                        let base = transcription.clone();
+                                        // Diariza en un hilo bloqueante (carga ONNX + inferencia).
+                                        tauri::async_runtime::spawn_blocking(move || {
+                                            diarize_and_label(&ds, &words, &dir, num_speakers, meeting)
+                                        })
+                                        .await
+                                        .ok()
+                                        .flatten()
+                                        .unwrap_or(base)
+                                    }
+                                }
+                                None => transcription,
+                            };
                             // Privacy: log timing and length, never the dictated
                             // text, so handy.log stays free of transcript bodies
                             // by default (S3).
