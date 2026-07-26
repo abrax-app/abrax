@@ -723,7 +723,8 @@
     "description": "选择 Abrax 的配色方案。Imperial 是特意设计的深色主题：启用期间将强制使用深色模式。",
     "options": {
       "abrax": "ABRAX",
-      "imperial": "Imperial"
+      "imperial": "Imperial",
+      "escuderia": "Escudería"
     }
   },
   "overlay": {

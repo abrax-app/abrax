@@ -723,7 +723,8 @@
     "description": "اختر لوحة ألوان Abrax. لوحة Imperial داكنة بحكم التصميم: ما دامت مفعّلة، تفرض الوضع الداكن.",
     "options": {
       "abrax": "ABRAX",
-      "imperial": "Imperial"
+      "imperial": "Imperial",
+      "escuderia": "Escudería"
     }
   },
   "overlay": {

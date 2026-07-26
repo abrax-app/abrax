@@ -723,7 +723,8 @@
     "description": "בחרו את ערכת הצבעים של Abrax. הערכה Imperial כהה מעצם עיצובה: כל עוד היא פעילה, היא כופה מצב כהה.",
     "options": {
       "abrax": "ABRAX",
-      "imperial": "Imperial"
+      "imperial": "Imperial",
+      "escuderia": "Escudería"
     }
   },
   "overlay": {

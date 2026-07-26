@@ -95,6 +95,7 @@ pub fn change_ui_theme_setting(app: AppHandle, ui_theme: String) -> Result<(), S
     let parsed = match ui_theme.as_str() {
         "abrax" => UiTheme::Abrax,
         "imperial" => UiTheme::Imperial,
+        "escuderia" => UiTheme::Escuderia,
         other => {
             warn!("Invalid ui theme '{}', defaulting to abrax", other);
             UiTheme::Abrax
@@ -190,12 +191,13 @@ pub fn change_esfera_modo_setting(app: AppHandle, esfera_modo: String) -> Result
     Ok(())
 }
 
-/// Light/dark mode the window chrome should actually show: Imperial is dark by
-/// design and forces dark regardless of the stored [`Theme`], which stays
-/// untouched and governs again when the palette returns to Abrax.
+/// Light/dark mode the window chrome should actually show: Imperial and
+/// Escuderia are dark by design and force dark regardless of the stored
+/// [`Theme`], which stays untouched and governs again when the palette
+/// returns to Abrax.
 pub fn effective_window_theme(settings: &AppSettings) -> Theme {
     match settings.ui_theme {
-        UiTheme::Imperial => Theme::Dark,
+        UiTheme::Imperial | UiTheme::Escuderia => Theme::Dark,
         UiTheme::Abrax => settings.theme,
     }
 }

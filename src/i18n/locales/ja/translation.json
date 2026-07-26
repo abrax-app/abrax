@@ -723,7 +723,8 @@
     "description": "Abrax のカラーパレットを選択します。Imperial は設計上ダークなテーマで、有効な間はダークモードが強制されます。",
     "options": {
       "abrax": "ABRAX",
-      "imperial": "Imperial"
+      "imperial": "Imperial",
+      "escuderia": "Escudería"
     }
   },
   "overlay": {

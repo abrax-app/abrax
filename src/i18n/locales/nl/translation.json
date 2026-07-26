@@ -726,7 +726,8 @@
     "description": "Kies het kleurenpalet van Abrax. Imperial is donker van opzet: zolang het actief is, forceert het de donkere modus.",
     "options": {
       "abrax": "ABRAX",
-      "imperial": "Imperial"
+      "imperial": "Imperial",
+      "escuderia": "Escudería"
     }
   },
   "overlay": {

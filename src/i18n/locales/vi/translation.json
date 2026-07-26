@@ -723,7 +723,8 @@
     "description": "Chọn bảng màu của Abrax. Imperial vốn là giao diện tối: khi đang bật, chế độ tối sẽ được áp dụng bắt buộc.",
     "options": {
       "abrax": "ABRAX",
-      "imperial": "Imperial"
+      "imperial": "Imperial",
+      "escuderia": "Escudería"
     }
   },
   "overlay": {

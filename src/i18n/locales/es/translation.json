@@ -723,7 +723,8 @@
     "description": "Elige la paleta de colores de Abrax. Imperial es un tema oscuro por diseño: mientras está activa, fuerza el modo oscuro.",
     "options": {
       "abrax": "ABRAX",
-      "imperial": "Imperial"
+      "imperial": "Imperial",
+      "escuderia": "Escudería"
     }
   },
   "overlay": {

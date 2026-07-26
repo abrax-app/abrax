@@ -726,7 +726,8 @@
     "description": "Choose Abrax's color palette. Imperial is dark by design: while it is active, it forces dark mode.",
     "options": {
       "abrax": "ABRAX",
-      "imperial": "Imperial"
+      "imperial": "Imperial",
+      "escuderia": "Escudería"
     }
   },
   "overlay": {

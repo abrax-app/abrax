@@ -723,7 +723,8 @@
     "description": "Choisissez la palette de couleurs d'Abrax. Imperial est sombre par conception : tant qu'elle est active, elle force le mode sombre.",
     "options": {
       "abrax": "ABRAX",
-      "imperial": "Imperial"
+      "imperial": "Imperial",
+      "escuderia": "Escudería"
     }
   },
   "overlay": {

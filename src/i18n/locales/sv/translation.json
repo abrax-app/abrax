@@ -723,7 +723,8 @@
     "description": "Välj Abrax färgpalett. Imperial är mörk till sin design: så länge den är aktiv tvingar den fram mörkt läge.",
     "options": {
       "abrax": "ABRAX",
-      "imperial": "Imperial"
+      "imperial": "Imperial",
+      "escuderia": "Escudería"
     }
   },
   "overlay": {

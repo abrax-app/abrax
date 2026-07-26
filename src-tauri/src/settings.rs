@@ -325,14 +325,15 @@ pub enum Theme {
 
 /// Color palette for the whole UI, orthogonal to [`Theme`] (light/dark).
 /// `Abrax` is the brand palette (cyan/violet/magenta); `Imperial` is a
-/// gold/amber/red palette that is dark by design, so it forces dark mode
-/// while active (the stored [`Theme`] is preserved and applies again on
-/// switching back).
+/// gold/amber/red palette and `Escuderia` a racing red/black/white palette,
+/// both dark by design, so they force dark mode while active (the stored
+/// [`Theme`] is preserved and applies again on switching back).
 #[derive(Serialize, Deserialize, Debug, Clone, Copy, PartialEq, Eq, Type)]
 #[serde(rename_all = "snake_case")]
 pub enum UiTheme {
     Abrax,
     Imperial,
+    Escuderia,
 }
 
 /// Shape of the main window, orthogonal to [`UiTheme`] (palette) and [`Theme`]

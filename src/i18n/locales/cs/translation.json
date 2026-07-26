@@ -723,7 +723,8 @@
     "description": "Zvolte barevnou paletu Abraxu. Imperial je tmavá už z návrhu: dokud je aktivní, vynucuje tmavý režim.",
     "options": {
       "abrax": "ABRAX",
-      "imperial": "Imperial"
+      "imperial": "Imperial",
+      "escuderia": "Escudería"
     }
   },
   "overlay": {

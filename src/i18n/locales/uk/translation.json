@@ -723,7 +723,8 @@
     "description": "Виберіть колірну палітру Abrax. Imperial темна за задумом: поки вона активна, примусово вмикається темний режим.",
     "options": {
       "abrax": "ABRAX",
-      "imperial": "Imperial"
+      "imperial": "Imperial",
+      "escuderia": "Escudería"
     }
   },
   "overlay": {
