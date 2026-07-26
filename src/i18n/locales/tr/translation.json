@@ -874,7 +874,8 @@
       "transcribing": "Transcribiendo",
       "polishing": "Puliendo",
       "error": "Falla"
-    }
+    },
+    "speakerLabel": "Konuşmacı {{n}}"
   },
   "retro": {
     "menu": "Abrax menüsü",
@@ -919,7 +920,21 @@
     "theme": "Tema",
     "footer": "RETRO MOD — bir ABRAX kaplaması · aynı şeffaf pencere",
     "tray": "Send to tray",
-    "minimize": "Minimize"
+    "minimize": "Minimize",
+    "localBadge": "Yerel işleme · %0 bulut",
+    "infoPalette": "Palet",
+    "infoLanguage": "Dil",
+    "infoFillers": "Dolgu sözcükleri",
+    "infoTranslate": "Çevir",
+    "infoAutoVoice": "Otomatik ses",
+    "infoVisual": "Görsel",
+    "words": "{{n}} kelime",
+    "actCopy": "Kopyala",
+    "actClear": "Temizle",
+    "emptyTranscriptions": "Henüz döküm yok.",
+    "activeModel": "ETKİN MODEL",
+    "localFull": "%100 yerel işleme · Bulut yok",
+    "backToClassic": "KLASİK GÖRÜNÜME DÖN"
   },
   "logo": {
     "tagline": "« Di la <accent>palabra</accent>. »"

@@ -874,7 +874,8 @@
       "transcribing": "Transcribiendo",
       "polishing": "Puliendo",
       "error": "Falla"
-    }
+    },
+    "speakerLabel": "Interlocutore {{n}}"
   },
   "retro": {
     "menu": "Menu di Abrax",
@@ -919,7 +920,21 @@
     "theme": "Tema",
     "footer": "MODALITÀ RETRO — uno skin di ABRAX · stessa finestra trasparente",
     "tray": "Send to tray",
-    "minimize": "Minimize"
+    "minimize": "Minimize",
+    "localBadge": "Elaborazione locale · 0% cloud",
+    "infoPalette": "Palette",
+    "infoLanguage": "Lingua",
+    "infoFillers": "Intercalari",
+    "infoTranslate": "Traduci",
+    "infoAutoVoice": "Voce auto",
+    "infoVisual": "Visivo",
+    "words": "{{n}} parole",
+    "actCopy": "Copia",
+    "actClear": "Pulisci",
+    "emptyTranscriptions": "Ancora nessuna trascrizione.",
+    "activeModel": "MODELLO ATTIVO",
+    "localFull": "Elaborazione 100% locale · Senza cloud",
+    "backToClassic": "TORNA ALLO SKIN CLASSICO"
   },
   "logo": {
     "tagline": "« Di la <accent>palabra</accent>. »"

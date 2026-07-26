@@ -874,7 +874,8 @@
       "transcribing": "Transcribiendo",
       "polishing": "Puliendo",
       "error": "Falla"
-    }
+    },
+    "speakerLabel": "Hablante {{n}}"
   },
   "retro": {
     "menu": "Menú de Abrax",
@@ -919,7 +920,21 @@
     "theme": "Tema",
     "footer": "MODO RETRO — un skin de ABRAX · misma ventana transparente",
     "tray": "Enviar a la bandeja",
-    "minimize": "Minimizar"
+    "minimize": "Minimizar",
+    "localBadge": "Procesamiento local · 0% Nube",
+    "infoPalette": "Paleta",
+    "infoLanguage": "Idioma",
+    "infoFillers": "Muletillas",
+    "infoTranslate": "Traducir",
+    "infoAutoVoice": "Auto-voz",
+    "infoVisual": "Visual",
+    "words": "{{n}} palabras",
+    "actCopy": "Copiar",
+    "actClear": "Limpiar",
+    "emptyTranscriptions": "Aún no hay transcripciones.",
+    "activeModel": "MODELO ACTIVO",
+    "localFull": "Procesamiento 100% local · Sin nube",
+    "backToClassic": "VOLVER AL SKIN CLÁSICO"
   },
   "logo": {
     "tagline": "« Di la <accent>palabra</accent>. »"

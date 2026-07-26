@@ -874,7 +874,8 @@
       "transcribing": "Transcribiendo",
       "polishing": "Puliendo",
       "error": "Falla"
-    }
+    },
+    "speakerLabel": "说话人 {{n}}"
   },
   "retro": {
     "menu": "Abrax 菜单",
@@ -919,7 +920,21 @@
     "theme": "主题",
     "footer": "复古模式 — 一款 ABRAX 皮肤 · 同样的透明窗口",
     "tray": "Send to tray",
-    "minimize": "Minimize"
+    "minimize": "Minimize",
+    "localBadge": "本地处理 · 0% 云端",
+    "infoPalette": "配色",
+    "infoLanguage": "语言",
+    "infoFillers": "填充词",
+    "infoTranslate": "翻译",
+    "infoAutoVoice": "自动语音",
+    "infoVisual": "视觉",
+    "words": "{{n}} 个词",
+    "actCopy": "复制",
+    "actClear": "清空",
+    "emptyTranscriptions": "还没有转写记录。",
+    "activeModel": "当前模型",
+    "localFull": "100% 本地处理 · 无云端",
+    "backToClassic": "返回经典皮肤"
   },
   "logo": {
     "tagline": "« Di la <accent>palabra</accent>. »"

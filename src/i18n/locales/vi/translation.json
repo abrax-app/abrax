@@ -874,7 +874,8 @@
       "transcribing": "Transcribiendo",
       "polishing": "Puliendo",
       "error": "Falla"
-    }
+    },
+    "speakerLabel": "Người nói {{n}}"
   },
   "retro": {
     "menu": "Menu Abrax",
@@ -919,7 +920,21 @@
     "theme": "Giao diện",
     "footer": "CHẾ ĐỘ RETRO — một skin ABRAX · vẫn cửa sổ trong suốt",
     "tray": "Send to tray",
-    "minimize": "Minimize"
+    "minimize": "Minimize",
+    "localBadge": "Xử lý cục bộ · 0% đám mây",
+    "infoPalette": "Bảng màu",
+    "infoLanguage": "Ngôn ngữ",
+    "infoFillers": "Từ đệm",
+    "infoTranslate": "Dịch",
+    "infoAutoVoice": "Giọng tự động",
+    "infoVisual": "Hiển thị",
+    "words": "{{n}} từ",
+    "actCopy": "Sao chép",
+    "actClear": "Xóa",
+    "emptyTranscriptions": "Chưa có bản ghi nào.",
+    "activeModel": "MÔ HÌNH ĐANG DÙNG",
+    "localFull": "Xử lý 100% cục bộ · Không đám mây",
+    "backToClassic": "QUAY LẠI GIAO DIỆN CỔ ĐIỂN"
   },
   "logo": {
     "tagline": "« Di la <accent>palabra</accent>. »"

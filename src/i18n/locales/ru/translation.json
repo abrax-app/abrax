@@ -874,7 +874,8 @@
       "transcribing": "Transcribiendo",
       "polishing": "Puliendo",
       "error": "Falla"
-    }
+    },
+    "speakerLabel": "Говорящий {{n}}"
   },
   "retro": {
     "menu": "Меню Abrax",
@@ -919,7 +920,21 @@
     "theme": "Тема",
     "footer": "РЕТРО-РЕЖИМ — скин ABRAX · то же прозрачное окно",
     "tray": "Send to tray",
-    "minimize": "Minimize"
+    "minimize": "Minimize",
+    "localBadge": "Локальная обработка · 0% облака",
+    "infoPalette": "Палитра",
+    "infoLanguage": "Язык",
+    "infoFillers": "Слова-паразиты",
+    "infoTranslate": "Перевод",
+    "infoAutoVoice": "Автоголос",
+    "infoVisual": "Визуально",
+    "words": "Слов: {{n}}",
+    "actCopy": "Копировать",
+    "actClear": "Очистить",
+    "emptyTranscriptions": "Расшифровок пока нет.",
+    "activeModel": "АКТИВНАЯ МОДЕЛЬ",
+    "localFull": "100% локальная обработка · Без облака",
+    "backToClassic": "ВЕРНУТЬСЯ К КЛАССИЧЕСКОЙ ТЕМЕ"
   },
   "logo": {
     "tagline": "« Di la <accent>palabra</accent>. »"

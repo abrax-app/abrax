@@ -874,7 +874,8 @@
       "transcribing": "Transcribiendo",
       "polishing": "Puliendo",
       "error": "Falla"
-    }
+    },
+    "speakerLabel": "Говорещ {{n}}"
   },
   "retro": {
     "menu": "Меню на Abrax",
@@ -919,7 +920,21 @@
     "theme": "Тема",
     "footer": "РЕТРО РЕЖИМ — скин на ABRAX · същият прозрачен прозорец",
     "tray": "Send to tray",
-    "minimize": "Minimize"
+    "minimize": "Minimize",
+    "localBadge": "Локална обработка · 0% облак",
+    "infoPalette": "Палитра",
+    "infoLanguage": "Език",
+    "infoFillers": "Паразитни думи",
+    "infoTranslate": "Превод",
+    "infoAutoVoice": "Автоглас",
+    "infoVisual": "Визуално",
+    "words": "Думи: {{n}}",
+    "actCopy": "Копирай",
+    "actClear": "Изчисти",
+    "emptyTranscriptions": "Все още няма транскрипции.",
+    "activeModel": "АКТИВЕН МОДЕЛ",
+    "localFull": "100% локална обработка · Без облак",
+    "backToClassic": "ОБРАТНО КЪМ КЛАСИЧЕСКИЯ СКИН"
   },
   "logo": {
     "tagline": "« Di la <accent>palabra</accent>. »"

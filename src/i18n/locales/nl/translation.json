@@ -874,7 +874,8 @@
       "transcribing": "Transcribiendo",
       "polishing": "Puliendo",
       "error": "Falla"
-    }
+    },
+    "speakerLabel": "Spreker {{n}}"
   },
   "retro": {
     "menu": "Abrax-menu",
@@ -919,7 +920,21 @@
     "theme": "Thema",
     "footer": "RETROMODUS — een ABRAX-skin · hetzelfde transparante venster",
     "tray": "Send to tray",
-    "minimize": "Minimize"
+    "minimize": "Minimize",
+    "localBadge": "Lokale verwerking · 0% cloud",
+    "infoPalette": "Palet",
+    "infoLanguage": "Taal",
+    "infoFillers": "Stopwoorden",
+    "infoTranslate": "Vertalen",
+    "infoAutoVoice": "Auto-stem",
+    "infoVisual": "Visueel",
+    "words": "{{n}} woorden",
+    "actCopy": "Kopiëren",
+    "actClear": "Wissen",
+    "emptyTranscriptions": "Nog geen transcripties.",
+    "activeModel": "ACTIEF MODEL",
+    "localFull": "100% lokale verwerking · Geen cloud",
+    "backToClassic": "TERUG NAAR DE KLASSIEKE SKIN"
   },
   "logo": {
     "tagline": "« Di la <accent>palabra</accent>. »"

@@ -874,7 +874,8 @@
       "transcribing": "Transcribiendo",
       "polishing": "Puliendo",
       "error": "Falla"
-    }
+    },
+    "speakerLabel": "Talare {{n}}"
   },
   "retro": {
     "menu": "Abrax-meny",
@@ -919,7 +920,21 @@
     "theme": "Tema",
     "footer": "RETROLÄGE — ett ABRAX-skin · samma transparenta fönster",
     "tray": "Send to tray",
-    "minimize": "Minimize"
+    "minimize": "Minimize",
+    "localBadge": "Lokal bearbetning · 0 % moln",
+    "infoPalette": "Palett",
+    "infoLanguage": "Språk",
+    "infoFillers": "Utfyllnadsord",
+    "infoTranslate": "Översätt",
+    "infoAutoVoice": "Autoröst",
+    "infoVisual": "Visuellt",
+    "words": "{{n}} ord",
+    "actCopy": "Kopiera",
+    "actClear": "Rensa",
+    "emptyTranscriptions": "Inga transkriberingar ännu.",
+    "activeModel": "AKTIV MODELL",
+    "localFull": "100 % lokal bearbetning · Inget moln",
+    "backToClassic": "TILLBAKA TILL KLASSISKT SKAL"
   },
   "logo": {
     "tagline": "« Di la <accent>palabra</accent>. »"

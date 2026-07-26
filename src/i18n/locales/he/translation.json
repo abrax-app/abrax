@@ -874,7 +874,8 @@
       "transcribing": "Transcribiendo",
       "polishing": "Puliendo",
       "error": "Falla"
-    }
+    },
+    "speakerLabel": "דובר {{n}}"
   },
   "retro": {
     "menu": "תפריט Abrax",
@@ -919,7 +920,21 @@
     "theme": "ערכת נושא",
     "footer": "מצב רטרו — סקין של ABRAX · אותו חלון שקוף",
     "tray": "Send to tray",
-    "minimize": "Minimize"
+    "minimize": "Minimize",
+    "localBadge": "עיבוד מקומי · 0% ענן",
+    "infoPalette": "פלטה",
+    "infoLanguage": "שפה",
+    "infoFillers": "מילות מילוי",
+    "infoTranslate": "תרגום",
+    "infoAutoVoice": "קול אוטומטי",
+    "infoVisual": "חזותי",
+    "words": "{{n}} מילים",
+    "actCopy": "העתקה",
+    "actClear": "ניקוי",
+    "emptyTranscriptions": "אין עדיין תמלולים.",
+    "activeModel": "דגם פעיל",
+    "localFull": "עיבוד מקומי ב-100% · ללא ענן",
+    "backToClassic": "חזרה לעיצוב הקלאסי"
   },
   "logo": {
     "tagline": "« Di la <accent>palabra</accent>. »"

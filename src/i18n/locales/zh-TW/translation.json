@@ -874,7 +874,8 @@
       "transcribing": "Transcribiendo",
       "polishing": "Puliendo",
       "error": "Falla"
-    }
+    },
+    "speakerLabel": "說話者 {{n}}"
   },
   "retro": {
     "menu": "Abrax 選單",
@@ -919,7 +920,21 @@
     "theme": "主題",
     "footer": "復古模式 — 一款 ABRAX 外觀 · 相同的透明視窗",
     "tray": "Send to tray",
-    "minimize": "Minimize"
+    "minimize": "Minimize",
+    "localBadge": "本機處理 · 0% 雲端",
+    "infoPalette": "配色",
+    "infoLanguage": "語言",
+    "infoFillers": "填充詞",
+    "infoTranslate": "翻譯",
+    "infoAutoVoice": "自動語音",
+    "infoVisual": "視覺",
+    "words": "{{n}} 個字",
+    "actCopy": "複製",
+    "actClear": "清空",
+    "emptyTranscriptions": "尚無轉錄紀錄。",
+    "activeModel": "目前模型",
+    "localFull": "100% 本機處理 · 無雲端",
+    "backToClassic": "返回經典外觀"
   },
   "logo": {
     "tagline": "« Di la <accent>palabra</accent>. »"

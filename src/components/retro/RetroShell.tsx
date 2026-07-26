@@ -5,6 +5,7 @@ import React, {
   useRef,
   useState,
 } from "react";
+import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { listen } from "@tauri-apps/api/event";
 import { getCurrentWindow } from "@tauri-apps/api/window";
@@ -90,6 +91,7 @@ const fmtHora = (secs: number): string => {
 };
 
 export const RetroShell: React.FC = () => {
+  const { t } = useTranslation();
   const { settings, updateSetting } = useSettings();
 
   const [view, setView] = useState<RView | null>("escuchar");
@@ -362,7 +364,7 @@ export const RetroShell: React.FC = () => {
       <AbraxLogo variant="horizontal" width={100} />
       <span className="rk-top-status" data-tauri-drag-region>
         <i className={`rk-dot${grabando ? " live" : " on"}`} />
-        Procesamiento local · 0% Nube
+        {t("retro.localBadge")}
         <CloudOff size={11} aria-hidden="true" />
       </span>
       <div className="rk-win">
@@ -414,27 +416,27 @@ export const RetroShell: React.FC = () => {
       </div>
       <div className="rk-infobar">
         <span>
-          <b>Paleta</b>
+          <b>{t("retro.infoPalette")}</b>
           {settings?.ui_theme === "imperial" ? "Imperial" : "ABRAX"}
         </span>
         <span>
-          <b>Idioma</b>
+          <b>{t("retro.infoLanguage")}</b>
           {langLabel}
         </span>
         <span>
-          <b>Muletillas</b>
+          <b>{t("retro.infoFillers")}</b>
           {fillerOn ? "On" : "Off"}
         </span>
         <span>
-          <b>Traducir</b>
+          <b>{t("retro.infoTranslate")}</b>
           {settings?.translate_to_english ? "On" : "Off"}
         </span>
         <span>
-          <b>Auto-voz</b>
+          <b>{t("retro.infoAutoVoice")}</b>
           {settings?.vad_enabled ? "On" : "Off"}
         </span>
         <span>
-          <b>Visual</b>
+          <b>{t("retro.infoVisual")}</b>
           {visualLabel}
         </span>
       </div>
@@ -476,14 +478,16 @@ export const RetroShell: React.FC = () => {
         spellCheck={false}
       />
       <div className="rk-dictado-foot">
-        <span className="rk-dictado-count">{numPalabras} palabras</span>
+        <span className="rk-dictado-count">
+          {t("retro.words", { n: numPalabras })}
+        </span>
         <div className="rk-dictado-acts">
           <button
             type="button"
             onClick={() => void copiar(dictado)}
             disabled={!dictado.trim()}
           >
-            <Copy size={12} aria-hidden="true" /> Copiar
+            <Copy size={12} aria-hidden="true" /> {t("retro.actCopy")}
           </button>
           <button
             type="button"
@@ -493,7 +497,7 @@ export const RetroShell: React.FC = () => {
             }}
             disabled={!dictado && !parcial}
           >
-            <Trash2 size={12} aria-hidden="true" /> Limpiar
+            <Trash2 size={12} aria-hidden="true" /> {t("retro.actClear")}
           </button>
         </div>
       </div>
@@ -507,7 +511,7 @@ export const RetroShell: React.FC = () => {
       </div>
       <div className="rk-recents-list rk-lista-full">
         {entries.length === 0 ? (
-          <div className="rk-vacio">Aún no hay transcripciones.</div>
+          <div className="rk-vacio">{t("retro.emptyTranscriptions")}</div>
         ) : (
           entries.map((e) => (
             <button
@@ -530,9 +534,9 @@ export const RetroShell: React.FC = () => {
 
   const vistaModelos = (
     <section className="rk-panel rk-modelos-v">
-      <div className="rk-cap">MODELO ACTIVO</div>
+      <div className="rk-cap">{t("retro.activeModel")}</div>
       <div className="rk-model-name rk-model-big">{modelName}</div>
-      <div className="rk-model-sub">Procesamiento 100% local · Sin nube</div>
+      <div className="rk-model-sub">{t("retro.localFull")}</div>
     </section>
   );
 
@@ -608,7 +612,7 @@ export const RetroShell: React.FC = () => {
           className="rk-link"
           onClick={() => void cambiarShell("classic")}
         >
-          ↺ VOLVER AL SKIN CLÁSICO
+          {`↺ ${t("retro.backToClassic")}`}
         </button>
       </section>
     </>

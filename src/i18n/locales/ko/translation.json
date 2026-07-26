@@ -874,7 +874,8 @@
       "transcribing": "Transcribiendo",
       "polishing": "Puliendo",
       "error": "Falla"
-    }
+    },
+    "speakerLabel": "화자 {{n}}"
   },
   "retro": {
     "menu": "Abrax 메뉴",
@@ -919,7 +920,21 @@
     "theme": "테마",
     "footer": "레트로 모드 — ABRAX 스킨 · 동일한 투명 창",
     "tray": "Send to tray",
-    "minimize": "Minimize"
+    "minimize": "Minimize",
+    "localBadge": "로컬 처리 · 클라우드 0%",
+    "infoPalette": "팔레트",
+    "infoLanguage": "언어",
+    "infoFillers": "군말",
+    "infoTranslate": "번역",
+    "infoAutoVoice": "자동 음성",
+    "infoVisual": "표시",
+    "words": "{{n}}단어",
+    "actCopy": "복사",
+    "actClear": "지우기",
+    "emptyTranscriptions": "아직 전사 기록이 없습니다.",
+    "activeModel": "활성 모델",
+    "localFull": "100% 로컬 처리 · 클라우드 없음",
+    "backToClassic": "클래식 스킨으로 돌아가기"
   },
   "logo": {
     "tagline": "« Di la <accent>palabra</accent>. »"

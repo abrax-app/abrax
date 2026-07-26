@@ -874,7 +874,8 @@
       "transcribing": "Transcribiendo",
       "polishing": "Puliendo",
       "error": "Falla"
-    }
+    },
+    "speakerLabel": "वक्ता {{n}}"
   },
   "retro": {
     "menu": "Abrax मेनु",
@@ -919,7 +920,21 @@
     "theme": "थिम",
     "footer": "रेट्रो मोड — एउटा ABRAX स्किन · उही पारदर्शी विन्डो",
     "tray": "Send to tray",
-    "minimize": "Minimize"
+    "minimize": "Minimize",
+    "localBadge": "स्थानीय प्रशोधन · ०% क्लाउड",
+    "infoPalette": "प्यालेट",
+    "infoLanguage": "भाषा",
+    "infoFillers": "भरौटे शब्द",
+    "infoTranslate": "अनुवाद",
+    "infoAutoVoice": "स्वतः आवाज",
+    "infoVisual": "दृश्य",
+    "words": "{{n}} शब्द",
+    "actCopy": "प्रतिलिपि",
+    "actClear": "खाली गर्नुहोस्",
+    "emptyTranscriptions": "अहिलेसम्म कुनै प्रतिलेख छैन।",
+    "activeModel": "सक्रिय मोडेल",
+    "localFull": "१००% स्थानीय प्रशोधन · क्लाउड छैन",
+    "backToClassic": "क्लासिक स्किनमा फर्कनुहोस्"
   },
   "logo": {
     "tagline": "« Di la <accent>palabra</accent>. »"

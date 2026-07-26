@@ -874,7 +874,8 @@
       "transcribing": "Transcribiendo",
       "polishing": "Puliendo",
       "error": "Falla"
-    }
+    },
+    "speakerLabel": "المتحدث {{n}}"
   },
   "retro": {
     "menu": "قائمة Abrax",
@@ -919,7 +920,21 @@
     "theme": "السمة",
     "footer": "وضع ريترو — واجهة ABRAX · النافذة الشفافة نفسها",
     "tray": "Send to tray",
-    "minimize": "Minimize"
+    "minimize": "Minimize",
+    "localBadge": "معالجة محلية · 0% سحابة",
+    "infoPalette": "لوحة الألوان",
+    "infoLanguage": "اللغة",
+    "infoFillers": "كلمات الحشو",
+    "infoTranslate": "ترجمة",
+    "infoAutoVoice": "صوت تلقائي",
+    "infoVisual": "المظهر",
+    "words": "{{n}} كلمة",
+    "actCopy": "نسخ",
+    "actClear": "مسح",
+    "emptyTranscriptions": "لا توجد تفريغات بعد.",
+    "activeModel": "النموذج النشط",
+    "localFull": "معالجة محلية 100% · بدون سحابة",
+    "backToClassic": "العودة إلى المظهر الكلاسيكي"
   },
   "logo": {
     "tagline": "« Di la <accent>palabra</accent>. »"

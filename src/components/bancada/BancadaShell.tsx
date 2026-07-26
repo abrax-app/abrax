@@ -1,4 +1,10 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { useTranslation } from "react-i18next";
 import { listen } from "@tauri-apps/api/event";
 import { getCurrentWindow } from "@tauri-apps/api/window";
@@ -73,6 +79,10 @@ const countWords = (s: string): number => {
   return tt ? tt.split(/\s+/).length : 0;
 };
 
+// Glifo decorativo del selector «fusionar hablante»: el nombre accesible lo
+// aporta el `title` del <select>, no este símbolo.
+const GLIFO_FUSION = "⤳";
+
 // Color por hablante (cicla). El acento de marca es el del Hablante 1.
 const SPK_COLORS = [
   "var(--bnc-accent)",
@@ -85,7 +95,10 @@ const SPK_COLORS = [
 
 // Si el texto trae marcadores [Hablante N] (diarización), los renderiza como
 // badges de color; si no, devuelve el texto tal cual.
-function renderTranscript(text: string): React.ReactNode {
+function renderTranscript(
+  text: string,
+  t: (k: string, o?: Record<string, unknown>) => string,
+): React.ReactNode {
   const parts = text.split(/(\[Hablante \d+\])/g);
   if (parts.length <= 1) return text;
   return parts.map((p, i) => {
@@ -94,12 +107,8 @@ function renderTranscript(text: string): React.ReactNode {
       const n = parseInt(m[1], 10);
       const color = SPK_COLORS[(n - 1) % SPK_COLORS.length];
       return (
-        <span
-          key={i}
-          className="bnc-spk"
-          style={{ color, borderColor: color }}
-        >
-          Hablante {n}
+        <span key={i} className="bnc-spk" style={{ color, borderColor: color }}>
+          {t("bancada.speakerLabel", { n })}
         </span>
       );
     }
@@ -125,10 +134,18 @@ function parseDiarized(text: string): DiarSegment[] | null {
         text: text.slice(last.idx, m.index).trim(),
       });
     }
-    last = { idx: re.lastIndex, time: m[1] ?? null, speaker: parseInt(m[2], 10) };
+    last = {
+      idx: re.lastIndex,
+      time: m[1] ?? null,
+      speaker: parseInt(m[2], 10),
+    };
   }
   if (last) {
-    segs.push({ time: last.time, speaker: last.speaker, text: text.slice(last.idx).trim() });
+    segs.push({
+      time: last.time,
+      speaker: last.speaker,
+      text: text.slice(last.idx).trim(),
+    });
   }
   const clean = segs.filter((s) => s.text);
   return clean.length ? clean : null;
@@ -397,11 +414,7 @@ export const BancadaShell: React.FC = () => {
   };
   const win = getCurrentWindow();
 
-  const estado: Estado = errOn
-    ? "error"
-    : grabando
-      ? "rec"
-      : (fase ?? "idle");
+  const estado: Estado = errOn ? "error" : grabando ? "rec" : (fase ?? "idle");
 
   const atajo = formatKeyCombination(
     settings?.bindings?.transcribe?.current_binding ?? "",
@@ -428,7 +441,8 @@ export const BancadaShell: React.FC = () => {
   const effSpeaker = useCallback(
     (n: number): number => {
       let s = n;
-      for (let i = 0; i < 12 && speakerMerge[s] != null; i++) s = speakerMerge[s];
+      for (let i = 0; i < 12 && speakerMerge[s] != null; i++)
+        s = speakerMerge[s];
       return s;
     },
     [speakerMerge],
@@ -452,7 +466,8 @@ export const BancadaShell: React.FC = () => {
     };
   }, [diarSegs, effSpeaker]);
   const speakersEdited =
-    Object.keys(speakerNames).length > 0 || Object.keys(speakerMerge).length > 0;
+    Object.keys(speakerNames).length > 0 ||
+    Object.keys(speakerMerge).length > 0;
 
   // Panel de hablantes (cuadradito): va DEBAJO del medidor de PAL/MIN, en la
   // columna izquierda. Solo aparece con una transcripción diarizada (al soltar).
@@ -491,7 +506,7 @@ export const BancadaShell: React.FC = () => {
                   if (tgt) setSpeakerMerge((p) => ({ ...p, [s]: tgt }));
                 }}
               >
-                <option value="">⤳</option>
+                <option value="">{GLIFO_FUSION}</option>
                 {distinctSpeakers
                   .filter((o) => o !== s)
                   .map((o) => (
@@ -552,7 +567,11 @@ export const BancadaShell: React.FC = () => {
         {/* columna izquierda: medidor PAL/MIN + panel de hablantes debajo */}
         <div className="bnc-hud-left">
           <div className="bnc-gauge">
-            <canvas ref={canvasRef} className="bnc-taco-cv" aria-hidden="true" />
+            <canvas
+              ref={canvasRef}
+              className="bnc-taco-cv"
+              aria-hidden="true"
+            />
           </div>
           {panelHablantes}
         </div>
@@ -607,7 +626,9 @@ export const BancadaShell: React.FC = () => {
                   const color = SPK_COLORS[(eff - 1) % SPK_COLORS.length];
                   return (
                     <div key={i} className="bnc-diar-seg">
-                      {s.time && <span className="bnc-diar-time">{s.time}</span>}
+                      {s.time && (
+                        <span className="bnc-diar-time">{s.time}</span>
+                      )}
                       <span
                         className="bnc-spk"
                         style={{ color, borderColor: color }}
@@ -621,7 +642,7 @@ export const BancadaShell: React.FC = () => {
               </div>
             ) : textoVivo ? (
               <span className="bnc-live-txt">
-                {renderTranscript(textoVivo)}
+                {renderTranscript(textoVivo, t)}
                 {grabando ? <span className="bnc-caret" /> : null}
               </span>
             ) : (
@@ -668,7 +689,10 @@ export const BancadaShell: React.FC = () => {
           label={t("bancada.btn.translate")}
           active={!!settings?.translate_to_english}
           onClick={() =>
-            updateSetting("translate_to_english", !settings?.translate_to_english)
+            updateSetting(
+              "translate_to_english",
+              !settings?.translate_to_english,
+            )
           }
         />
         <Chip
@@ -692,7 +716,9 @@ export const BancadaShell: React.FC = () => {
             icon={Hash}
             label={
               settings?.diarization_num_speakers
-                ? t("bancada.speakersN", { n: settings.diarization_num_speakers })
+                ? t("bancada.speakersN", {
+                    n: settings.diarization_num_speakers,
+                  })
                 : t("bancada.speakersAuto")
             }
             active={!!settings?.diarization_num_speakers}

@@ -874,7 +874,8 @@
       "transcribing": "Transcribiendo",
       "polishing": "Puliendo",
       "error": "Falla"
-    }
+    },
+    "speakerLabel": "話者 {{n}}"
   },
   "retro": {
     "menu": "Abrax メニュー",
@@ -919,7 +920,21 @@
     "theme": "テーマ",
     "footer": "レトロモード — ABRAX のスキン · 同じ透明ウィンドウ",
     "tray": "Send to tray",
-    "minimize": "Minimize"
+    "minimize": "Minimize",
+    "localBadge": "ローカル処理 · クラウド0%",
+    "infoPalette": "パレット",
+    "infoLanguage": "言語",
+    "infoFillers": "フィラー",
+    "infoTranslate": "翻訳",
+    "infoAutoVoice": "自動音声",
+    "infoVisual": "表示",
+    "words": "{{n}} 語",
+    "actCopy": "コピー",
+    "actClear": "クリア",
+    "emptyTranscriptions": "まだ文字起こしがありません。",
+    "activeModel": "使用中のモデル",
+    "localFull": "100% ローカル処理 · クラウドなし",
+    "backToClassic": "クラシックスキンに戻る"
   },
   "logo": {
     "tagline": "« Di la <accent>palabra</accent>. »"

@@ -874,7 +874,8 @@
       "transcribing": "Transcribiendo",
       "polishing": "Puliendo",
       "error": "Falla"
-    }
+    },
+    "speakerLabel": "Mluvčí {{n}}"
   },
   "retro": {
     "menu": "Nabídka Abrax",
@@ -919,7 +920,21 @@
     "theme": "Motiv",
     "footer": "RETRO REŽIM — skin ABRAX · stejné průhledné okno",
     "tray": "Send to tray",
-    "minimize": "Minimize"
+    "minimize": "Minimize",
+    "localBadge": "Místní zpracování · 0 % cloudu",
+    "infoPalette": "Paleta",
+    "infoLanguage": "Jazyk",
+    "infoFillers": "Vycpávková slova",
+    "infoTranslate": "Přeložit",
+    "infoAutoVoice": "Automatický hlas",
+    "infoVisual": "Vzhled",
+    "words": "Slov: {{n}}",
+    "actCopy": "Kopírovat",
+    "actClear": "Vymazat",
+    "emptyTranscriptions": "Zatím žádné přepisy.",
+    "activeModel": "AKTIVNÍ MODEL",
+    "localFull": "100% místní zpracování · Bez cloudu",
+    "backToClassic": "ZPĚT NA KLASICKÝ VZHLED"
   },
   "logo": {
     "tagline": "« Di la <accent>palabra</accent>. »"
