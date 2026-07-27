@@ -1097,10 +1097,14 @@ pub fn run(cli_args: CliArgs) {
                         settings.show_tray_icon && !window.app_handle().state::<CliArgs>().no_tray;
                     if !tray_available {
                         log::info!("Cierre sin bandeja disponible: se sale de Abrax");
-                        // Salir con el silencio de «silenciar al grabar» puesto lo
-                        // dejaría pegado A NIVEL DE SISTEMA: no se deshace solo, ni
-                        // reiniciando Abrax. Es idempotente, así que no estorba
-                        // cuando no había nada silenciado.
+                        // Quitar el silencio de «silenciar al grabar», que es del
+                        // SISTEMA y no se deshace solo. La red de verdad está en
+                        // `RunEvent::Exit` (cubre TODAS las salidas, incluido el
+                        // «Salir» de la bandeja); esta llamada se queda a
+                        // propósito por ser idempotente y gratuita: si por lo que
+                        // fuera el teardown no llegara a correr, el equipo del
+                        // usuario no se queda mudo. Duplicación deliberada — no
+                        // la quites por parecer redundante.
                         window
                             .app_handle()
                             .state::<Arc<AudioRecordingManager>>()
@@ -1158,6 +1162,30 @@ pub fn run(cli_args: CliArgs) {
             }
             // Teardown transcribe.cpp before exit
             tauri::RunEvent::Exit => {
+                // El silencio de «silenciar al grabar» es del SISTEMA, no de
+                // Abrax: si el proceso muere con él puesto, NO se deshace solo
+                // —ni reiniciando Abrax— y el usuario se queda sin sonido en
+                // todo el equipo sin manera de relacionarlo con nosotros.
+                //
+                // Va AQUÍ, que es el único punto por el que pasan TODAS las
+                // salidas. Ponerlo solo en el manejador de cierre (más arriba)
+                // dejaba fuera el «Salir» del menú de la bandeja, que llama a
+                // `app.exit(0)` directo: cerrar por ahí mientras se dictaba
+                // apagaba Abrax dejando el equipo mudo.
+                //
+                // El orden importa. Cerrar el micrófono PRIMERO cierra una
+                // carrera real: el silencio se aplica desde un hilo con 100 ms
+                // de retraso más el sonido de inicio (actions.rs), así que
+                // salir justo al empezar a dictar podía volver a silenciar
+                // DESPUÉS de haberlo quitado. Sin el stream abierto ese hilo ya
+                // no silencia nada (`apply_mute` exige `is_open`). Y como
+                // `stop_microphone_stream` no toca el silencio si el stream ya
+                // estaba cerrado, después hace falta igual `remove_mute`, que
+                // es idempotente.
+                if let Some(am) = app.try_state::<Arc<AudioRecordingManager>>() {
+                    am.stop_microphone_stream();
+                    am.remove_mute();
+                }
                 if let Some(tm) = app.try_state::<Arc<TranscriptionManager>>() {
                     let _ = tm.unload_model();
                 }
