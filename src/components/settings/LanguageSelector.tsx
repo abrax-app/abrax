@@ -34,6 +34,10 @@ const effectiveLanguage = (
   if (intent !== "auto" && supportsLanguageCode(supported, intent))
     return intent;
   if (supportsDetection) return "auto";
+  // Espejo EXACTO del fallback de Rust (`effective_language` en model.rs):
+  // español primero, después inglés. Si los dos lados divergen, el desplegable
+  // muestra un idioma y el motor dicta en otro.
+  if (supportsLanguageCode(supported, "es")) return "es";
   if (supportsLanguageCode(supported, "en")) return "en";
   return recognitionLanguage(supported[0]);
 };

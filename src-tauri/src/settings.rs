@@ -699,7 +699,18 @@ fn default_whats_new_last_seen_version() -> String {
 }
 
 fn default_selected_language() -> String {
-    "auto".to_string()
+    // Producto es-419: el idioma de fábrica es ESPAÑOL, no auto-detección.
+    //
+    // Con "auto" el fallo era este: los modelos que no saben detectar idioma
+    // (Canary declara `lang_detect: false`) no pueden honrar "auto", así que
+    // `effective_language` los mandaba al fallback cableado «prefer English»
+    // (managers/model.rs) y el dictado salía en inglés. No era un reset del
+    // ajuste: era una coerción. Con "es" de fábrica, Canary —que sí habla
+    // español— resuelve a español y el fallback ni se toca.
+    //
+    // Instalaciones existentes NO cambian: el merge de settings solo rellena
+    // claves ausentes.
+    "es".to_string()
 }
 
 fn default_overlay_position() -> OverlayPosition {
@@ -709,12 +720,18 @@ fn default_overlay_position() -> OverlayPosition {
 }
 
 fn default_overlay_style() -> OverlayStyle {
-    // Linux hides the overlay by default; other platforms show the live overlay.
-    // Position is independent and only selects top vs. bottom placement.
+    // La esfera es la imagen de marca de Abrax: no puede venir apagada de fábrica.
+    // Antes el default era `Live` (la píldora heredada del upstream), así que quien
+    // instalaba, dictaba una frase y cerraba NUNCA la veía. Ahora es lo primero que
+    // aparece al dictar. `Live` y `Minimal` siguen a un clic en Ajustes → Avanzado.
+    //
+    // Linux se queda sin overlay por defecto (el overlay depende de una ventana
+    // transparente que no todos los compositores dan). Position es independiente y
+    // solo elige arriba vs. abajo.
     #[cfg(target_os = "linux")]
     return OverlayStyle::None;
     #[cfg(not(target_os = "linux"))]
-    return OverlayStyle::Live;
+    return OverlayStyle::Esfera;
 }
 
 fn default_esfera_modo() -> EsferaModo {
@@ -1124,7 +1141,7 @@ pub fn get_default_settings() -> AppSettings {
         clamshell_microphone: None,
         selected_output_device: None,
         translate_to_english: false,
-        selected_language: "auto".to_string(),
+        selected_language: default_selected_language(),
         overlay_position: default_overlay_position(),
         debug_mode: false,
         log_level: default_log_level(),
@@ -1828,9 +1845,11 @@ mod tests {
 
     #[cfg(not(target_os = "linux"))]
     #[test]
-    fn default_overlay_style_is_live_when_overlay_defaults_on() {
+    fn default_overlay_style_is_esfera_when_overlay_defaults_on() {
+        // La esfera es la imagen de marca: si alguien vuelve a poner `Live` aquí,
+        // el producto deja de mostrarla de fábrica y nadie se entera.
         let settings = get_default_settings();
-        assert_eq!(settings.overlay_style, OverlayStyle::Live);
+        assert_eq!(settings.overlay_style, OverlayStyle::Esfera);
     }
 
     #[test]

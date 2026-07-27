@@ -254,13 +254,21 @@ pub fn effective_language(
         return "auto".to_string();
     }
 
-    // Model can't auto-detect and the intent isn't usable: fall back to a
-    // concrete language (prefer English) so we never hand the engine "auto".
-    if let Some(en) = supported_languages
-        .iter()
-        .find(|language| base_language(language) == "en")
-    {
-        return en.clone();
+    // El modelo no sabe autodetectar y lo que pidió el usuario no le sirve: hay
+    // que darle un idioma concreto, porque al motor jamás se le pasa "auto".
+    //
+    // Se prefiere ESPAÑOL y solo después inglés. Antes era inglés a secas, y ese
+    // era el fallo: con el intent en "auto", Canary —que no detecta idioma— caía
+    // aquí y el dictado salía en inglés en una app que promete español de primera
+    // clase. Con el default de fábrica en "es" este camino ya casi no se pisa,
+    // pero sigue cubriendo a quien tenga "auto" guardado de una versión anterior.
+    for preferido in ["es", "en"] {
+        if let Some(code) = supported_languages
+            .iter()
+            .find(|language| base_language(language) == preferido)
+        {
+            return code.clone();
+        }
     }
     recognition_language(&supported_languages[0]).to_string()
 }
@@ -2415,6 +2423,32 @@ mod tests {
         let languages = vec!["zh-Hant".to_string()];
 
         assert_eq!(effective_language("auto", &languages, false), "zh");
+    }
+
+    #[test]
+    fn test_effective_language_prefers_spanish_over_english_when_model_cannot_detect() {
+        // Regresión del fallo medido el 26/07 en un Windows limpio: «si cambio de
+        // modelo al Canary, queda por defecto en inglés».
+        //
+        // Canary declara `lang_detect: false`, así que un intent "auto" no se puede
+        // honrar y hay que elegir un idioma concreto. El fallback estaba cableado a
+        // inglés, y en una app que promete español de primera clase eso contradice
+        // la marca. Los cuatro idiomas son los que declara canary-180m-flash.
+        let canary = vec![
+            "en".to_string(),
+            "de".to_string(),
+            "es".to_string(),
+            "fr".to_string(),
+        ];
+        assert_eq!(effective_language("auto", &canary, false), "es");
+
+        // Y si el modelo NO habla español, inglés sigue siendo el sustituto.
+        let sin_espanol = vec!["en".to_string(), "de".to_string()];
+        assert_eq!(effective_language("auto", &sin_espanol, false), "en");
+
+        // Lo que el usuario eligió a mano manda por encima de todo: si pidió
+        // francés y el modelo lo tiene, no se le cambia a español.
+        assert_eq!(effective_language("fr", &canary, false), "fr");
     }
 
     #[test]
