@@ -435,6 +435,27 @@
         "resetDefaults": "恢复默认列表",
         "disable": "关闭过滤"
       },
+      "autocorreccion": {
+        "title": "口头自我纠正",
+        "description": "口述时如果你出声改口，文字直接就是改好的。基于规则，即时且离线：不使用任何 AI 模型，也不走后处理。拿不准时它什么都不改。默认关闭，因为它会删除文字。",
+        "ejemplo": "例如：“把会议安排在周二……不对，抱歉，是周三” → “把会议安排在周三。”",
+        "sustitucionTitle": "纠正触发词",
+        "sustitucionDescription": "你用来替换刚说过的内容的话（例如“不对，抱歉”“我是说”）。只有在触发词之前找到同类的对应内容时才替换——同为星期、月份、时间、数字或人名。找不到就不做改动。",
+        "borradoTitle": "删除触发词",
+        "borradoDescription": "你用来作废整句上文的话（例如“删掉这句”“不要这句”）。那句话连同触发词一起被删除。",
+        "placeholder": "添加触发词",
+        "add": "添加",
+        "remove": "删除 {{senal}}",
+        "duplicate": "“{{senal}}”已存在",
+        "showDefaults": "改用内置",
+        "resetDefaults": "恢复内置",
+        "disable": "关闭该级别",
+        "mode": {
+          "defaults": "当前：内置触发词",
+          "custom": "当前：自定义触发词",
+          "disabled": "该级别已关闭"
+        }
+      },
       "voiceActivityDetection": {
         "title": "Voice Activity Detection",
         "description": "Filter silence from recordings. Streaming-capable models use a longer VAD tail; disabling VAD records raw audio."

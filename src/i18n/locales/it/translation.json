@@ -435,6 +435,27 @@
         "resetDefaults": "Ripristina lista predefinita",
         "disable": "Disattiva filtro"
       },
+      "autocorreccion": {
+        "title": "Autocorrezione a voce",
+        "description": "Se ti correggi ad alta voce mentre detti, il testo esce già corretto. A regole, immediato e offline: non usa alcun modello di IA né la Post-elaborazione. Nel dubbio non tocca nulla. È disattivata per impostazione predefinita perché può cancellare del testo.",
+        "ejemplo": "Esempio: «Fissa la riunione per martedì… no, scusa, per mercoledì» → «Fissa la riunione per mercoledì.»",
+        "sustitucionTitle": "Segnali di correzione",
+        "sustitucionDescription": "Quello che dici per sostituire qualcosa che hai appena detto (p. es. «no, scusa», «cioè»). Sostituisce solo se prima del segnale trova un segmento equivalente: stesso giorno, mese, ora, numero o nome. Se non lo trova, non cambia nulla.",
+        "borradoTitle": "Segnali di cancellazione",
+        "borradoDescription": "Quello che dici per scartare l'intera frase precedente (p. es. «cancella questo», «lascia stare»). Quella frase e il segnale vengono eliminati.",
+        "placeholder": "Aggiungi segnale",
+        "add": "Aggiungi",
+        "remove": "Elimina {{senal}}",
+        "duplicate": "«{{senal}}» esiste già",
+        "showDefaults": "Usa i predefiniti",
+        "resetDefaults": "Torna ai predefiniti",
+        "disable": "Disattiva livello",
+        "mode": {
+          "defaults": "Attivo: segnali predefiniti",
+          "custom": "Attivo: segnali personali",
+          "disabled": "Livello disattivato"
+        }
+      },
       "voiceActivityDetection": {
         "title": "Rilevamento dell'attività vocale",
         "description": "Filtra il silenzio dalle registrazioni. I modelli che supportano lo streaming utilizzano una coda VAD più lunga; disabilitando la VAD si registra l'audio grezzo."

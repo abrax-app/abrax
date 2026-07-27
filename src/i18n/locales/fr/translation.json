@@ -435,6 +435,27 @@
         "resetDefaults": "Rétablir la liste par défaut",
         "disable": "Désactiver le filtre"
       },
+      "autocorreccion": {
+        "title": "Autocorrection à voix haute",
+        "description": "Si vous vous corrigez à voix haute pendant la dictée, le texte sort déjà corrigé. Par règles, instantané et hors ligne : sans aucun modèle d'IA ni Post-traitement. En cas de doute, rien n'est modifié. Désactivée par défaut, car elle peut supprimer du texte.",
+        "ejemplo": "Exemple : « Programme la réunion pour mardi… non, pardon, pour mercredi » → « Programme la réunion pour mercredi. »",
+        "sustitucionTitle": "Signaux de correction",
+        "sustitucionDescription": "Ce que vous dites pour remplacer ce que vous venez de dire (p. ex. « non, pardon », « enfin »). Le remplacement n'a lieu que si un segment équivalent est trouvé avant le signal : même jour, même mois, même heure, même nombre ou même nom. Sinon, rien n'est modifié.",
+        "borradoTitle": "Signaux d'effacement",
+        "borradoDescription": "Ce que vous dites pour jeter toute la phrase précédente (p. ex. « efface ça », « oublie ça »). Cette phrase et le signal sont supprimés.",
+        "placeholder": "Ajouter un signal",
+        "add": "Ajouter",
+        "remove": "Supprimer {{senal}}",
+        "duplicate": "« {{senal}} » existe déjà",
+        "showDefaults": "Utiliser ceux d'origine",
+        "resetDefaults": "Revenir à ceux d'origine",
+        "disable": "Désactiver le niveau",
+        "mode": {
+          "defaults": "Actif : signaux d'origine",
+          "custom": "Actif : vos propres signaux",
+          "disabled": "Niveau désactivé"
+        }
+      },
       "voiceActivityDetection": {
         "title": "Voice Activity Detection",
         "description": "Filter silence from recordings. Streaming-capable models use a longer VAD tail; disabling VAD records raw audio."

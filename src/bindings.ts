@@ -1444,7 +1444,25 @@ dictionary_project?: DictionaryProject | null; model_unload_timeout?: ModelUnloa
  * usa para el "Pulido con IA" local. `None` = ninguno (se usa Ollama en
  * loopback si está, o solo reglas). Opcional por diseño.
  */
-correccion_modelo_local?: string | null; experimental_enabled?: boolean; lazy_stream_close?: boolean; keyboard_implementation?: KeyboardImplementation; show_tray_icon?: boolean; paste_delay_ms?: number; paste_delay_after_ms?: number; typing_tool?: TypingTool; external_script_path?: string | null; custom_filler_words?: string[] | null; transcribe_accelerator?: TranscribeAcceleratorSetting; ort_accelerator?: OrtAcceleratorSetting; transcribe_gpu_device?: number; extra_recording_buffer_ms?: number; vad_enabled?: boolean; 
+correccion_modelo_local?: string | null; experimental_enabled?: boolean; lazy_stream_close?: boolean; keyboard_implementation?: KeyboardImplementation; show_tray_icon?: boolean; paste_delay_ms?: number; paste_delay_after_ms?: number; typing_tool?: TypingTool; external_script_path?: string | null; custom_filler_words?: string[] | null; 
+/**
+ * Autocorrección hablada: si quien dicta se corrige a sí mismo en voz alta
+ * («…el martes, no, perdón, el miércoles»), el texto sale ya corregido.
+ * Por REGLAS y 100% local — no usa Post Proceso/BYOK ni ningún modelo.
+ * **Apagada por defecto**: borra texto, y eso se activa a conciencia.
+ */
+autocorreccion_activa?: boolean; 
+/**
+ * Señales de borrado explícito (nivel 1). Mismo contrato que las
+ * muletillas: `null` = las de fábrica, `[]` = nivel apagado, lista propia
+ * = reemplaza a las de fábrica.
+ */
+autocorreccion_senales_borrado?: string[] | null; 
+/**
+ * Señales de sustitución con paralelo (nivel 2). Mismo contrato que
+ * `autocorreccion_senales_borrado`.
+ */
+autocorreccion_senales_sustitucion?: string[] | null; transcribe_accelerator?: TranscribeAcceleratorSetting; ort_accelerator?: OrtAcceleratorSetting; transcribe_gpu_device?: number; extra_recording_buffer_ms?: number; vad_enabled?: boolean; 
 /**
  * Diarización de hablantes (offline): etiqueta la transcripción con
  * `[Hablante N]` cuando hay varias voces. Opt-in (cuesta CPU y requiere los

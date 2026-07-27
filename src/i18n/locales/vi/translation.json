@@ -435,6 +435,27 @@
         "resetDefaults": "Khôi phục danh sách mặc định",
         "disable": "Tắt bộ lọc"
       },
+      "autocorreccion": {
+        "title": "Tự sửa lời khi nói",
+        "description": "Nếu bạn nói lại để sửa mình trong lúc đọc chính tả, văn bản hiện ra đã được sửa sẵn. Chạy theo quy tắc, tức thì và ngoại tuyến: không dùng mô hình AI nào và không qua Hậu xử lý. Khi không chắc, nó không đổi gì cả. Mặc định tắt vì nó có thể xóa chữ.",
+        "ejemplo": "Ví dụ: “Đặt lịch họp vào thứ Ba… à không, xin lỗi, thứ Tư” → “Đặt lịch họp vào thứ Tư.”",
+        "sustitucionTitle": "Cụm từ báo hiệu sửa",
+        "sustitucionDescription": "Những gì bạn nói để thay thế điều vừa nói (ví dụ “à không”, “ý tôi là”). Chỉ thay khi tìm thấy một đoạn tương đương trước cụm từ đó — cùng thứ trong tuần, tháng, giờ, con số hoặc tên. Nếu không tìm thấy, nó không đổi gì.",
+        "borradoTitle": "Cụm từ báo hiệu xóa",
+        "borradoDescription": "Những gì bạn nói để bỏ nguyên câu vừa nói (ví dụ “xóa câu đó”, “quên câu đó”). Câu đó và cụm từ báo hiệu đều bị xóa.",
+        "placeholder": "Thêm cụm từ",
+        "add": "Thêm",
+        "remove": "Xóa {{senal}}",
+        "duplicate": "“{{senal}}” đã có rồi",
+        "showDefaults": "Dùng mặc định",
+        "resetDefaults": "Về mặc định",
+        "disable": "Tắt cấp độ",
+        "mode": {
+          "defaults": "Đang dùng: cụm từ mặc định",
+          "custom": "Đang dùng: cụm từ của bạn",
+          "disabled": "Cấp độ đã tắt"
+        }
+      },
       "voiceActivityDetection": {
         "title": "Voice Activity Detection",
         "description": "Filter silence from recordings. Streaming-capable models use a longer VAD tail; disabling VAD records raw audio."

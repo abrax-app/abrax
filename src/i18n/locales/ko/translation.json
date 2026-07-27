@@ -435,6 +435,27 @@
         "resetDefaults": "기본 목록 복원",
         "disable": "필터 끄기"
       },
+      "autocorreccion": {
+        "title": "말로 하는 자동 수정",
+        "description": "받아쓰는 도중 소리 내어 스스로 고치면 텍스트가 이미 고쳐진 상태로 나옵니다. 규칙 기반이라 즉시, 인터넷 없이 동작합니다. AI 모델도 후처리도 쓰지 않습니다. 애매하면 아무것도 바꾸지 않습니다. 텍스트를 지울 수 있어 기본값은 꺼짐입니다.",
+        "ejemplo": "예: “회의를 화요일로 잡아 줘… 아니다, 미안, 수요일로” → “회의를 수요일로 잡아 줘.”",
+        "sustitucionTitle": "수정 신호어",
+        "sustitucionDescription": "방금 말한 것을 다른 말로 바꿀 때 쓰는 표현입니다(예: “아니다, 미안”, “그러니까”). 신호어 앞에 같은 요일·달·시각·숫자·이름처럼 대응되는 부분이 있을 때만 바꿉니다. 없으면 아무것도 바꾸지 않습니다.",
+        "borradoTitle": "삭제 신호어",
+        "borradoDescription": "바로 앞 문장 전체를 버릴 때 쓰는 표현입니다(예: “그거 지워”, “그거 잊어”). 그 문장과 신호어가 함께 삭제됩니다.",
+        "placeholder": "신호어 추가",
+        "add": "추가",
+        "remove": "{{senal}} 삭제",
+        "duplicate": "“{{senal}}”은(는) 이미 있습니다",
+        "showDefaults": "기본값 사용",
+        "resetDefaults": "기본값으로 복원",
+        "disable": "단계 끄기",
+        "mode": {
+          "defaults": "사용 중: 기본 신호어",
+          "custom": "사용 중: 내 신호어",
+          "disabled": "단계 꺼짐"
+        }
+      },
       "voiceActivityDetection": {
         "title": "Voice Activity Detection",
         "description": "Filter silence from recordings. Streaming-capable models use a longer VAD tail; disabling VAD records raw audio."

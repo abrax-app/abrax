@@ -435,6 +435,27 @@
         "resetDefaults": "Återställ standardlistan",
         "disable": "Stäng av filtret"
       },
+      "autocorreccion": {
+        "title": "Talad självkorrigering",
+        "description": "Om du rättar dig själv högt medan du dikterar kommer texten ut färdigrättad. Regelbaserad, direkt och offline: den använder ingen AI-modell och ingen Efterbehandling. Vid minsta tvekan ändras ingenting. Avstängd från början eftersom den kan radera text.",
+        "ejemplo": "Exempel: ”Boka mötet på tisdag… nej, förlåt, på onsdag” → ”Boka mötet på onsdag.”",
+        "sustitucionTitle": "Rättelsesignaler",
+        "sustitucionDescription": "Det du säger för att byta ut något du precis sagt (t.ex. ”nej, förlåt”, ”jag menar”). Bytet sker bara om det finns ett likvärdigt avsnitt före signalen – samma veckodag, månad, tid, siffra eller namn. Hittas inget ändras ingenting.",
+        "borradoTitle": "Raderingssignaler",
+        "borradoDescription": "Det du säger för att kasta hela föregående mening (t.ex. ”radera det”, ”glöm det”). Meningen och signalen tas bort.",
+        "placeholder": "Lägg till signal",
+        "add": "Lägg till",
+        "remove": "Ta bort {{senal}}",
+        "duplicate": "”{{senal}}” finns redan",
+        "mode": {
+          "defaults": "Aktivt: inbyggda signaler",
+          "custom": "Aktivt: egna signaler",
+          "disabled": "Nivån avstängd"
+        },
+        "showDefaults": "Använd de inbyggda",
+        "resetDefaults": "Tillbaka till inbyggda",
+        "disable": "Stäng av nivån"
+      },
       "voiceActivityDetection": {
         "title": "Voice Activity Detection",
         "description": "Filter silence from recordings. Streaming-capable models use a longer VAD tail; disabling VAD records raw audio."

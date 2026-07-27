@@ -1858,6 +1858,22 @@ fn post_process_transcription_text(
     //    llegar al editor del usuario una ristra de «qqqq…».
     let raw = crate::audio_toolkit::recortar_repeticion_degenerada(&raw);
 
+    // 0.5 Autocorrección hablada (opt-in, apagada de fábrica): si el hablante
+    //     se corrigió a sí mismo en voz alta, el texto sale ya corregido.
+    //     Va ANTES de las capas difusas a propósito: `apply_custom_words`
+    //     corrige por Levenshtein, así que un usuario con la palabra propia
+    //     «Diego» convertiría la señal «digo» en «Diego» y la corrección se
+    //     perdería. Aquí el texto todavía es lo que se dijo.
+    let raw = if settings.autocorreccion_activa {
+        crate::audio_toolkit::aplicar_autocorreccion(
+            &raw,
+            &settings.autocorreccion_senales_borrado,
+            &settings.autocorreccion_senales_sustitucion,
+        )
+    } else {
+        raw
+    };
+
     // 1. Reemplazos exactos del Diccionario Vivo (F5.1): intención explícita
     //    del usuario, van primero para que el fuzzy no toque sus tokens.
     let replacement_pairs: Vec<(String, String)> = settings

@@ -4,6 +4,7 @@ import { ShowOverlay } from "../ShowOverlay";
 import { ModelUnloadTimeoutSetting } from "../ModelUnloadTimeout";
 import { CustomWords } from "../CustomWords";
 import { CustomFillerWords } from "../CustomFillerWords";
+import { AutocorreccionSettings } from "../AutocorreccionSettings";
 import { MemoriaSettings } from "../MemoriaSettings";
 import { CustomReplacements } from "../CustomReplacements";
 import { CorreccionSettings } from "../CorreccionSettings";
@@ -51,6 +52,7 @@ export const AdvancedSettings: React.FC = () => {
         <VoiceActivityDetection descriptionMode="tooltip" grouped={true} />
         <CustomWords descriptionMode="tooltip" grouped />
         <CustomFillerWords descriptionMode="tooltip" grouped />
+        <AutocorreccionSettings descriptionMode="tooltip" grouped />
         <AppendTrailingSpace descriptionMode="tooltip" grouped={true} />
       </SettingsGroup>
 

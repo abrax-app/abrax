@@ -392,7 +392,7 @@ fn preserve_case_pattern(original: &str, replacement: &str) -> String {
 ///
 /// Byte-safe con puntuación multibyte ("¿", "…", "—"): la versión anterior
 /// usaba conteos de caracteres como índices de bytes y panickeaba con "¿El".
-fn extract_punctuation(word: &str) -> (&str, &str) {
+pub(crate) fn extract_punctuation(word: &str) -> (&str, &str) {
     let prefix_end = word
         .char_indices()
         .find(|(_, c)| c.is_alphanumeric())

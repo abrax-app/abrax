@@ -435,6 +435,27 @@
         "resetDefaults": "Restaurar lista padrão",
         "disable": "Desativar filtro"
       },
+      "autocorreccion": {
+        "title": "Autocorreção falada",
+        "description": "Se você se corrige em voz alta enquanto dita, o texto já sai corrigido. Por regras, na hora e sem internet: não usa nenhum modelo de IA nem o Pós-processamento. Na dúvida, não mexe em nada. Vem desligada porque pode apagar texto.",
+        "ejemplo": "Exemplo: “Marque a reunião para terça… não, desculpa, para quarta” → “Marque a reunião para quarta.”",
+        "sustitucionTitle": "Sinais de correção",
+        "sustitucionDescription": "O que você diz para substituir algo que acabou de falar (p. ex. “não, desculpa”, “quer dizer”). Só substitui se encontrar antes um trecho equivalente — mesmo dia da semana, mês, hora, número ou nome. Se não encontrar, não mexe em nada.",
+        "borradoTitle": "Sinais de exclusão",
+        "borradoDescription": "O que você diz para descartar a frase anterior inteira (p. ex. “apaga isso”, “esquece isso”). Essa frase e o sinal são removidos.",
+        "placeholder": "Adicionar sinal",
+        "add": "Adicionar",
+        "remove": "Remover {{senal}}",
+        "duplicate": "“{{senal}}” já existe",
+        "mode": {
+          "defaults": "Ativo: sinais de fábrica",
+          "custom": "Ativo: sinais próprios",
+          "disabled": "Nível desativado"
+        },
+        "showDefaults": "Usar os de fábrica",
+        "resetDefaults": "Voltar aos de fábrica",
+        "disable": "Desativar nível"
+      },
       "voiceActivityDetection": {
         "title": "Voice Activity Detection",
         "description": "Filter silence from recordings. Streaming-capable models use a longer VAD tail; disabling VAD records raw audio."

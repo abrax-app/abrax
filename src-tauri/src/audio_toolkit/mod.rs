@@ -1,4 +1,5 @@
 pub mod audio;
+pub mod autocorreccion;
 pub mod constants;
 pub mod text;
 pub mod utils;
@@ -9,6 +10,7 @@ pub use audio::{
     read_wav_samples, save_wav_file, verify_wav_file, AudioRecorder, CpalDeviceInfo, SpectrumFrame,
     VadPolicy,
 };
+pub use autocorreccion::aplicar_autocorreccion;
 pub use text::{
     apply_custom_replacements, apply_custom_words, apply_dictionary_fuzzy,
     apply_exact_phrase_replacements, apply_multi_token_join, build_match_key,

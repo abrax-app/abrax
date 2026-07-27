@@ -435,6 +435,27 @@
         "resetDefaults": "Standaardlijst herstellen",
         "disable": "Filter uitschakelen"
       },
+      "autocorreccion": {
+        "title": "Gesproken zelfcorrectie",
+        "description": "Als je jezelf hardop verbetert tijdens het dicteren, komt de tekst er al verbeterd uit. Werkt op regels, direct en offline: geen AI-model en geen Nabewerking. Bij twijfel verandert er niets. Staat standaard uit, want er kan tekst door verdwijnen.",
+        "ejemplo": "Voorbeeld: “Zet de vergadering op dinsdag… nee, sorry, op woensdag” wordt “Zet de vergadering op woensdag.”",
+        "sustitucionTitle": "Correctiesignalen",
+        "sustitucionDescription": "Wat je zegt om iets te vervangen wat je net hebt gezegd (bijvoorbeeld “nee, sorry” of “ik bedoel”). Er wordt alleen vervangen als er vóór het signaal een vergelijkbaar stuk staat: dezelfde weekdag, maand, tijd, getal of naam. Wordt dat niet gevonden, dan verandert er niets.",
+        "borradoTitle": "Wissignalen",
+        "borradoDescription": "Wat je zegt om de hele vorige zin te laten vallen (bijvoorbeeld “wis dat” of “vergeet dat”). Die zin en het signaal verdwijnen allebei.",
+        "placeholder": "Signaal toevoegen",
+        "add": "Toevoegen",
+        "remove": "{{senal}} verwijderen",
+        "duplicate": "“{{senal}}” bestaat al",
+        "showDefaults": "Standaard gebruiken",
+        "resetDefaults": "Terug naar standaard",
+        "disable": "Niveau uitzetten",
+        "mode": {
+          "defaults": "Actief: standaardsignalen",
+          "custom": "Actief: eigen signalen",
+          "disabled": "Niveau uit"
+        }
+      },
       "voiceActivityDetection": {
         "title": "Spraakactiviteitsdetectie (VAD)",
         "description": "Filter stilte uit opnames. Streaming-modellen gebruiken een langere VAD-uitloop; het uitschakelen van VAD neemt de ruwe audio op."

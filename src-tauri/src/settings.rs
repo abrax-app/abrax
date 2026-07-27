@@ -586,6 +586,21 @@ pub struct AppSettings {
     pub external_script_path: Option<String>,
     #[serde(default)]
     pub custom_filler_words: Option<Vec<String>>,
+    /// Autocorrección hablada: si quien dicta se corrige a sí mismo en voz alta
+    /// («…el martes, no, perdón, el miércoles»), el texto sale ya corregido.
+    /// Por REGLAS y 100% local — no usa Post Proceso/BYOK ni ningún modelo.
+    /// **Apagada por defecto**: borra texto, y eso se activa a conciencia.
+    #[serde(default)]
+    pub autocorreccion_activa: bool,
+    /// Señales de borrado explícito (nivel 1). Mismo contrato que las
+    /// muletillas: `null` = las de fábrica, `[]` = nivel apagado, lista propia
+    /// = reemplaza a las de fábrica.
+    #[serde(default)]
+    pub autocorreccion_senales_borrado: Option<Vec<String>>,
+    /// Señales de sustitución con paralelo (nivel 2). Mismo contrato que
+    /// `autocorreccion_senales_borrado`.
+    #[serde(default)]
+    pub autocorreccion_senales_sustitucion: Option<Vec<String>>,
     #[serde(default)]
     pub transcribe_accelerator: TranscribeAcceleratorSetting,
     #[serde(default)]
@@ -1193,6 +1208,9 @@ pub fn get_default_settings() -> AppSettings {
         typing_tool: default_typing_tool(),
         external_script_path: None,
         custom_filler_words: None,
+        autocorreccion_activa: false,
+        autocorreccion_senales_borrado: None,
+        autocorreccion_senales_sustitucion: None,
         transcribe_accelerator: TranscribeAcceleratorSetting::default(),
         ort_accelerator: OrtAcceleratorSetting::default(),
         transcribe_gpu_device: default_transcribe_gpu_device(),

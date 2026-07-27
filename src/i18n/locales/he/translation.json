@@ -435,6 +435,27 @@
         "resetDefaults": "שחזר את רשימת ברירת המחדל",
         "disable": "כבה את המסנן"
       },
+      "autocorreccion": {
+        "title": "תיקון עצמי בדיבור",
+        "description": "אם אתם מתקנים את עצמכם בקול תוך כדי הכתבה, הטקסט יוצא כבר מתוקן. מבוסס כללים, מיידי וללא אינטרנט: בלי שום מודל בינה מלאכותית ובלי העיבוד המאוחר. במקרה של ספק לא נוגע בכלום. כבוי כברירת מחדל, כי הוא עלול למחוק טקסט.",
+        "ejemplo": "דוגמה: “קבע את הפגישה ליום שלישי… לא, סליחה, ליום רביעי” הופך ל“קבע את הפגישה ליום רביעי.”",
+        "sustitucionTitle": "ביטויי תיקון",
+        "sustitucionDescription": "מה שאתם אומרים כדי להחליף משהו שהרגע אמרתם (למשל “לא, סליחה”, “כלומר”). ההחלפה מתבצעת רק אם נמצא לפני הביטוי קטע מקביל — אותו יום, חודש, שעה, מספר או שם. אם לא נמצא, שום דבר לא משתנה.",
+        "borradoTitle": "ביטויי מחיקה",
+        "borradoDescription": "מה שאתם אומרים כדי לבטל את כל המשפט הקודם (למשל “תמחק את זה”, “תשכח מזה”). המשפט הזה והביטוי נמחקים.",
+        "placeholder": "הוספת ביטוי",
+        "add": "הוספה",
+        "remove": "מחיקת {{senal}}",
+        "duplicate": "“{{senal}}” כבר קיים",
+        "showDefaults": "שימוש במובנים",
+        "resetDefaults": "חזרה למובנים",
+        "disable": "השבתת הרמה",
+        "mode": {
+          "defaults": "פעיל: ביטויים מובנים",
+          "custom": "פעיל: ביטויים משלכם",
+          "disabled": "הרמה מושבתת"
+        }
+      },
       "voiceActivityDetection": {
         "title": "Voice Activity Detection",
         "description": "Filter silence from recordings. Streaming-capable models use a longer VAD tail; disabling VAD records raw audio."

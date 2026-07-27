@@ -435,6 +435,27 @@
         "resetDefaults": "Obnovit výchozí seznam",
         "disable": "Vypnout filtr"
       },
+      "autocorreccion": {
+        "title": "Mluvená autokorekce",
+        "description": "Když se při diktování nahlas opravíš, text vyjde rovnou opravený. Funguje podle pravidel, okamžitě a offline: nepoužívá žádný model AI ani Následné zpracování. Když si není jistá, nic nemění. Ve výchozím stavu je vypnutá, protože může mazat text.",
+        "ejemplo": "Příklad: „Naplánuj schůzku na úterý… ne, promiň, na středu“ se změní na „Naplánuj schůzku na středu.“",
+        "sustitucionTitle": "Signály opravy",
+        "sustitucionDescription": "Co řekneš, aby se nahradilo něco řečeného před chvílí (např. „ne, promiň“, „vlastně“). Nahradí to jen tehdy, když před signálem najde odpovídající úsek – stejný den v týdnu, měsíc, čas, číslo nebo jméno. Když žádný nenajde, nic nemění.",
+        "borradoTitle": "Signály smazání",
+        "borradoDescription": "Co řekneš, aby se zahodila celá předchozí věta (např. „smaž to“, „zapomeň na to“). Ta věta i signál se odstraní.",
+        "placeholder": "Přidat signál",
+        "add": "Přidat",
+        "remove": "Odebrat {{senal}}",
+        "duplicate": "„{{senal}}“ už existuje",
+        "showDefaults": "Použít výchozí",
+        "resetDefaults": "Zpět na výchozí",
+        "disable": "Vypnout úroveň",
+        "mode": {
+          "defaults": "Aktivní: výchozí signály",
+          "custom": "Aktivní: vlastní signály",
+          "disabled": "Úroveň vypnuta"
+        }
+      },
       "voiceActivityDetection": {
         "title": "Voice Activity Detection",
         "description": "Filter silence from recordings. Streaming-capable models use a longer VAD tail; disabling VAD records raw audio."

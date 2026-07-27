@@ -435,6 +435,27 @@
         "resetDefaults": "Restore default list",
         "disable": "Disable filter"
       },
+      "autocorreccion": {
+        "title": "Spoken self-correction",
+        "description": "If you correct yourself out loud while dictating, the text comes out already fixed. Rule-based, instant and offline: it uses no AI model and no Post-processing. When in doubt it changes nothing. Off by default because it can delete text.",
+        "ejemplo": "Example: “Schedule the meeting for Tuesday… no, sorry, for Wednesday” → “Schedule the meeting for Wednesday.”",
+        "sustitucionTitle": "Correction cues",
+        "sustitucionDescription": "What you say to replace something you just said (e.g. “no, sorry”, “I mean”). It only substitutes when it finds an equivalent segment before the cue — same weekday, month, time, number or name. If it finds none, it changes nothing.",
+        "borradoTitle": "Deletion cues",
+        "borradoDescription": "What you say to discard the whole previous sentence (e.g. “delete that”, “forget that”). That sentence and the cue are removed.",
+        "placeholder": "Add cue",
+        "add": "Add",
+        "remove": "Remove {{senal}}",
+        "duplicate": "“{{senal}}” already exists",
+        "mode": {
+          "defaults": "Active: built-in cues",
+          "custom": "Active: your own cues",
+          "disabled": "Level disabled"
+        },
+        "showDefaults": "Use the built-in ones",
+        "resetDefaults": "Back to the built-in ones",
+        "disable": "Disable level"
+      },
       "voiceActivityDetection": {
         "title": "Voice Activity Detection",
         "description": "Filter silence from recordings. Streaming-capable models use a longer VAD tail; disabling VAD records raw audio."
