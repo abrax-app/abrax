@@ -18,7 +18,26 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from huggingface_hub import HfApi, HfFileSystem
 
 ORG = "handy-computer"
-CATALOG_VERSION = 1
+CATALOG_VERSION = 2
+
+# ───────────────────────── ABRAX: lista blanca de envío (D1) ─────────────────
+# ABRAX envía CINCO modelos, no los 65 de la organización. Sin esta lista, una
+# corrida de este script deshace la poda en silencio y devuelve el catálogo
+# completo al binario.
+#
+# Los cinco salen del informe SUPERFICIE_ABRAX_2026-07-26 §B.2 y pasaron la
+# compuerta C.1 (descargan sin token ni acuerdo previo). El orden es el
+# editorial: primero el liviano que arranca en un minuto, después el de todos
+# los días, y al final los especialistas.
+#
+# Para volver al catálogo completo del upstream: poner ENVIADOS = None.
+ENVIADOS = [
+    "canary-180m-flash",
+    "whisper-large-v3-turbo",
+    "whisper-large-v3",
+    "nemotron-3.5-asr-streaming-0.6b",
+    "cohere-transcribe-03-2026",
+]
 
 # ───────────────────────── scoring (one constant each) ──────────────────────
 SPEED_SCALE = 8.0    # speed = 100·(1 − e^(−rtf/8))     grows toward 100
@@ -36,11 +55,18 @@ def acc_from_wer(wer):
 # badge / onboarding subset — independent of rank, so a model can rank high
 # without carrying the recommended tag.
 CURATION = {
-    "parakeet-unified-en-0.6b":        {"rank": 1, "rec": True, "desc": "Fast, accurate live English transcription"},
-    "nemotron-3.5-asr-streaming-0.6b": {"rank": 2, "rec": True, "desc": "Live multilingual transcription across 28 languages"},
-    "canary-180m-flash":               {"rank": 3, "rec": True, "desc": "Tiny and instant, runs well on any hardware"},
-    "cohere-transcribe-03-2026":       {"rank": 4, "rec": True, "desc": "Highest accuracy, 14 languages, slower"},
-    "whisper-medium":                  {"rank": 5, "rec": True, "desc": "Broadest language, but may run a bit slow"},
+    # ABRAX (D1): los cinco que se envían, en su orden editorial. Solo el
+    # primero lleva insignia — una insignia que llevan cinco de cinco no
+    # recomienda nada. El copy visible es el es-419 de `onboarding.models.*`
+    # en i18n; estos `desc` son el respaldo en inglés para los demás locales.
+    "canary-180m-flash":               {"rank": 1, "rec": True, "desc": "Tiny and instant, runs well on any hardware"},
+    "whisper-large-v3-turbo":          {"rank": 2, "desc": "The everyday pick: 100 languages, no waiting"},
+    "whisper-large-v3":                {"rank": 3, "desc": "Widest coverage. Slower, but complete"},
+    "nemotron-3.5-asr-streaming-0.6b": {"rank": 4, "desc": "Live multilingual transcription across 28 languages"},
+    "cohere-transcribe-03-2026":       {"rank": 5, "desc": "Highest accuracy, 14 languages, slower"},
+    # ── fuera de ENVIADOS: se conservan por si el catálogo vuelve a abrirse ──
+    "parakeet-unified-en-0.6b":        {"rank": 11, "desc": "Fast, accurate live English transcription"},
+    "whisper-medium":                  {"rank": 12, "desc": "Broadest language, but may run a bit slow"},
     # ranked (sorted high) but NOT tagged recommended
     "Voxtral-Mini-4B-Realtime-2602":   {"rank": 6, "desc": "Live multilingual, excellent on powerful machines"},
     "parakeet-tdt-0.6b-v3":            {"rank": 7, "desc": "Fast and accurate. Supports 25 European languages"},
@@ -232,6 +258,7 @@ def main():
         for f in as_completed(futs):
             try:
                 m = f.result()
+                if ENVIADOS is not None and m["slug"] not in ENVIADOS: continue
                 if not CURATION.get(m["slug"], {}).get("hidden"): models.append(m)
             except Exception as e:
                 failures.append((futs[f], e))
@@ -239,6 +266,13 @@ def main():
     if failures:
         print(f"catalog generation failed for {len(failures)} repo(s)", file=sys.stderr)
         raise SystemExit(1)
+    if ENVIADOS is not None:
+        # Un repo renombrado o retirado encogería el catálogo sin avisar, y el
+        # binario saldría con menos modelos de los que la UI promete.
+        faltan = set(ENVIADOS) - {m["slug"] for m in models}
+        if faltan:
+            print(f"ENVIADOS sin repo en {ORG}: {sorted(faltan)}", file=sys.stderr)
+            raise SystemExit(1)
     models.sort(key=lambda m: (not m["recommended"], m["recommended_rank"] or 1e9,
                                m["family"], -(m["speed_score"] or 0)))
     catalog = {

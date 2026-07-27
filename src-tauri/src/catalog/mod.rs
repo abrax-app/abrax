@@ -127,6 +127,11 @@ mod tests {
     use crate::managers::model_capabilities::KNOWN_ARCHES;
     use std::collections::BTreeSet;
 
+    /// `org/repo/archivo.gguf` -> `org/repo`.
+    fn repo_de(id: &str) -> &str {
+        id.rsplit_once('/').map(|(repo, _)| repo).unwrap_or(id)
+    }
+
     #[test]
     fn catalog_parses_and_is_nonempty() {
         assert!(!CATALOG.is_empty(), "bundled catalog should contain models");
@@ -146,6 +151,70 @@ mod tests {
         for d in CATALOG.iter() {
             assert!((0.0..=1.0).contains(&d.speed_score), "{} speed", d.id);
             assert!((0.0..=1.0).contains(&d.accuracy_score), "{} acc", d.id);
+        }
+    }
+
+    /// ABRAX envía CINCO modelos curados, no los 65 de la organización upstream
+    /// (D1). Este test es el que impide que la poda se deshaga sola: correr
+    /// `scripts/gen_catalog.py` sin su lista blanca `ENVIADOS` devuelve el
+    /// catálogo completo, y sin esta comprobación el binario saldría con 65
+    /// modelos y nadie se enteraría hasta ver la pantalla.
+    #[test]
+    fn catalog_ships_the_curated_five() {
+        // El id del descriptor es `org/repo/archivo.gguf`; comparamos por REPO
+        // para que cambiar el quant por defecto no rompa este test.
+        let ids: Vec<&str> = CATALOG.iter().map(|d| repo_de(&d.id)).collect();
+        assert_eq!(
+            ids,
+            vec![
+                "handy-computer/canary-180m-flash-gguf",
+                "handy-computer/whisper-large-v3-turbo-gguf",
+                "handy-computer/whisper-large-v3-gguf",
+                "handy-computer/nemotron-3.5-asr-streaming-0.6b-gguf",
+                "handy-computer/cohere-transcribe-03-2026-gguf",
+            ],
+            "el catálogo enviado debe ser exactamente los 5 curados, en orden"
+        );
+        let ranks: Vec<Option<u32>> = CATALOG.iter().map(|d| d.recommended_rank).collect();
+        assert_eq!(
+            ranks,
+            vec![Some(1), Some(2), Some(3), Some(4), Some(5)],
+            "los rangos editoriales deben ser 1..5 sin huecos ni repetidos"
+        );
+    }
+
+    /// Una insignia que llevan cinco de cinco no recomienda nada. La medición en
+    /// equipo limpio pidió que la recomendación fuera evidente: exactamente una.
+    #[test]
+    fn exactly_one_model_carries_the_recommended_badge() {
+        let badged: Vec<&str> = CATALOG
+            .iter()
+            .filter(|d| d.recommended)
+            .map(|d| repo_de(&d.id))
+            .collect();
+        assert_eq!(
+            badged,
+            vec!["handy-computer/canary-180m-flash-gguf"],
+            "solo el modelo de arranque lleva insignia «Recomendado»"
+        );
+    }
+
+    /// ABRAX vende dictado en español. Un modelo que no lo transcribe no tiene
+    /// nada que hacer en un catálogo de cinco.
+    #[test]
+    fn every_shipped_model_transcribes_spanish() {
+        for d in CATALOG.iter() {
+            let languages = d
+                .caps
+                .languages
+                .as_ref()
+                .unwrap_or_else(|| panic!("{} no declara idiomas", d.id));
+            assert!(
+                languages.iter().any(|l| l == "es"),
+                "{} no transcribe español: {:?}",
+                d.id,
+                languages
+            );
         }
     }
 

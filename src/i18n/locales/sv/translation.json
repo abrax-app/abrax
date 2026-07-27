@@ -54,11 +54,11 @@
         "name": "Whisper Large",
         "description": "Bra noggrannhet, men långsam."
       },
-      "parakeet-tdt-0.6b-v2": {
+      "parakeet-tdt-0_6b-v2": {
         "name": "Parakeet V2",
         "description": "Endast engelska. Den bästa modellen för engelsktalande."
       },
-      "parakeet-tdt-0.6b-v3": {
+      "parakeet-tdt-0_6b-v3": {
         "name": "Parakeet V3",
         "description": "Snabb och noggrann"
       },
@@ -101,6 +101,21 @@
       "cohere-int8": {
         "name": "Cohere",
         "description": "En stor, långsammare, men mycket noggrann flerspråkig modell."
+      },
+      "handy-computer_canary-180m-flash-gguf": {
+        "description": "Fast — dictate on the fly on any machine, even an old laptop. The one we recommend to start with: downloads in under a minute."
+      },
+      "handy-computer_whisper-large-v3-turbo-gguf": {
+        "description": "Balanced — the everyday pick: understands 100 languages and doesn't keep you waiting."
+      },
+      "handy-computer_whisper-large-v3-gguf": {
+        "description": "Widest coverage — the big Whisper, the one everyone names. Slower, but complete."
+      },
+      "handy-computer_nemotron-3_5-asr-streaming-0_6b-gguf": {
+        "description": "Live — writes as you speak, word by word. This is the one that makes the sphere dance."
+      },
+      "handy-computer_cohere-transcribe-03-2026-gguf": {
+        "description": "Highest accuracy — the most exact in the catalog. Wants a machine with some muscle."
       }
     },
     "errors": {
@@ -173,7 +188,12 @@
     "checkFailed": "Kunde inte kontrollera modellens status",
     "loadFailed": "Kunde inte läsa in modellen",
     "switchFailed": "Kunde inte byta modell",
-    "statusTitle": "Modellstatus: {{estado}}"
+    "statusTitle": "Modellstatus: {{estado}}",
+    "confirmDownload": {
+      "title": "Download model",
+      "body": "{{modelName}} — {{size}}\n\n{{description}}\n\nIt downloads once and stays on your machine. After that it works offline.",
+      "ok": "Download"
+    }
   },
   "settings": {
     "modelSettings": {

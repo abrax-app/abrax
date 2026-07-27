@@ -27,10 +27,10 @@
   },
   "onboarding": {
     "subtitle": "Para comenzar, elige un modelo de transcripción",
-    "existingModelsTitle": "Compatible Models",
-    "downloadModelsTitle": "Available to Download",
-    "showAllModels": "Show all {{total}} models",
-    "showFewerModels": "Show fewer models",
+    "existingModelsTitle": "Ya en tu equipo",
+    "downloadModelsTitle": "Para descargar",
+    "showAllModels": "Ver los {{total}} modelos",
+    "showFewerModels": "Ver menos",
     "recommended": "Recomendado",
     "customModelDescription": "Sin soporte oficial",
     "modelCard": {
@@ -54,11 +54,11 @@
         "name": "Whisper Large",
         "description": "Buena precisión, pero lento."
       },
-      "parakeet-tdt-0.6b-v2": {
+      "parakeet-tdt-0_6b-v2": {
         "name": "Parakeet V2",
         "description": "Solo inglés. El mejor modelo para hablantes de inglés."
       },
-      "parakeet-tdt-0.6b-v3": {
+      "parakeet-tdt-0_6b-v3": {
         "name": "Parakeet V3",
         "description": "Rápido y preciso"
       },
@@ -101,10 +101,25 @@
       "cohere-int8": {
         "name": "Cohere",
         "description": "Un modelo grande, más lento, pero muy preciso y multilingüe."
+      },
+      "handy-computer_canary-180m-flash-gguf": {
+        "description": "Rápido — para dictar al vuelo en cualquier equipo, hasta en un portátil viejo. Es el que recomendamos para empezar: se descarga en menos de un minuto."
+      },
+      "handy-computer_whisper-large-v3-turbo-gguf": {
+        "description": "Equilibrado — el de todos los días: entiende 100 idiomas y no te hace esperar."
+      },
+      "handy-computer_whisper-large-v3-gguf": {
+        "description": "Máxima cobertura — el Whisper grande, el que nombran todos. Más lento, pero completo."
+      },
+      "handy-computer_nemotron-3_5-asr-streaming-0_6b-gguf": {
+        "description": "En vivo — escribe mientras hablas, palabra por palabra. Es el que hace bailar la esfera."
+      },
+      "handy-computer_cohere-transcribe-03-2026-gguf": {
+        "description": "Máxima precisión — el más exacto del catálogo. Pide un equipo con músculo."
       }
     },
     "errors": {
-      "selectModel": "Failed to select model"
+      "selectModel": "No se pudo seleccionar el modelo"
     },
     "permissions": {
       "title": "Permisos Requeridos",
@@ -159,7 +174,7 @@
     "downloadSpeed": "{{speed}} MB/s",
     "capabilities": {
       "languageSelection": "Soporta múltiples idiomas de entrada",
-      "languageCount": "{{total}} languages",
+      "languageCount": "{{total}} idiomas",
       "translation": "Puede traducir al inglés",
       "translate": "Traducir al inglés",
       "singleLanguage": "Solo admite este idioma",
@@ -173,7 +188,12 @@
     "checkFailed": "No se pudo comprobar el estado del modelo",
     "loadFailed": "No se pudo cargar el modelo",
     "switchFailed": "No se pudo cambiar de modelo",
-    "statusTitle": "Estado del modelo: {{estado}}"
+    "statusTitle": "Estado del modelo: {{estado}}",
+    "confirmDownload": {
+      "title": "Descargar modelo",
+      "body": "{{modelName}} — {{size}}\n\n{{description}}\n\nSe descarga una sola vez y queda en tu equipo. Después funciona sin internet.",
+      "ok": "Descargar"
+    }
   },
   "settings": {
     "modelSettings": {
@@ -417,7 +437,7 @@
       },
       "voiceActivityDetection": {
         "title": "Voice Activity Detection",
-        "description": "Filter silence from recordings. Streaming-capable models use a longer VAD tail; disabling VAD records raw audio."
+        "description": "Filtra los silencios de la grabación. Los modelos con streaming usan una cola de detección más larga."
       },
       "dictionary": {
         "title": "Diccionario del proyecto",

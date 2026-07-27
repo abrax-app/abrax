@@ -1,11 +1,11 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { ask } from "@tauri-apps/plugin-dialog";
 import { ChevronDown, Globe, RefreshCw, Search } from "lucide-react";
 import type { ModelCardStatus } from "@/components/onboarding";
 import { ModelCard } from "@/components/onboarding";
 import { CarpetaModelos } from "./CarpetaModelos";
 import { useModelStore } from "@/stores/modelStore";
+import { confirmarBorrado, confirmarDescarga } from "@/lib/utils/modelDialogs";
 import {
   getLanguageLabel,
   MODEL_CAPABILITY_LANGUAGES,
@@ -131,30 +131,20 @@ export const ModelsSettings: React.FC = () => {
   };
 
   const handleModelDownload = async (modelId: string) => {
+    // Confirmar antes de bajar cientos de MB (misma regla que en el onboarding).
+    const model = models.find((m: ModelInfo) => m.id === modelId);
+    if (model && !(await confirmarDescarga(model, t))) return;
     await downloadModel(modelId);
   };
 
   const handleModelDelete = async (modelId: string) => {
     const model = models.find((m: ModelInfo) => m.id === modelId);
-    const modelName = model?.name || modelId;
-    const isActive = modelId === currentModel;
-
-    const confirmed = await ask(
-      isActive
-        ? t("settings.models.deleteActiveConfirm", { modelName })
-        : t("settings.models.deleteConfirm", { modelName }),
-      {
-        title: t("settings.models.deleteTitle"),
-        kind: "warning",
-      },
-    );
-
-    if (confirmed) {
-      try {
-        await deleteModel(modelId);
-      } catch (err) {
-        console.error(`Failed to delete model ${modelId}:`, err);
-      }
+    if (!model) return;
+    if (!(await confirmarBorrado(model, modelId === currentModel, t))) return;
+    try {
+      await deleteModel(modelId);
+    } catch (err) {
+      console.error(`Failed to delete model ${modelId}:`, err);
     }
   };
 
@@ -165,6 +155,12 @@ export const ModelsSettings: React.FC = () => {
       console.error(`Failed to cancel download for ${modelId}:`, err);
     }
   };
+
+  // Con el catálogo curado (5 modelos) el buscador y el filtro de idioma sobran:
+  // no se filtran cinco elementos y son dos controles más en una pantalla que la
+  // medición del 26/07 describió como abrumadora. Reaparecen solos si el
+  // catálogo vuelve a crecer o si el usuario acumula modelos en disco.
+  const catalogoCorto = models.length <= 8;
 
   // Filter models by search query (name + description) and language filter
   const filteredModels = useMemo(() => {
@@ -240,16 +236,18 @@ export const ModelsSettings: React.FC = () => {
       <CarpetaModelos />
 
       {/* Search bar — filter the catalog by name or description */}
-      <div className="relative">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text/40 pointer-events-none" />
-        <input
-          type="text"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          placeholder={t("settings.models.searchPlaceholder")}
-          className="w-full pl-9 pr-3 py-2 text-sm bg-mid-gray/10 border border-mid-gray/40 rounded-lg focus:outline-none focus:ring-1 focus:ring-logo-primary placeholder:text-text/40"
-        />
-      </div>
+      {!catalogoCorto && (
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text/40 pointer-events-none" />
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder={t("settings.models.searchPlaceholder")}
+            className="w-full pl-9 pr-3 py-2 text-sm bg-mid-gray/10 border border-mid-gray/40 rounded-lg focus:outline-none focus:ring-1 focus:ring-logo-primary placeholder:text-text/40"
+          />
+        </div>
+      )}
 
       {filteredModels.length > 0 ? (
         <div className="space-y-6">
@@ -274,7 +272,10 @@ export const ModelsSettings: React.FC = () => {
                   <span>{t("settings.models.rescan.label")}</span>
                 </button>
                 {/* Language filter dropdown */}
-                <div className="relative" ref={languageDropdownRef}>
+                <div
+                  className={`relative ${catalogoCorto ? "hidden" : ""}`}
+                  ref={languageDropdownRef}
+                >
                   <button
                     type="button"
                     onClick={() =>

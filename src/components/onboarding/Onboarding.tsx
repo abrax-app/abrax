@@ -7,6 +7,18 @@ import type { ModelCardStatus } from "./ModelCard";
 import ModelCard, { isLegacySource } from "./ModelCard";
 import AbraxLogo from "../icons/AbraxLogo";
 import { useModelStore } from "../../stores/modelStore";
+import {
+  confirmarBorrado,
+  confirmarDescarga,
+} from "../../lib/utils/modelDialogs";
+
+/**
+ * A partir de aquí el catálogo se considera «corto»: caben todas las tarjetas
+ * sin scroll y plegarlas tras «Ver los N modelos» solo agrega un clic. Con el
+ * catálogo curado (5 modelos) siempre se muestran todas; el plegado se conserva
+ * para el caso de un usuario con muchos modelos heredados en disco.
+ */
+const CATALOGO_CORTO = 8;
 
 interface OnboardingProps {
   onModelSelected: () => void;
@@ -25,6 +37,8 @@ const Onboarding: React.FC<OnboardingProps> = ({ onModelSelected }) => {
     downloadStats,
     downloadErrors,
     cancelDownload,
+    deleteModel,
+    currentModel,
   } = useModelStore();
   const [selectedModelId, setSelectedModelId] = useState<string | null>(null);
   const [showAll, setShowAll] = useState(false);
@@ -73,9 +87,10 @@ const Onboarding: React.FC<OnboardingProps> = ({ onModelSelected }) => {
   }, [models, uiLanguage]);
 
   const hasRecommended = topPicks.length > 0 || otherRecommended.length > 0;
+  const listaCorta = downloadable.length <= CATALOGO_CORTO;
   // When nothing recommended remains to download (e.g. all already on disk),
   // there is no curated subset to collapse, so just show the full list.
-  const showRest = showAll || !hasRecommended;
+  const showRest = showAll || !hasRecommended || listaCorta;
 
   // Watch for the selected model to finish downloading + verifying + extracting
   useEffect(() => {
@@ -121,6 +136,11 @@ const Onboarding: React.FC<OnboardingProps> = ({ onModelSelected }) => {
   ]);
 
   const handleDownloadModel = async (modelId: string) => {
+    // Preguntar ANTES de bajar: son cientos de MB y hasta ahora bastaba un clic
+    // en la tarjeta. El diálogo es también el «ver qué es antes de bajarlo».
+    const model = models.find((m: ModelInfo) => m.id === modelId);
+    if (model && !(await confirmarDescarga(model, t))) return;
+
     setSelectedModelId(modelId);
 
     // Error toast is handled centrally by the model-download-failed event listener
@@ -128,6 +148,17 @@ const Onboarding: React.FC<OnboardingProps> = ({ onModelSelected }) => {
     const success = await downloadModel(modelId);
     if (!success) {
       setSelectedModelId(null);
+    }
+  };
+
+  const handleDeleteModel = async (modelId: string) => {
+    const model = models.find((m: ModelInfo) => m.id === modelId);
+    if (!model) return;
+    if (!(await confirmarBorrado(model, modelId === currentModel, t))) return;
+    try {
+      await deleteModel(modelId);
+    } catch (err) {
+      console.error(`Failed to delete model ${modelId}:`, err);
     }
   };
 
@@ -196,6 +227,7 @@ const Onboarding: React.FC<OnboardingProps> = ({ onModelSelected }) => {
                     status={getExistingModelStatus(model.id)}
                     disabled={isBusy}
                     onSelect={handleSelectExistingModel}
+                    onDelete={handleDeleteModel}
                     showRecommended={false}
                   />
                 ))}
@@ -223,7 +255,7 @@ const Onboarding: React.FC<OnboardingProps> = ({ onModelSelected }) => {
                   downloadProgress={getModelDownloadProgress(model.id)}
                   downloadSpeed={getModelDownloadSpeed(model.id)}
                   errorMessage={downloadErrors[model.id]}
-                  showRecommended={false}
+                  showRecommended
                 />
               ))}
 
@@ -239,11 +271,11 @@ const Onboarding: React.FC<OnboardingProps> = ({ onModelSelected }) => {
                   downloadProgress={getModelDownloadProgress(model.id)}
                   downloadSpeed={getModelDownloadSpeed(model.id)}
                   errorMessage={downloadErrors[model.id]}
-                  showRecommended={false}
+                  showRecommended
                 />
               ))}
 
-              {hasRecommended && rest.length > 0 && (
+              {hasRecommended && rest.length > 0 && !listaCorta && (
                 <button
                   type="button"
                   onClick={() => setShowAll((v) => !v)}
@@ -275,7 +307,7 @@ const Onboarding: React.FC<OnboardingProps> = ({ onModelSelected }) => {
                     downloadProgress={getModelDownloadProgress(model.id)}
                     downloadSpeed={getModelDownloadSpeed(model.id)}
                     errorMessage={downloadErrors[model.id]}
-                    showRecommended={false}
+                    showRecommended
                   />
                 ))}
             </div>
