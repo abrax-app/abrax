@@ -7,6 +7,7 @@ import {
   FileText,
   Boxes,
   Settings,
+  LayoutGrid,
   ShieldCheck,
   CloudOff,
   ArrowDownToLine,
@@ -22,6 +23,7 @@ import { cerrarDesdeShell } from "@/lib/utils/ventana";
 import { formatKeyCombination } from "@/lib/utils/keyboard";
 import { commands, type HistoryEntry } from "@/bindings";
 import { GeneralSettings, HistorySettings, ModelsSettings } from "../settings";
+import { SECTIONS_CONFIG, type SidebarSection } from "../Sidebar";
 import { ShellSelector } from "../settings/ShellSelector";
 import { PaletteSelector } from "../settings/PaletteSelector";
 import { montarEsfera, type EsferaHandle } from "./esferaHome";
@@ -31,7 +33,7 @@ import "./quiet.css";
 // redondeado, sidebar limpia y un hero con la esfera + atajo + botón gradiente.
 // Inspiración: Wispr Flow / ChatGPT / Spotify. La app "casi desaparece".
 
-type QView = "escuchar" | "transcripciones" | "modelos" | "ajustes";
+type QView = "escuchar" | "transcripciones" | "modelos" | "ajustes" | "mas";
 
 const fmtHora = (secs: number): string => {
   try {
@@ -45,12 +47,27 @@ const fmtHora = (secs: number): string => {
   }
 };
 
+// Sub-pestañas del ítem «Más». El orden importa: **Avanzado va primero y es la
+// activa por defecto** porque ahí viven el Diccionario vivo y la Memoria de
+// correcciones, que son los diferenciadores de ABRAX. Enterrarlos tras dos clics
+// y un scroll haría que el shell bonito nos costara justo lo que nos hace únicos.
+// Se hospedan las secciones REALES del registro compartido (`SECTIONS_CONFIG`),
+// igual que hace el shell Bancada: cero UI duplicada.
+const MAS_SECCIONES = [
+  "advanced",
+  "escucha",
+  "postprocessing",
+  "about",
+] as const satisfies readonly SidebarSection[];
+type MasSeccion = (typeof MAS_SECCIONES)[number];
+
 export const QuietShell: React.FC = () => {
   const { t } = useTranslation();
   const { settings } = useSettings();
   const osType = useOsType();
 
   const [view, setView] = useState<QView>("escuchar");
+  const [seccionMas, setSeccionMas] = useState<SidebarSection>("advanced");
   const [grabando, setGrabando] = useState(false);
   const [entries, setEntries] = useState<HistoryEntry[]>([]);
   // Tras cambiar a Quiet en caliente la ventana conserva el marco nativo hasta
@@ -138,6 +155,23 @@ export const QuietShell: React.FC = () => {
     settings?.bindings?.transcribe?.current_binding ?? "",
     osType,
   );
+  // Secciones del ítem «Más». Se derivan del registro compartido con
+  // `Object.entries` —igual que el shell Bancada— porque indexar
+  // `SECTIONS_CONFIG` por una clave literal conserva el tipo estrecho de
+  // `as const` y `enabled` queda declarado sin argumentos.
+  const seccionesMas = Object.entries(SECTIONS_CONFIG)
+    .filter(
+      ([id, c]) =>
+        MAS_SECCIONES.includes(id as MasSeccion) && c.enabled(settings),
+    )
+    .map(([id, c]) => ({ id: id as SidebarSection, ...c }));
+  // Si la activa se deshabilita en caliente (p. ej. se apaga el modo
+  // depuración), se cae a la primera disponible en vez de renderizar una
+  // sección que ya no existe.
+  const SeccionMasActiva = (
+    seccionesMas.find((s) => s.id === seccionMas) ?? seccionesMas[0]
+  )?.component;
+
   const win = getCurrentWindow();
 
   useEffect(() => {
@@ -166,6 +200,7 @@ export const QuietShell: React.FC = () => {
     },
     { id: "modelos", icon: Boxes, label: t("quiet.nav.models") },
     { id: "ajustes", icon: Settings, label: t("quiet.nav.settings") },
+    { id: "mas", icon: LayoutGrid, label: t("quiet.nav.more") },
   ];
 
   return (
@@ -300,6 +335,24 @@ export const QuietShell: React.FC = () => {
             ) : view === "modelos" ? (
               <div className="q-sec">
                 <ModelsSettings />
+              </div>
+            ) : view === "mas" ? (
+              <div className="q-sec">
+                <div className="q-subtabs" role="tablist">
+                  {seccionesMas.map((s) => (
+                    <button
+                      type="button"
+                      key={s.id}
+                      role="tab"
+                      aria-selected={seccionMas === s.id}
+                      className={`q-subtab${seccionMas === s.id ? " on" : ""}`}
+                      onClick={() => setSeccionMas(s.id)}
+                    >
+                      {t(s.labelKey)}
+                    </button>
+                  ))}
+                </div>
+                <SeccionMasActiva />
               </div>
             ) : (
               <div className="q-sec q-ajustes">

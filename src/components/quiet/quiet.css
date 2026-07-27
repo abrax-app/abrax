@@ -306,6 +306,46 @@
   gap: 8px;
 }
 
+/* ── sub-pestañas del ítem «Más» ──
+   Hospedan las secciones reales (Avanzado, Escucha, Post Proceso, Acerca de).
+   `flex-wrap` es el requisito de cierre: en el ancho mínimo de la ventana Quiet
+   (600 px) las cuatro no caben en una línea, así que bajan en vez de salirse o
+   provocar scroll horizontal. */
+.q-subtabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--q-line);
+}
+.q-subtab {
+  padding: 6px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--q-line);
+  background: none;
+  color: var(--q-dim);
+  font-size: 13.5px;
+  cursor: pointer;
+  transition:
+    background 0.15s ease,
+    color 0.15s ease;
+}
+.q-subtab:hover {
+  background: rgb(255 255 255 / 5%);
+  color: var(--q-text);
+}
+.q-subtab.on {
+  background: color-mix(in srgb, var(--q-b) 22%, transparent);
+  border-color: color-mix(in srgb, var(--q-b) 45%, transparent);
+  color: var(--q-text);
+}
+/* Foco visible: Quiet se navega entero con teclado y eso no se pierde. */
+.q-subtab:focus-visible {
+  outline: 2px solid var(--q-a);
+  outline-offset: 2px;
+}
+
 /* scrollbar discreta */
 .q-main::-webkit-scrollbar {
   width: 10px;
