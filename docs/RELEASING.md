@@ -75,6 +75,54 @@ Para reactivar el auto-update al publicar:
 5. Publicar `latest.json` + artefactos en el endpoint.
 6. Poner `update_checks_enabled` por defecto en `true` solo cuando el canal exista.
 
+## 🚦 GATE: la landing y los binarios se publican JUNTOS
+
+La landing tiene una sección **«Antes de instalar»** (`landing/index.html`,
+`id="avisos"`) escrita para binarios **SIN FIRMAR**: explica el aviso de
+SmartScreen, el «editor desconocido» del UAC, el bloqueo de Gatekeeper y la ruta
+por Ajustes del Sistema.
+
+**Esa sección y el estado de firma de los binarios tienen que coincidir. Las dos
+combinaciones cruzadas mienten:**
+
+| Binario                  | Sección «Antes de instalar» | Resultado                                                                                             |
+| ------------------------ | --------------------------- | ----------------------------------------------------------------------------------------------------- |
+| Sin firmar / ad-hoc      | **Presente**                | ✅ Correcto                                                                                           |
+| Sin firmar / ad-hoc      | Quitada                     | ❌ El usuario ve dos avisos de seguridad sin contexto y cierra la ventana                             |
+| Firmado **y** notarizado | **Presente**                | ❌ Miente al revés: anuncia bloqueos que no van a ocurrir y siembra una desconfianza que ya no aplica |
+| Firmado **y** notarizado | Quitada                     | ✅ Correcto                                                                                           |
+
+**Estado a 27/07/2026 — se publica SIN FIRMAR, la sección SE QUEDA.** El `.dmg`
+de la entrega se construye **en local** en el Mac Apple Silicon: firma **ad-hoc**
+(`signingIdentity: "-"`), sin certificado Apple (la inscripción no ha llegado) y
+con el CI bloqueado por facturación. Windows tampoco va firmado.
+
+**Si el certificado llegara antes de publicar** y se firmara **y notarizara** de
+verdad — las dos cosas, firmar sin notarizar NO quita el bloqueo —, hay que
+**quitar la sección entera** y también los dos enlaces `href="#avisos"` de las
+tarjetas de compatibilidad. Notarizar y dejar la sección puesta es el error más
+caro de los cuatro: es el único que resta credibilidad a un producto que ya
+cumple.
+
+### Lo que un usuario de macOS ve hoy, y por qué está escrito así
+
+- **«Clic derecho → Abrir» YA NO FUNCIONA.** Apple eliminó ese atajo en **macOS
+  15 Sequoia** ([Developer News, 6/8/2024](https://developer.apple.com/news/?id=saqachfa):
+  «users will no longer be able to Control-click to override Gatekeeper… They'll
+  need to visit System Settings > Privacy & Security»). Cualquier instrucción
+  que lo mencione manda al usuario a un callejón sin salida y le hace concluir
+  que la app está rota. La ruta válida es **Ajustes del Sistema → Privacidad y
+  seguridad → Abrir de todas formas**, con dos avisos que el sistema no da: hay
+  que **intentar abrir la app antes** de que el botón aparezca, y el botón
+  **caduca en cosa de una hora**.
+- **Con firma ad-hoc, macOS puede decir que la app «está dañada»** y en ese caso
+  **no ofrece ningún botón para abrir**. La única salida es
+  `xattr -dr com.apple.quarantine /Applications/Abrax.app`. Por eso ese comando
+  está en la landing y no solo aquí.
+- De los diálogos se citan **los botones, no el texto completo**: las cadenas
+  exactas varían entre builds y versiones, y una cita que no coincide con lo que
+  el usuario tiene en pantalla destruye la confianza que la sección construye.
+
 ## Firma
 
 - **Windows:** el `signCommand` de Azure Trusted Signing de cjpais fue **eliminado**.
@@ -118,4 +166,19 @@ Para reactivar el auto-update al publicar:
 
 ## Checksums
 
-Generar `SHA256SUMS.txt` por release y publicarlo en la landing junto a las descargas.
+**Estado real 27/07/2026: NO se genera ni se publica ningún `SHA256SUMS.txt`.**
+Ningún paso de CI lo produce (verificado sobre `.github/workflows/`). La landing
+lo anunciaba —«publicado junto a cada release firmado»— y era doblemente falso:
+ni existe el archivo ni se firma nada. Esa frase se quitó el 27/07 y se sustituyó
+por lo que sí es cierto: el código está entero y se puede compilar una copia
+propia.
+
+Pendiente para cuando haya release de verdad: añadir un paso de CI que genere
+`SHA256SUMS.txt` con los artefactos y lo suba al release. **Solo entonces** se
+vuelve a anunciar en la landing — no antes.
+
+Ojo con el matiz que sí es cierto hoy y conviene no perder: **las voces de TTS sí
+verifican sha256** al descargarse (`src-tauri/src/managers/tts/download.rs`), y
+los modelos legacy por URL también (`model.rs`, campo `sha256`). Los **cinco
+modelos del catálogo** bajan de Hugging Face por una ruta que **no** comprueba
+hash. La landing lo dice así, separado.
