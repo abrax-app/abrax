@@ -56,7 +56,12 @@
 
       <header class="hero-cabecera">
         <a href="#" aria-label="ABRAX — inicio">
-          <img src="assets/abrax-lockup.svg" alt="ABRAX" width="112" height="30" />
+          <img
+            src="assets/abrax-lockup.svg"
+            alt="ABRAX"
+            width="112"
+            height="30"
+          />
         </a>
         <nav class="nav-principal" aria-label="Principal">
           <a href="#funciones">Funciones</a>
@@ -87,8 +92,8 @@
         </h1>
         <p class="lema">« DI LA <em>PALABRA</em>. »</p>
         <p class="hero-prop">
-          Presionas un atajo, hablas en tu español, y el texto —código o
-          prosa— aparece en la app activa.
+          Presionas un atajo, hablas en tu español, y el texto —código o prosa—
+          aparece en la app activa.
         </p>
         <div class="hero-ctas">
           <a class="btn btn--hero" href="#descarga">Descargar ABRAX</a>
@@ -324,7 +329,6 @@
             ><i style="background: #e88a1a"></i
             ><i style="background: #e8442a"></i><span>IMPERIAL</span>
           </div>
-
         </div>
       </div>
     </section>
@@ -360,8 +364,8 @@
             Vienen desactivadas; se activan una por una.
           </p>
           <ul class="lista">
-            <li>Descarga de modelos y voces (con checksum)</li>
-            <li>Aviso de nuevas versiones</li>
+            <li>Descarga de modelos desde Hugging Face</li>
+            <li>Descarga de voces (verificadas con checksum)</li>
           </ul>
         </div>
         <div class="card">
@@ -443,8 +447,9 @@
           </ul>
           <div class="limite-titulo">Límites honestos</div>
           <p>
-            Pide conceder Accesibilidad y Micrófono la primera vez. En Intel,
-            los modelos grandes van lentos.
+            macOS bloquea la app la primera vez, porque no está firmada:
+            <a href="#avisos">te explicamos abajo qué hacer</a>. Pide conceder
+            Accesibilidad y Micrófono. En Intel, los modelos grandes van lentos.
           </p>
         </div>
         <div class="card card--compat">
@@ -457,8 +462,9 @@
           </ul>
           <div class="limite-titulo">Límites honestos</div>
           <p>
-            SmartScreen puede advertir mientras el instalador gana reputación.
-            Verifica el checksum y sigue.
+            Windows muestra dos avisos antes de instalar, porque el instalador
+            no está firmado:
+            <a href="#avisos">te explicamos abajo qué hacer</a>.
           </p>
         </div>
         <div class="card card--compat">
@@ -570,6 +576,84 @@
     </section>
 
     <!-- ═══════════ CTA FINAL ═══════════ -->
+    <!-- ═══════════ AVISOS DE INSTALACIÓN ═══════════
+         Windows y macOS advierten antes de dejar instalar ABRAX, porque no
+         está firmado con un certificado comercial. Preferimos decirlo aquí,
+         con los botones exactos, a que alguien vea un aviso de seguridad sin
+         contexto y cierre la ventana. -->
+    <section class="seccion" id="avisos" aria-labelledby="t-avisos">
+      <h2 id="t-avisos">Antes de instalar</h2>
+      <p class="sub-seccion">
+        Tu sistema va a advertirte. Es esperable y te contamos exactamente qué
+        vas a ver.
+      </p>
+      <p>
+        ABRAX no está firmado con un certificado comercial. Firmarlo cuesta
+        cientos de dólares al año y no haría el programa más seguro: solo haría
+        que Microsoft y Apple nos reconocieran. Como no lo está, tu sistema
+        avisa de que no sabe quién lo publica — que es cierto, y por eso el
+        código está entero a la vista.
+      </p>
+
+      <div class="cards">
+        <div class="card card--compat">
+          <span class="chip chip--on" style="margin-bottom: 12px">Windows</span>
+          <p>
+            Primero una pantalla azul de SmartScreen diciendo que protegió tu
+            equipo. Después, una ventana de permisos donde el editor aparece
+            como desconocido y se ve la ruta completa del archivo.
+          </p>
+          <div class="limite-titulo">Qué hacer</div>
+          <ul class="lista">
+            <li>En la pantalla azul: <strong>Más información</strong></li>
+            <li>Luego: <strong>Ejecutar de todas formas</strong></li>
+            <li>En la ventana de permisos: <strong>Sí</strong></li>
+          </ul>
+          <p style="font-size: 13px; color: var(--suave-lectura)">
+            SmartScreen no dice que el archivo sea peligroso: dice que es nuevo
+            y que poca gente lo ha descargado todavía.
+          </p>
+        </div>
+
+        <div class="card card--compat">
+          <span class="chip chip--on" style="margin-bottom: 12px">macOS</span>
+          <p>
+            La primera vez, macOS bloquea la app y te ofrece moverla a la
+            papelera. <strong>Ese aviso no trae ningún botón para abrir</strong>
+            — el permiso se da en otro sitio.
+          </p>
+          <div class="limite-titulo">Qué hacer</div>
+          <ul class="lista">
+            <li>Arrastra ABRAX a Aplicaciones y ábrela desde ahí</li>
+            <li>Cuando salga el aviso, ciérralo</li>
+            <li>Menú Apple → Ajustes del Sistema → Privacidad y seguridad</li>
+            <li>Abajo del todo: <strong>Abrir de todas formas</strong></li>
+          </ul>
+          <p style="font-size: 13px; color: var(--suave-lectura)">
+            El clic derecho → Abrir ya no sirve: Apple lo quitó en macOS 15. Y
+            ese botón caduca en cosa de una hora — si tardas, vuelve a abrir la
+            app y repite.
+          </p>
+        </div>
+
+        <div class="card card--compat">
+          <span class="chip" style="margin-bottom: 12px">Si se atasca</span>
+          <p>
+            Si macOS dice que ABRAX <em>está dañado</em>, no lo está: es la
+            marca de cuarentena que pone el navegador al descargar. Se quita con
+            una línea en la Terminal.
+          </p>
+          <div class="ejemplo">
+            <span class="dolar">$</span> xattr -cr /Applications/Abrax.app
+          </div>
+          <p style="font-size: 13px; color: var(--suave-lectura)">
+            En Windows, si el instalador no arranca, abre las Propiedades del
+            archivo y marca <strong>Desbloquear</strong> abajo del todo.
+          </p>
+        </div>
+      </div>
+    </section>
+
     <section
       class="seccion cta-final"
       id="descarga"
@@ -617,12 +701,14 @@
       </div>
       <div class="checksum">
         <div>
-          <span class="dolar">$</span> shasum -a 256 Abrax-0.1.0-arm64.dmg
+          <span class="dolar">$</span> git clone
+          https://github.com/abrax-app/abrax
         </div>
         <p>
-          Compara el resultado con
-          <span class="archivo">SHA256SUMS.txt</span>, publicado junto a cada
-          release firmado.
+          No hace falta que nos creas: el código está entero y puedes compilar
+          tu propia copia. Los binarios no van firmados —
+          <a href="#avisos">por eso tu sistema avisa</a> — así que la garantía
+          que ofrecemos es esa, poder mirar.
         </p>
       </div>
     </section>
@@ -770,7 +856,10 @@
           introVista = sessionStorage.getItem("abrax_intro") === "1";
         } catch (e) {}
         var saltarIntro =
-          sinActo || introVista || reduced || typeof CUADRADITOS === "undefined";
+          sinActo ||
+          introVista ||
+          reduced ||
+          typeof CUADRADITOS === "undefined";
 
         if (saltarIntro) {
           /* sin intro: al hero directo (QA, reduced-motion o ya vista) */
@@ -1198,9 +1287,7 @@
                  girar rápido acelera suave, no teletransporta */
               const lim = window.innerHeight * 1.15;
               const aqui = window.scrollY;
-              irA(
-                Math.max(aqui - lim, Math.min(aqui + lim, objetivo + paso)),
-              );
+              irA(Math.max(aqui - lim, Math.min(aqui + lim, objetivo + paso)));
             },
             { passive: false },
           );
