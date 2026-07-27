@@ -14,7 +14,15 @@
       content="Puesto de voz local para programar en español. Gratis, open source, local por defecto."
     />
     <meta property="og:type" content="website" />
-    <meta property="og:image" content="assets/og.jpg" />
+    <!-- Los scrapers de OG (WhatsApp, Slack, X, LinkedIn) exigen URL ABSOLUTA:
+         con una ruta relativa la tarjeta social sale sin imagen. Si el dominio
+         final cambia, hay que cambiar estas tres líneas a la vez. -->
+    <link rel="canonical" href="https://abrax.krafify.com/" />
+    <meta property="og:url" content="https://abrax.krafify.com/" />
+    <meta
+      property="og:image"
+      content="https://abrax.krafify.com/assets/og.jpg"
+    />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta property="og:site_name" content="ABRAX" />
@@ -108,7 +116,6 @@
         <div class="hero-chips">
           <span class="chip chip--on">macOS</span>
           <span class="chip chip--on">Windows</span>
-          <span class="chip chip--on">Linux</span>
           <span class="chip">Gratuito · open source · MIT</span>
         </div>
         <p class="hero-priv">
@@ -381,14 +388,23 @@
         </div>
         <div class="card">
           <div class="titulo-priv" style="color: #fff">Cómo borrar todo</div>
-          <p>Todo vive en una carpeta local:</p>
-          <div
-            class="ejemplo"
-            style="display: inline-block; padding: 2px 8px; margin: 10px 0"
-          >
-            <span class="res">~/.abrax</span>
+          <p>Tus dictados, ajustes y diccionario viven en una carpeta local:</p>
+          <div class="ejemplo" style="margin: 10px 0">
+            <div><span class="res">%APPDATA%\cl.abrax.app</span></div>
+            <div>
+              <span class="res"
+                >~/Library/Application Support/cl.abrax.app</span
+              >
+            </div>
           </div>
-          <p>La borras y no queda nada. No hay cuenta que cerrar.</p>
+          <p>
+            La borras y no queda nada tuyo. No hay cuenta que cerrar. Los
+            modelos de voz se guardan aparte, en la caché de Hugging Face (<span
+              class="res"
+              >~/.cache/huggingface</span
+            >), porque pesan y se comparten con otras herramientas: si quieres
+            recuperar ese espacio, hay que borrarla también.
+          </p>
         </div>
       </div>
     </section>
@@ -467,16 +483,20 @@
             <a href="#avisos">te explicamos abajo qué hacer</a>.
           </p>
         </div>
+        <!-- Linux queda FUERA de esta entrega: el codigo compila y hay
+             artefactos en CI, pero no se ha probado lo suficiente para
+             ofrecerlo. Anunciar una plataforma que no se ha verificado es la
+             clase de promesa que esta pagina ya no hace. -->
         <div class="card card--compat">
-          <span class="chip chip--on" style="margin-bottom: 12px">Linux</span>
-          <ul class="lista">
-            <li>X11 completo</li>
-            <li>AppImage y .deb</li>
+          <span class="chip" style="margin-bottom: 12px">Linux</span>
+          <ul class="lista lista--x">
+            <li>Todavía no</li>
           </ul>
-          <div class="limite-titulo">Límites honestos</div>
+          <div class="limite-titulo">Por qué no</div>
           <p>
-            En Wayland la inserción global es limitada: algunos entornos pasan
-            por el portapapeles.
+            El código compila en Linux, pero no lo hemos probado lo suficiente
+            como para ofrecerlo. Preferimos no dar una descarga que no podemos
+            sostener. Si compilas desde el código, funciona.
           </p>
         </div>
       </div>
@@ -673,32 +693,42 @@
       <p class="cta-mantra" id="t-descarga">
         Gratis. Open source. Local. <em>Para siempre.</em>
       </p>
+      <!-- ══ ESTADO: EN ESPERA (no hay release publicado) ══
+           Enlazar a la pagina de releases mientras esta vacia es un boton
+           muerto: promete una descarga y entrega una pagina en blanco. Hasta
+           que exista el artefacto, los dos botones NO son enlaces (son <span>
+           con aria-disabled) y la unica accion viva es el codigo, que si
+           funciona hoy.
+
+           PARA PUBLICAR: sustituir cada <span class="btn btn--prim btn--espera"
+           aria-disabled="true"> por
+             <a class="btn btn--prim" href="URL_DEL_ARTEFACTO">
+           con la URL directa del .dmg y del .exe (no la de la pagina de
+           releases), quitar el parrafo .cta-espera de abajo, y devolver la
+           linea de formatos. Instrucciones completas en README.md. -->
       <div class="cta-botones">
-        <a
-          class="btn btn--prim"
-          href="https://github.com/abrax-app/abrax/releases"
-          target="_blank"
-          rel="noopener"
-          >Descargar para macOS</a
+        <span class="btn btn--prim btn--espera" aria-disabled="true"
+          >macOS · el viernes 31</span
+        >
+        <span class="btn btn--prim btn--espera" aria-disabled="true"
+          >Windows · el viernes 31</span
         >
         <a
-          class="btn btn--prim"
-          href="https://github.com/abrax-app/abrax/releases"
+          class="btn btn--ghost"
+          href="https://github.com/abrax-app/abrax"
           target="_blank"
           rel="noopener"
-          >Descargar para Windows</a
-        >
-        <a
-          class="btn btn--prim"
-          href="https://github.com/abrax-app/abrax/releases"
-          target="_blank"
-          rel="noopener"
-          >Descargar para Linux</a
+          >Ver el código ↗</a
         >
       </div>
+      <p class="cta-espera">
+        Todavía no hay descarga publicada. El instalador se libera el
+        <strong>viernes 31</strong>; hasta entonces, el código está entero y se
+        puede compilar.
+      </p>
       <div class="cta-formatos">
-        <span>.dmg · Silicon e Intel</span><span>·</span><span>.exe</span
-        ><span>·</span><span>.AppImage / .deb</span>
+        <span>.dmg · Silicon e Intel</span><span>·</span
+        ><span>.exe · Windows 10 y 11</span>
       </div>
       <div class="checksum">
         <div>

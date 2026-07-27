@@ -329,6 +329,32 @@ h2::before {
   color: #fff;
   background: var(--violeta-claro);
 }
+/* Botón de descarga MIENTRAS NO HAY RELEASE.
+   No es un enlace (es un <span>): un botón que promete descarga y lleva a una
+   página de releases vacía es peor que uno que dice la verdad. Se ve como un
+   botón apagado, no clicable y sin hover, para que se lea como «todavía no» y
+   no como «está roto». */
+.btn--espera {
+  background: transparent;
+  color: var(--suave-lectura);
+  border: 1px dashed var(--borde);
+  box-shadow: none;
+  cursor: default;
+}
+.btn--espera:hover,
+.btn--espera:active {
+  transform: none;
+  background: transparent;
+  color: var(--suave-lectura);
+}
+.cta-espera {
+  margin: 14px auto 0;
+  max-width: 46ch;
+  font-size: 13.5px;
+  color: var(--suave-lectura);
+  text-wrap: pretty;
+}
+
 .btn--sec {
   font-size: 11px;
   letter-spacing: 0.18em;
