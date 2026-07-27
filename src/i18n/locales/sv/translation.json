@@ -733,7 +733,14 @@
       "title": "Senaste fel ({{count}})",
       "dismiss": "Avfärda",
       "toggle": "Visa alla fel"
-    }
+    },
+    "recordingTooShortTitle": "Nästan inget spelades in",
+    "recordingTooShort": "Inspelningen varade mindre än en sekund. Om du använder kortkommandot, håll ner {{atajo}} medan du pratar.",
+    "recordingTooShortNoBinding": "Inspelningen varade mindre än en sekund. Prata en stund innan du stoppar.",
+    "transcriptionEmptyTitle": "Inget uppfattades",
+    "transcriptionEmpty": "Inga ord kändes igen. Försök igen, prata lite högre eller närmare.",
+    "shortcutRegistrationTitle": "Kortkommandot kunde inte aktiveras",
+    "shortcutRegistration": "Abrax kunde inte registrera sitt kortkommando. Starta om; kvarstår det, välj ett annat i Inställningar → Allmänt."
   },
   "appLanguage": {
     "title": "Applikationsspråk",
@@ -1043,7 +1050,8 @@
       "listen": "Listen",
       "transcriptions": "Transcriptions",
       "models": "Models",
-      "settings": "Settings"
+      "settings": "Settings",
+      "more": "Mer"
     },
     "ready": "ABRAX is ready",
     "holdHint": "Hold <k>{{atajo}}</k> and start talking",

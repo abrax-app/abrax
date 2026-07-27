@@ -736,7 +736,14 @@
       "title": "Recente fouten ({{count}})",
       "dismiss": "Negeren",
       "toggle": "Alle fouten tonen"
-    }
+    },
+    "recordingTooShortTitle": "Er is bijna niets opgenomen",
+    "recordingTooShort": "De opname duurde minder dan een seconde. Als je de sneltoets gebruikt, houd {{atajo}} ingedrukt terwijl je praat.",
+    "recordingTooShortNoBinding": "De opname duurde minder dan een seconde. Praat even voordat je stopt.",
+    "transcriptionEmptyTitle": "Er is niets verstaan",
+    "transcriptionEmpty": "Er zijn geen woorden herkend. Probeer het opnieuw, iets luider of dichterbij.",
+    "shortcutRegistrationTitle": "De sneltoets kon niet worden ingeschakeld",
+    "shortcutRegistration": "Abrax kon zijn sneltoets niet registreren. Start opnieuw; blijft het, stel dan een andere in bij Instellingen → Algemeen."
   },
   "appLanguage": {
     "title": "Interfacetaal",
@@ -1043,7 +1050,8 @@
       "listen": "Listen",
       "transcriptions": "Transcriptions",
       "models": "Models",
-      "settings": "Settings"
+      "settings": "Settings",
+      "more": "Meer"
     },
     "ready": "ABRAX is ready",
     "holdHint": "Hold <k>{{atajo}}</k> and start talking",

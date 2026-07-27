@@ -736,7 +736,14 @@
       "title": "Recent errors ({{count}})",
       "dismiss": "Dismiss",
       "toggle": "Show all errors"
-    }
+    },
+    "recordingTooShortTitle": "Almost nothing was recorded",
+    "recordingTooShort": "The recording lasted less than a second. If you use the shortcut, hold {{atajo}} while you speak.",
+    "recordingTooShortNoBinding": "The recording lasted less than a second. Speak for a moment before stopping it.",
+    "transcriptionEmptyTitle": "Nothing was understood",
+    "transcriptionEmpty": "No words were recognized. Try again, speaking a bit louder or closer.",
+    "shortcutRegistrationTitle": "The shortcut could not be enabled",
+    "shortcutRegistration": "Abrax couldn't register its keyboard shortcut. Restart it; if it persists, set a different shortcut in Settings → General."
   },
   "appLanguage": {
     "title": "Application Language",
@@ -1043,7 +1050,8 @@
       "listen": "Listen",
       "transcriptions": "Transcriptions",
       "models": "Models",
-      "settings": "Settings"
+      "settings": "Settings",
+      "more": "More"
     },
     "ready": "ABRAX is ready",
     "holdHint": "Hold <k>{{atajo}}</k> and start talking",

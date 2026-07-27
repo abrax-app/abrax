@@ -733,7 +733,14 @@
       "title": "שגיאות אחרונות ({{count}})",
       "dismiss": "סגור",
       "toggle": "הצג את כל השגיאות"
-    }
+    },
+    "recordingTooShortTitle": "כמעט שום דבר לא הוקלט",
+    "recordingTooShort": "ההקלטה נמשכה פחות משנייה. אם אתה משתמש בקיצור, החזק את {{atajo}} לחוץ בזמן שאתה מדבר.",
+    "recordingTooShortNoBinding": "ההקלטה נמשכה פחות משנייה. דבר רגע לפני שאתה עוצר אותה.",
+    "transcriptionEmptyTitle": "לא הובן דבר",
+    "transcriptionEmpty": "לא זוהו מילים. נסה שוב, בקול קצת יותר חזק או קרוב יותר.",
+    "shortcutRegistrationTitle": "לא ניתן היה להפעיל את קיצור הדרך",
+    "shortcutRegistration": "Abrax לא הצליח לרשום את קיצור המקלדת. הפעל אותו מחדש; אם זה נמשך, הגדר קיצור אחר בהגדרות ← כללי."
   },
   "appLanguage": {
     "title": "שפת האפליקציה",
@@ -1043,7 +1050,8 @@
       "listen": "Listen",
       "transcriptions": "Transcriptions",
       "models": "Models",
-      "settings": "Settings"
+      "settings": "Settings",
+      "more": "עוד"
     },
     "ready": "ABRAX is ready",
     "holdHint": "Hold <k>{{atajo}}</k> and start talking",

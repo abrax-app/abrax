@@ -115,7 +115,14 @@ const WHISPER_SAMPLE_RATE: usize = 16000;
 #[derive(Clone, Debug)]
 pub enum RecordingState {
     Idle,
-    Recording { binding_id: String },
+    Recording {
+        binding_id: String,
+        /// Cuándo empezó esta grabación. Sirve para distinguir «el usuario soltó
+        /// la tecla enseguida» de «el micrófono no entregó audio»: son dos fallos
+        /// distintos y confundirlos manda al usuario a revisar el micrófono
+        /// equivocado.
+        started_at: Instant,
+    },
     Stopping,
 }
 
@@ -195,6 +202,10 @@ pub struct AudioRecordingManager {
     /// so the retry re-enumerates. The system-default case is never cached —
     /// the recorder resolves the current default itself, cheaply.
     cached_device: Arc<Mutex<Option<(String, cpal::Device)>>>,
+    /// Cuánto duró la última grabación, medida de principio a fin. La lee el
+    /// orquestador del dictado para elegir el aviso correcto cuando no llega
+    /// audio.
+    last_recording_duration: Arc<Mutex<Option<Duration>>>,
 }
 
 impl AudioRecordingManager {
@@ -222,6 +233,7 @@ impl AudioRecordingManager {
             did_mute: Arc::new(Mutex::new(false)),
             close_generation: Arc::new(AtomicU64::new(0)),
             cancel_generation: Arc::new(AtomicU64::new(0)),
+            last_recording_duration: Arc::new(Mutex::new(None)),
             stream_router,
             cached_device: Arc::new(Mutex::new(None)),
         };
@@ -253,6 +265,11 @@ impl AudioRecordingManager {
             }
         }
         settings.selected_microphone.clone()
+    }
+
+    /// Cuánto duró la última grabación. `None` si todavía no hubo ninguna.
+    pub fn last_recording_duration(&self) -> Option<Duration> {
+        *self.last_recording_duration.lock().unwrap()
     }
 
     pub fn invalidate_device_cache(&self) {
@@ -523,6 +540,7 @@ impl AudioRecordingManager {
                     *self.is_recording.lock().unwrap() = true;
                     *state = RecordingState::Recording {
                         binding_id: binding_id.to_string(),
+                        started_at: Instant::now(),
                     };
                     debug!("Recording started for binding {binding_id}");
                     return Ok(());
@@ -562,7 +580,9 @@ impl AudioRecordingManager {
         match *state {
             RecordingState::Recording {
                 binding_id: ref active,
+                started_at,
             } if active == binding_id => {
+                *self.last_recording_duration.lock().unwrap() = Some(started_at.elapsed());
                 *state = RecordingState::Stopping;
                 drop(state);
 

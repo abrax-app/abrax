@@ -733,7 +733,14 @@
       "title": "最近的錯誤（{{count}}）",
       "dismiss": "關閉",
       "toggle": "顯示所有錯誤"
-    }
+    },
+    "recordingTooShortTitle": "幾乎沒有錄到內容",
+    "recordingTooShort": "錄音不到一秒。如果你使用快速鍵，說話時請按住 {{atajo}}。",
+    "recordingTooShortNoBinding": "錄音不到一秒。停止前先說一會兒。",
+    "transcriptionEmptyTitle": "沒有聽清任何內容",
+    "transcriptionEmpty": "沒有辨識到任何字詞。請再試一次，說得大聲一點或靠近一些。",
+    "shortcutRegistrationTitle": "無法啟用快速鍵",
+    "shortcutRegistration": "Abrax 無法註冊鍵盤快速鍵。請重新啟動；若仍如此，請在設定 → 一般中改用其他快速鍵。"
   },
   "appLanguage": {
     "title": "應用程式語言",
@@ -1043,7 +1050,8 @@
       "listen": "Listen",
       "transcriptions": "Transcriptions",
       "models": "Models",
-      "settings": "Settings"
+      "settings": "Settings",
+      "more": "更多"
     },
     "ready": "ABRAX is ready",
     "holdHint": "Hold <k>{{atajo}}</k> and start talking",

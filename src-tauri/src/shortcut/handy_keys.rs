@@ -435,6 +435,8 @@ pub fn init_shortcuts(app: &AppHandle) -> Result<(), String> {
     let user_settings = settings::load_or_create_app_settings(app);
 
     // Register all bindings except cancel (which is dynamic)
+    let mut intentados = 0usize;
+    let mut registrados = 0usize;
     for (id, default_binding) in default_bindings {
         if id == "cancel" {
             continue;
@@ -450,16 +452,48 @@ pub fn init_shortcuts(app: &AppHandle) -> Result<(), String> {
             .cloned()
             .unwrap_or(default_binding);
 
+        intentados += 1;
         if let Err(e) = state.register(&binding) {
             error!(
                 "Failed to register handy-keys shortcut {} during init: {}",
                 id, e
             );
+        } else {
+            registrados += 1;
         }
     }
 
+    // Si NINGUNO se pudo registrar, este backend no está operativo: `HandyKeysState::new`
+    // devuelve `Ok` siempre (solo lanza el hilo), así que si el `HotkeyManager` muere
+    // dentro del hilo, cada `register` falla contra un canal sin receptor y la app se
+    // quedaba SIN ATAJO y sin una sola señal — abierta, con el modelo cargado, y el
+    // atajo simplemente inexistente.
+    //
+    // Se AVISA, pero NO se devuelve `Err`. Devolverlo haría que el llamador cayera al
+    // backend de Tauri (`shortcut/mod.rs`), y eso es peor por dos motivos comprobados:
+    //  · ese camino PERSISTE `keyboard_implementation = Tauri` en settings y no hay
+    //    ninguna forma de revertirlo desde la interfaz;
+    //  · el atajo por defecto de macOS es `ctrl+option`, solo modificadores, que el
+    //    backend de Tauri rechaza por diseño — el usuario quedaría con un backend
+    //    degradado PARA SIEMPRE y sin atajo, que es justo lo que se quería evitar.
+    // Además saltarse el `app.manage(state)` de abajo dejaría a `change_binding` sin
+    // estado que buscar, así que el usuario tampoco podría reasignar el atajo a mano.
+    //
+    // Avisando y siguiendo, el próximo arranque vuelve a intentarlo por sí solo.
+    if intentados > 0 && registrados == 0 {
+        error!("handy-keys no registró ninguno de los {intentados} atajos");
+        crate::user_alerts::alert(
+            app,
+            crate::user_alerts::AlertKind::ShortcutRegistration,
+            None,
+        );
+    }
+
     app.manage(state);
-    info!("handy-keys shortcuts initialized");
+    info!(
+        "handy-keys shortcuts initialized ({}/{} registrados)",
+        registrados, intentados
+    );
     Ok(())
 }
 

@@ -733,7 +733,14 @@
       "title": "الأخطاء الأخيرة ({{count}})",
       "dismiss": "تجاهل",
       "toggle": "عرض كل الأخطاء"
-    }
+    },
+    "recordingTooShortTitle": "لم يُسجَّل شيء تقريبًا",
+    "recordingTooShort": "استمر التسجيل أقل من ثانية. إذا كنت تستخدم الاختصار، استمر بالضغط على {{atajo}} أثناء الكلام.",
+    "recordingTooShortNoBinding": "استمر التسجيل أقل من ثانية. تحدّث للحظة قبل إيقافه.",
+    "transcriptionEmptyTitle": "لم يُفهم شيء",
+    "transcriptionEmpty": "لم يتم التعرف على أي كلمة. حاول مرة أخرى بصوت أعلى قليلًا أو من مسافة أقرب.",
+    "shortcutRegistrationTitle": "تعذّر تفعيل الاختصار",
+    "shortcutRegistration": "لم يتمكن Abrax من تسجيل اختصار لوحة المفاتيح. أعد تشغيله؛ وإذا استمر، عيّن اختصارًا آخر من الإعدادات ← عام."
   },
   "appLanguage": {
     "title": "لغة التطبيق",
@@ -1043,7 +1050,8 @@
       "listen": "Listen",
       "transcriptions": "Transcriptions",
       "models": "Models",
-      "settings": "Settings"
+      "settings": "Settings",
+      "more": "المزيد"
     },
     "ready": "ABRAX is ready",
     "holdHint": "Hold <k>{{atajo}}</k> and start talking",

@@ -32,6 +32,17 @@ pub enum AlertKind {
     /// La grabación no capturó audio (0 muestras): mic mudo/desconectado, o
     /// «Audio del sistema» activo pero sin nada sonando.
     RecordingNoAudio,
+    /// El usuario soltó la tecla antes de alcanzar a hablar. NO es un problema
+    /// del micrófono: culpar al micrófono aquí manda a revisar el hardware
+    /// equivocado, que es exactamente lo que pasó en la medición del 26/07.
+    RecordingTooShort,
+    /// Se capturó audio y el motor terminó bien, pero no reconoció ni una
+    /// palabra. Antes esta rama ocultaba el overlay sin decir nada: el usuario
+    /// veía «no pasó nada» y no tenía forma de saber por qué.
+    TranscriptionEmpty,
+    /// No se pudo registrar ningún atajo global. Sin esto la app queda abierta y
+    /// aparentemente sana, pero el atajo no existe y nada lo dice.
+    ShortcutRegistration,
     Recording,
     Transcription,
     Paste,
@@ -89,7 +100,18 @@ pub fn alert(app: &AppHandle, kind: AlertKind, detail: Option<String>) {
             AlertKind::RecordingPermissionDenied
             | AlertKind::RecordingNoDevice
             | AlertKind::RecordingNoAudio
-            | AlertKind::Recording => strings.error_recording,
+            | AlertKind::Recording
+            // Soltar la tecla antes de tiempo también es «no se pudo grabar»
+            // para la notificación del sistema, que no admite matices: el
+            // mensaje fino (mantener el atajo) vive en el toast del frontend,
+            // que es quien conoce el atajo real. Reusar la cadena existente
+            // evita 22 traducciones más para una superficie de una línea.
+            | AlertKind::RecordingTooShort => strings.error_recording,
+            // No reconocer palabras es un resultado del motor: cae del mismo
+            // lado que un fallo de transcripción.
+            AlertKind::TranscriptionEmpty => strings.error_transcription,
+            // Sin atajo no se puede dictar: cae del lado de «no se pudo grabar».
+            AlertKind::ShortcutRegistration => strings.error_recording,
             AlertKind::Transcription => strings.error_transcription,
             AlertKind::Paste => strings.error_paste,
             AlertKind::ModelLoad => strings.error_model_load,

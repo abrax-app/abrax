@@ -733,7 +733,14 @@
       "title": "Недавние ошибки ({{count}})",
       "dismiss": "Скрыть",
       "toggle": "Показать все ошибки"
-    }
+    },
+    "recordingTooShortTitle": "Почти ничего не записалось",
+    "recordingTooShort": "Запись длилась меньше секунды. Если вы пользуетесь сочетанием клавиш, удерживайте {{atajo}}, пока говорите.",
+    "recordingTooShortNoBinding": "Запись длилась меньше секунды. Скажите что-нибудь, прежде чем останавливать.",
+    "transcriptionEmptyTitle": "Ничего не распознано",
+    "transcriptionEmpty": "Слова не распознаны. Попробуйте снова, говоря чуть громче или ближе.",
+    "shortcutRegistrationTitle": "Не удалось включить сочетание клавиш",
+    "shortcutRegistration": "Abrax не смог зарегистрировать сочетание клавиш. Перезапустите; если не поможет, задайте другое в Настройки → Общие."
   },
   "appLanguage": {
     "title": "Язык приложения",
@@ -1043,7 +1050,8 @@
       "listen": "Listen",
       "transcriptions": "Transcriptions",
       "models": "Models",
-      "settings": "Settings"
+      "settings": "Settings",
+      "more": "Ещё"
     },
     "ready": "ABRAX is ready",
     "holdHint": "Hold <k>{{atajo}}</k> and start talking",

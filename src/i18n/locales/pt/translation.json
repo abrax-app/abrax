@@ -733,7 +733,14 @@
       "title": "Erros recentes ({{count}})",
       "dismiss": "Dispensar",
       "toggle": "Mostrar todos os erros"
-    }
+    },
+    "recordingTooShortTitle": "Quase nada foi gravado",
+    "recordingTooShort": "A gravação durou menos de um segundo. Se você usa o atalho, segure {{atajo}} enquanto fala.",
+    "recordingTooShortNoBinding": "A gravação durou menos de um segundo. Fale um instante antes de parar.",
+    "transcriptionEmptyTitle": "Nada foi entendido",
+    "transcriptionEmpty": "Nenhuma palavra foi reconhecida. Tente de novo, falando um pouco mais alto ou mais perto.",
+    "shortcutRegistrationTitle": "Não foi possível ativar o atalho",
+    "shortcutRegistration": "O Abrax não conseguiu registrar seu atalho de teclado. Reinicie; se continuar, defina outro em Configurações → Geral."
   },
   "appLanguage": {
     "title": "Idioma da Aplicação",
@@ -1043,7 +1050,8 @@
       "listen": "Listen",
       "transcriptions": "Transcriptions",
       "models": "Models",
-      "settings": "Settings"
+      "settings": "Settings",
+      "more": "Mais"
     },
     "ready": "ABRAX is ready",
     "holdHint": "Hold <k>{{atajo}}</k> and start talking",

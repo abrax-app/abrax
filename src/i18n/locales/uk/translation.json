@@ -733,7 +733,14 @@
       "title": "Останні помилки ({{count}})",
       "dismiss": "Приховати",
       "toggle": "Показати всі помилки"
-    }
+    },
+    "recordingTooShortTitle": "Майже нічого не записалося",
+    "recordingTooShort": "Запис тривав менше секунди. Якщо ви користуєтесь сполученням клавіш, утримуйте {{atajo}}, поки говорите.",
+    "recordingTooShortNoBinding": "Запис тривав менше секунди. Скажіть щось, перш ніж зупиняти.",
+    "transcriptionEmptyTitle": "Нічого не розпізнано",
+    "transcriptionEmpty": "Слова не розпізнано. Спробуйте ще раз, говорячи трохи гучніше або ближче.",
+    "shortcutRegistrationTitle": "Не вдалося увімкнути сполучення клавіш",
+    "shortcutRegistration": "Abrax не зміг зареєструвати сполучення клавіш. Перезапустіть; якщо не допоможе, задайте інше в Налаштування → Загальні."
   },
   "appLanguage": {
     "title": "Мова інтерфейсу",
@@ -1043,7 +1050,8 @@
       "listen": "Listen",
       "transcriptions": "Transcriptions",
       "models": "Models",
-      "settings": "Settings"
+      "settings": "Settings",
+      "more": "Ще"
     },
     "ready": "ABRAX is ready",
     "holdHint": "Hold <k>{{atajo}}</k> and start talking",

@@ -733,7 +733,14 @@
       "title": "Erreurs récentes ({{count}})",
       "dismiss": "Ignorer",
       "toggle": "Afficher toutes les erreurs"
-    }
+    },
+    "recordingTooShortTitle": "Presque rien n’a été enregistré",
+    "recordingTooShort": "L’enregistrement a duré moins d’une seconde. Si tu utilises le raccourci, maintiens {{atajo}} pendant que tu parles.",
+    "recordingTooShortNoBinding": "L’enregistrement a duré moins d’une seconde. Parle un instant avant de l’arrêter.",
+    "transcriptionEmptyTitle": "Rien n'a été compris",
+    "transcriptionEmpty": "Aucun mot n'a été reconnu. Réessaie en parlant un peu plus fort ou plus près.",
+    "shortcutRegistrationTitle": "Le raccourci n’a pas pu être activé",
+    "shortcutRegistration": "Abrax n’a pas pu enregistrer son raccourci clavier. Redémarre-le ; si ça persiste, définis-en un autre dans Réglages → Général."
   },
   "appLanguage": {
     "title": "Langue de l'application",
@@ -1043,7 +1050,8 @@
       "listen": "Listen",
       "transcriptions": "Transcriptions",
       "models": "Models",
-      "settings": "Settings"
+      "settings": "Settings",
+      "more": "Plus"
     },
     "ready": "ABRAX is ready",
     "holdHint": "Hold <k>{{atajo}}</k> and start talking",

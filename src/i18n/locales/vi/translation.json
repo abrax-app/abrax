@@ -733,7 +733,14 @@
       "title": "Lỗi gần đây ({{count}})",
       "dismiss": "Bỏ qua",
       "toggle": "Hiện tất cả lỗi"
-    }
+    },
+    "recordingTooShortTitle": "Hầu như không ghi được gì",
+    "recordingTooShort": "Bản ghi kéo dài chưa tới một giây. Nếu bạn dùng phím tắt, hãy giữ {{atajo}} trong khi nói.",
+    "recordingTooShortNoBinding": "Bản ghi kéo dài chưa tới một giây. Hãy nói một lúc trước khi dừng.",
+    "transcriptionEmptyTitle": "Không nghe được gì",
+    "transcriptionEmpty": "Không nhận ra từ nào. Hãy thử lại, nói to hơn một chút hoặc gần hơn.",
+    "shortcutRegistrationTitle": "Không thể bật phím tắt",
+    "shortcutRegistration": "Abrax không đăng ký được phím tắt. Hãy khởi động lại; nếu vẫn vậy, đặt phím tắt khác trong Cài đặt → Chung."
   },
   "appLanguage": {
     "title": "Ngôn ngữ ứng dụng",
@@ -1043,7 +1050,8 @@
       "listen": "Listen",
       "transcriptions": "Transcriptions",
       "models": "Models",
-      "settings": "Settings"
+      "settings": "Settings",
+      "more": "Thêm"
     },
     "ready": "ABRAX is ready",
     "holdHint": "Hold <k>{{atajo}}</k> and start talking",

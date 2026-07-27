@@ -733,7 +733,14 @@
       "title": "Скорошни грешки ({{count}})",
       "dismiss": "Отхвърли",
       "toggle": "Покажи всички грешки"
-    }
+    },
+    "recordingTooShortTitle": "Почти нищо не беше записано",
+    "recordingTooShort": "Записът продължи по-малко от секунда. Ако използвате прекия път, задръжте {{atajo}}, докато говорите.",
+    "recordingTooShortNoBinding": "Записът продължи по-малко от секунда. Говорете за момент, преди да го спрете.",
+    "transcriptionEmptyTitle": "Нищо не беше разбрано",
+    "transcriptionEmpty": "Не бяха разпознати думи. Опитайте отново, като говорите малко по-силно или по-близо.",
+    "shortcutRegistrationTitle": "Прекият път не можа да се активира",
+    "shortcutRegistration": "Abrax не можа да регистрира клавишната комбинация. Рестартирайте; ако продължи, задайте друга в Настройки → Общи."
   },
   "appLanguage": {
     "title": "Език на приложението",
@@ -1043,7 +1050,8 @@
       "listen": "Listen",
       "transcriptions": "Transcriptions",
       "models": "Models",
-      "settings": "Settings"
+      "settings": "Settings",
+      "more": "Още"
     },
     "ready": "ABRAX is ready",
     "holdHint": "Hold <k>{{atajo}}</k> and start talking",

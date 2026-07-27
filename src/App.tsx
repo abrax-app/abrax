@@ -20,6 +20,8 @@ import { useSettings } from "./hooks/useSettings";
 import { useSettingsStore } from "./stores/settingsStore";
 import { commands, events } from "@/bindings";
 import { getLanguageDirection, initializeRTL } from "@/lib/utils/rtl";
+import { formatKeyCombination } from "@/lib/utils/keyboard";
+import { useOsType } from "./hooks/useOsType";
 
 type OnboardingStep = "accessibility" | "model" | "done";
 
@@ -40,6 +42,7 @@ function App() {
   const [currentSection, setCurrentSection] =
     useState<SidebarSection>("general");
   const { settings, updateSetting } = useSettings();
+  const osType = useOsType();
   const direction = getLanguageDirection(i18n.language);
   const refreshAudioDevices = useSettingsStore(
     (state) => state.refreshAudioDevices,
@@ -114,6 +117,23 @@ function App() {
         toast.error(title, { description });
       } else if (kind === "recording_no_device") {
         toast.error(title, { description: t("errors.noInputDevice") });
+      } else if (kind === "recording_too_short") {
+        // El usuario soltó la tecla antes de hablar. Se le dice qué teclas
+        // mantener, con el atajo REAL que tenga configurado y ya formateado
+        // para su plataforma — nada de culpar al micrófono.
+        const atajo = formatKeyCombination(
+          settings?.bindings?.transcribe?.current_binding ?? "",
+          osType,
+        );
+        toast.error(title, {
+          description: atajo
+            ? t("errors.recordingTooShort", { atajo })
+            : t("errors.recordingTooShortNoBinding"),
+        });
+      } else if (kind === "transcription_empty") {
+        toast.error(title, { description: t("errors.transcriptionEmpty") });
+      } else if (kind === "shortcut_registration") {
+        toast.error(title, { description: t("errors.shortcutRegistration") });
       } else if (kind === "paste") {
         toast.error(title, { description: t("errors.pasteFailed") });
       } else {
@@ -123,7 +143,7 @@ function App() {
     return () => {
       unlisten.then((fn) => fn());
     };
-  }, [t]);
+  }, [t, settings?.bindings?.transcribe?.current_binding, osType]);
 
   // Memoria en el sitio: cuando ABRAX aprende de una corrección hecha donde
   // se dicta, se celebra con el mismo toast del aprendizaje por Historial y

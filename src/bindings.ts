@@ -1352,7 +1352,24 @@ export type AlertKind = "recording_permission_denied" | "recording_no_device" |
  * La grabación no capturó audio (0 muestras): mic mudo/desconectado, o
  * «Audio del sistema» activo pero sin nada sonando.
  */
-"recording_no_audio" | "recording" | "transcription" | "paste" | "model_load" | "model_download"
+"recording_no_audio" | 
+/**
+ * El usuario soltó la tecla antes de alcanzar a hablar. NO es un problema
+ * del micrófono: culpar al micrófono aquí manda a revisar el hardware
+ * equivocado, que es exactamente lo que pasó en la medición del 26/07.
+ */
+"recording_too_short" | 
+/**
+ * Se capturó audio y el motor terminó bien, pero no reconoció ni una
+ * palabra. Antes esta rama ocultaba el overlay sin decir nada: el usuario
+ * veía «no pasó nada» y no tenía forma de saber por qué.
+ */
+"transcription_empty" | 
+/**
+ * No se pudo registrar ningún atajo global. Sin esto la app queda abierta y
+ * aparentemente sana, pero el atajo no existe y nada lo dice.
+ */
+"shortcut_registration" | "recording" | "transcription" | "paste" | "model_load" | "model_download"
 export type AmbiguityWarning = { 
 /**
  * El término vago tal como apareció en el dictado.

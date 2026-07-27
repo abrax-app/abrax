@@ -733,7 +733,14 @@
       "title": "最近的错误（{{count}}）",
       "dismiss": "关闭",
       "toggle": "显示所有错误"
-    }
+    },
+    "recordingTooShortTitle": "几乎没有录到内容",
+    "recordingTooShort": "录音不到一秒。如果你使用快捷键，说话时请按住 {{atajo}}。",
+    "recordingTooShortNoBinding": "录音不到一秒。停止前先说一会儿。",
+    "transcriptionEmptyTitle": "没有听清任何内容",
+    "transcriptionEmpty": "没有识别到任何词。请再试一次，说得大声一点或靠近一些。",
+    "shortcutRegistrationTitle": "无法启用快捷键",
+    "shortcutRegistration": "Abrax 无法注册键盘快捷键。请重启；若仍如此，请在设置 → 常规中改用其他快捷键。"
   },
   "appLanguage": {
     "title": "应用语言",
@@ -1043,7 +1050,8 @@
       "listen": "Listen",
       "transcriptions": "Transcriptions",
       "models": "Models",
-      "settings": "Settings"
+      "settings": "Settings",
+      "more": "更多"
     },
     "ready": "ABRAX is ready",
     "holdHint": "Hold <k>{{atajo}}</k> and start talking",

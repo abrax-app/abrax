@@ -733,7 +733,14 @@
       "title": "Ostatnie błędy ({{count}})",
       "dismiss": "Odrzuć",
       "toggle": "Pokaż wszystkie błędy"
-    }
+    },
+    "recordingTooShortTitle": "Prawie nic nie nagrano",
+    "recordingTooShort": "Nagranie trwało krócej niż sekundę. Jeśli używasz skrótu, przytrzymaj {{atajo}} podczas mówienia.",
+    "recordingTooShortNoBinding": "Nagranie trwało krócej niż sekundę. Powiedz coś przed zatrzymaniem.",
+    "transcriptionEmptyTitle": "Nic nie zrozumiano",
+    "transcriptionEmpty": "Nie rozpoznano żadnych słów. Spróbuj ponownie, mówiąc nieco głośniej lub bliżej.",
+    "shortcutRegistrationTitle": "Nie udało się włączyć skrótu",
+    "shortcutRegistration": "Abrax nie zarejestrował skrótu klawiszowego. Uruchom ponownie; jeśli to nie pomoże, ustaw inny w Ustawienia → Ogólne."
   },
   "appLanguage": {
     "title": "Język aplikacji",
@@ -1043,7 +1050,8 @@
       "listen": "Listen",
       "transcriptions": "Transcriptions",
       "models": "Models",
-      "settings": "Settings"
+      "settings": "Settings",
+      "more": "Więcej"
     },
     "ready": "ABRAX is ready",
     "holdHint": "Hold <k>{{atajo}}</k> and start talking",

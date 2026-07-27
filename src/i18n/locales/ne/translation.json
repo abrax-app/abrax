@@ -736,7 +736,14 @@
       "title": "हालका त्रुटिहरू ({{count}})",
       "dismiss": "हटाउनुहोस्",
       "toggle": "सबै त्रुटिहरू देखाउनुहोस्"
-    }
+    },
+    "recordingTooShortTitle": "झन्डै केही रेकर्ड भएन",
+    "recordingTooShort": "रेकर्डिङ एक सेकेन्डभन्दा कम रह्यो। सर्टकट प्रयोग गर्नुहुन्छ भने, बोल्दै गर्दा {{atajo}} थिचिराख्नुहोस्।",
+    "recordingTooShortNoBinding": "रेकर्डिङ एक सेकेन्डभन्दा कम रह्यो। रोक्नुअघि केही बेर बोल्नुहोस्।",
+    "transcriptionEmptyTitle": "केही बुझिएन",
+    "transcriptionEmpty": "कुनै शब्द चिनिएन। अलि ठूलो स्वरमा वा नजिकबाट फेरि प्रयास गर्नुहोस्।",
+    "shortcutRegistrationTitle": "सर्टकट सक्रिय गर्न सकिएन",
+    "shortcutRegistration": "Abrax ले किबोर्ड सर्टकट दर्ता गर्न सकेन। पुनः सुरु गर्नुहोस्; जारी रहे सेटिङ → सामान्य मा अर्को सर्टकट राख्नुहोस्।"
   },
   "appLanguage": {
     "title": "एपको भाषा",
@@ -1043,7 +1050,8 @@
       "listen": "Listen",
       "transcriptions": "Transcriptions",
       "models": "Models",
-      "settings": "Settings"
+      "settings": "Settings",
+      "more": "थप"
     },
     "ready": "ABRAX is ready",
     "holdHint": "Hold <k>{{atajo}}</k> and start talking",

@@ -733,7 +733,14 @@
       "title": "Nedávné chyby ({{count}})",
       "dismiss": "Zavřít",
       "toggle": "Zobrazit všechny chyby"
-    }
+    },
+    "recordingTooShortTitle": "Skoro nic se nenahrálo",
+    "recordingTooShort": "Nahrávka trvala méně než sekundu. Pokud používáš zkratku, drž {{atajo}}, dokud mluvíš.",
+    "recordingTooShortNoBinding": "Nahrávka trvala méně než sekundu. Chvíli mluv, než ji zastavíš.",
+    "transcriptionEmptyTitle": "Nic nebylo rozpoznáno",
+    "transcriptionEmpty": "Nebyla rozpoznána žádná slova. Zkus to znovu, mluv trochu hlasitěji nebo blíž.",
+    "shortcutRegistrationTitle": "Zkratku se nepodařilo aktivovat",
+    "shortcutRegistration": "Abrax nedokázal zaregistrovat klávesovou zkratku. Restartuj ho; pokud potíže trvají, nastav jinou v Nastavení → Obecné."
   },
   "appLanguage": {
     "title": "Jazyk aplikace",
@@ -1043,7 +1050,8 @@
       "listen": "Listen",
       "transcriptions": "Transcriptions",
       "models": "Models",
-      "settings": "Settings"
+      "settings": "Settings",
+      "more": "Více"
     },
     "ready": "ABRAX is ready",
     "holdHint": "Hold <k>{{atajo}}</k> and start talking",

@@ -733,7 +733,14 @@
       "title": "最近のエラー（{{count}}）",
       "dismiss": "閉じる",
       "toggle": "すべてのエラーを表示"
-    }
+    },
+    "recordingTooShortTitle": "ほとんど録音されませんでした",
+    "recordingTooShort": "録音は1秒未満でした。ショートカットを使う場合は、話している間 {{atajo}} を押し続けてください。",
+    "recordingTooShortNoBinding": "録音は1秒未満でした。停止する前に少し話してください。",
+    "transcriptionEmptyTitle": "何も聞き取れませんでした",
+    "transcriptionEmpty": "単語を認識できませんでした。もう少し大きな声で、またはマイクに近づいて話してみてください。",
+    "shortcutRegistrationTitle": "ショートカットを有効にできませんでした",
+    "shortcutRegistration": "Abrax はキーボードショートカットを登録できませんでした。再起動してください。続く場合は設定 → 一般で別のショートカットを指定してください。"
   },
   "appLanguage": {
     "title": "アプリの言語",
@@ -1043,7 +1050,8 @@
       "listen": "Listen",
       "transcriptions": "Transcriptions",
       "models": "Models",
-      "settings": "Settings"
+      "settings": "Settings",
+      "more": "その他"
     },
     "ready": "ABRAX is ready",
     "holdHint": "Hold <k>{{atajo}}</k> and start talking",

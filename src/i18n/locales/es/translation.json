@@ -733,7 +733,14 @@
       "title": "Errores recientes ({{count}})",
       "dismiss": "Descartar",
       "toggle": "Mostrar todos los errores"
-    }
+    },
+    "recordingTooShortTitle": "Casi no se grabó nada",
+    "recordingTooShort": "La grabación duró menos de un segundo. Si usas el atajo, mantén {{atajo}} presionado mientras hablas.",
+    "recordingTooShortNoBinding": "La grabación duró menos de un segundo. Habla un momento antes de detenerla.",
+    "transcriptionEmptyTitle": "No se entendió nada",
+    "transcriptionEmpty": "No se reconoció ninguna palabra. Prueba de nuevo, hablando un poco más fuerte o más cerca.",
+    "shortcutRegistrationTitle": "No se pudo activar el atajo",
+    "shortcutRegistration": "Abrax no pudo registrar su atajo de teclado. Reinícialo; si sigue igual, asigna otro atajo en Ajustes → General."
   },
   "appLanguage": {
     "title": "Idioma de la aplicación",
@@ -1043,7 +1050,8 @@
       "listen": "Escuchar",
       "transcriptions": "Transcripciones",
       "models": "Modelos",
-      "settings": "Ajustes"
+      "settings": "Ajustes",
+      "more": "Más"
     },
     "ready": "ABRAX está listo",
     "holdHint": "Mantén <k>{{atajo}}</k> y comienza a hablar",

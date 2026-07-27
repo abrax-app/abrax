@@ -853,19 +853,41 @@ impl ShortcutAction for TranscribeAction {
 
                 if samples.is_empty() {
                     debug!("Recording produced no audio samples; skipping persistence");
-                    // Aviso al usuario: no llegó audio. Si estaba en «Audio del
-                    // sistema», casi seguro no había nada sonando (ese modo escucha
-                    // los parlantes, no el micrófono) — mensaje distinto por caso.
-                    let detail = if get_settings(&ah).capture_system_audio {
-                        "No se detectó audio del sistema. ¿Está sonando la reunión? El chip «Audio sistema» escucha lo que suena en tu PC, no tu micrófono."
+                    // No llegó audio. Hay DOS causas y culpar a la equivocada le
+                    // cuesta al usuario diez minutos revisando su micrófono: en la
+                    // medición del 26/07 pasó exactamente eso. Si la grabación duró
+                    // menos que un parpadeo, el usuario soltó la tecla antes de
+                    // hablar — el micrófono no tiene nada que ver.
+                    const DEMASIADO_CORTA: Duration = Duration::from_millis(300);
+                    let duracion = rm.last_recording_duration();
+                    let solto_enseguida = duracion.is_some_and(|d| d < DEMASIADO_CORTA);
+
+                    if solto_enseguida {
+                        debug!(
+                            "Recording lasted {:?} (< {:?}): user released the key too early",
+                            duracion, DEMASIADO_CORTA
+                        );
+                        // El detalle lo compone el frontend, que es quien sabe el
+                        // idioma y sabe formatear el atajo real por plataforma.
+                        crate::user_alerts::alert(
+                            &ah,
+                            crate::user_alerts::AlertKind::RecordingTooShort,
+                            None,
+                        );
                     } else {
-                        "No se detectó audio del micrófono. Revisá que esté conectado, con permiso y sin silenciar."
-                    };
-                    crate::user_alerts::alert(
-                        &ah,
-                        crate::user_alerts::AlertKind::RecordingNoAudio,
-                        Some(detail.to_string()),
-                    );
+                        // Si estaba en «Audio del sistema», casi seguro no había nada
+                        // sonando (ese modo escucha los parlantes, no el micrófono).
+                        let detail = if get_settings(&ah).capture_system_audio {
+                            "No se detectó audio del sistema. ¿Está sonando la reunión? El chip «Audio sistema» escucha lo que suena en tu PC, no tu micrófono."
+                        } else {
+                            "No se detectó audio del micrófono. Revisá que esté conectado, con permiso y sin silenciar."
+                        };
+                        crate::user_alerts::alert(
+                            &ah,
+                            crate::user_alerts::AlertKind::RecordingNoAudio,
+                            Some(detail.to_string()),
+                        );
+                    }
                     // Tear down any streaming worker so its channel doesn't leak
                     // and block the next start_stream.
                     tm.cancel_stream();
@@ -1058,6 +1080,16 @@ impl ShortcutAction for TranscribeAction {
                             }
 
                             if processed.final_text.is_empty() {
+                                // Se grabó y el motor terminó bien, pero no salió ni
+                                // una palabra. Esta rama ocultaba el overlay y no
+                                // decía NADA: para el usuario era «apreté el atajo y
+                                // no pasó nada», sin una sola pista. Ahora avisa.
+                                debug!("Transcription produced no text; alerting the user");
+                                crate::user_alerts::alert(
+                                    &ah,
+                                    crate::user_alerts::AlertKind::TranscriptionEmpty,
+                                    None,
+                                );
                                 hide_recording_overlay(&ah);
                                 change_tray_icon(&ah, TrayIconState::Idle);
                             } else {

@@ -20,6 +20,12 @@ export const alertTitleKey = (kind: AlertKind): string => {
       return "errors.noInputDeviceTitle";
     case "recording_no_audio":
       return "errors.recordingNoAudioTitle";
+    case "recording_too_short":
+      return "errors.recordingTooShortTitle";
+    case "transcription_empty":
+      return "errors.transcriptionEmptyTitle";
+    case "shortcut_registration":
+      return "errors.shortcutRegistrationTitle";
     case "recording":
       return "errors.recordingFailedTitle";
     case "transcription":

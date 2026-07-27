@@ -733,7 +733,14 @@
       "title": "Son hatalar ({{count}})",
       "dismiss": "Kapat",
       "toggle": "Tüm hataları göster"
-    }
+    },
+    "recordingTooShortTitle": "Neredeyse hiçbir şey kaydedilmedi",
+    "recordingTooShort": "Kayıt bir saniyeden kısa sürdü. Kısayolu kullanıyorsan konuşurken {{atajo}} tuşunu basılı tut.",
+    "recordingTooShortNoBinding": "Kayıt bir saniyeden kısa sürdü. Durdurmadan önce biraz konuş.",
+    "transcriptionEmptyTitle": "Hiçbir şey anlaşılmadı",
+    "transcriptionEmpty": "Hiçbir kelime tanınmadı. Biraz daha yüksek sesle veya daha yakından tekrar dene.",
+    "shortcutRegistrationTitle": "Kısayol etkinleştirilemedi",
+    "shortcutRegistration": "Abrax klavye kısayolunu kaydedemedi. Yeniden başlat; sürerse Ayarlar → Genel’den başka bir kısayol belirle."
   },
   "appLanguage": {
     "title": "Uygulama Dili",
@@ -1043,7 +1050,8 @@
       "listen": "Listen",
       "transcriptions": "Transcriptions",
       "models": "Models",
-      "settings": "Settings"
+      "settings": "Settings",
+      "more": "Daha fazla"
     },
     "ready": "ABRAX is ready",
     "holdHint": "Hold <k>{{atajo}}</k> and start talking",

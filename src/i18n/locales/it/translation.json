@@ -733,7 +733,14 @@
       "title": "Errori recenti ({{count}})",
       "dismiss": "Ignora",
       "toggle": "Mostra tutti gli errori"
-    }
+    },
+    "recordingTooShortTitle": "Non è stato registrato quasi nulla",
+    "recordingTooShort": "La registrazione è durata meno di un secondo. Se usi la scorciatoia, tieni premuto {{atajo}} mentre parli.",
+    "recordingTooShortNoBinding": "La registrazione è durata meno di un secondo. Parla un momento prima di fermarla.",
+    "transcriptionEmptyTitle": "Non si è capito nulla",
+    "transcriptionEmpty": "Non è stata riconosciuta nessuna parola. Riprova parlando un po' più forte o più vicino.",
+    "shortcutRegistrationTitle": "Non è stato possibile attivare la scorciatoia",
+    "shortcutRegistration": "Abrax non è riuscito a registrare la sua scorciatoia. Riavvialo; se persiste, impostane un’altra in Impostazioni → Generali."
   },
   "appLanguage": {
     "title": "Lingua Applicazione",
@@ -1043,7 +1050,8 @@
       "listen": "Listen",
       "transcriptions": "Transcriptions",
       "models": "Models",
-      "settings": "Settings"
+      "settings": "Settings",
+      "more": "Altro"
     },
     "ready": "ABRAX is ready",
     "holdHint": "Hold <k>{{atajo}}</k> and start talking",

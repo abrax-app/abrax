@@ -733,7 +733,14 @@
       "title": "Letzte Fehler ({{count}})",
       "dismiss": "Verwerfen",
       "toggle": "Alle Fehler anzeigen"
-    }
+    },
+    "recordingTooShortTitle": "Es wurde fast nichts aufgenommen",
+    "recordingTooShort": "Die Aufnahme dauerte weniger als eine Sekunde. Wenn du das Tastenkürzel nutzt, halte {{atajo}} gedrückt, während du sprichst.",
+    "recordingTooShortNoBinding": "Die Aufnahme dauerte weniger als eine Sekunde. Sprich einen Moment, bevor du sie stoppst.",
+    "transcriptionEmptyTitle": "Es wurde nichts verstanden",
+    "transcriptionEmpty": "Es wurden keine Wörter erkannt. Versuch es noch einmal, etwas lauter oder näher am Mikrofon.",
+    "shortcutRegistrationTitle": "Das Tastenkürzel konnte nicht aktiviert werden",
+    "shortcutRegistration": "Abrax konnte sein Tastenkürzel nicht registrieren. Starte es neu; wenn es bleibt, lege in Einstellungen → Allgemein ein anderes fest."
   },
   "appLanguage": {
     "title": "Anwendungssprache",
@@ -1043,7 +1050,8 @@
       "listen": "Listen",
       "transcriptions": "Transcriptions",
       "models": "Models",
-      "settings": "Settings"
+      "settings": "Settings",
+      "more": "Mehr"
     },
     "ready": "ABRAX is ready",
     "holdHint": "Hold <k>{{atajo}}</k> and start talking",
