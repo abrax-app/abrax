@@ -797,7 +797,16 @@ fn default_ui_theme() -> UiTheme {
 }
 
 fn default_ui_shell() -> UiShell {
-    UiShell::Classic
+    // Quiet de fábrica. La medición en un Windows limpio dio 3/10 y una de las
+    // quejas fue «abruma mucho»: tras elegir el modelo, lo primero que veía el
+    // usuario era el formulario de ajustes del shell clásico, sin una sola línea
+    // que dijera qué hacer. Quiet abre en un inicio con la esfera, el atajo a la
+    // vista y las últimas transcripciones.
+    //
+    // Clásico sigue siendo el respaldo permanente y está a un clic en
+    // Acerca de → Forma de la ventana. Las instalaciones existentes no cambian:
+    // el merge de settings solo rellena claves ausentes.
+    UiShell::Quiet
 }
 
 /// El nombre del producto viene sembrado: en español **b y v son el mismo
@@ -1642,13 +1651,13 @@ mod tests {
     }
 
     /// A store written before shells existed has no `ui_shell` key and must
-    /// load as Classic; an unknown shell (e.g. written by a newer build) must
-    /// salvage to the default instead of resetting the whole store.
+    /// load as the factory default; an unknown shell (e.g. written by a newer
+    /// build) must salvage to that default instead of resetting the whole store.
     #[test]
     fn ui_shell_defaults_and_salvages() {
         let settings: AppSettings =
             serde_json::from_value(serde_json::json!({})).expect("ui_shell needs a serde default");
-        assert_eq!(settings.ui_shell, UiShell::Classic);
+        assert_eq!(settings.ui_shell, default_ui_shell());
 
         let mut stored = default_settings_json();
         stored

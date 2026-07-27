@@ -17,6 +17,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import AbraxLogo from "../icons/AbraxLogo";
+import AlertsBanner from "../AlertsBanner";
 import { useSettings } from "@/hooks/useSettings";
 import { useOsType } from "@/hooks/useOsType";
 import { cerrarDesdeShell } from "@/lib/utils/ventana";
@@ -285,11 +286,22 @@ export const QuietShell: React.FC = () => {
           </aside>
 
           <main className="q-main">
+            {/* Centro de errores. Vivía solo en el shell clásico, así que al
+                pasar Quiet a ser el default los fallos ocurridos con la ventana
+                oculta se habrían quedado sin superficie donde verse: el toast se
+                pierde y el registro no se mostraba en ningún sitio. */}
+            <AlertsBanner />
             {view === "escuchar" ? (
               <div className="q-hero">
                 <h1 className="q-h1">{t("quiet.ready")}</h1>
-                <p className="q-hint">
-                  {atajo ? (
+                <p className={`q-hint${grabando ? " on" : ""}`}>
+                  {/* Al dispararse el atajo, el texto confirma que FUNCIONÓ. Es
+                      la única forma de que un fallo del hook de teclado se vea
+                      en el momento en que el usuario está mirando, y de paso
+                      enseña el gesto de mantener sin que nadie lea nada. */}
+                  {grabando ? (
+                    t("quiet.dictando")
+                  ) : atajo ? (
                     <Trans
                       i18nKey="quiet.holdHint"
                       values={{ atajo }}

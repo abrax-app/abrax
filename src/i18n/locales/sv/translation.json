@@ -126,7 +126,15 @@
         "requestFailed": "Misslyckades med att begära behörighet. Försök igen."
       }
     },
-    "emptyCatalog": "Inga modeller tillgängliga. Kontrollera loggen och starta om Abrax."
+    "emptyCatalog": "Inga modeller tillgängliga. Kontrollera loggen och starta om Abrax.",
+    "welcome": {
+      "pitch": "Prata så dyker texten upp, på din egen dator.",
+      "badgeLocal": "100% lokalt",
+      "badgeNoCloud": "Ingen moln",
+      "badgeFree": "Gratis",
+      "whyModel": "För att höra dig laddar Abrax ner en röstmodell en gång. Sedan fungerar det offline.",
+      "start": "Kom igång"
+    }
   },
   "modelSelector": {
     "custom": "Anpassad",
@@ -1054,8 +1062,8 @@
       "more": "Mer"
     },
     "ready": "ABRAX is ready",
-    "holdHint": "Hold <k>{{atajo}}</k> and start talking",
-    "holdHintNoBinding": "Set a shortcut in Settings and start talking",
+    "holdHint": "Håll ner <k>{{atajo}}</k> medan du pratar och släpp när du är klar.",
+    "holdHintNoBinding": "Ställ in ett kortkommando i Inställningar och håll ner det medan du pratar.",
     "start": "Start transcription",
     "stop": "Stop",
     "recent": "Recent transcriptions",
@@ -1065,7 +1073,8 @@
     "min": "Minimize",
     "max": "Maximize",
     "close": "Close",
-    "tray": "Send to tray"
+    "tray": "Send to tray",
+    "dictando": "Jag lyssnar… släpp när du är klar"
   },
   "soundPicker": {
     "custom": "Anpassad",

@@ -10,7 +10,10 @@ import "./App.css";
 import AccessibilityPermissions from "./components/AccessibilityPermissions";
 import AlertsBanner, { alertTitleKey } from "./components/AlertsBanner";
 import Footer from "./components/footer";
-import Onboarding, { AccessibilityOnboarding } from "./components/onboarding";
+import Onboarding, {
+  AccessibilityOnboarding,
+  Welcome,
+} from "./components/onboarding";
 import { Sidebar, SidebarSection, SECTIONS_CONFIG } from "./components/Sidebar";
 import { RetroShell } from "./components/retro/RetroShell";
 import { QuietShell } from "./components/quiet/QuietShell";
@@ -23,7 +26,7 @@ import { getLanguageDirection, initializeRTL } from "@/lib/utils/rtl";
 import { formatKeyCombination } from "@/lib/utils/keyboard";
 import { useOsType } from "./hooks/useOsType";
 
-type OnboardingStep = "accessibility" | "model" | "done";
+type OnboardingStep = "welcome" | "accessibility" | "model" | "done";
 
 const renderSettingsContent = (section: SidebarSection) => {
   const ActiveComponent =
@@ -222,9 +225,10 @@ function App() {
 
         setOnboardingStep("done");
       } else {
-        // New user - start full onboarding
+        // Usuario nuevo: primero saber QUÉ es esto. Quien ya completó el
+        // onboarding y solo vuelve por permisos no la ve de nuevo.
         setIsReturningUser(false);
-        setOnboardingStep("accessibility");
+        setOnboardingStep("welcome");
       }
     } catch (error) {
       console.error("Failed to check onboarding status:", error);
@@ -272,7 +276,9 @@ function App() {
   // stable wrapper around this node, so crossing between onboarding steps and
   // the main app never remounts it (which would drop any in-flight toast).
   let content: ReactNode;
-  if (onboardingStep === "accessibility") {
+  if (onboardingStep === "welcome") {
+    content = <Welcome onContinue={() => setOnboardingStep("accessibility")} />;
+  } else if (onboardingStep === "accessibility") {
     content = (
       <AccessibilityOnboarding onComplete={handleAccessibilityComplete} />
     );

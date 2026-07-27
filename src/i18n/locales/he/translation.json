@@ -126,7 +126,15 @@
         "requestFailed": "בקשת ההרשאה נכשלה. נסה שוב."
       }
     },
-    "emptyCatalog": "אין מודלים זמינים. בדוק את היומן והפעל מחדש את Abrax."
+    "emptyCatalog": "אין מודלים זמינים. בדוק את היומן והפעל מחדש את Abrax.",
+    "welcome": {
+      "pitch": "דבר והטקסט מופיע, במחשב שלך.",
+      "badgeLocal": "100% מקומי",
+      "badgeNoCloud": "בלי ענן",
+      "badgeFree": "חינם",
+      "whyModel": "כדי לשמוע אותך, Abrax צריך להוריד פעם אחת מודל קולי. אחר כך הוא עובד בלי אינטרנט.",
+      "start": "להתחיל"
+    }
   },
   "modelSelector": {
     "custom": "מותאם אישית",
@@ -1054,8 +1062,8 @@
       "more": "עוד"
     },
     "ready": "ABRAX is ready",
-    "holdHint": "Hold <k>{{atajo}}</k> and start talking",
-    "holdHintNoBinding": "Set a shortcut in Settings and start talking",
+    "holdHint": "החזק את <k>{{atajo}}</k> לחוץ בזמן שאתה מדבר, ושחרר בסיום.",
+    "holdHintNoBinding": "הגדר קיצור דרך בהגדרות והחזק אותו לחוץ בזמן שאתה מדבר.",
     "start": "Start transcription",
     "stop": "Stop",
     "recent": "Recent transcriptions",
@@ -1065,7 +1073,8 @@
     "min": "Minimize",
     "max": "Maximize",
     "close": "Close",
-    "tray": "Send to tray"
+    "tray": "Send to tray",
+    "dictando": "אני מקשיב… שחרר בסיום"
   },
   "soundPicker": {
     "custom": "מותאם אישית",

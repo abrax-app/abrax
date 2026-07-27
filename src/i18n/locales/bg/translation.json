@@ -126,7 +126,15 @@
         "requestFailed": "Заявката за разрешение не бе успешна. Опитайте отново."
       }
     },
-    "emptyCatalog": "Няма налични модели. Провери лога и рестартирай Abrax."
+    "emptyCatalog": "Няма налични модели. Провери лога и рестартирай Abrax.",
+    "welcome": {
+      "pitch": "Говорете и текстът се появява, на вашия компютър.",
+      "badgeLocal": "100% локално",
+      "badgeNoCloud": "Без облак",
+      "badgeFree": "Безплатно",
+      "whyModel": "За да ви чуе, Abrax трябва веднъж да изтегли гласов модел. После работи без интернет.",
+      "start": "Начало"
+    }
   },
   "modelSelector": {
     "custom": "Персонализиран",
@@ -1054,8 +1062,8 @@
       "more": "Още"
     },
     "ready": "ABRAX is ready",
-    "holdHint": "Hold <k>{{atajo}}</k> and start talking",
-    "holdHintNoBinding": "Set a shortcut in Settings and start talking",
+    "holdHint": "Задръжте <k>{{atajo}}</k>, докато говорите, и го пуснете накрая.",
+    "holdHintNoBinding": "Задайте пряк път в Настройки и го задръжте, докато говорите.",
     "start": "Start transcription",
     "stop": "Stop",
     "recent": "Recent transcriptions",
@@ -1065,7 +1073,8 @@
     "min": "Minimize",
     "max": "Maximize",
     "close": "Close",
-    "tray": "Send to tray"
+    "tray": "Send to tray",
+    "dictando": "Слушам ви… пуснете накрая"
   },
   "soundPicker": {
     "custom": "Персонализиран",

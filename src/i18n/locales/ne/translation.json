@@ -126,7 +126,15 @@
         "requestFailed": "अनुमति अनुरोध गर्न सकिएन। कृपया फेरि प्रयास गर्नुहोस्।"
       }
     },
-    "emptyCatalog": "कुनै मोडेल उपलब्ध छैन। लग जाँच गरी Abrax पुनः सुरु गर्नुहोस्।"
+    "emptyCatalog": "कुनै मोडेल उपलब्ध छैन। लग जाँच गरी Abrax पुनः सुरु गर्नुहोस्।",
+    "welcome": {
+      "pitch": "बोल्नुहोस्, पाठ तपाईंकै कम्प्युटरमा देखिन्छ।",
+      "badgeLocal": "१००% लोकल",
+      "badgeNoCloud": "क्लाउड छैन",
+      "badgeFree": "निःशुल्क",
+      "whyModel": "सुन्नका लागि Abrax ले एक पटक भ्वाइस मोडेल डाउनलोड गर्छ। त्यसपछि इन्टरनेटविनै चल्छ।",
+      "start": "सुरु गर्नुहोस्"
+    }
   },
   "modelSelector": {
     "custom": "कस्टम",
@@ -1054,8 +1062,8 @@
       "more": "थप"
     },
     "ready": "ABRAX is ready",
-    "holdHint": "Hold <k>{{atajo}}</k> and start talking",
-    "holdHintNoBinding": "Set a shortcut in Settings and start talking",
+    "holdHint": "बोल्दै गर्दा <k>{{atajo}}</k> थिचिराख्नुहोस्, र सकिएपछि छोड्नुहोस्।",
+    "holdHintNoBinding": "सेटिङमा सर्टकट राख्नुहोस् र बोल्दै गर्दा थिचिराख्नुहोस्।",
     "start": "Start transcription",
     "stop": "Stop",
     "recent": "Recent transcriptions",
@@ -1065,7 +1073,8 @@
     "min": "Minimize",
     "max": "Maximize",
     "close": "Close",
-    "tray": "Send to tray"
+    "tray": "Send to tray",
+    "dictando": "म सुन्दै छु… सकिएपछि छोड्नुहोस्"
   },
   "soundPicker": {
     "custom": "अनुकूलित",

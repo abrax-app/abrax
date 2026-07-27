@@ -126,7 +126,15 @@
         "requestFailed": "İzin isteği başarısız oldu. Lütfen tekrar deneyin."
       }
     },
-    "emptyCatalog": "Kullanılabilir model yok. Günlüğü kontrol edip Abrax'ı yeniden başlatın."
+    "emptyCatalog": "Kullanılabilir model yok. Günlüğü kontrol edip Abrax'ı yeniden başlatın.",
+    "welcome": {
+      "pitch": "Konuş, metin kendi bilgisayarında belirsin.",
+      "badgeLocal": "%100 yerel",
+      "badgeNoCloud": "Bulut yok",
+      "badgeFree": "Ücretsiz",
+      "whyModel": "Seni duyabilmek için Abrax bir kez ses modeli indirir. Sonrasında internetsiz çalışır.",
+      "start": "Başla"
+    }
   },
   "modelSelector": {
     "custom": "Özel",
@@ -1054,8 +1062,8 @@
       "more": "Daha fazla"
     },
     "ready": "ABRAX is ready",
-    "holdHint": "Hold <k>{{atajo}}</k> and start talking",
-    "holdHintNoBinding": "Set a shortcut in Settings and start talking",
+    "holdHint": "Konuşurken <k>{{atajo}}</k> tuşunu basılı tut, bitince bırak.",
+    "holdHintNoBinding": "Ayarlar'dan bir kısayol belirle ve konuşurken basılı tut.",
     "start": "Start transcription",
     "stop": "Stop",
     "recent": "Recent transcriptions",
@@ -1065,7 +1073,8 @@
     "min": "Minimize",
     "max": "Maximize",
     "close": "Close",
-    "tray": "Send to tray"
+    "tray": "Send to tray",
+    "dictando": "Seni dinliyorum… bitince bırak"
   },
   "soundPicker": {
     "custom": "Özel",

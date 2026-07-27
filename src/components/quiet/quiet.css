@@ -187,6 +187,12 @@
   color: var(--q-dim);
   margin: 0 0 10px;
 }
+/* El hint se enciende cuando el atajo se dispara de verdad: confirma al usuario
+   que funcionó, en el instante exacto en que lo está probando. */
+.q-hint.on {
+  color: var(--q-text);
+}
+
 .q-kbd {
   display: inline-block;
   margin: 0 3px;

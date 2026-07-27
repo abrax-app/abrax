@@ -126,7 +126,15 @@
         "requestFailed": "Berechtigungsanfrage fehlgeschlagen. Bitte erneut versuchen."
       }
     },
-    "emptyCatalog": "Keine Modelle verfügbar. Prüfe das Log und starte Abrax neu."
+    "emptyCatalog": "Keine Modelle verfügbar. Prüfe das Log und starte Abrax neu.",
+    "welcome": {
+      "pitch": "Sprich, und der Text erscheint – auf deinem Rechner.",
+      "badgeLocal": "100% lokal",
+      "badgeNoCloud": "Ohne Cloud",
+      "badgeFree": "Kostenlos",
+      "whyModel": "Damit Abrax dich hören kann, lädt es einmalig ein Sprachmodell. Danach läuft es offline.",
+      "start": "Loslegen"
+    }
   },
   "modelSelector": {
     "custom": "Benutzerdefiniert",
@@ -1054,8 +1062,8 @@
       "more": "Mehr"
     },
     "ready": "ABRAX is ready",
-    "holdHint": "Hold <k>{{atajo}}</k> and start talking",
-    "holdHintNoBinding": "Set a shortcut in Settings and start talking",
+    "holdHint": "Halte <k>{{atajo}}</k> gedrückt, während du sprichst, und lass am Ende los.",
+    "holdHintNoBinding": "Lege in den Einstellungen ein Tastenkürzel fest und halte es gedrückt, während du sprichst.",
     "start": "Start transcription",
     "stop": "Stop",
     "recent": "Recent transcriptions",
@@ -1065,7 +1073,8 @@
     "min": "Minimize",
     "max": "Maximize",
     "close": "Close",
-    "tray": "Send to tray"
+    "tray": "Send to tray",
+    "dictando": "Ich höre zu … am Ende loslassen"
   },
   "soundPicker": {
     "custom": "Benutzerdefiniert",

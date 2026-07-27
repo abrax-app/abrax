@@ -126,7 +126,15 @@
         "requestFailed": "Error al solicitar permiso. Por favor, inténtalo de nuevo."
       }
     },
-    "emptyCatalog": "No hay modelos disponibles. Revisa el log y reinicia Abrax."
+    "emptyCatalog": "No hay modelos disponibles. Revisa el log y reinicia Abrax.",
+    "welcome": {
+      "pitch": "Habla y aparece el texto, en tu equipo.",
+      "badgeLocal": "100% local",
+      "badgeNoCloud": "Sin nube",
+      "badgeFree": "Gratis",
+      "whyModel": "Para escucharte, Abrax necesita descargar una vez un modelo de voz. Después funciona sin internet.",
+      "start": "Empezar"
+    }
   },
   "modelSelector": {
     "custom": "Personalizado",
@@ -1054,8 +1062,8 @@
       "more": "Más"
     },
     "ready": "ABRAX está listo",
-    "holdHint": "Mantén <k>{{atajo}}</k> y comienza a hablar",
-    "holdHintNoBinding": "Configura un atajo en Ajustes y comienza a hablar",
+    "holdHint": "Mantén <k>{{atajo}}</k> presionado mientras hablas, y suelta al terminar.",
+    "holdHintNoBinding": "Configura un atajo en Ajustes y mantenlo presionado mientras hablas.",
     "start": "Iniciar transcripción",
     "stop": "Detener",
     "recent": "Transcripciones recientes",
@@ -1065,7 +1073,8 @@
     "min": "Minimizar",
     "max": "Maximizar",
     "close": "Cerrar",
-    "tray": "Enviar a la bandeja"
+    "tray": "Enviar a la bandeja",
+    "dictando": "Te estoy escuchando… suelta al terminar"
   },
   "soundPicker": {
     "custom": "Personalizado",

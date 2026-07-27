@@ -126,7 +126,15 @@
         "requestFailed": "請求權限失敗，請重試"
       }
     },
-    "emptyCatalog": "沒有可用的模型。請檢查日誌並重新啟動 Abrax。"
+    "emptyCatalog": "沒有可用的模型。請檢查日誌並重新啟動 Abrax。",
+    "welcome": {
+      "pitch": "說話，文字就出現在你自己的電腦上。",
+      "badgeLocal": "100% 本機",
+      "badgeNoCloud": "無需雲端",
+      "badgeFree": "免費",
+      "whyModel": "為了聽清你說話，Abrax 需要下載一次語音模型。之後即可離線使用。",
+      "start": "開始"
+    }
   },
   "modelSelector": {
     "custom": "自訂",
@@ -1054,8 +1062,8 @@
       "more": "更多"
     },
     "ready": "ABRAX is ready",
-    "holdHint": "Hold <k>{{atajo}}</k> and start talking",
-    "holdHintNoBinding": "Set a shortcut in Settings and start talking",
+    "holdHint": "說話時按住 <k>{{atajo}}</k>，說完再放開。",
+    "holdHintNoBinding": "在設定中指定一個快速鍵，說話時按住它。",
     "start": "Start transcription",
     "stop": "Stop",
     "recent": "Recent transcriptions",
@@ -1065,7 +1073,8 @@
     "min": "Minimize",
     "max": "Maximize",
     "close": "Close",
-    "tray": "Send to tray"
+    "tray": "Send to tray",
+    "dictando": "我在聽… 說完放開"
   },
   "soundPicker": {
     "custom": "自訂",

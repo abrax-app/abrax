@@ -126,7 +126,15 @@
         "requestFailed": "Không thể yêu cầu quyền. Vui lòng thử lại."
       }
     },
-    "emptyCatalog": "Không có mô hình nào khả dụng. Kiểm tra nhật ký và khởi động lại Abrax."
+    "emptyCatalog": "Không có mô hình nào khả dụng. Kiểm tra nhật ký và khởi động lại Abrax.",
+    "welcome": {
+      "pitch": "Nói, và văn bản hiện ra ngay trên máy của bạn.",
+      "badgeLocal": "100% cục bộ",
+      "badgeNoCloud": "Không đám mây",
+      "badgeFree": "Miễn phí",
+      "whyModel": "Để nghe bạn, Abrax tải một mô hình giọng nói một lần. Sau đó hoạt động không cần mạng.",
+      "start": "Bắt đầu"
+    }
   },
   "modelSelector": {
     "custom": "Tùy chỉnh",
@@ -1054,8 +1062,8 @@
       "more": "Thêm"
     },
     "ready": "ABRAX is ready",
-    "holdHint": "Hold <k>{{atajo}}</k> and start talking",
-    "holdHintNoBinding": "Set a shortcut in Settings and start talking",
+    "holdHint": "Giữ <k>{{atajo}}</k> trong khi nói, rồi thả ra khi xong.",
+    "holdHintNoBinding": "Đặt một phím tắt trong Cài đặt và giữ nó trong khi nói.",
     "start": "Start transcription",
     "stop": "Stop",
     "recent": "Recent transcriptions",
@@ -1065,7 +1073,8 @@
     "min": "Minimize",
     "max": "Maximize",
     "close": "Close",
-    "tray": "Send to tray"
+    "tray": "Send to tray",
+    "dictando": "Đang nghe bạn… thả ra khi xong"
   },
   "soundPicker": {
     "custom": "Tùy chỉnh",

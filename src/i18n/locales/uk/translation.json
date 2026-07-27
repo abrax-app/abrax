@@ -126,7 +126,15 @@
         "requestFailed": "Не вдалося запросити дозвіл. Будь ласка, спробуйте ще раз."
       }
     },
-    "emptyCatalog": "Немає доступних моделей. Перевірте журнал і перезапустіть Abrax."
+    "emptyCatalog": "Немає доступних моделей. Перевірте журнал і перезапустіть Abrax.",
+    "welcome": {
+      "pitch": "Говоріть — і текст з’являється, на вашому комп’ютері.",
+      "badgeLocal": "100% локально",
+      "badgeNoCloud": "Без хмари",
+      "badgeFree": "Безкоштовно",
+      "whyModel": "Щоб чути вас, Abrax один раз завантажує голосову модель. Далі працює без інтернету.",
+      "start": "Почати"
+    }
   },
   "modelSelector": {
     "custom": "Користувацька",
@@ -1054,8 +1062,8 @@
       "more": "Ще"
     },
     "ready": "ABRAX is ready",
-    "holdHint": "Hold <k>{{atajo}}</k> and start talking",
-    "holdHintNoBinding": "Set a shortcut in Settings and start talking",
+    "holdHint": "Утримуйте <k>{{atajo}}</k>, поки говорите, і відпустіть наприкінці.",
+    "holdHintNoBinding": "Задайте сполучення клавіш у налаштуваннях і утримуйте його, поки говорите.",
     "start": "Start transcription",
     "stop": "Stop",
     "recent": "Recent transcriptions",
@@ -1065,7 +1073,8 @@
     "min": "Minimize",
     "max": "Maximize",
     "close": "Close",
-    "tray": "Send to tray"
+    "tray": "Send to tray",
+    "dictando": "Слухаю… відпустіть наприкінці"
   },
   "soundPicker": {
     "custom": "Власний",

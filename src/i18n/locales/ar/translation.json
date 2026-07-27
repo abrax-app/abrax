@@ -126,7 +126,15 @@
         "requestFailed": "فشل طلب الإذن. يرجى المحاولة مرة أخرى."
       }
     },
-    "emptyCatalog": "لا توجد نماذج متاحة. تحقق من السجل وأعد تشغيل Abrax."
+    "emptyCatalog": "لا توجد نماذج متاحة. تحقق من السجل وأعد تشغيل Abrax.",
+    "welcome": {
+      "pitch": "تحدّث ويظهر النص، على جهازك.",
+      "badgeLocal": "محلي 100%",
+      "badgeNoCloud": "بدون سحابة",
+      "badgeFree": "مجاني",
+      "whyModel": "لكي يسمعك Abrax عليه تنزيل نموذج صوتي مرة واحدة. بعدها يعمل دون إنترنت.",
+      "start": "ابدأ"
+    }
   },
   "modelSelector": {
     "custom": "مخصص",
@@ -1054,8 +1062,8 @@
       "more": "المزيد"
     },
     "ready": "ABRAX is ready",
-    "holdHint": "Hold <k>{{atajo}}</k> and start talking",
-    "holdHintNoBinding": "Set a shortcut in Settings and start talking",
+    "holdHint": "استمر بالضغط على <k>{{atajo}}</k> أثناء الكلام، ثم اتركه عند الانتهاء.",
+    "holdHintNoBinding": "عيّن اختصارًا في الإعدادات واستمر بالضغط عليه أثناء الكلام.",
     "start": "Start transcription",
     "stop": "Stop",
     "recent": "Recent transcriptions",
@@ -1065,7 +1073,8 @@
     "min": "Minimize",
     "max": "Maximize",
     "close": "Close",
-    "tray": "Send to tray"
+    "tray": "Send to tray",
+    "dictando": "أستمع إليك… اترك المفتاح عند الانتهاء"
   },
   "soundPicker": {
     "custom": "مخصص",

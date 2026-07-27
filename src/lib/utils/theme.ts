@@ -167,7 +167,11 @@ const getStoredShell = (): UiShell => {
   } catch {
     // ignore
   }
-  return "classic";
+  // Debe coincidir con `default_ui_shell()` de Rust: solo se usa en el PRIMER
+  // arranque (localStorage vacío), antes de que lleguen los settings. Si
+  // divergen, la primera ventana se pinta con el marco del shell equivocado y
+  // se corrige al sincronizar — un parpadeo evitable.
+  return "quiet";
 };
 
 /** Apply the persisted mode + palette + shell from the last launch, synchronously. */
@@ -183,7 +187,7 @@ export const syncThemeFromSettings = async (): Promise<void> => {
     if (result.status === "ok") {
       const theme = result.data.theme ?? "system";
       const uiTheme = result.data.ui_theme ?? "abrax";
-      const uiShell = result.data.ui_shell ?? "classic";
+      const uiShell = result.data.ui_shell ?? "quiet";
       persist(THEME_STORAGE_KEY, theme);
       persist(UI_THEME_STORAGE_KEY, uiTheme);
       persist(SHELL_STORAGE_KEY, uiShell);

@@ -126,7 +126,15 @@
         "requestFailed": "Nepodařilo se požádat o oprávnění. Zkuste to prosím znovu."
       }
     },
-    "emptyCatalog": "Nejsou k dispozici žádné modely. Zkontrolujte log a restartujte Abrax."
+    "emptyCatalog": "Nejsou k dispozici žádné modely. Zkontrolujte log a restartujte Abrax.",
+    "welcome": {
+      "pitch": "Mluv a text se objeví, přímo v tvém počítači.",
+      "badgeLocal": "100% lokálně",
+      "badgeNoCloud": "Bez cloudu",
+      "badgeFree": "Zdarma",
+      "whyModel": "Aby tě Abrax slyšel, musí jednou stáhnout hlasový model. Potom funguje bez internetu.",
+      "start": "Začít"
+    }
   },
   "modelSelector": {
     "custom": "Vlastní",
@@ -1054,8 +1062,8 @@
       "more": "Více"
     },
     "ready": "ABRAX is ready",
-    "holdHint": "Hold <k>{{atajo}}</k> and start talking",
-    "holdHintNoBinding": "Set a shortcut in Settings and start talking",
+    "holdHint": "Drž <k>{{atajo}}</k>, dokud mluvíš, a po skončení pusť.",
+    "holdHintNoBinding": "Nastav zkratku v Nastavení a drž ji, dokud mluvíš.",
     "start": "Start transcription",
     "stop": "Stop",
     "recent": "Recent transcriptions",
@@ -1065,7 +1073,8 @@
     "min": "Minimize",
     "max": "Maximize",
     "close": "Close",
-    "tray": "Send to tray"
+    "tray": "Send to tray",
+    "dictando": "Poslouchám… po skončení pusť"
   },
   "soundPicker": {
     "custom": "Vlastní",

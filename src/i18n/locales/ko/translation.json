@@ -126,7 +126,15 @@
         "requestFailed": "권한 요청에 실패했습니다. 다시 시도해주세요."
       }
     },
-    "emptyCatalog": "사용 가능한 모델이 없습니다. 로그를 확인하고 Abrax를 다시 시작하세요."
+    "emptyCatalog": "사용 가능한 모델이 없습니다. 로그를 확인하고 Abrax를 다시 시작하세요.",
+    "welcome": {
+      "pitch": "말하면 텍스트가 나타납니다. 이 컴퓨터 안에서.",
+      "badgeLocal": "100% 로컬",
+      "badgeNoCloud": "클라우드 없음",
+      "badgeFree": "무료",
+      "whyModel": "듣기 위해 Abrax는 음성 모델을 한 번 내려받습니다. 그 뒤로는 인터넷 없이 작동합니다.",
+      "start": "시작하기"
+    }
   },
   "modelSelector": {
     "custom": "사용자 정의",
@@ -1054,8 +1062,8 @@
       "more": "더 보기"
     },
     "ready": "ABRAX is ready",
-    "holdHint": "Hold <k>{{atajo}}</k> and start talking",
-    "holdHintNoBinding": "Set a shortcut in Settings and start talking",
+    "holdHint": "말하는 동안 <k>{{atajo}}</k> 키를 누르고 있다가, 끝나면 놓으세요.",
+    "holdHintNoBinding": "설정에서 단축키를 지정한 뒤 말하는 동안 누르고 있으세요.",
     "start": "Start transcription",
     "stop": "Stop",
     "recent": "Recent transcriptions",
@@ -1065,7 +1073,8 @@
     "min": "Minimize",
     "max": "Maximize",
     "close": "Close",
-    "tray": "Send to tray"
+    "tray": "Send to tray",
+    "dictando": "듣고 있어요… 끝나면 놓으세요"
   },
   "soundPicker": {
     "custom": "사용자 지정",

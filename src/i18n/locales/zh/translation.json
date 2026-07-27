@@ -126,7 +126,15 @@
         "requestFailed": "请求权限失败。请重试。"
       }
     },
-    "emptyCatalog": "没有可用的模型。请检查日志并重启 Abrax。"
+    "emptyCatalog": "没有可用的模型。请检查日志并重启 Abrax。",
+    "welcome": {
+      "pitch": "说话，文字就出现在你自己的电脑上。",
+      "badgeLocal": "100% 本地",
+      "badgeNoCloud": "无需云端",
+      "badgeFree": "免费",
+      "whyModel": "为了听清你说话，Abrax 需要下载一次语音模型。之后即可离线使用。",
+      "start": "开始"
+    }
   },
   "modelSelector": {
     "custom": "自定义",
@@ -1054,8 +1062,8 @@
       "more": "更多"
     },
     "ready": "ABRAX is ready",
-    "holdHint": "Hold <k>{{atajo}}</k> and start talking",
-    "holdHintNoBinding": "Set a shortcut in Settings and start talking",
+    "holdHint": "说话时按住 <k>{{atajo}}</k>，说完再松开。",
+    "holdHintNoBinding": "在设置中指定一个快捷键，说话时按住它。",
     "start": "Start transcription",
     "stop": "Stop",
     "recent": "Recent transcriptions",
@@ -1065,7 +1073,8 @@
     "min": "Minimize",
     "max": "Maximize",
     "close": "Close",
-    "tray": "Send to tray"
+    "tray": "Send to tray",
+    "dictando": "我在听… 说完松开"
   },
   "soundPicker": {
     "custom": "自定义",

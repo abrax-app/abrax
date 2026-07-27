@@ -126,7 +126,15 @@
         "requestFailed": "権限のリクエストに失敗しました。もう一度お試しください。"
       }
     },
-    "emptyCatalog": "利用可能なモデルがありません。ログを確認して Abrax を再起動してください。"
+    "emptyCatalog": "利用可能なモデルがありません。ログを確認して Abrax を再起動してください。",
+    "welcome": {
+      "pitch": "話すと、テキストがこの端末に現れます。",
+      "badgeLocal": "100% ローカル",
+      "badgeNoCloud": "クラウド不要",
+      "badgeFree": "無料",
+      "whyModel": "聞き取るために、Abrax は音声モデルを一度だけダウンロードします。そのあとはオフラインで動きます。",
+      "start": "はじめる"
+    }
   },
   "modelSelector": {
     "custom": "カスタム",
@@ -1054,8 +1062,8 @@
       "more": "その他"
     },
     "ready": "ABRAX is ready",
-    "holdHint": "Hold <k>{{atajo}}</k> and start talking",
-    "holdHintNoBinding": "Set a shortcut in Settings and start talking",
+    "holdHint": "話している間は <k>{{atajo}}</k> を押し続け、終わったら離してください。",
+    "holdHintNoBinding": "設定でショートカットを決めて、話している間は押し続けてください。",
     "start": "Start transcription",
     "stop": "Stop",
     "recent": "Recent transcriptions",
@@ -1065,7 +1073,8 @@
     "min": "Minimize",
     "max": "Maximize",
     "close": "Close",
-    "tray": "Send to tray"
+    "tray": "Send to tray",
+    "dictando": "聞いています… 終わったら離してください"
   },
   "soundPicker": {
     "custom": "カスタム",

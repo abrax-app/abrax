@@ -126,7 +126,15 @@
         "requestFailed": "Machtiging aanvragen mislukt. Probeer het opnieuw."
       }
     },
-    "emptyCatalog": "Geen modellen beschikbaar. Controleer het logboek en herstart Abrax."
+    "emptyCatalog": "Geen modellen beschikbaar. Controleer het logboek en herstart Abrax.",
+    "welcome": {
+      "pitch": "Praat en de tekst verschijnt, op je eigen computer.",
+      "badgeLocal": "100% lokaal",
+      "badgeNoCloud": "Geen cloud",
+      "badgeFree": "Gratis",
+      "whyModel": "Om je te horen downloadt Abrax eenmalig een spraakmodel. Daarna werkt het offline.",
+      "start": "Beginnen"
+    }
   },
   "modelSelector": {
     "custom": "Aangepast",
@@ -1054,8 +1062,8 @@
       "more": "Meer"
     },
     "ready": "ABRAX is ready",
-    "holdHint": "Hold <k>{{atajo}}</k> and start talking",
-    "holdHintNoBinding": "Set a shortcut in Settings and start talking",
+    "holdHint": "Houd <k>{{atajo}}</k> ingedrukt terwijl je praat en laat los als je klaar bent.",
+    "holdHintNoBinding": "Stel een sneltoets in bij Instellingen en houd die ingedrukt terwijl je praat.",
     "start": "Start transcription",
     "stop": "Stop",
     "recent": "Recent transcriptions",
@@ -1065,7 +1073,8 @@
     "min": "Minimize",
     "max": "Maximize",
     "close": "Close",
-    "tray": "Send to tray"
+    "tray": "Send to tray",
+    "dictando": "Ik luister… laat los als je klaar bent"
   },
   "soundPicker": {
     "custom": "Aangepast",
