@@ -80,3 +80,12 @@ open source [Handy](https://github.com/cjpais/Handy). No implica afiliación,
 respaldo ni continuidad oficial con sus mantenedores. Ver
 [ATTRIBUTION.md](ATTRIBUTION.md), [UPSTREAM.md](UPSTREAM.md),
 [LICENSE](LICENSE) y [LICENSES-THIRD-PARTY.md](LICENSES-THIRD-PARTY.md).
+
+Los **modelos de reconocimiento de voz** no se empaquetan: se descargan bajo
+demanda y cada uno conserva su licencia. El recomendado por defecto,
+**Canary 180M Flash** © NVIDIA Corporation, es
+[CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/) y exige atribución;
+esa atribución y la de los demás modelos están en
+[LICENSES-THIRD-PARTY.md](LICENSES-THIRD-PARTY.md), que además viaja dentro del
+instalador y se muestra en la app (Ajustes → Acerca de → Agradecimientos).
+Abrax no está afiliado a NVIDIA, OpenAI ni Cohere, ni cuenta con su respaldo.

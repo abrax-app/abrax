@@ -717,6 +717,10 @@
           "title": "ggml",
           "description": "Högpresterande inferens av OpenAI:s Whisper-modell för automatisk taligenkänning",
           "details": "Abrax använder ggml för snabb, lokal tal-till-text-behandling. Tack till det fantastiska arbete som utförts av Georgi Gerganov med medarbetare."
+        },
+        "modelos": {
+          "title": "Modeller för taligenkänning",
+          "description": "Modellerna laddas ned vid behov och ingår inte i installationsprogrammet. Varje modell behåller sin egen licens; de med CC-BY kräver attribution, som anges här. Fullständig text finns i LICENSES-THIRD-PARTY.md."
         }
       },
       "whatsNewUpdates": {

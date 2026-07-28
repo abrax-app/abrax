@@ -717,6 +717,10 @@
           "title": "ggml",
           "description": "OpenAI'nin Whisper otomatik konuşma tanıma modelinin yüksek performanslı çıkarımı",
           "details": "Abrax, hızlı ve yerel konuşmadan metne dönüştürme için ggml kullanır. Georgi Gerganov ve katkıda bulunanların harika çalışmaları için teşekkür ederiz."
+        },
+        "modelos": {
+          "title": "Konuşma tanıma modelleri",
+          "description": "Modeller istek üzerine indirilir ve yükleyicinin bir parçası değildir. Her biri kendi lisansını korur; CC-BY olanlar atıf gerektirir ve bu atıf burada verilmiştir. Tam metin LICENSES-THIRD-PARTY.md dosyasındadır."
         }
       },
       "whatsNewUpdates": {

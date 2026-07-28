@@ -717,6 +717,10 @@
           "title": "ggml",
           "description": "オンデバイス機械学習推論のための高性能テンソルライブラリ",
           "details": "Abrax のローカルの音声からテキストへの文字起こしは transcribe.cpp と ggml を基盤としています。Georgi Gerganov 氏と貢献者の皆様の素晴らしい仕事に感謝します。"
+        },
+        "modelos": {
+          "title": "音声認識モデル",
+          "description": "モデルは必要に応じてダウンロードされ、インストーラーには含まれていません。各モデルはそれぞれのライセンスに従います。CC-BY のモデルは帰属表示が必要なため、ここに記載しています。全文は LICENSES-THIRD-PARTY.md をご覧ください。"
         }
       },
       "whatsNewUpdates": {

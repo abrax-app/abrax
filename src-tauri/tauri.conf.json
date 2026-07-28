@@ -27,7 +27,12 @@
     "active": true,
     "createUpdaterArtifacts": false,
     "targets": "all",
-    "resources": ["resources/**/*"],
+    "resources": {
+      "resources": "resources",
+      "../LICENSE": "LICENSE",
+      "../LICENSES-THIRD-PARTY.md": "LICENSES-THIRD-PARTY.md",
+      "../ATTRIBUTION.md": "ATTRIBUTION.md"
+    },
     "license": "MIT",
     "icon": [
       "icons/32x32.png",

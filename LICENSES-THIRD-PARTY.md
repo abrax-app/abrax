@@ -1,9 +1,85 @@
-# Licencias de terceros — motores de voz (TTS) de Abrax
+# Licencias de terceros de Abrax
 
-Abrax es MIT. Los motores de voz neuronales usan componentes con licencias
-distintas. Este documento explica cómo se mantiene la separación, en especial
-del **fonemizador espeak-ng (GPL-3.0)**, para que el repositorio y el instalador
-MIT **nunca enlacen ni redistribuyan código GPL**.
+Abrax es MIT. Los componentes de terceros que descarga o ejecuta conservan sus
+propias licencias. Este documento las declara y da las atribuciones exigidas.
+
+Cubre dos familias, y ninguna viaja dentro del instalador: los **modelos de
+reconocimiento de voz (ASR)** que Abrax descarga bajo demanda, y los **motores de
+voz (TTS)** que se aprovisionan en el primer uso.
+
+- [Modelos de reconocimiento de voz (ASR)](#modelos-de-reconocimiento-de-voz-asr)
+- [Motores de voz (TTS)](#motores-de-voz-tts)
+
+---
+
+# Modelos de reconocimiento de voz (ASR)
+
+Abrax **no empaqueta ningún modelo**: el instalador viaja sin pesos y cada modelo
+se descarga desde Hugging Face cuando el usuario lo elige. Aun así, Abrax los
+distribuye de facto al ofrecerlos y descargarlos, así que **cada uno conserva su
+licencia y sus obligaciones**, y las que exigen atribución la reciben aquí.
+
+Los cinco que Abrax ofrece hoy son builds GGUF publicados por la organización
+`handy-computer`, derivados por cuantización de los modelos originales. **La
+licencia que manda es la del modelo original**, y es la que se declara.
+
+| Modelo (nombre en la app) | Autor original     | Modelo original                                                                                           | Build GGUF que se descarga                                                                                                          | Licencia                                           |
+| ------------------------- | ------------------ | --------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------- |
+| Canary 180M Flash         | NVIDIA Corporation | [`nvidia/canary-180m-flash`](https://huggingface.co/nvidia/canary-180m-flash)                             | [`handy-computer/canary-180m-flash-gguf`](https://huggingface.co/handy-computer/canary-180m-flash-gguf)                             | **CC-BY-4.0**                                      |
+| Whisper Large v3 Turbo    | OpenAI             | [`openai/whisper-large-v3-turbo`](https://huggingface.co/openai/whisper-large-v3-turbo)                   | [`handy-computer/whisper-large-v3-turbo-gguf`](https://huggingface.co/handy-computer/whisper-large-v3-turbo-gguf)                   | Apache-2.0                                         |
+| Whisper Large v3          | OpenAI             | [`openai/whisper-large-v3`](https://huggingface.co/openai/whisper-large-v3)                               | [`handy-computer/whisper-large-v3-gguf`](https://huggingface.co/handy-computer/whisper-large-v3-gguf)                               | Apache-2.0                                         |
+| Nemotron Streaming 3.5    | NVIDIA Corporation | [`nvidia/nemotron-3.5-asr-streaming-0.6b`](https://huggingface.co/nvidia/nemotron-3.5-asr-streaming-0.6b) | [`handy-computer/nemotron-3.5-asr-streaming-0.6b-gguf`](https://huggingface.co/handy-computer/nemotron-3.5-asr-streaming-0.6b-gguf) | [**OpenMDW-1.1**](https://openmdw.ai/license/1-1/) |
+| Cohere Transcribe         | Cohere Labs        | [`CohereLabs/cohere-transcribe-03-2026`](https://huggingface.co/CohereLabs/cohere-transcribe-03-2026)     | [`handy-computer/cohere-transcribe-03-2026-gguf`](https://huggingface.co/handy-computer/cohere-transcribe-03-2026-gguf)             | Apache-2.0                                         |
+
+## Atribución exigida por CC-BY-4.0
+
+La licencia [Creative Commons Attribution 4.0 International](https://creativecommons.org/licenses/by/4.0/)
+obliga a dar crédito al autor, enlazar la licencia e indicar si hubo cambios.
+Para el modelo CC-BY que Abrax ofrece:
+
+> **Canary 180M Flash** © NVIDIA Corporation, usado bajo
+> [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/).
+> **Modificado:** Abrax descarga un build **cuantizado a GGUF** publicado por
+> `handy-computer`, no los pesos originales. No se modificó el entrenamiento del
+> modelo.
+> Abrax **no está afiliado a NVIDIA Corporation ni cuenta con su respaldo**, y
+> NVIDIA no avala este producto.
+
+Esta misma atribución se muestra **dentro de la app**, en Ajustes → Acerca de →
+Agradecimientos, junto al autor y la licencia de cada modelo.
+
+## Notas sobre las otras licencias
+
+- **OpenMDW-1.1** (Nemotron Streaming 3.5) es la licencia de modelo abierto de
+  NVIDIA; su texto vive en <https://openmdw.ai/license/1-1/>. No exige atribución
+  en la interfaz, pero se acredita igual por coherencia.
+- **Apache-2.0** (Whisper ×2, Cohere Transcribe) exige conservar los avisos de
+  copyright y licencia, que viajan dentro de cada repositorio de modelo. Abrax no
+  redistribuye esos archivos porque no empaqueta los pesos.
+
+## Límites declarados
+
+- **Sin verificación de integridad de los pesos.** Las descargas de modelos ASR
+  **no se comprueban por sha256** hoy (`QuantFile` solo lleva `size_bytes`), a
+  diferencia de los runtimes TTS de más abajo, que sí van anclados. Está anotado
+  como deuda en `docs/RELEASING.md` §Checksums; no se anuncia lo contrario en
+  ninguna parte.
+- **Los builds GGUF los publica un tercero** (`handy-computer`). Abrax declara la
+  licencia del modelo **original**, que es la que obliga; si un build intermedio
+  declarara otra distinta, manda la del origen.
+- El registro heredado del upstream contiene más entradas de modelos que la
+  interfaz **no ofrece** (no son seleccionables ni descargables desde la app).
+  Esta sección cubre los cinco que Abrax sí ofrece. Si alguno de los heredados
+  volviera a ofrecerse, entra aquí antes de enviarse.
+
+---
+
+# Motores de voz (TTS)
+
+Los motores de voz neuronales usan componentes con licencias distintas. Esta
+sección explica cómo se mantiene la separación, en especial del **fonemizador
+espeak-ng (GPL-3.0)**, para que el repositorio y el instalador MIT **nunca
+enlacen ni redistribuyan código GPL**.
 
 ## Principio: "mere aggregation" (agregación simple)
 

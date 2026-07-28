@@ -717,6 +717,10 @@
           "title": "ggml",
           "description": "Suy luận hiệu suất cao của mô hình nhận dạng giọng nói tự động Whisper của OpenAI",
           "details": "Abrax sử dụng ggml để xử lý chuyển đổi giọng nói thành văn bản nhanh, cục bộ. Cảm ơn công việc tuyệt vời của Georgi Gerganov và các cộng tác viên."
+        },
+        "modelos": {
+          "title": "Mô hình nhận dạng giọng nói",
+          "description": "Các mô hình được tải xuống theo yêu cầu và không nằm trong bộ cài đặt. Mỗi mô hình giữ giấy phép riêng; những mô hình theo CC-BY yêu cầu ghi công, và phần ghi công được nêu tại đây. Toàn văn có trong LICENSES-THIRD-PARTY.md."
         }
       },
       "whatsNewUpdates": {

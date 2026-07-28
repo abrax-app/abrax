@@ -717,6 +717,10 @@
           "title": "ggml",
           "description": "Hochleistungs-Inferenz des Whisper-Spracherkennungsmodells von OpenAI",
           "details": "Abrax verwendet ggml für schnelle, lokale Sprach-zu-Text-Verarbeitung. Dank an Georgi Gerganov und die Mitwirkenden für ihre großartige Arbeit."
+        },
+        "modelos": {
+          "title": "Spracherkennungsmodelle",
+          "description": "Die Modelle werden bei Bedarf heruntergeladen und sind nicht Teil des Installationsprogramms. Jedes behält seine eigene Lizenz; die CC-BY-Modelle erfordern eine Namensnennung, die hier erfolgt. Vollständiger Text in LICENSES-THIRD-PARTY.md."
         }
       },
       "whatsNewUpdates": {

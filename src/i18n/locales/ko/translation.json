@@ -717,6 +717,10 @@
           "title": "ggml",
           "description": "OpenAI의 Whisper 자동 음성 인식 모델의 고성능 추론",
           "details": "Abrax는 빠르고 로컬 음성-텍스트 처리를 위해 ggml를 사용합니다. Georgi Gerganov와 기여자들의 놀라운 작업에 감사드립니다."
+        },
+        "modelos": {
+          "title": "음성 인식 모델",
+          "description": "모델은 필요할 때 다운로드되며 설치 프로그램에 포함되어 있지 않습니다. 각 모델은 고유한 라이선스를 따릅니다. CC-BY 모델은 저작자 표시가 필요하므로 여기에 명시했습니다. 전문은 LICENSES-THIRD-PARTY.md에 있습니다."
         }
       },
       "whatsNewUpdates": {

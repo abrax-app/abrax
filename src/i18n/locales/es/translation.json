@@ -717,6 +717,10 @@
           "title": "ggml",
           "description": "Inferencia de alto rendimiento del modelo de reconocimiento automático de voz Whisper de OpenAI",
           "details": "Abrax usa ggml para procesamiento de voz a texto rápido y local. Gracias al increíble trabajo de Georgi Gerganov y colaboradores."
+        },
+        "modelos": {
+          "title": "Modelos de reconocimiento de voz",
+          "description": "Los modelos se descargan bajo demanda y no forman parte del instalador. Cada uno conserva su licencia; los CC-BY exigen atribución, y aquí se da. Texto completo en LICENSES-THIRD-PARTY.md."
         }
       },
       "whatsNewUpdates": {

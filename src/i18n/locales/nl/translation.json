@@ -721,6 +721,10 @@
           "title": "ggml",
           "description": "Krachtige tensorbibliotheek voor lokale AI-verwerking",
           "details": "Abrax's lokale spraak-naar-tekst is gebouwd op transcribe.cpp en ggml. Met dank aan het geweldige werk van Georgi Gerganov en alle bijdragers."
+        },
+        "modelos": {
+          "title": "Spraakherkenningsmodellen",
+          "description": "De modellen worden op verzoek gedownload en maken geen deel uit van het installatieprogramma. Elk model behoudt zijn eigen licentie; de CC-BY-modellen vereisen naamsvermelding, die hier wordt gegeven. Volledige tekst in LICENSES-THIRD-PARTY.md."
         }
       }
     }

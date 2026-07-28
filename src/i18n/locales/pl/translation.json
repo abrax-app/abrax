@@ -717,6 +717,10 @@
           "title": "ggml",
           "description": "Wydajne wykonywanie modelu rozpoznawania mowy Whisper od OpenAI",
           "details": "Abrax używa ggml do szybkiego, lokalnego przetwarzania mowy na tekst. Dzięki niesamowitej pracy Georgi Gerganova i współtwórców."
+        },
+        "modelos": {
+          "title": "Modele rozpoznawania mowy",
+          "description": "Modele są pobierane na żądanie i nie wchodzą w skład instalatora. Każdy zachowuje własną licencję; te na licencji CC-BY wymagają podania autorstwa, które zamieszczono tutaj. Pełny tekst w pliku LICENSES-THIRD-PARTY.md."
         }
       },
       "whatsNewUpdates": {

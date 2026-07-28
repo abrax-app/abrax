@@ -14,6 +14,32 @@ import { ThemeSelector } from "../ThemeSelector";
 import { LogDirectory } from "../debug";
 import AbraxLogo from "../../icons/AbraxLogo";
 
+/**
+ * Atribución de los modelos ASR que Abrax ofrece descargar.
+ *
+ * `canary-180m-flash` es **CC-BY-4.0** y es el modelo recomendado por defecto:
+ * esa licencia EXIGE dar crédito, así que la atribución tiene que estar donde el
+ * usuario pueda verla, no solo en un archivo del repositorio. El texto completo
+ * vive en `LICENSES-THIRD-PARTY.md`, que ahora sí viaja en el instalador.
+ *
+ * Nombres, autores y licencias son nombres propios: no pasan por `t()`.
+ */
+const MODELOS_ASR = [
+  {
+    nombre: "Canary 180M Flash",
+    autor: "NVIDIA Corporation",
+    lic: "CC-BY-4.0",
+  },
+  { nombre: "Whisper Large v3 Turbo", autor: "OpenAI", lic: "Apache-2.0" },
+  { nombre: "Whisper Large v3", autor: "OpenAI", lic: "Apache-2.0" },
+  {
+    nombre: "Nemotron Streaming 3.5",
+    autor: "NVIDIA Corporation",
+    lic: "OpenMDW-1.1",
+  },
+  { nombre: "Cohere Transcribe", autor: "Cohere Labs", lic: "Apache-2.0" },
+];
+
 export const AboutSettings: React.FC = () => {
   const { t } = useTranslation();
   const [version, setVersion] = useState("");
@@ -111,6 +137,25 @@ export const AboutSettings: React.FC = () => {
           <div className="text-sm text-mid-gray">
             {t("settings.about.acknowledgments.ggml.details")}
           </div>
+        </SettingContainer>
+        <SettingContainer
+          title={t("settings.about.acknowledgments.modelos.title")}
+          description={t("settings.about.acknowledgments.modelos.description")}
+          grouped={true}
+          layout="stacked"
+        >
+          <ul className="text-sm text-mid-gray space-y-0.5">
+            {MODELOS_ASR.map((m) => (
+              <li
+                key={m.nombre}
+                className="flex flex-wrap items-baseline gap-x-2"
+              >
+                <span className="text-text">{m.nombre}</span>
+                <span>{m.autor}</span>
+                <span className="font-mono text-xs opacity-80">{m.lic}</span>
+              </li>
+            ))}
+          </ul>
         </SettingContainer>
       </SettingsGroup>
     </div>

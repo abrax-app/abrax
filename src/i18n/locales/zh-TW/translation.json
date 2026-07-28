@@ -717,6 +717,10 @@
           "title": "ggml",
           "description": "針對 OpenAI Whisper 自動語音識別模型的高效能推理引擎",
           "details": "Abrax 使用 ggml 進行快速的本機語音轉文字處理。感謝 Georgi Gerganov 和貢獻者們的傑出工作"
+        },
+        "modelos": {
+          "title": "語音辨識模型",
+          "description": "模型會依需求下載，並未包含在安裝程式中。每個模型各自保留其授權條款；採用 CC-BY 的模型要求標示出處，此處即為標示。完整內容請見 LICENSES-THIRD-PARTY.md。"
         }
       },
       "whatsNewUpdates": {
