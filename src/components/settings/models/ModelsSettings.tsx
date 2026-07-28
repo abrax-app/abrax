@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { ChevronDown, Globe, RefreshCw, Search } from "lucide-react";
 import type { ModelCardStatus } from "@/components/onboarding";
 import { ModelCard } from "@/components/onboarding";
-import { CarpetaModelos } from "./CarpetaModelos";
+// import { CarpetaModelos } from "./CarpetaModelos"; // ver nota más abajo
 import { useModelStore } from "@/stores/modelStore";
 import { confirmarBorrado, confirmarDescarga } from "@/lib/utils/modelDialogs";
 import {
@@ -232,8 +232,17 @@ export const ModelsSettings: React.FC = () => {
         </p>
       </div>
 
-      {/* Dónde viven los modelos (elección de disco, compartida con Pulido) */}
-      <CarpetaModelos />
+      {/* OCULTO (28/07) — «Carpeta de modelos» promete algo que no cumple.
+          Los cinco modelos del catálogo se descargan a la caché de Hugging
+          Face (`managers/model.rs:1837`, `ApiBuilder::from_env()`), no a la
+          carpeta que el usuario elige aquí: el ajuste solo manda sobre los
+          modelos heredados y los de Pulido. Elegir disco y ver que las
+          descargas siguen yendo a otro sitio es peor que no ofrecerlo —
+          mismo criterio que se aplicó al chip «Hablantes».
+          Vuelve cuando se haga el refactor de `models_dir` (ver IDEAS.md).
+          El componente y su comando se conservan intactos: reactivar es
+          descomentar esta línea. */}
+      {/* <CarpetaModelos /> */}
 
       {/* Search bar — filter the catalog by name or description */}
       {!catalogoCorto && (
