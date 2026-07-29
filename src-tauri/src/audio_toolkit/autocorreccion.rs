@@ -79,6 +79,20 @@ pub const SUSTITUCION_POR_DEFECTO: &[&str] = &[
     "digo",
 ];
 
+/// Señales de sustitución que SOLO valen justo después de puntos suspensivos.
+///
+/// «no» delimitado por comas es casi siempre una negación de verdad («vamos
+/// mañana, no, pasado mañana» la contiene y no debe tocarse), así que jamás
+/// puede ser señal general. Pero tras «…» la prosodia cambia: «a las ocho…
+/// no, a las nueve» es un falso comienzo, la forma más común de corregirse al
+/// dictar. La elipsis la escribe el ASR cuando la voz se corta a media frase.
+///
+/// Doble candado: además del contexto de elipsis, estas señales pasan por el
+/// mismo nivel 2 que las demás — sin segmento paralelo no se toca nada.
+/// No son configurables por diseño: su seguridad depende del contexto, no de
+/// la lista, y siguen la suerte del nivel de sustitución (apagado = apagadas).
+const SUSTITUCION_TRAS_ELIPSIS: &[&str] = &["no", "bueno, no", "mejor"];
+
 static PREPOSICIONES: Lazy<HashSet<&'static str>> = Lazy::new(|| {
     [
         "a", "ante", "bajo", "con", "contra", "de", "desde", "durante", "en", "entre", "hacia",
@@ -276,6 +290,13 @@ fn compilar(senales: &[String]) -> Vec<Vec<String>> {
     compiladas
 }
 
+/// ¿El token termina en puntos suspensivos? Acepta el carácter «…» y la forma
+/// de tres puntos sueltos que emiten algunos ASR («gigas...»).
+fn termina_en_elipsis(token: &Token) -> bool {
+    let (_, sufijo) = extract_punctuation(token.crudo);
+    sufijo.contains('…') || sufijo.contains("...")
+}
+
 /// ¿Empieza en `i` alguna de estas señales? Devuelve su largo en tokens.
 ///
 /// Una señal multi-token no cruza un cierre de oración en su interior, igual que
@@ -467,7 +488,12 @@ fn aplicar_sustitucion(tokens: &[Token], i: usize, n: usize) -> Option<String> {
 }
 
 /// Una pasada: aplica como mucho UNA corrección. `None` = no se tocó nada.
-fn una_pasada(texto: &str, borrado: &[Vec<String>], sustitucion: &[Vec<String>]) -> Option<String> {
+fn una_pasada(
+    texto: &str,
+    borrado: &[Vec<String>],
+    sustitucion: &[Vec<String>],
+    sustitucion_elipsis: &[Vec<String>],
+) -> Option<String> {
     let tokens = tokenizar(texto);
     let mut i = 0;
     while i < tokens.len() {
@@ -483,6 +509,17 @@ fn una_pasada(texto: &str, borrado: &[Vec<String>], sustitucion: &[Vec<String>])
             // adelante, por si el dictado trae otra corrección que sí aplica.
             i += n;
             continue;
+        }
+        // Señales que solo existen justo después de «…»: mismo nivel 2, con el
+        // candado extra del contexto. «no» entre comas jamás llega aquí.
+        if i > 0 && termina_en_elipsis(&tokens[i - 1]) {
+            if let Some(n) = casa_senal(&tokens, i, sustitucion_elipsis) {
+                if let Some(nuevo) = aplicar_sustitucion(&tokens, i, n) {
+                    return Some(nuevo);
+                }
+                i += n;
+                continue;
+            }
         }
         i += 1;
     }
@@ -516,9 +553,22 @@ pub fn aplicar_autocorreccion(
         return texto.to_string();
     }
 
+    // Las señales de elipsis siguen la suerte del nivel de sustitución: con el
+    // nivel apagado (`Some(vec![])`) tampoco existen.
+    let sustitucion_elipsis: Vec<Vec<String>> = if sustitucion.is_empty() {
+        Vec::new()
+    } else {
+        compilar(
+            &SUSTITUCION_TRAS_ELIPSIS
+                .iter()
+                .map(|s| s.to_string())
+                .collect::<Vec<_>>(),
+        )
+    };
+
     let mut actual = texto.to_string();
     for _ in 0..MAX_PASADAS {
-        match una_pasada(&actual, &borrado, &sustitucion) {
+        match una_pasada(&actual, &borrado, &sustitucion, &sustitucion_elipsis) {
             Some(nuevo) => actual = nuevo,
             None => return actual,
         }
@@ -771,5 +821,80 @@ mod tests {
         // La señal se compara por clave normalizada: «Dejalo» sin tilde cae.
         assert_eq!(corrige("Manda el correo. Dejalo."), "");
         assert_eq!(corrige("Manda el correo. DÉJALO."), "");
+    }
+
+    // ──────────────── «no» tras puntos suspensivos (falso comienzo) ────────
+
+    #[test]
+    fn elipsis_no_suelto_corrige_hora() {
+        assert_eq!(
+            corrige("Mañana voy a llegar a las ocho… no, a las nueve."),
+            "Mañana voy a llegar a las nueve."
+        );
+    }
+
+    #[test]
+    fn elipsis_no_suelto_corrige_dia() {
+        assert_eq!(
+            corrige("Lo dejamos para el viernes… no, el jueves."),
+            "Lo dejamos para el jueves."
+        );
+    }
+
+    #[test]
+    fn elipsis_tres_puntos_ascii_tambien_cuenta() {
+        // Algunos ASR escriben «...» en vez de «…».
+        assert_eq!(
+            corrige("La reunión es a las cuatro... no, a las cinco."),
+            "La reunión es a las cinco."
+        );
+    }
+
+    #[test]
+    fn elipsis_mejor_corrige_con_paralelo() {
+        assert_eq!(
+            corrige("La demo es a las cuatro… mejor, a las seis."),
+            "La demo es a las seis."
+        );
+    }
+
+    #[test]
+    fn elipsis_sin_categoria_conocida_se_abstiene() {
+        // «violeta» no es día, mes, hora, número ni nombre propio: sin
+        // categoría no hay paralelo, y sin paralelo no se toca nada. El
+        // marcador queda visible — mejor eso que adivinar cuánto reemplazar.
+        let t = "Tenemos que usar el color verde… no, mejor el violeta.";
+        assert_eq!(corrige(t), t);
+    }
+
+    #[test]
+    fn no_entre_comas_sigue_siendo_negacion() {
+        // Sin elipsis delante, «no» jamás es señal: esta frase contiene una
+        // negación de verdad y debe quedar exactamente como se dictó.
+        let t = "vamos mañana, no, pasado mañana";
+        assert_eq!(corrige(t), t);
+    }
+
+    #[test]
+    fn no_tras_punto_no_es_senal() {
+        // El punto es un cierre deliberado, no una duda: no activa la señal.
+        let t = "Ya lo revisé. No, no hace falta repetirlo.";
+        assert_eq!(corrige(t), t);
+    }
+
+    #[test]
+    fn elipsis_sin_paralelo_no_toca_nada() {
+        // La regla de oro sobrevive al contexto de elipsis: «espera» no tiene
+        // categoría, así que no hay paralelo posible y no se toca nada.
+        let t = "Primero tenemos que… no, espera.";
+        assert_eq!(corrige(t), t);
+    }
+
+    #[test]
+    fn elipsis_con_nivel_sustitucion_apagado_no_existe() {
+        // Las señales de elipsis siguen la suerte del nivel 2: apagado el
+        // nivel, apagadas ellas — identidad exacta.
+        let t = "Voy a las ocho… no, a las nueve.";
+        assert_eq!(aplicar_autocorreccion(t, &None, &Some(vec![])), t);
     }
 }

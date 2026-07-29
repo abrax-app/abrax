@@ -25,8 +25,10 @@
 
 pub mod emoji;
 pub mod fraseador;
+pub mod identificadores;
 pub mod modelos;
 pub mod motor_sidecar;
+pub mod numeros;
 pub mod protegidos;
 pub mod reglas;
 pub mod simbolos;
@@ -66,13 +68,24 @@ pub fn corregir(texto: &str, modo: CorreccionModo) -> ResultadoCorreccion {
     let mut t = texto.to_string();
     if matches!(modo, CorreccionModo::Limpio | CorreccionModo::Pulido) {
         t = reglas::autocorreccion_hablada(&t);
+        // Repetición inmediata accidental: «después después» → «después».
+        // Después de la autocorrección (que puede crear una) y antes de la
+        // ortotipografía. Ver [`reglas::colapsar_repeticiones`].
+        t = reglas::colapsar_repeticiones(&t);
         // Tildes: corrección léxica, fuera de `Literal` (que promete no cambiar
         // ninguna palabra). Solo añade acentos cuya omisión no es una palabra
         // válida — nunca cambia el sentido. Ver [`tildes`].
         t = tildes::restaurar_tildes(&t);
-        // Símbolos dictados inequívocos: «dos slash tres» → «2/3». Solo dispara
-        // con disparadores que no son habla normal y números a los lados; jamás
-        // toca «más/por/igual» sueltos. Ver [`simbolos`].
+        // Verbalización → forma escrita, en este orden medido: los numerales
+        // primero («ocho mil ochenta» → «8080»), los identificadores después
+        // (para que «localhost dos puntos 8080» ya tenga el puerto en cifras)
+        // y los símbolos al final («100 por ciento» → «100%»). Cada módulo es
+        // conservador y se abstiene sin evidencia. Todo ANTES de capitalizar:
+        // un correo que abre el dictado debe unirse primero y quedar
+        // «whisper@main.io», no capitalizarse como palabra y dar
+        // «Whisper@main.io». Ver [`numeros`], [`identificadores`], [`simbolos`].
+        t = numeros::normalizar_numeros(&t);
+        t = identificadores::normalizar_identificadores(&t);
         t = simbolos::normalizar_simbolos(&t);
     }
     t = reglas::normalizar_espacios(&t);

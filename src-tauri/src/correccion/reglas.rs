@@ -16,11 +16,17 @@ use crate::audio_toolkit::build_match_key;
 /// (`, perdón,`): "te pido perdón" jamás activa la regla.
 const MARCADORES: &[&[&str]] = &[
     &["perdon"],
+    &["perdona"],
+    &["disculpa"],
     &["digo"],
     &["mejor", "dicho"],
     &["mas", "bien"],
     &["quise", "decir"],
     &["quiero", "decir"],
+    &["mentira"],
+    &["miento"],
+    &["me", "equivoque"],
+    &["corrijo"],
 ];
 
 /// Puntuación que puede colgar del final de un token ("miércoles.", "nueve,").
@@ -139,6 +145,74 @@ fn aplicar_una_autocorreccion(texto: &str) -> Option<String> {
     None
 }
 
+/// Palabras cuya repetición inmediata suele ser deliberada: negación enfática
+/// («no no, eso no»), énfasis («muy muy rápido») y dígitos dictados de a uno.
+const NO_COLAPSAR: &[&str] = &[
+    "no", "si", "ya", "muy", "cero", "uno", "dos", "tres", "cuatro", "cinco", "seis", "siete",
+    "ocho", "nueve", "diez",
+];
+
+/// Colapsa la repetición inmediata accidental: «después después revisamos» →
+/// «después revisamos». El ASR duplica palabras cuando quien dicta titubea.
+///
+/// Cuatro guardas, cada una nacida de un caso real que rompió el prototipo:
+/// - [`NO_COLAPSAR`]: «no no», «muy muy» y los dígitos dictados se respetan.
+/// - Mayúscula a MITAD de frase delata nombre propio («Baden Baden»); la del
+///   token que abre el texto es ortotipografía y no cuenta.
+/// - Tokens con dígitos jamás («22 22 33 44» es un teléfono).
+/// - Vecinos de deletreo tampoco: en «hache te te pe ese» la doble «te» es
+///   la doble T de «https».
+pub fn colapsar_repeticiones(texto: &str) -> String {
+    // Línea a línea: los saltos de línea del dictado sobreviven siempre.
+    texto
+        .split('\n')
+        .map(colapsar_linea)
+        .collect::<Vec<_>>()
+        .join("\n")
+}
+
+fn colapsar_linea(texto: &str) -> String {
+    let toks: Vec<&str> = texto.split_whitespace().collect();
+    let mut out: Vec<&str> = Vec::new();
+    for (i, t) in toks.iter().enumerate() {
+        if let Some(&prev) = out.last() {
+            let nucleo = prev.trim_end_matches(PUNT_FINAL);
+            let clave_prev = build_match_key(nucleo);
+            let clave_act = build_match_key(t.trim_end_matches(PUNT_FINAL));
+            let mayuscula_media =
+                out.len() > 1 && nucleo.chars().next().is_some_and(|c| c.is_uppercase());
+            let numerico = nucleo.chars().any(|c| c.is_numeric());
+            let es_deletreo =
+                |w: &str| super::identificadores::es_clave_deletreo(&build_match_key(w));
+            let vecino_deletreo = es_deletreo(nucleo)
+                && (toks
+                    .get(i + 1)
+                    .is_some_and(|n| es_deletreo(n.trim_end_matches(PUNT_FINAL)))
+                    || (i >= 2 && es_deletreo(toks[i - 2].trim_end_matches(PUNT_FINAL))));
+            if !clave_prev.is_empty()
+                && clave_prev == clave_act
+                && nucleo.len() == prev.len()
+                && !NO_COLAPSAR.contains(&clave_prev.as_str())
+                && !mayuscula_media
+                && !numerico
+                && !vecino_deletreo
+            {
+                // Conserva la puntuación del segundo token («tarda tarda,» → «tarda,»).
+                *out.last_mut().unwrap() = t;
+                continue;
+            }
+        }
+        out.push(t);
+    }
+    // Sin colapso, el texto original queda byte a byte (espaciado incluido).
+    let unido = out.join(" ");
+    if unido == toks.join(" ") {
+        texto.to_string()
+    } else {
+        unido
+    }
+}
+
 /// Normaliza espacios alrededor de puntuación: quita los espacios ANTES de
 /// `, . ; : ! ? …` («hola , mundo» → «hola, mundo») y asegura uno DESPUÉS de
 /// `,` y `;` cuando sigue una letra («uno,dos» → «uno, dos»). No toca `.` ni
@@ -215,10 +289,12 @@ pub fn capitalizar_oraciones(texto: &str) -> String {
             let es_llana = palabra
                 .chars()
                 .all(|w| w.is_alphabetic() && w.is_lowercase());
-            // ¿Token con punto interno? («www» en «www.abrax.app»)
+            // ¿Token con separador interno de identificador? El punto de
+            // «www.abrax.app», la arroba de «whisper@main.io» o los dos puntos
+            // de «localhost:8080»: nada de eso es una palabra que capitalizar.
             let punto_interno = matches!(
                 (indices.get(fin + 1), indices.get(fin + 2)),
-                (Some(&(_, '.')), Some(&(_, sig))) if sig.is_alphanumeric()
+                (Some(&(_, '.' | '@' | ':')), Some(&(_, sig))) if sig.is_alphanumeric()
             );
             if es_llana && !punto_interno {
                 let mut cs = palabra.chars();
@@ -360,6 +436,16 @@ mod tests {
             capitalizar_oraciones("visita www.abrax.app. gracias"),
             "Visita www.abrax.app. Gracias"
         );
+        // La arroba y los dos puntos internos también delatan identificador:
+        // un correo o un puerto abriendo oración se quedan como están.
+        assert_eq!(
+            capitalizar_oraciones("whisper@main.io es el remitente"),
+            "whisper@main.io es el remitente"
+        );
+        assert_eq!(
+            capitalizar_oraciones("localhost:8080 no responde. revisa el puerto"),
+            "localhost:8080 no responde. Revisa el puerto"
+        );
     }
 
     #[test]
@@ -373,6 +459,95 @@ mod tests {
     #[test]
     fn signos_de_apertura_no_bloquean_la_mayuscula() {
         assert_eq!(capitalizar_oraciones("¿qué hora es?"), "¿Qué hora es?");
+    }
+
+    // ── repetición inmediata ──────────────────────────────────────────────
+
+    #[test]
+    fn colapsa_la_repeticion_accidental() {
+        assert_eq!(
+            colapsar_repeticiones("y después después revisamos el diseño"),
+            "y después revisamos el diseño"
+        );
+        // Conserva la puntuación del segundo token.
+        assert_eq!(
+            colapsar_repeticiones("la aplicación tarda tarda, mucho"),
+            "la aplicación tarda, mucho"
+        );
+        assert_eq!(colapsar_repeticiones("es el el archivo"), "es el archivo");
+    }
+
+    #[test]
+    fn repeticion_deliberada_se_respeta() {
+        for t in [
+            "no no, eso no",             // negación enfática
+            "va a ser muy muy rápido",   // énfasis
+            "el código es dos dos tres", // dígitos dictados de a uno
+            "llama al 22 22 33 44",      // teléfono en cifras
+            "vamos a Baden Baden",       // nombre propio a mitad de frase
+        ] {
+            assert_eq!(colapsar_repeticiones(t), t, "no debía tocar «{t}»");
+        }
+    }
+
+    #[test]
+    fn repeticion_en_deletreo_se_respeta() {
+        // La doble «te» de «hache te te pe ese» es la doble T de «https».
+        let t = "hache te te pe ese dos puntos barra barra";
+        assert_eq!(colapsar_repeticiones(t), t);
+    }
+
+    #[test]
+    fn mayuscula_que_abre_el_texto_no_es_nombre_propio() {
+        // «Después, bueno, después» tras quitar la muletilla: la mayúscula del
+        // primer token es ortotipografía, no evidencia de nombre propio. El
+        // colapso conserva el SEGUNDO token (por su puntuación); la mayúscula
+        // la restaura `capitalizar_oraciones` más adelante en la cadena.
+        assert_eq!(
+            colapsar_repeticiones("Después después hacemos las pruebas"),
+            "después hacemos las pruebas"
+        );
+        assert_eq!(
+            capitalizar_oraciones(&colapsar_repeticiones(
+                "Después después hacemos las pruebas"
+            )),
+            "Después hacemos las pruebas"
+        );
+    }
+
+    #[test]
+    fn repeticion_preserva_saltos_de_linea() {
+        assert_eq!(
+            colapsar_repeticiones("primera línea línea\nsegunda intacta"),
+            "primera línea\nsegunda intacta"
+        );
+        let t = "sin repetición\ncon  espacios  raros";
+        assert_eq!(colapsar_repeticiones(t), t);
+    }
+
+    // ── marcadores nuevos de autocorrección ──────────────────────────────
+
+    #[test]
+    fn marcadores_nuevos_disparan_con_ancla() {
+        assert_eq!(
+            autocorreccion_hablada("debemos hacerlo el lunes, mentira, el martes"),
+            "debemos hacerlo el martes"
+        );
+        assert_eq!(
+            autocorreccion_hablada("lo vemos el viernes, corrijo, el sábado"),
+            "lo vemos el sábado"
+        );
+        assert_eq!(
+            autocorreccion_hablada("la reunión es en marzo, me equivoqué, en abril"),
+            "la reunión es en abril"
+        );
+    }
+
+    #[test]
+    fn mentira_sin_estructura_de_marcador_no_dispara() {
+        // «mentira» como sustantivo normal: sin comas alrededor no es señal.
+        let t = "eso es mentira y lo sabes";
+        assert_eq!(autocorreccion_hablada(t), t);
     }
 
     #[test]
