@@ -172,6 +172,9 @@ pub fn normalizar_espacios(texto: &str) -> String {
 /// convierte `useAuthStore` en `UseAuthStore` — y salta tokens con punto
 /// interno (`www.abrax.app`, `archivo.rs`). Un punto pegado a la siguiente
 /// palabra («3.14», «v0.1.0») no es fin de oración y no activa nada.
+///
+/// Tampoco capitaliza tras `/`, `\` o `@`: esos caracteres abren una ruta o un
+/// identificador, no una oración («/usr/bin», `@antonio`).
 pub fn capitalizar_oraciones(texto: &str) -> String {
     let mut out = String::with_capacity(texto.len());
     let mut esperar_mayuscula = true;
@@ -186,6 +189,14 @@ pub fn capitalizar_oraciones(texto: &str) -> String {
                 Some(&(_, sig)) => sig.is_whitespace(),
                 None => false,
             };
+            i += 1;
+            continue;
+        }
+        // Ruta o identificador abriendo oración: `/`, `\` y `@` no anteceden a
+        // una mayúscula. Sin esto «/usr/bin y algo» salía «/Usr/bin y algo».
+        if esperar_mayuscula && matches!(c, '/' | '\\' | '@') {
+            esperar_mayuscula = false;
+            out.push(c);
             i += 1;
             continue;
         }
@@ -362,5 +373,35 @@ mod tests {
     #[test]
     fn signos_de_apertura_no_bloquean_la_mayuscula() {
         assert_eq!(capitalizar_oraciones("¿qué hora es?"), "¿Qué hora es?");
+    }
+
+    #[test]
+    fn rutas_e_identificadores_no_se_capitalizan() {
+        // Abriendo el texto y tras punto: una ruta no es una oración.
+        assert_eq!(capitalizar_oraciones("/usr/bin y algo"), "/usr/bin y algo");
+        assert_eq!(
+            capitalizar_oraciones("listo. /home/antonio falla"),
+            "Listo. /home/antonio falla"
+        );
+        // Ruta UNC tras punto: la barra invertida tampoco abre oración.
+        assert_eq!(
+            capitalizar_oraciones("listo. \\\\servidor\\ruta"),
+            "Listo. \\\\servidor\\ruta"
+        );
+        // La letra de unidad SÍ se capitaliza, y así debe ser: «c:» → «C:».
+        assert_eq!(
+            capitalizar_oraciones("c:\\usuarios\\antonio"),
+            "C:\\usuarios\\antonio"
+        );
+        assert_eq!(
+            capitalizar_oraciones("@antonio revisa esto"),
+            "@antonio revisa esto"
+        );
+        // Y la oración normal siguiente SÍ se capitaliza: el arreglo no
+        // desactiva la regla, solo la salta en el token del identificador.
+        assert_eq!(
+            capitalizar_oraciones("/tmp/x existe. ahora sigue"),
+            "/tmp/x existe. Ahora sigue"
+        );
     }
 }
