@@ -1,4 +1,5 @@
-/* Skin "Bancada" — HUD moderno (shell F1). Plano, tipografía grande, mucho aire
+/* Skin "Karting" (id interno `bancada`, ver BancadaShell.tsx) — HUD moderno de
+   automovilismo. Plano, tipografía grande, mucho aire
    y acentos vibrantes (paleta Escudería = rojo #EE3F2C). Nada de metal/carbono
    ni botones-hardware skeuomórficos: lenguaje de UI actual (tablero de auto
    eléctrico / gráficos de TV). El acento sale de --color-logo-primary → retiñe
@@ -398,7 +399,10 @@
   border-radius: 6px;
   padding: 4px 7px;
   color: var(--bnc-text);
-  font: 500 13px/1.2 ui-sans-serif, system-ui, sans-serif;
+  font:
+    500 13px/1.2 ui-sans-serif,
+    system-ui,
+    sans-serif;
 }
 .bnc-diar-name:focus {
   outline: none;
@@ -439,7 +443,10 @@
   border-radius: 6px;
   padding: 5px;
   color: var(--bnc-dim);
-  font: 500 11px/1 ui-sans-serif, system-ui, sans-serif;
+  font:
+    500 11px/1 ui-sans-serif,
+    system-ui,
+    sans-serif;
   cursor: pointer;
 }
 .bnc-diar-reset:hover {

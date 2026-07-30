@@ -37,7 +37,8 @@ import {
 import AbraxLogo from "../icons/AbraxLogo";
 import { useSettings } from "@/hooks/useSettings";
 import { commands, events, type HistoryEntry } from "@/bindings";
-import { applyShell } from "@/lib/utils/theme";
+import { applyShell, UI_SHELL_OPTIONS } from "@/lib/utils/theme";
+import type { UiShell } from "@/bindings";
 import { EsferaEngine, readEsferaPalette } from "../../overlay/esfera/engine";
 import "./retro.css";
 
@@ -64,11 +65,11 @@ const NAV: [RView, string, LucideIcon][] = [
 
 const EQ_LABELS = ["60", "170", "310", "600", "1K", "3K", "6K", "12K"];
 
-const SKINS: ["retro" | "quiet" | "classic", string][] = [
-  ["retro", "Retro"],
-  ["quiet", "Quiet"],
-  ["classic", "Clásico"],
-];
+// Los skins NO se enumeran aquí: se derivan de `UI_SHELL_OPTIONS`, la misma
+// fuente que usa el selector de Ajustes, y las etiquetas salen de `t()`. Estuvo
+// escrito a mano y se desincronizó: la lista se quedó en tres y Karting, añadido
+// después, era INALCANZABLE desde Retro — el skin existía pero no había forma de
+// llegar a él si estabas aquí. Derivarla hace que un skin nuevo aparezca solo.
 
 const LANG_NAMES: Record<string, string> = {
   auto: "Auto",
@@ -301,7 +302,7 @@ export const RetroShell: React.FC = () => {
       // ignorar
     }
   };
-  const cambiarShell = async (shell: "retro" | "quiet" | "classic") => {
+  const cambiarShell = async (shell: UiShell) => {
     setSkinMenu(false);
     applyShell(shell);
     try {
@@ -646,15 +647,15 @@ export const RetroShell: React.FC = () => {
             </button>
             {skinMenu && (
               <div className="rk-skinmenu" onClick={(e) => e.stopPropagation()}>
-                {SKINS.filter(
-                  ([s]) => s !== (settings?.ui_shell ?? "retro"),
-                ).map(([s, l]) => (
+                {UI_SHELL_OPTIONS.filter(
+                  (s) => s !== (settings?.ui_shell ?? "retro"),
+                ).map((s) => (
                   <button
                     key={s}
                     type="button"
                     onClick={() => void cambiarShell(s)}
                   >
-                    {l}
+                    {t(`shell.options.${s}`)}
                   </button>
                 ))}
               </div>

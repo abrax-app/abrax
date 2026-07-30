@@ -54,8 +54,17 @@ const PALETA_LABEL: Record<UiTheme, string> = {
   escuderia: "ESCUDERÍA",
 };
 
-// Skin "Bancada" — consola de garaje / banco de pruebas de motor (shell F1,
-// paleta Escudería por defecto). TABLERO: instrumentos héroe (ignición,
+// Skin "Karting" — consola de garaje / banco de pruebas de motor (paleta
+// Escudería por defecto).
+//
+// El id interno sigue siendo `bancada` a propósito: es una variante serde
+// guardada en settings (`UiShell::Bancada`), y renombrarla dejaría en Clásico a
+// quien tuviera este skin puesto. La ETIQUETA visible es «Karting» en los 22
+// locales. Se dejó de llamar «shell F1» porque prometía Fórmula 1 y el HUD que
+// quedó no es eso; el vocabulario de boxes, pit-radio y largada vale igual para
+// el karting, así que el resto del copy sigue coherente.
+//
+// TABLERO: instrumentos héroe (ignición,
 // shift-lights, tacómetro, lámparas, LCD de pit-radio) sobre el ciclo de
 // dictado real de RetroShell (poll isRecording → startSpectrum/stopSpectrum,
 // R8). BITÁCORA/SETUP: componentes REALES embebidos (HistorySettings + las 8
