@@ -56,12 +56,23 @@ const OVERLAY_STREAM_HEIGHT: f64 = 120.0;
 // Esfera style: a square stage for the audio-reactive sphere plus a slim
 // status row underneath. Constant across states so the window never resizes
 // mid-dictation (the sphere itself morphs between recording/working).
+/// Overlay de LECTURA (Escucha): un parlante y nada más. Deliberadamente
+/// diminuto — aparece mientras se lee en voz alta y no debe competir con lo que
+/// el usuario esté mirando, que es justo el texto que le están leyendo.
+const OVERLAY_LEYENDO_WIDTH: f64 = 76.0;
+const OVERLAY_LEYENDO_HEIGHT: f64 = 44.0;
+
 const OVERLAY_ESFERA_WIDTH: f64 = 240.0;
 const OVERLAY_ESFERA_HEIGHT: f64 = 252.0;
 
 /// Overlay window size (logical) for a given style + UI state.
 fn overlay_dimensions(style: OverlayStyle, state: &str) -> (f64, f64) {
-    if style == OverlayStyle::Esfera {
+    // `leyendo` se comprueba ANTES que el estilo: leer en voz alta no es dictar, y
+    // no debe heredar el tamaño de la esfera ni del panel Live. Es el mismo
+    // overlay reutilizado, con su propia forma.
+    if state == "leyendo" {
+        (OVERLAY_LEYENDO_WIDTH, OVERLAY_LEYENDO_HEIGHT)
+    } else if style == OverlayStyle::Esfera {
         (OVERLAY_ESFERA_WIDTH, OVERLAY_ESFERA_HEIGHT)
     } else if state == "streaming" {
         (OVERLAY_STREAM_WIDTH, OVERLAY_STREAM_HEIGHT)
@@ -426,6 +437,15 @@ fn show_overlay_state(app_handle: &AppHandle, state: &str) {
 /// Shows the recording overlay window with fade-in animation
 pub fn show_recording_overlay(app_handle: &AppHandle) {
     show_overlay_state(app_handle, "recording");
+}
+
+/// Muestra el overlay de LECTURA: un parlante que retumba mientras Escucha lee.
+///
+/// Se oculta con `hide_recording_overlay`, igual que los demás estados — es la
+/// misma ventana, no una nueva. Respeta `overlay_style == None`: si el usuario
+/// apagó los overlays, este tampoco aparece.
+pub fn show_leyendo_overlay(app_handle: &AppHandle) {
+    show_overlay_state(app_handle, "leyendo");
 }
 
 /// Shows the larger streaming overlay that displays live transcription text

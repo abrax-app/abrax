@@ -768,7 +768,8 @@
   },
   "overlay": {
     "transcribing": "Transcriberen...",
-    "processing": "Verwerken..."
+    "processing": "Verwerken...",
+    "leyendo": "Wordt voorgelezen"
   },
   "correccion": {
     "motor": {

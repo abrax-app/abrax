@@ -431,3 +431,72 @@
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
+/* ── Overlay de LECTURA (Escucha) ─────────────────────────────────────────────
+   Un parlante diminuto mientras se lee en voz alta. Las ondas laten desfasadas
+   para que se lea como sonido saliendo, no como un icono estático.
+
+   El latido es DECORATIVO y no mide nada: el motor de voz no expone amplitud, y
+   fingir un medidor de nivel sería un instrumento que miente. Comunica «está
+   sonando», que es lo único que hace falta saber. */
+.scard.leyendo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 14px;
+  gap: 0;
+}
+.spk {
+  color: var(--s-accent);
+  display: block;
+}
+.spk-cono {
+  transform-origin: 8px 12px;
+  animation: spk-cono 0.9s ease-in-out infinite;
+}
+.spk-onda {
+  transform-origin: 12px 12px;
+  animation: spk-onda 0.9s ease-in-out infinite;
+}
+/* La onda de dentro sale primero; la de fuera la sigue. Ese desfase es lo que
+   hace que se lea como una onda que VIAJA y no como dos líneas parpadeando. */
+.spk-onda-1 {
+  animation-delay: 0s;
+}
+.spk-onda-2 {
+  animation-delay: 0.18s;
+}
+
+@keyframes spk-cono {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.09);
+  }
+}
+@keyframes spk-onda {
+  0%,
+  100% {
+    opacity: 0.35;
+    transform: translateX(0);
+  }
+  50% {
+    opacity: 1;
+    transform: translateX(1px);
+  }
+}
+
+/* Reduced motion: se detiene el latido y las ondas quedan visibles y quietas.
+   El overlay sigue apareciendo y desapareciendo, que es la señal que de verdad
+   importa — lo que se retira es la animación continua, no la información. */
+@media (prefers-reduced-motion: reduce) {
+  .spk-cono,
+  .spk-onda {
+    animation: none;
+  }
+  .spk-onda {
+    opacity: 0.85;
+  }
+}

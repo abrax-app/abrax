@@ -765,7 +765,8 @@
   },
   "overlay": {
     "transcribing": "正在轉錄...",
-    "processing": "處理中..."
+    "processing": "處理中...",
+    "leyendo": "正在朗讀"
   },
   "whatsNew": {
     "title": "Abrax v{{version}} 新功能"

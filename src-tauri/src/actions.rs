@@ -945,9 +945,12 @@ impl ShortcutAction for LeerSeleccionAction {
                 LEYENDO.load(Ordering::SeqCst) || matches!(tts.status(), Ok(e) if e.hablando);
             if leyendo {
                 LEYENDO.store(false, Ordering::SeqCst);
+                // Esta rama sale ANTES de crear el guard, así que oculta ella.
+                crate::overlay::hide_recording_overlay(&app);
                 if let Err(e) = tts.stop() {
-                    warn!("leer selección: no se pudo detener la lectura: {e}");
+                    warn!("[leer] no se pudo detener la lectura: {e}");
                 }
+                info!("[leer] lectura detenida por el usuario");
                 return;
             }
             LEYENDO.store(true, Ordering::SeqCst);
@@ -956,13 +959,18 @@ impl ShortcutAction for LeerSeleccionAction {
             // olvidara de bajarla, el atajo quedaría creyendo que sigue leyendo y
             // la siguiente pulsación intentaría callar algo que no suena: el atajo
             // quedaría muerto hasta reiniciar. El guard lo hace por construcción.
-            struct BajarAlSalir;
+            // El guard baja la bandera Y oculta el overlay. Los dos en el mismo
+            // sitio a propósito: si el overlay se ocultara en una línea al final,
+            // cualquier `return` de error dejaría un parlante flotando en pantalla
+            // para siempre. `Drop` lo hace por construcción.
+            struct BajarAlSalir(AppHandle);
             impl Drop for BajarAlSalir {
                 fn drop(&mut self) {
                     LEYENDO.store(false, std::sync::atomic::Ordering::SeqCst);
+                    crate::overlay::hide_recording_overlay(&self.0);
                 }
             }
-            let _guard = BajarAlSalir;
+            let _guard = BajarAlSalir(app.clone());
 
             // Traza del camino completo. Una lectura correcta no escribía NADA en
             // el log, así que ante «no funciona» no había forma de saber en qué
@@ -1009,6 +1017,9 @@ impl ShortcutAction for LeerSeleccionAction {
             // va a un hilo de bloqueo y no al ejecutor async. Cuando vuelve, la
             // lectura acabó y el guard baja la bandera.
             info!("[leer] hablando con voz {voz:?} tras {:?}", t0.elapsed());
+            // Se muestra AQUÍ y no al capturar: si no había selección, el overlay
+            // habría aparecido y desaparecido de golpe, un parpadeo sin sentido.
+            crate::overlay::show_leyendo_overlay(&app);
             let _ = tauri::async_runtime::spawn_blocking(move || {
                 if let Err(e) = tts.speak(seleccion, voz, Some(velocidad), Some(tono)) {
                     warn!("[leer] la síntesis falló: {e}");

@@ -17,7 +17,14 @@ import EsferaStage from "./EsferaStage";
 import type { EsferaState } from "./esfera/engine";
 import type { SpectrumPayload } from "@/lib/types/events";
 
-type OverlayState = "recording" | "streaming" | "transcribing" | "processing";
+type OverlayState =
+  | "recording"
+  | "streaming"
+  | "transcribing"
+  | "processing"
+  // Escucha leyendo en voz alta. No es dictado: no lleva micro, ni onda, ni
+  // temporizador — solo el parlante.
+  | "leyendo";
 
 // ── ONDA REACTIVA ───────────────────────────────────────────────────────────
 // Una SEÑAL EN EL TIEMPO, no barras y tampoco un espectro. El upstream (Handy)
@@ -203,7 +210,16 @@ const RecordingOverlay: React.FC = () => {
         setIsVisible(true);
         // Subscribe to spectrum frames only while visible (R8): the backend
         // gates FFT + emission on this subscription.
-        void commands.startSpectrum();
+        //
+        // Y SOLO SI EL ESTADO LO NECESITA. `leyendo` es Escucha leyendo un texto
+        // en voz alta: no hay micrófono de por medio y no se dibuja onda alguna.
+        // Suscribirse ahí encendería la FFT del micro mientras al usuario
+        // simplemente le leen algo — desperdicio, y una activación del micrófono
+        // que nadie pidió. La letra de R8 se cumplía (el overlay está visible),
+        // pero no su intención.
+        if (overlayState !== "leyendo") {
+          void commands.startSpectrum();
+        }
       });
 
       const unlistenHide = await listen("hide-overlay", () => {
@@ -386,6 +402,59 @@ const RecordingOverlay: React.FC = () => {
       <div className="sbase-r">{showCancel && cancelBtn}</div>
     </div>
   );
+
+  // ---- Overlay de LECTURA (Escucha) ----------------------------------------
+  // Un parlante y nada más, mientras se lee en voz alta. Va ANTES de mirar el
+  // estilo a propósito: leer no es dictar, así que no hereda la esfera ni el
+  // panel Live — se ve igual con cualquier estilo elegido.
+  //
+  // Las ondas del parlante PULSAN, no miden. El motor de voz no expone amplitud,
+  // así que animarlas al ritmo real no es posible; fingir un medidor de nivel
+  // sería un instrumento que miente. Lo que comunica es «está sonando», que es
+  // exactamente lo que hay que saber.
+  if (state === "leyendo") {
+    return (
+      <div
+        dir={direction}
+        className={`ov-stage ${position} ov-fade ${isVisible ? "show" : ""}`}
+      >
+        <div className="scard compact leyendo">
+          <svg
+            className="spk"
+            viewBox="0 0 24 24"
+            width="22"
+            height="22"
+            role="img"
+            aria-label={t("overlay.leyendo")}
+          >
+            {/* cono del parlante */}
+            <path
+              className="spk-cono"
+              d="M4 9.5h3.2L12 5.6v12.8L7.2 14.5H4z"
+              fill="currentColor"
+            />
+            {/* dos ondas que laten desfasadas: la de dentro primero */}
+            <path
+              className="spk-onda spk-onda-1"
+              d="M15 9.2a4 4 0 0 1 0 5.6"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.8"
+              strokeLinecap="round"
+            />
+            <path
+              className="spk-onda spk-onda-2"
+              d="M17.6 6.8a7.6 7.6 0 0 1 0 10.4"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.8"
+              strokeLinecap="round"
+            />
+          </svg>
+        </div>
+      </div>
+    );
+  }
 
   // ---- Esfera overlay: the audio-reactive sphere on a cosmic stage, with the
   // shared control row underneath (timer + cancel while listening; spinner +

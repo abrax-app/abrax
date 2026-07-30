@@ -765,7 +765,8 @@
   },
   "overlay": {
     "transcribing": "文字起こし中…",
-    "processing": "処理中…"
+    "processing": "処理中…",
+    "leyendo": "読み上げ中"
   },
   "whatsNew": {
     "title": "Abrax v{{version}} の新機能"

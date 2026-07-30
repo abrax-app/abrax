@@ -765,7 +765,8 @@
   },
   "overlay": {
     "transcribing": "...جاري التفريغ",
-    "processing": "...جاري المعالجة"
+    "processing": "...جاري المعالجة",
+    "leyendo": "قراءة بصوت عال"
   },
   "whatsNew": {
     "title": "الجديد في Abrax v{{version}}"

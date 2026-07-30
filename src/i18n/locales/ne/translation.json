@@ -768,7 +768,8 @@
   },
   "overlay": {
     "transcribing": "ट्रान्सक्राइब गरिँदैछ...",
-    "processing": "प्रशोधन गरिँदैछ..."
+    "processing": "प्रशोधन गरिँदैछ...",
+    "leyendo": "ठूलो स्वरमा पढ्दै"
   },
   "correccion": {
     "motor": {

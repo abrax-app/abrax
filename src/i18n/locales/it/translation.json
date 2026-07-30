@@ -765,7 +765,8 @@
   },
   "overlay": {
     "transcribing": "Trascrizione...",
-    "processing": "Elaborazione..."
+    "processing": "Elaborazione...",
+    "leyendo": "Lettura ad alta voce"
   },
   "whatsNew": {
     "title": "Novità in Abrax v{{version}}"

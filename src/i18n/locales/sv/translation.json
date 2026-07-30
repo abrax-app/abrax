@@ -765,7 +765,8 @@
   },
   "overlay": {
     "transcribing": "Transkriberar...",
-    "processing": "Bearbetar..."
+    "processing": "Bearbetar...",
+    "leyendo": "Läser upp"
   },
   "whatsNew": {
     "title": "Nytt i Abrax v{{version}}"

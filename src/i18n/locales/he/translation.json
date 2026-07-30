@@ -765,7 +765,8 @@
   },
   "overlay": {
     "transcribing": "מתמלל...",
-    "processing": "מעבד..."
+    "processing": "מעבד...",
+    "leyendo": "מקריא בקול"
   },
   "whatsNew": {
     "title": "חדש ב-Abrax v{{version}}"

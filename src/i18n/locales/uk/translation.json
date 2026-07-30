@@ -765,7 +765,8 @@
   },
   "overlay": {
     "transcribing": "Обробка...",
-    "processing": "Постобробка..."
+    "processing": "Постобробка...",
+    "leyendo": "Читання вголос"
   },
   "whatsNew": {
     "title": "Нове в Abrax v{{version}}"

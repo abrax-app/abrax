@@ -765,7 +765,8 @@
   },
   "overlay": {
     "transcribing": "Đang chuyển đổi...",
-    "processing": "Đang xử lý..."
+    "processing": "Đang xử lý...",
+    "leyendo": "Đang đọc to"
   },
   "whatsNew": {
     "title": "Điểm mới trong Abrax v{{version}}"
