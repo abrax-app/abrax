@@ -651,6 +651,16 @@ FunctionEnd
   LangString aproximadamente        ${LANG_SPANISH} "aprox."
   LangString separadorDecimal       ${LANG_SPANISH} ","
   LangString deleteModelsDone       ${LANG_SPANISH} "Modelos descargados eliminados de la caché."
+  ; ─── Se REDEFINEN cadenas de Tauri: gana la última, verificado con makensis
+  ; (avisa «set multiple times» y usa esta). El texto original decía solo
+  ; «Pulse Aceptar para cerrarlo» y CALLABA qué hace Cancelar, que aborta la
+  ; instalación o la desinstalación entera sin decir nada. Y como ABRAX se va a
+  ; la BANDEJA al pulsar la X, el usuario está convencido de haberla cerrado:
+  ; pasó el 29/07 y costó una desinstalación que «no funcionaba». Se nombra la
+  ; bandeja y se explican los DOS botones.
+  LangString appRunningOkKill ${LANG_SPANISH} "{{product_name}} sigue abierto.$\n$\nRecuerda que al cerrar la ventana queda en la bandeja, junto al reloj.$\n$\nAceptar: lo cierra y continúa.$\nCancelar: no cambia nada y esto se detiene."
+  LangString appRunning       ${LANG_SPANISH} "{{product_name}} sigue abierto y hay que cerrarlo para continuar. Si cerraste la ventana, míralo en la bandeja junto al reloj: clic derecho en su icono y «Salir». Después vuelve a intentarlo."
+  LangString failedToKillApp  ${LANG_SPANISH} "No se pudo cerrar {{product_name}}. Ciérralo desde la bandeja —clic derecho en su icono junto al reloj y «Salir»— y vuelve a intentarlo."
 !endif
 
 !ifdef LANG_ENGLISH
@@ -666,6 +676,10 @@ FunctionEnd
   LangString aproximadamente        ${LANG_ENGLISH} "approx."
   LangString separadorDecimal       ${LANG_ENGLISH} "."
   LangString deleteModelsDone       ${LANG_ENGLISH} "Downloaded models removed from the cache."
+  ; Ver la nota de la tabla en español: se redefinen a propósito.
+  LangString appRunningOkKill ${LANG_ENGLISH} "{{product_name}} is still running.$\n$\nNote that closing its window leaves it in the tray, next to the clock.$\n$\nOK: closes it and continues.$\nCancel: changes nothing and stops here."
+  LangString appRunning       ${LANG_ENGLISH} "{{product_name}} is still running and must be closed to continue. If you closed its window, look for it in the tray next to the clock: right-click its icon and choose Quit. Then try again."
+  LangString failedToKillApp  ${LANG_ENGLISH} "{{product_name}} could not be closed. Close it from the tray — right-click its icon next to the clock and choose Quit — then try again."
 !endif
 
 Function .onInit
