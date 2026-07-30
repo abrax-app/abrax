@@ -752,10 +752,19 @@ fn default_overlay_position() -> OverlayPosition {
 }
 
 fn default_overlay_style() -> OverlayStyle {
-    // La esfera es la imagen de marca de Abrax: no puede venir apagada de fábrica.
-    // Antes el default era `Live` (la píldora heredada del upstream), así que quien
-    // instalaba, dictaba una frase y cerraba NUNCA la veía. Ahora es lo primero que
-    // aparece al dictar. `Live` y `Minimal` siguen a un clic en Ajustes → Avanzado.
+    // `Minimal` de fábrica: la píldora discreta con la onda de voz.
+    //
+    // HISTORIA DE ESTE DEFAULT, porque ha cambiado dos veces y conviene no
+    // deshacerlo por descuido:
+    //   · `Live` (heredado del upstream) — se cambió porque quien instalaba,
+    //     dictaba una frase y cerraba nunca veía la esfera.
+    //   · `Esfera` — la imagen de marca, para que apareciera sola al dictar.
+    //   · `Minimal` (ahora) — decisión de producto del 29/07: la píldora con la
+    //     onda de voz es lo primero que se ve al dictar.
+    //
+    // COSTE ASUMIDO A SABIENDAS: la esfera ya NO sale de fábrica, así que hay que
+    // entrar a Ajustes → Avanzado para verla. Sigue a un clic, y la landing y el
+    // video la muestran igual.
     //
     // Linux se queda sin overlay por defecto (el overlay depende de una ventana
     // transparente que no todos los compositores dan). Position es independiente y
@@ -763,7 +772,7 @@ fn default_overlay_style() -> OverlayStyle {
     #[cfg(target_os = "linux")]
     return OverlayStyle::None;
     #[cfg(not(target_os = "linux"))]
-    return OverlayStyle::Esfera;
+    return OverlayStyle::Minimal;
 }
 
 fn default_esfera_modo() -> EsferaModo {
@@ -1925,12 +1934,39 @@ mod tests {
         assert!(s.custom_replacements.iter().all(|r| r.to == "ABRAX"));
     }
 
+    // El default del overlay depende de la plataforma, así que su guardián
+    // también. El test anterior afirmaba `Esfera` SIN guarda de `cfg`, con lo que
+    // en Linux —donde el default es `None` a propósito, porque no todos los
+    // compositores dan ventana transparente— fallaba. Fallo latente heredado que
+    // se arregla aquí de paso, ya que se estaba tocando este mismo test.
     #[test]
-    fn default_overlay_style_is_esfera_when_overlay_defaults_on() {
-        // La esfera es la imagen de marca: si alguien vuelve a poner `Live` aquí,
-        // el producto deja de mostrarla de fábrica y nadie se entera.
+    #[cfg(not(target_os = "linux"))]
+    fn default_overlay_style_es_minimal() {
+        // Decisión de producto del 29/07: de fábrica sale la píldora con la onda
+        // de voz. Este test es el guardián del default: si alguien lo cambia sin
+        // querer, aquí se ve. La razón y el coste están en
+        // `default_overlay_style`.
         let settings = get_default_settings();
-        assert_eq!(settings.overlay_style, OverlayStyle::Esfera);
+        assert_eq!(settings.overlay_style, OverlayStyle::Minimal);
+    }
+
+    #[test]
+    #[cfg(not(target_os = "linux"))]
+    fn el_overlay_sale_encendido_de_fabrica() {
+        // Lo que NO puede pasar, elijamos el estilo que sea: que el overlay venga
+        // apagado y nadie vea nada al dictar. Ese fue el fallo original con `Live`
+        // heredado, y por eso se guarda aparte del estilo concreto.
+        let settings = get_default_settings();
+        assert_ne!(settings.overlay_style, OverlayStyle::None);
+    }
+
+    #[test]
+    #[cfg(target_os = "linux")]
+    fn default_overlay_style_en_linux_es_none() {
+        // En Linux se apaga a propósito: el overlay necesita una ventana
+        // transparente y no todos los compositores la dan.
+        let settings = get_default_settings();
+        assert_eq!(settings.overlay_style, OverlayStyle::None);
     }
 
     #[test]
