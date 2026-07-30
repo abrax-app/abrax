@@ -1013,19 +1013,53 @@ impl ShortcutAction for LeerSeleccionAction {
             let velocidad = settings.tts_velocidad;
             let tono = settings.tts_tono;
 
-            // `speak` bloquea hasta terminar de sintetizar Y de reproducir, así que
-            // va a un hilo de bloqueo y no al ejecutor async. Cuando vuelve, la
-            // lectura acabó y el guard baja la bandera.
             info!("[leer] hablando con voz {voz:?} tras {:?}", t0.elapsed());
             // Se muestra AQUÍ y no al capturar: si no había selección, el overlay
             // habría aparecido y desaparecido de golpe, un parpadeo sin sentido.
             crate::overlay::show_leyendo_overlay(&app);
+
+            // `speak` va a un hilo de bloqueo porque en los motores neuronales SÍ
+            // bloquea hasta sintetizar y reproducir.
+            let tts_sonda = tts.clone();
             let _ = tauri::async_runtime::spawn_blocking(move || {
                 if let Err(e) = tts.speak(seleccion, voz, Some(velocidad), Some(tono)) {
                     warn!("[leer] la síntesis falló: {e}");
                 }
             })
             .await;
+
+            // PERO EL MOTOR DEL SISTEMA NO BLOQUEA: encola la frase y vuelve al
+            // instante. Medido el 30/07 con la traza de arriba — 655 caracteres
+            // «leídos» en 322 ms, cuando son treinta segundos de voz. Sin esperar
+            // aquí, el overlay se mostraba y el guard lo ocultaba 64 ms después:
+            // un parpadeo que ni llegaba a pintarse, y por eso «no aparece nada».
+            // Y la bandera de lectura se bajaba enseguida, así que el atajo tampoco
+            // podía parar nada.
+            //
+            // Se espera a que el motor DEJE de hablar de verdad. Primero a que
+            // EMPIECE (encolar tarda un momento y preguntar demasiado pronto
+            // devuelve «no habla»), y después a que termine.
+            const SONDEO: Duration = Duration::from_millis(120);
+            const ESPERA_ARRANQUE: Duration = Duration::from_secs(2);
+            // Techo duro: si `status` mintiera, el overlay no puede quedarse en
+            // pantalla para siempre. Diez minutos es más de lo que dura cualquier
+            // selección razonable y sigue siendo un final garantizado.
+            const TECHO: Duration = Duration::from_secs(600);
+
+            let hablando = || matches!(tts_sonda.status(), Ok(e) if e.hablando);
+            let arranque = Instant::now();
+            while !hablando() && arranque.elapsed() < ESPERA_ARRANQUE {
+                tokio::time::sleep(SONDEO).await;
+            }
+            let inicio = Instant::now();
+            while hablando() {
+                // Si el usuario pulsó el atajo otra vez, la bandera ya está abajo:
+                // salir deja que el guard oculte el overlay sin esperar al motor.
+                if !LEYENDO.load(Ordering::SeqCst) || inicio.elapsed() > TECHO {
+                    break;
+                }
+                tokio::time::sleep(SONDEO).await;
+            }
             info!("[leer] lectura terminada, total {:?}", t0.elapsed());
         });
     }
