@@ -12,6 +12,82 @@ use tauri_plugin_clipboard_manager::ClipboardExt;
 #[cfg(target_os = "linux")]
 use crate::utils::{is_kde_wayland, is_wayland};
 
+/// Captura lo que el usuario tiene SELECCIONADO en cualquier aplicación y
+/// devuelve el texto, **dejando el portapapeles como estaba**.
+///
+/// Cómo: guarda el portapapeles, envía Copiar a la ventana en foco, lee lo que
+/// aparezca y restaura lo guardado. Es la misma coreografía que el pegado del
+/// dictado, al revés, y con la misma regla dura (R5): jamás destruir lo que el
+/// usuario tenía copiado.
+///
+/// # Cómo se distingue «no hay selección» de «se copió algo»
+///
+/// No se puede preguntar al sistema si hay selección. Así que se compara con lo
+/// que había ANTES: si tras el Copiar el portapapeles no cambió, es que la app en
+/// foco no tenía nada seleccionado y el Copiar no hizo nada. Devuelve `Ok(None)`.
+///
+/// Tiene un falso negativo conocido y aceptado: si el usuario selecciona
+/// exactamente el mismo texto que ya tenía copiado, se lee como «sin selección».
+/// La alternativa —vaciar el portapapeles antes de copiar para detectar el
+/// cambio— arriesga dejarlo vacío si algo falla en medio, y perder lo copiado es
+/// peor que no leer una vez.
+pub fn leer_seleccion(app_handle: &AppHandle) -> Result<Option<String>, String> {
+    let clipboard = app_handle.clipboard();
+
+    // Igual que en el pegado: `read_text`/`read_image` devuelven Err si el
+    // formato no está, así que una imagen copiada no colapsa a cadena vacía.
+    let texto_previo = clipboard.read_text().ok();
+    let imagen_previa = clipboard.read_image().ok();
+
+    // Se usa la instancia GESTIONADA de Enigo, no una nueva: `lib.rs` deja su
+    // inicialización al frontend tras el onboarding a propósito, para no disparar
+    // el diálogo de permisos de macOS antes de que el usuario esté listo. Crear
+    // una aquí se saltaría ese diseño.
+    {
+        let enigo_state = app_handle
+            .try_state::<EnigoState>()
+            .ok_or("Enigo state not initialized")?;
+        let mut enigo = enigo_state
+            .0
+            .lock()
+            .map_err(|e| format!("Failed to lock Enigo: {}", e))?;
+        input::send_copy_ctrl_c(&mut enigo)?;
+    }
+
+    // Margen para que la app en foco atienda el Copiar y escriba. El de dentro de
+    // `send_copy_ctrl_c` cubre la pulsación; este, la escritura al portapapeles.
+    std::thread::sleep(Duration::from_millis(120));
+
+    let copiado = clipboard.read_text().ok();
+
+    // Restaurar SIEMPRE, y en el mismo orden de prioridad que el pegado: una
+    // imagen copiada es lo que más duele perder.
+    if let Some(img) = imagen_previa {
+        let _ = clipboard.write_image(&img);
+    } else if let Some(ref t) = texto_previo {
+        #[cfg(target_os = "linux")]
+        {
+            if is_wayland() && is_wl_copy_available() {
+                let _ = write_clipboard_via_wl_copy(t);
+            } else {
+                let _ = clipboard.write_text(t);
+            }
+        }
+        #[cfg(not(target_os = "linux"))]
+        {
+            let _ = clipboard.write_text(t);
+        }
+    }
+
+    match copiado {
+        // Sin cambio respecto a lo que ya había: no había selección.
+        Some(ref c) if Some(c) == texto_previo.as_ref() => Ok(None),
+        Some(c) if c.trim().is_empty() => Ok(None),
+        Some(c) => Ok(Some(c)),
+        None => Ok(None),
+    }
+}
+
 /// Pastes text using the clipboard: saves current content, writes text, sends paste keystroke, restores clipboard.
 fn paste_via_clipboard(
     enigo: &mut Enigo,

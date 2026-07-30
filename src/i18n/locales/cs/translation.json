@@ -234,6 +234,10 @@
             "name": "Zkratka zrušení",
             "description": "Klávesová zkratka pro zrušení aktuálního nahrávání."
           },
+          "leer_seleccion": {
+            "name": "Přečíst výběr nahlas",
+            "description": "Přečte nahlas text, který máte označený v jakékoli aplikaci. Dalším stisknutím přečtení zastavíte."
+          },
           "transcribe_with_post_process": {
             "name": "Klávesa pro následné zpracování",
             "description": "Volitelné: Vyhrazená klávesová zkratka, která vždy použije AI následné zpracování na váš přepis."

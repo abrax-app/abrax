@@ -234,6 +234,10 @@
             "name": "Skrót anulowania",
             "description": "Skrót klawiaturowy do anulowania bieżącego nagrywania."
           },
+          "leer_seleccion": {
+            "name": "Przeczytaj zaznaczenie na głos",
+            "description": "Czyta na głos tekst zaznaczony w dowolnej aplikacji. Naciśnij ponownie, aby przerwać."
+          },
           "transcribe_with_post_process": {
             "name": "Skrót postprocessingu",
             "description": "Opcjonalnie: Dedykowany skrót klawiszowy, który zawsze stosuje postprocessing AI do transkrypcji."

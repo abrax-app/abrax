@@ -234,6 +234,10 @@
             "name": "İptal Kısayolu",
             "description": "Mevcut kaydı iptal etmek için klavye kısayolu."
           },
+          "leer_seleccion": {
+            "name": "Seçimi sesli oku",
+            "description": "Herhangi bir uygulamada seçtiğiniz metni sesli okur. Durdurmak için tekrar basın."
+          },
           "transcribe_with_post_process": {
             "name": "Son İşlem Kısayolu",
             "description": "İsteğe bağlı: Transkripsiyonunuza her zaman AI son işleme uygulayan özel bir kısayol tuşu."

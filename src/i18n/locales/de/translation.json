@@ -234,6 +234,10 @@
             "name": "Abbrechen-Tastenkürzel",
             "description": "Das Tastenkürzel zum Abbrechen der aktuellen Aufnahme."
           },
+          "leer_seleccion": {
+            "name": "Auswahl vorlesen",
+            "description": "Liest den in einer beliebigen Anwendung ausgewählten Text vor. Zum Beenden erneut drücken."
+          },
           "transcribe_with_post_process": {
             "name": "Nachbearbeitungs-Tastenkürzel",
             "description": "Optional: Ein dediziertes Tastenkürzel, das immer die KI-Nachbearbeitung auf deine Transkription anwendet."

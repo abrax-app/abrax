@@ -234,6 +234,10 @@
             "name": "Atajo de Cancelar",
             "description": "El atajo de teclado para cancelar la grabación actual."
           },
+          "leer_seleccion": {
+            "name": "Leer la selección en voz alta",
+            "description": "Lee en voz alta el texto que tengas seleccionado en cualquier aplicación. Púlsalo otra vez para callar."
+          },
           "transcribe_with_post_process": {
             "name": "Tecla de Post Procesamiento",
             "description": "Opcional: Una tecla de acceso rápido dedicada que siempre aplica post procesamiento con IA a tu transcripción."
@@ -436,7 +440,7 @@
       },
       "autocorreccion": {
         "title": "Autocorrección hablada",
-        "description": "Si te corriges en voz alta mientras dictas, el texto sale ya corregido. Por reglas, al instante y sin conexión: no usa ningún modelo de IA ni el Post Proceso. Ante la duda no toca nada. Viene apagada porque puede borrar texto.",
+        "description": "Si te corriges en voz alta mientras dictas, el texto sale ya corregido. Por reglas, al instante y sin conexión: no usa ningún modelo de IA. Ante la duda no toca nada. Viene apagada porque puede borrar texto.",
         "ejemplo": "Ejemplo: «Agenda la reunión para el martes… no, perdón, para el miércoles» → «Agenda la reunión para el miércoles.»",
         "sustitucionTitle": "Señales de corrección",
         "sustitucionDescription": "Lo que dices para reemplazar algo que acabas de decir (p. ej. «no, perdón», «digo»). Solo sustituye si encuentra antes un segmento equivalente —mismo día, mes, hora, número o nombre—; si no lo encuentra, no toca nada.",

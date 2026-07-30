@@ -27,6 +27,10 @@ export const GeneralSettings: React.FC = () => {
         {!isLinux && !pushToTalk && (
           <ShortcutInput shortcutId="cancel" grouped={true} />
         )}
+        {/* Leer la selección en voz alta. Va aquí y no en Escucha porque es un
+            atajo global, y todos los atajos se configuran en un mismo sitio: si
+            estuviera en Escucha habría dos lugares donde buscar teclas. */}
+        <ShortcutInput shortcutId="leer_seleccion" grouped={true} />
       </SettingsGroup>
       <ModelSettingsCard />
       <SettingsGroup title={t("settings.sound.title")}>

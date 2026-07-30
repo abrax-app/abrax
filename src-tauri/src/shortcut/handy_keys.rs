@@ -441,7 +441,6 @@ pub fn init_shortcuts(app: &AppHandle) -> Result<(), String> {
         if id == "cancel" {
             continue;
         }
-        // Skip post-processing shortcut when the feature is disabled
 
         let binding = user_settings
             .bindings

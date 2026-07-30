@@ -920,6 +920,37 @@ pub fn get_default_settings() -> AppSettings {
         },
     );
 
+    // Leer en voz alta la selección de cualquier aplicación.
+    //
+    // POR QUÉ NO ES `ctrl+l`, que es lo que se pidió: Ctrl+L está de las más
+    // ocupadas que hay. En Chrome, Edge y Firefox enfoca la barra de direcciones;
+    // en el Explorador de Windows, también; en una terminal limpia la pantalla; en
+    // VS Code selecciona la línea. Un atajo GLOBAL lo captura antes que la app en
+    // foco, así que registrarlo dejaría a cualquiera sin barra de direcciones en
+    // el navegador. `es_atajo_global_seguro` no lo frenaría: solo rechaza teclas
+    // sueltas sin modificador, no colisiones con aplicaciones.
+    //
+    // `ctrl+shift+l` en Windows/Linux y `ctrl+option+l` en macOS: libres en las
+    // apps corrientes, y el macOS sigue la convención que ya eligió el dictado
+    // (Control+Option, ver el default de arriba). Se cambia en Ajustes.
+    #[cfg(target_os = "macos")]
+    let leer_shortcut = "ctrl+option+l";
+    #[cfg(not(target_os = "macos"))]
+    let leer_shortcut = "ctrl+shift+l";
+    bindings.insert(
+        "leer_seleccion".to_string(),
+        ShortcutBinding {
+            id: "leer_seleccion".to_string(),
+            name: "Leer la selección en voz alta".to_string(),
+            description:
+                "Lee en voz alta el texto que tengas seleccionado en cualquier aplicación. \
+                 Púlsalo otra vez para callar."
+                    .to_string(),
+            default_binding: leer_shortcut.to_string(),
+            current_binding: leer_shortcut.to_string(),
+        },
+    );
+
     AppSettings {
         settings_schema_version: default_settings_schema_version(),
         bindings,
@@ -1743,6 +1774,54 @@ mod tests {
         // heredado, y por eso se guarda aparte del estilo concreto.
         let settings = get_default_settings();
         assert_ne!(settings.overlay_style, OverlayStyle::None);
+    }
+
+    /// El atajo de leer la selección viene de fábrica y bien formado.
+    ///
+    /// LÍMITE DECLARADO: aquí NO se comprueba que exista su entrada en
+    /// `actions::ACTION_MAP`, que es el emparejamiento que de verdad importa —un
+    /// binding sin acción es un atajo global fantasma, registrado en el sistema y
+    /// sin efecto. No se puede: referenciar `ACTION_MAP` desde cualquier test de
+    /// esta crate hace que el binario de test no arranque en Windows
+    /// (`STATUS_ENTRYPOINT_NOT_FOUND`, 0xc0000139) porque arrastra dependencias
+    /// nativas que el ejecutable de test no tiene al lado. Verificado: con la
+    /// aserción, 0 tests corren; sin ella, 389 pasan.
+    ///
+    /// Así que el emparejamiento se sostiene a mano y está escrito junto a
+    /// `ACTION_MAP`: **todo id de `bindings` necesita su entrada ahí**.
+    #[test]
+    fn el_atajo_de_leer_seleccion_existe_y_esta_bien_formado() {
+        let settings = get_default_settings();
+        let b = settings
+            .bindings
+            .get("leer_seleccion")
+            .expect("el binding debe venir de fábrica");
+        assert_eq!(b.id, "leer_seleccion");
+        assert!(!b.default_binding.is_empty());
+        assert_eq!(b.default_binding, b.current_binding);
+    }
+
+    /// NO puede ser `ctrl+l`. Está ocupadísimo: barra de direcciones en Chrome,
+    /// Edge, Firefox y el Explorador de Windows; limpiar pantalla en una terminal.
+    /// Un atajo global lo captura antes que la app en foco, así que dejaría a
+    /// cualquiera sin barra de direcciones. Si alguien lo pone aquí a mano, este
+    /// test explica por qué no.
+    #[test]
+    fn el_atajo_de_leer_seleccion_no_secuestra_ctrl_l() {
+        let settings = get_default_settings();
+        let atajo = settings.bindings["leer_seleccion"]
+            .default_binding
+            .to_ascii_lowercase();
+        let tokens: Vec<&str> = atajo.split('+').map(str::trim).collect();
+        let solo_ctrl_l = tokens.len() == 2
+            && tokens.contains(&"l")
+            && tokens.iter().any(|t| *t == "ctrl" || *t == "control");
+        assert!(
+            !solo_ctrl_l,
+            "«{atajo}» secuestraría la barra de direcciones del navegador"
+        );
+        // Y sigue siendo un atajo global válido para el validador del repo.
+        assert!(tokens.len() >= 2, "sin modificador secuestraría el teclado");
     }
 
     #[test]

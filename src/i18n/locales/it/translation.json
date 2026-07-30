@@ -234,6 +234,10 @@
             "name": "Scorciatoia Annulla",
             "description": "La scorciatoia da tastiera per annullare la registrazione in corso."
           },
+          "leer_seleccion": {
+            "name": "Leggi la selezione ad alta voce",
+            "description": "Legge ad alta voce il testo selezionato in qualsiasi applicazione. Premi di nuovo per interrompere."
+          },
           "transcribe_with_post_process": {
             "name": "Tasto di post-elaborazione",
             "description": "Facoltativo: Un tasto di scelta rapida dedicato che applica sempre la post-elaborazione IA alla trascrizione."

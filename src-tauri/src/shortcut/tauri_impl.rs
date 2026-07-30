@@ -29,7 +29,6 @@ pub fn init_shortcuts(app: &AppHandle) {
         if id == "cancel" {
             continue; // Skip cancel shortcut, it will be registered dynamically
         }
-        // Skip post-processing shortcut when the feature is disabled
         let binding = user_settings
             .bindings
             .get(&id)

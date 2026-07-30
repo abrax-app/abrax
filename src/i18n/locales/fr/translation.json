@@ -234,6 +234,10 @@
             "name": "Raccourci d'Annulation",
             "description": "Le raccourci clavier pour annuler l'enregistrement en cours."
           },
+          "leer_seleccion": {
+            "name": "Lire la sélection à voix haute",
+            "description": "Lit à voix haute le texte que vous avez sélectionné dans n'importe quelle application. Appuyez à nouveau pour arrêter."
+          },
           "transcribe_with_post_process": {
             "name": "Raccourci de post-traitement",
             "description": "Facultatif : Un raccourci dédié qui applique toujours le post-traitement IA à votre transcription."

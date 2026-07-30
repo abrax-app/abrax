@@ -900,6 +900,75 @@ impl ShortcutAction for TranscribeAction {
 // Cancel Action
 struct CancelAction;
 
+/// Lee en voz alta lo que el usuario tenga SELECCIONADO en cualquier aplicación.
+///
+/// Es un TOGGLE: si ya está leyendo, la pulsación calla. Si no, captura la
+/// selección de la ventana en foco y la lee con la voz elegida en Escucha.
+///
+/// La captura va por el portapapeles (copiar → leer → restaurar) porque no hay
+/// forma portable de leer la selección de otra app sin copiar; ver
+/// [`crate::clipboard::leer_seleccion`], que garantiza la restauración (R5).
+///
+/// Todo el trabajo va a una tarea aparte: la acción del atajo NO puede bloquear
+/// el hilo que atiende el teclado, o la pulsación se sentiría pegajosa.
+struct LeerSeleccionAction;
+
+impl ShortcutAction for LeerSeleccionAction {
+    fn start(&self, app: &AppHandle, _binding_id: &str, _shortcut_str: &str) {
+        let app = app.clone();
+        tauri::async_runtime::spawn(async move {
+            let Some(tts) = app.try_state::<Arc<TtsManager>>() else {
+                warn!("leer selección: el motor de voz no está inicializado");
+                return;
+            };
+            let tts = tts.inner().clone();
+
+            // Toggle: si está leyendo, esta pulsación calla y no captura nada.
+            if matches!(tts.status(), Ok(e) if e.hablando) {
+                if let Err(e) = tts.stop() {
+                    warn!("leer selección: no se pudo detener la lectura: {e}");
+                }
+                return;
+            }
+
+            let seleccion = match crate::clipboard::leer_seleccion(&app) {
+                Ok(Some(t)) => t,
+                Ok(None) => {
+                    // Sin selección no se dice nada y no se molesta con un error:
+                    // pulsar el atajo sin seleccionar es un accidente común.
+                    debug!("leer selección: no había nada seleccionado");
+                    return;
+                }
+                Err(e) => {
+                    warn!("leer selección: no se pudo capturar la selección: {e}");
+                    return;
+                }
+            };
+
+            // Misma voz y mismos ajustes de velocidad/tono que el panel Escucha:
+            // el atajo no es un modo aparte, es el mismo lector.
+            let settings = get_settings(&app);
+            let voz = settings.escucha_voz_prosa.clone();
+            let velocidad = settings.tts_velocidad;
+            let tono = settings.tts_tono;
+
+            // `speak` bloquea hasta terminar de sintetizar, así que va a un hilo
+            // de bloqueo y no al ejecutor async.
+            let _ = tauri::async_runtime::spawn_blocking(move || {
+                if let Err(e) = tts.speak(seleccion, voz, Some(velocidad), Some(tono)) {
+                    warn!("leer selección: la síntesis falló: {e}");
+                }
+            })
+            .await;
+        });
+    }
+
+    fn stop(&self, _app: &AppHandle, _binding_id: &str, _shortcut_str: &str) {
+        // Nada al soltar: el toggle vive en `start`. Si se detuviera aquí, un
+        // atajo pulsado y soltado (lo normal) callaría al instante.
+    }
+}
+
 impl ShortcutAction for CancelAction {
     fn start(&self, app: &AppHandle, _binding_id: &str, _shortcut_str: &str) {
         utils::cancel_current_operation(app);
@@ -934,6 +1003,17 @@ impl ShortcutAction for TestAction {
 }
 
 // Static Action Map
+/// Acciones por id de atajo.
+///
+/// **INVARIANTE: todo id de `settings::bindings` necesita su entrada aquí.** Un
+/// binding sin acción se registra en el sistema operativo y no hace nada: un
+/// atajo global fantasma, que le roba la combinación al resto de las apps para
+/// nada. Es peor que no tenerlo.
+///
+/// No hay test que lo compruebe, y no por descuido: referenciar `ACTION_MAP`
+/// desde cualquier test de esta crate impide que arranque el binario de test en
+/// Windows (`STATUS_ENTRYPOINT_NOT_FOUND`) porque arrastra dependencias nativas
+/// que el ejecutable de test no tiene al lado. Se sostiene leyendo las dos listas.
 pub static ACTION_MAP: Lazy<HashMap<String, Arc<dyn ShortcutAction>>> = Lazy::new(|| {
     let mut map = HashMap::new();
     map.insert(
@@ -943,6 +1023,10 @@ pub static ACTION_MAP: Lazy<HashMap<String, Arc<dyn ShortcutAction>>> = Lazy::ne
     map.insert(
         "cancel".to_string(),
         Arc::new(CancelAction) as Arc<dyn ShortcutAction>,
+    );
+    map.insert(
+        "leer_seleccion".to_string(),
+        Arc::new(LeerSeleccionAction) as Arc<dyn ShortcutAction>,
     );
     map.insert(
         "test".to_string(),

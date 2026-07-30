@@ -216,6 +216,10 @@
             "name": "Sneltoets voor annuleren",
             "description": "De sneltoets om de huidige opname te annuleren."
           },
+          "leer_seleccion": {
+            "name": "Selectie voorlezen",
+            "description": "Leest de tekst voor die je in een willekeurige toepassing hebt geselecteerd. Druk opnieuw om te stoppen."
+          },
           "transcribe_with_post_process": {
             "name": "Sneltoets voor naverwerking",
             "description": "Optioneel: Een specifieke sneltoets die altijd AI-naverwerking toepast op je transcriptie."

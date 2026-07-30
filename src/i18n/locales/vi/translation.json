@@ -234,6 +234,10 @@
             "name": "Phím tắt hủy",
             "description": "Phím tắt để hủy bản ghi hiện tại."
           },
+          "leer_seleccion": {
+            "name": "Đọc to phần đã chọn",
+            "description": "Đọc to đoạn văn bản bạn đã chọn trong bất kỳ ứng dụng nào. Nhấn lại để dừng."
+          },
           "transcribe_with_post_process": {
             "name": "Phím tắt xử lý sau",
             "description": "Tùy chọn: Phím tắt chuyên dụng luôn áp dụng xử lý sau bằng AI cho bản chuyển đổi của bạn."

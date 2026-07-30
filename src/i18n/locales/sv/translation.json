@@ -216,6 +216,10 @@
             "name": "Kortkommando för att avbryta",
             "description": "Kortkommandot för att avbryta den aktuella inspelningen."
           },
+          "leer_seleccion": {
+            "name": "Läs upp markeringen",
+            "description": "Läser upp texten du har markerat i valfritt program. Tryck igen för att avbryta."
+          },
           "transcribe_with_post_process": {
             "name": "Snabbkommando för efterbearbetning",
             "description": "Valfritt: En dedikerad snabbknapp som alltid tillämpar AI-efterbearbetning på din transkription."

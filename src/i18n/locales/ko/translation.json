@@ -216,6 +216,10 @@
             "name": "취소 단축키",
             "description": "현재 녹음을 취소하는 키보드 단축키입니다."
           },
+          "leer_seleccion": {
+            "name": "선택 영역 읽어주기",
+            "description": "어떤 앱에서든 선택한 텍스트를 소리내어 읽습니다. 다시 누르면 멈춥니다."
+          },
           "transcribe_with_post_process": {
             "name": "후처리 단축키",
             "description": "선택 사항: 항상 AI 후처리를 적용하는 전용 단축키입니다."

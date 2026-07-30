@@ -51,6 +51,43 @@ pub fn send_paste_ctrl_v(enigo: &mut Enigo) -> Result<(), String> {
     Ok(())
 }
 
+/// Envía Copiar (Ctrl+C / ⌘C) a la ventana en foco, para capturar lo que el
+/// usuario tiene seleccionado en CUALQUIER aplicación.
+///
+/// Es la única vía razonable: leer la selección de otra app sin copiar exige las
+/// APIs de accesibilidad (UI Automation en Windows, AX en macOS), que piden
+/// permisos aparte y no funcionan en todas las aplicaciones. Copiar funciona
+/// donde funciona Ctrl+C, que es prácticamente todo.
+///
+/// **Quien llama es responsable de restaurar el portapapeles** — ver
+/// [`crate::clipboard::leer_seleccion`], que lo hace. Misma regla que el pegado
+/// del dictado (fix R5): jamás destruir lo que el usuario tenía copiado.
+pub fn send_copy_ctrl_c(enigo: &mut Enigo) -> Result<(), String> {
+    #[cfg(target_os = "macos")]
+    let (modifier_key, c_key_code) = (Key::Meta, Key::Other(8));
+    #[cfg(target_os = "windows")]
+    let (modifier_key, c_key_code) = (Key::Control, Key::Other(0x43)); // VK_C
+    #[cfg(target_os = "linux")]
+    let (modifier_key, c_key_code) = (Key::Control, Key::Unicode('c'));
+
+    enigo
+        .key(modifier_key, enigo::Direction::Press)
+        .map_err(|e| format!("Failed to press modifier key: {}", e))?;
+    enigo
+        .key(c_key_code, enigo::Direction::Click)
+        .map_err(|e| format!("Failed to click C key: {}", e))?;
+
+    // Mismo margen que el pegado: la app en foco necesita un instante para
+    // atender la combinación y dejar la selección en el portapapeles.
+    std::thread::sleep(std::time::Duration::from_millis(100));
+
+    enigo
+        .key(modifier_key, enigo::Direction::Release)
+        .map_err(|e| format!("Failed to release modifier key: {}", e))?;
+
+    Ok(())
+}
+
 /// Sends a Ctrl+Shift+V paste command.
 /// This is commonly used in terminal applications on Linux to paste without formatting.
 /// Note: On Wayland, this may not work - callers should check for Wayland and use alternative methods.
