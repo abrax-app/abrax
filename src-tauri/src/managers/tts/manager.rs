@@ -176,12 +176,23 @@ impl TtsManager {
         let mut s = settings::get_settings(&self.app);
         s.tts_selected_engine = Some(id);
         settings::write_settings(&self.app, s);
-        let active = engine_to_u8(self.resolve_active());
+        let resuelto = self.resolve_active();
+        let active = engine_to_u8(resuelto);
         let prev = self.active.swap(active, Ordering::SeqCst);
         if prev != active {
             let _ = self.stop();
-            // La voz guardada es del motor VIEJO y hay que sanearla, o el usuario
-            // cambia de motor y sigue oyendo la voz del sistema. Ver abajo.
+        }
+        // SOLO se sanea si el motor que el usuario pidió es el que quedó ACTIVO.
+        //
+        // Si pidió Online y hoy no arranca, `resolve_active` degrada al Sistema —
+        // y sanear entonces le cambiaría la voz por una del SISTEMA, pisándole la
+        // preferencia por un fallo temporal. Cuando el motor vuelva, se habría
+        // perdido su elección. Visto en vivo el 30/07: el log mostró la voz
+        // cambiada a un token del registro de Windows justo tras degradar.
+        //
+        // Con el motor caído no hace falta sanear igualmente: el fallback usa su
+        // propia voz por defecto.
+        if resuelto == id {
             self.sanear_voz_guardada();
         }
         Ok(())

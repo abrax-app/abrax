@@ -964,16 +964,29 @@ impl ShortcutAction for LeerSeleccionAction {
             }
             let _guard = BajarAlSalir;
 
+            // Traza del camino completo. Una lectura correcta no escribía NADA en
+            // el log, así que ante «no funciona» no había forma de saber en qué
+            // paso se rompió. Sin contenido del dictado, solo longitudes (S3).
+            let t0 = Instant::now();
+            info!("[leer] atajo pulsado, capturando selección");
+
             let seleccion = match crate::clipboard::leer_seleccion(&app) {
-                Ok(Some(t)) => t,
+                Ok(Some(t)) => {
+                    info!(
+                        "[leer] selección capturada: {} chars en {:?}",
+                        t.chars().count(),
+                        t0.elapsed()
+                    );
+                    t
+                }
                 Ok(None) => {
                     // Sin selección no se dice nada y no se molesta con un error:
                     // pulsar el atajo sin seleccionar es un accidente común.
-                    debug!("leer selección: no había nada seleccionado");
+                    info!("[leer] no había nada seleccionado ({:?})", t0.elapsed());
                     return;
                 }
                 Err(e) => {
-                    warn!("leer selección: no se pudo capturar la selección: {e}");
+                    warn!("[leer] no se pudo capturar la selección: {e}");
                     return;
                 }
             };
@@ -995,12 +1008,14 @@ impl ShortcutAction for LeerSeleccionAction {
             // `speak` bloquea hasta terminar de sintetizar Y de reproducir, así que
             // va a un hilo de bloqueo y no al ejecutor async. Cuando vuelve, la
             // lectura acabó y el guard baja la bandera.
+            info!("[leer] hablando con voz {voz:?} tras {:?}", t0.elapsed());
             let _ = tauri::async_runtime::spawn_blocking(move || {
                 if let Err(e) = tts.speak(seleccion, voz, Some(velocidad), Some(tono)) {
-                    warn!("leer selección: la síntesis falló: {e}");
+                    warn!("[leer] la síntesis falló: {e}");
                 }
             })
             .await;
+            info!("[leer] lectura terminada, total {:?}", t0.elapsed());
         });
     }
 

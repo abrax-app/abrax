@@ -10,7 +10,7 @@ use std::io::{BufRead, Write};
 use std::net::TcpListener;
 use std::path::PathBuf;
 use std::process::{Child, Stdio};
-use std::sync::mpsc;
+use std::sync::{mpsc, Arc, Mutex};
 use std::time::Duration;
 
 use tauri::{AppHandle, Emitter};
@@ -73,9 +73,50 @@ impl PyServerEngine {
         }
     }
 
-    /// ¿Está el runtime aprovisionado? (intérprete del venv presente).
+    /// ¿Está el runtime aprovisionado **y completo**?
+    ///
+    /// Antes bastaba con que existiera el intérprete, y eso dejaba al usuario
+    /// atrapado: un venv A MEDIAS —con `Scripts/python.exe` pero sin `pyvenv.cfg`
+    /// ni paquetes— se reportaba como instalado, así que la UI no ofrecía
+    /// reinstalarlo y el motor fallaba para siempre con «No pyvenv.cfg file».
+    ///
+    /// Encontrado el 30/07 en un equipo real, en los DOS motores a la vez. La
+    /// causa más probable es la desinstalación: el `RmDir /r` del datadir borró el
+    /// venv a medias y dejó el `python.exe` atrás. Un borrado parcial es normal
+    /// —un archivo en uso, permisos—, así que la comprobación tiene que resistirlo.
+    ///
+    /// Se exigen las tres señales de un venv sano. `pyvenv.cfg` es la decisiva:
+    /// la escribe `uv venv` al TERMINAR, así que su ausencia significa
+    /// «interrumpido» sin ambigüedad.
     pub fn is_provisioned(runtime_dir: &std::path::Path) -> bool {
+        let venv = runtime_dir.join(".venv");
         venv_python(runtime_dir).is_file()
+            && venv.join("pyvenv.cfg").is_file()
+            && Self::tiene_paquetes(&venv)
+    }
+
+    /// ¿El venv tiene algo instalado? Un venv creado pero sin `pip install` no
+    /// sirve: el servidor arrancaría y moriría por un import que falta.
+    fn tiene_paquetes(venv: &std::path::Path) -> bool {
+        // Windows: Lib/site-packages · Unix: lib/pythonX.Y/site-packages
+        let directo = venv.join("Lib").join("site-packages");
+        if directo.is_dir() {
+            return std::fs::read_dir(&directo)
+                .map(|mut d| d.next().is_some())
+                .unwrap_or(false);
+        }
+        let lib = venv.join("lib");
+        std::fs::read_dir(&lib)
+            .map(|entradas| {
+                entradas.flatten().any(|e| {
+                    let sp = e.path().join("site-packages");
+                    sp.is_dir()
+                        && std::fs::read_dir(&sp)
+                            .map(|mut d| d.next().is_some())
+                            .unwrap_or(false)
+                })
+            })
+            .unwrap_or(false)
     }
 
     /// ¿La GPU de este equipo es compatible con motores que la exigen?
@@ -151,9 +192,34 @@ impl PyServerEngine {
             .arg(self.cfg.device_arg)
             .current_dir(&self.runtime_dir)
             .stdout(Stdio::piped())
-            .stderr(Stdio::null())
+            // stderr CAPTURADO, no descartado. Estaba en `Stdio::null()` y por eso
+            // cualquier fallo de Python —un paquete que falta, el venv roto,
+            // edge-tts sin instalar— se perdía y lo único que llegaba al usuario
+            // era «no respondió a tiempo», que describe el síntoma y esconde la
+            // causa. Con 180 s de plazo, «no respondió» casi nunca es lentitud:
+            // es que el proceso murió. Reportado el 30/07 con el motor Online.
+            .stderr(Stdio::piped())
             .spawn()
             .map_err(|e| TtsError::Io(format!("no se pudo lanzar el servidor: {e}")))?;
+
+        // El stderr se drena en su propio hilo y se guarda: si el proceso muere,
+        // sus últimas líneas son el diagnóstico. Se acota a las últimas para no
+        // acumular sin límite si el servidor se pone a escupir avisos.
+        let motivo = Arc::new(Mutex::new(Vec::<String>::new()));
+        if let Some(stderr) = child.stderr.take() {
+            let motivo = motivo.clone();
+            std::thread::spawn(move || {
+                let reader = std::io::BufReader::new(stderr);
+                for line in reader.lines().map_while(Result::ok) {
+                    if let Ok(mut v) = motivo.lock() {
+                        v.push(line);
+                        if v.len() > 12 {
+                            v.remove(0);
+                        }
+                    }
+                }
+            });
+        }
 
         // Espera la línea "READY" (la carga del modelo puede tardar).
         let stdout = child
@@ -181,10 +247,29 @@ impl PyServerEngine {
                 Ok(())
             }
             Err(_) => {
+                // ¿Murió, o de verdad tardó? Son cosas distintas y el mensaje debe
+                // distinguirlas: con 180 s de plazo, «tardó» casi nunca es cierto.
+                let salida = child.try_wait().ok().flatten();
                 let _ = child.kill();
-                Err(TtsError::NotAvailable(
-                    "el servidor de voz no respondió a tiempo".into(),
-                ))
+                let detalle = motivo
+                    .lock()
+                    .ok()
+                    .map(|v| v.join(" | "))
+                    .filter(|s| !s.trim().is_empty());
+
+                let msg = match (salida, detalle) {
+                    (Some(code), Some(d)) => {
+                        format!("el servidor de voz se cerró ({code}): {d}")
+                    }
+                    (Some(code), None) => format!(
+                        "el servidor de voz se cerró ({code}) sin decir por qué. \
+                         Prueba a reinstalar el motor desde Escucha."
+                    ),
+                    (None, Some(d)) => format!("el servidor de voz no arrancó: {d}"),
+                    (None, None) => "el servidor de voz no respondió a tiempo".into(),
+                };
+                log::warn!("[tts] {msg}");
+                Err(TtsError::NotAvailable(msg))
             }
         }
     }
@@ -299,6 +384,26 @@ pub fn venv_python(runtime_dir: &std::path::Path) -> PathBuf {
         runtime_dir.join(".venv").join("Scripts").join("python.exe")
     } else {
         runtime_dir.join(".venv").join("bin").join("python")
+    }
+}
+
+/// Borra un venv previo antes de crearlo de nuevo.
+///
+/// Reinstalar tiene que ser un ARREGLO, y sobre restos no lo es: `uv venv` sobre
+/// un venv corrupto puede darlo por bueno y dejarlo igual de roto. El caso que lo
+/// motivó (30/07): una desinstalación borró el datadir a medias y dejó el
+/// `python.exe` sin `pyvenv.cfg`; sin limpiar antes, cada reintento reproducía el
+/// mismo estado.
+///
+/// Es best-effort a propósito: si algo impide borrar (un archivo en uso), se sigue
+/// y que `uv` lo intente — fallar aquí sería peor que intentarlo.
+pub fn limpiar_venv(runtime_dir: &std::path::Path) {
+    let venv = runtime_dir.join(".venv");
+    if venv.exists() {
+        log::info!("[tts] limpiando venv previo en {}", venv.display());
+        if let Err(e) = std::fs::remove_dir_all(&venv) {
+            log::warn!("[tts] no se pudo limpiar el venv ({e}); se intenta igual");
+        }
     }
 }
 

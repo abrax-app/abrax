@@ -1132,8 +1132,45 @@ Section Uninstall
     DeleteRegKey /ifempty HKCU "${MANUKEY}"
 
     SetShellVarContext current
+
+    ; --- PROCESOS HIJO --- Antes de borrar hay que matar lo que corra DESDE el
+    ; datadir. El motor de voz arranca un `python.exe` que vive dentro de
+    ; `<datadir>\tts\runtime\*\.venv\Scripts\`, y si sigue vivo el `RmDir /r` de
+    ; abajo NO puede borrar su carpeta: se lleva lo que puede y deja el resto.
+    ;
+    ; Eso es exactamente lo que se encontro el 30/07 en un equipo real: tras
+    ; desinstalar quedaron los dos venv a medias —con `python.exe` pero sin
+    ; `pyvenv.cfg` ni paquetes—, y como la app los daba por instalados, el motor
+    ; no arrancaba nunca y tampoco ofrecia reinstalarlo. `CheckIfAppIsRunning`
+    ; cubre el ejecutable principal, pero no a sus hijos.
+    ;
+    ; Se filtra por RUTA, no por nombre: matar todos los `python.exe` del sistema
+    ; se llevaria por delante el trabajo del usuario. Solo mueren los que se
+    ; ejecutan desde nuestra carpeta.
+    DetailPrint "Cerrando procesos del motor de voz..."
+    ; OJO CON EL ESCAPADO: NSIS no admite '' para una comilla simple dentro de una
+    ; cadena delimitada por comillas simples — hay que usar $\' o la cadena se
+    ; corta a mitad. Y $$ produce un $ literal, que es lo que PowerShell necesita
+    ; para $_ .
+    nsExec::ExecToLog 'powershell -NoProfile -NonInteractive -ExecutionPolicy Bypass -Command "Get-CimInstance Win32_Process | Where-Object { $$_.ExecutablePath -and $$_.ExecutablePath -like $\'$APPDATA\${BUNDLEID}\*$\' } | ForEach-Object { try { Stop-Process -Id $$_.ProcessId -Force -ErrorAction Stop } catch {} }"'
+    Pop $R9
+    Sleep 400
+
     RmDir /r "$APPDATA\${BUNDLEID}"
     RmDir /r "$LOCALAPPDATA\${BUNDLEID}"
+
+    ; Segunda pasada: `RmDir /r` NO informa de errores, asi que la unica forma de
+    ; saber si funciono es MIRAR si la carpeta sigue ahi. Si quedo algo se
+    ; reintenta tras un respiro —un archivo recien liberado suele borrarse a la
+    ; segunda— y si aun asi resiste, se deja dicho en el log en vez de fingir que
+    ; la desinstalacion fue limpia.
+    ${If} ${FileExists} "$APPDATA\${BUNDLEID}\*.*"
+      Sleep 800
+      RmDir /r "$APPDATA\${BUNDLEID}"
+      ${If} ${FileExists} "$APPDATA\${BUNDLEID}\*.*"
+        DetailPrint "Aviso: quedaron archivos en $APPDATA\${BUNDLEID} (en uso)."
+      ${EndIf}
+    ${EndIf}
 
     ; --- MODELOS --- Los pesos NO están en el datadir: transcribe-cpp los baja
     ; a la caché de Hugging Face. Sin esto, «eliminar mis datos» dejaba varios

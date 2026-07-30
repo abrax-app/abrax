@@ -352,6 +352,9 @@ pub fn is_installed(app: &AppHandle) -> bool {
 pub async fn install_runtime(app: &AppHandle) -> Result<(), String> {
     let dir = download::runtime_dir(app, RUNTIME_NAME)?;
     std::fs::create_dir_all(&dir).map_err(|e| e.to_string())?;
+    // Restos de una instalación anterior fuera ANTES de crear: reinstalar debe
+    // arreglar, y sobre un venv a medias no arregla nada.
+    pyserver::limpiar_venv(&dir);
     let venv = dir.join(".venv");
     let venv_str = venv.to_string_lossy().to_string();
     pyserver::run_uv(&["venv", &venv_str, "--python", "3.12"]).await?;
