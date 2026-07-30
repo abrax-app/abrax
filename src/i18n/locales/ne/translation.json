@@ -826,27 +826,19 @@
   "correccion": {
     "motor": {
       "title": "सुधार इन्जिन",
-      "description": "ट्रान्सक्रिप्सन र टाँस्ने बीचमा तपाईंको बोलाइ सफा गर्छ। बन्दले सबै जस्ताको तस्तै राख्छ। नियम मात्रले तुरुन्तै निश्चित सुधारहरू लागू गर्छ। स्थानीय मोडेलले यस कम्प्युटरको स्थानीय LLM (Ollama) लाई पनि सोध्छ र उपलब्ध नभए वा अर्थ बदलिए नियममा फर्किन्छ। स्वतःले उपलब्ध उत्तम विकल्प छान्छ।",
+      "description": "ट्रान्सक्रिप्सन र टाँस्ने बीचमा तपाईंको बोलाइ सफा गर्छ। बन्दले सबै जस्ताको तस्तै राख्छ। नियम मात्रले तुरुन्तै निश्चित सुधारहरू लागू गर्छ।",
       "options": {
-        "auto": "स्वतः",
         "solo_reglas": "नियम मात्र",
-        "modelo": "स्थानीय मोडेल",
         "desactivado": "बन्द"
       }
     },
     "modo": {
       "title": "सुधार स्तर",
-      "description": "अक्षरशःले खाली स्थान र ठूला अक्षर मात्र सुधार्छ। सफाले बोलेका आत्म-सुधारहरू पनि मिलाउँछ (मङ्गलबार — माफ गर्नुहोस्, बुधबार)। परिष्कृतले स्पष्टताका लागि हल्का पुनर्संरचना गर्न सक्छ, तर अर्थ, नाम, अङ्क वा नकार कहिल्यै बदल्दैन।",
+      "description": "अक्षरशःले खाली स्थान र ठूला अक्षर मात्र सुधार्छ। सफाले बोलेका आत्म-सुधारहरू पनि मिलाउँछ (मङ्गलबार — माफ गर्नुहोस्, बुधबार)।",
       "options": {
         "literal": "अक्षरशः",
-        "limpio": "सफा",
-        "pulido": "परिष्कृत"
+        "limpio": "सफा"
       }
-    },
-    "estado": {
-      "detectado": "Ollama भेटियो — मोडेल: {{modelo}}",
-      "sinModelos": "Ollama चलिरहेको छ तर कुनै मोडेल डाउनलोड छैन — निश्चित नियमहरू प्रयोग हुनेछन्",
-      "noDetectado": "Ollama भेटिएन — निश्चित नियमहरू प्रयोग हुनेछन्"
     }
   },
   "pruebaMic": {
@@ -1069,18 +1061,6 @@
     "descSystem": "अपरेटिङ प्रणालीका आवाजहरू। सधैँ उपलब्ध, डाउनलोड बिना।",
     "descPiper": "स्पेनिसमा न्युरल आवाज, हलुका, CPU मा चल्छ।",
     "descKokoro": "CPU मा उच्च गुणस्तरको न्युरल आवाज।"
-  },
-  "pulidoModelos": {
-    "intro": "Download a local model for AI Polish. It's optional: without a model, correction uses the deterministic rules. It runs in a separate process and unloads itself when idle.",
-    "nombreRecomendado": "{{nombre}} · recommended",
-    "tamanoLicencia": "{{gb}} GB · {{licencia}}",
-    "descargar": "Download ({{gb}} GB)",
-    "porcentaje": "{{pct}}%",
-    "cancelar": "Cancel",
-    "usar": "Use",
-    "activo": "Active",
-    "borrar": "Delete",
-    "errorDescarga": "Download failed: {{error}}"
   },
   "carpetaModelos": {
     "titulo": "Models folder",

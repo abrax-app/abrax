@@ -236,7 +236,7 @@ export const ModelsSettings: React.FC = () => {
           Los cinco modelos del catálogo se descargan a la caché de Hugging
           Face (`managers/model.rs:1837`, `ApiBuilder::from_env()`), no a la
           carpeta que el usuario elige aquí: el ajuste solo manda sobre los
-          modelos heredados y los de Pulido. Elegir disco y ver que las
+          modelos heredados. Elegir disco y ver que las
           descargas siguen yendo a otro sitio es peor que no ofrecerlo —
           mismo criterio que se aplicó al chip «Hablantes».
           Vuelve cuando se haga el refactor de `models_dir` (ver IDEAS.md).

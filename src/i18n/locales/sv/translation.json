@@ -826,27 +826,19 @@
   "correccion": {
     "motor": {
       "title": "Korrigeringsmotor",
-      "description": "Städar upp din diktering mellan transkribering och inklistring. Av lämnar allt exakt som det transkriberades. Endast regler tillämpar omedelbara deterministiska korrigeringar. Lokal modell rådfrågar dessutom en lokal LLM (Ollama på den här datorn) och faller tillbaka på regler om den inte är tillgänglig eller ändrar betydelsen. Auto väljer det bästa tillgängliga alternativet.",
+      "description": "Städar upp din diktering mellan transkribering och inklistring. Av lämnar allt exakt som det transkriberades. Endast regler tillämpar omedelbara deterministiska korrigeringar.",
       "options": {
-        "auto": "Auto",
         "solo_reglas": "Endast regler",
-        "modelo": "Lokal modell",
         "desactivado": "Av"
       }
     },
     "modo": {
       "title": "Korrigeringsnivå",
-      "description": "Ordagrann korrigerar bara mellanslag och versaler. Ren löser även talade självrättelser (på tisdag — förlåt, onsdag). Polerad får omstrukturera lätt för tydlighet, utan att någonsin ändra betydelse, namn, siffror eller negationer.",
+      "description": "Ordagrann korrigerar bara mellanslag och versaler. Ren löser även talade självrättelser (på tisdag — förlåt, onsdag).",
       "options": {
         "literal": "Ordagrann",
-        "limpio": "Ren",
-        "pulido": "Polerad"
+        "limpio": "Ren"
       }
-    },
-    "estado": {
-      "detectado": "Ollama hittad — modell: {{modelo}}",
-      "sinModelos": "Ollama körs men har inga modeller nedladdade — deterministiska regler används",
-      "noDetectado": "Ollama hittades inte — deterministiska regler används"
     }
   },
   "pruebaMic": {
@@ -1069,18 +1061,6 @@
     "descSystem": "Operativsystemets röster. Alltid tillgängliga, inga nedladdningar.",
     "descPiper": "Neural röst på svenska, lätt, körs på CPU.",
     "descKokoro": "Neural röst av hög kvalitet på CPU."
-  },
-  "pulidoModelos": {
-    "intro": "Download a local model for AI Polish. It's optional: without a model, correction uses the deterministic rules. It runs in a separate process and unloads itself when idle.",
-    "nombreRecomendado": "{{nombre}} · recommended",
-    "tamanoLicencia": "{{gb}} GB · {{licencia}}",
-    "descargar": "Download ({{gb}} GB)",
-    "porcentaje": "{{pct}}%",
-    "cancelar": "Cancel",
-    "usar": "Use",
-    "activo": "Active",
-    "borrar": "Delete",
-    "errorDescarga": "Download failed: {{error}}"
   },
   "carpetaModelos": {
     "titulo": "Models folder",

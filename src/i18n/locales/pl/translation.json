@@ -826,27 +826,19 @@
   "correccion": {
     "motor": {
       "title": "Silnik korekty",
-      "description": "Porządkuje dyktowanie między transkrypcją a wklejeniem. Wyłączone zostawia wszystko dokładnie tak, jak zostało przepisane. Tylko reguły stosuje natychmiastowe poprawki deterministyczne. Model lokalny dodatkowo pyta lokalny LLM (Ollama na tym komputerze) i wraca do reguł, gdy jest niedostępny lub zmienia znaczenie. Automatycznie wybiera najlepszą dostępną opcję.",
+      "description": "Porządkuje dyktowanie między transkrypcją a wklejeniem. Wyłączone zostawia wszystko dokładnie tak, jak zostało przepisane. Tylko reguły stosuje natychmiastowe poprawki deterministyczne.",
       "options": {
-        "auto": "Automatycznie",
         "solo_reglas": "Tylko reguły",
-        "modelo": "Model lokalny",
         "desactivado": "Wyłączone"
       }
     },
     "modo": {
       "title": "Poziom korekty",
-      "description": "Dosłowny poprawia tylko odstępy i wielkie litery. Czysty rozwiązuje też mówione autopoprawki (we wtorek — przepraszam, w środę). Dopracowany może lekko przeredagować dla jasności, nigdy nie zmieniając znaczenia, nazw, liczb ani przeczeń.",
+      "description": "Dosłowny poprawia tylko odstępy i wielkie litery. Czysty rozwiązuje też mówione autopoprawki (we wtorek — przepraszam, w środę).",
       "options": {
         "literal": "Dosłowny",
-        "limpio": "Czysty",
-        "pulido": "Dopracowany"
+        "limpio": "Czysty"
       }
-    },
-    "estado": {
-      "detectado": "Wykryto Ollama — model: {{modelo}}",
-      "sinModelos": "Ollama działa, ale nie ma pobranych modeli — zostaną użyte reguły deterministyczne",
-      "noDetectado": "Nie wykryto Ollama — zostaną użyte reguły deterministyczne"
     }
   },
   "pruebaMic": {
@@ -1069,18 +1061,6 @@
     "descSystem": "Głosy systemu operacyjnego. Zawsze dostępne, bez pobierania.",
     "descPiper": "Neuronowy głos po polsku, lekki, działa na CPU.",
     "descKokoro": "Wysokiej jakości głos neuronowy na CPU."
-  },
-  "pulidoModelos": {
-    "intro": "Download a local model for AI Polish. It's optional: without a model, correction uses the deterministic rules. It runs in a separate process and unloads itself when idle.",
-    "nombreRecomendado": "{{nombre}} · recommended",
-    "tamanoLicencia": "{{gb}} GB · {{licencia}}",
-    "descargar": "Download ({{gb}} GB)",
-    "porcentaje": "{{pct}}%",
-    "cancelar": "Cancel",
-    "usar": "Use",
-    "activo": "Active",
-    "borrar": "Delete",
-    "errorDescarga": "Download failed: {{error}}"
   },
   "carpetaModelos": {
     "titulo": "Models folder",

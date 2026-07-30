@@ -826,27 +826,19 @@
   "correccion": {
     "motor": {
       "title": "محرك التصحيح",
-      "description": "ينظّف إملاءك بين النسخ واللصق. معطّل يترك كل شيء تمامًا كما نُسخ. القواعد فقط تطبّق تصحيحات حتمية فورية. النموذج المحلي يستشير أيضًا نموذج لغة محليًا (Ollama على هذا الجهاز) ويعود إلى القواعد إذا لم يكن متاحًا أو غيّر المعنى. تلقائي يختار أفضل خيار متاح.",
+      "description": "ينظّف إملاءك بين النسخ واللصق. معطّل يترك كل شيء تمامًا كما نُسخ. القواعد فقط تطبّق تصحيحات حتمية فورية. النموذج المحلي يستشير أيضًا نموذج لغة محليًا (Ollama على هذا الجهاز) ويعود إلى القواعد إذا لم يكن متاحًا أو غيّر المعنى.",
       "options": {
-        "auto": "تلقائي",
         "solo_reglas": "القواعد فقط",
-        "modelo": "نموذج محلي",
         "desactivado": "معطّل"
       }
     },
     "modo": {
       "title": "مستوى التصحيح",
-      "description": "حرفي يصحّح المسافات والأحرف الكبيرة فقط. نظيف يحلّ أيضًا التصحيحات الذاتية المنطوقة (يوم الثلاثاء — عفوًا، الأربعاء). مصقول قد يعيد الصياغة قليلًا للوضوح، دون أن يغيّر أبدًا المعنى أو الأسماء أو الأرقام أو النفي.",
+      "description": "حرفي يصحّح المسافات والأحرف الكبيرة فقط. نظيف يحلّ أيضًا التصحيحات الذاتية المنطوقة (يوم الثلاثاء — عفوًا، الأربعاء).",
       "options": {
         "literal": "حرفي",
-        "limpio": "نظيف",
-        "pulido": "مصقول"
+        "limpio": "نظيف"
       }
-    },
-    "estado": {
-      "detectado": "تم اكتشاف Ollama — النموذج: {{modelo}}",
-      "sinModelos": "Ollama يعمل لكن دون نماذج منزّلة — ستُستخدم القواعد الحتمية",
-      "noDetectado": "لم يُكتشف Ollama — ستُستخدم القواعد الحتمية"
     }
   },
   "pruebaMic": {
@@ -1069,18 +1061,6 @@
     "descSystem": "أصوات نظام التشغيل. متاحة دائمًا، دون أي تنزيل.",
     "descPiper": "صوت عصبي بالعربية، خفيف، يعمل على CPU.",
     "descKokoro": "صوت عصبي عالي الجودة على CPU."
-  },
-  "pulidoModelos": {
-    "intro": "Download a local model for AI Polish. It's optional: without a model, correction uses the deterministic rules. It runs in a separate process and unloads itself when idle.",
-    "nombreRecomendado": "{{nombre}} · recommended",
-    "tamanoLicencia": "{{gb}} GB · {{licencia}}",
-    "descargar": "Download ({{gb}} GB)",
-    "porcentaje": "{{pct}}%",
-    "cancelar": "Cancel",
-    "usar": "Use",
-    "activo": "Active",
-    "borrar": "Delete",
-    "errorDescarga": "Download failed: {{error}}"
   },
   "carpetaModelos": {
     "titulo": "Models folder",

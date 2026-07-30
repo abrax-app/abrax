@@ -826,27 +826,19 @@
   "correccion": {
     "motor": {
       "title": "מנוע התיקון",
-      "description": "מנקה את ההכתבה בין התמלול להדבקה. כבוי משאיר הכול בדיוק כפי שתומלל. כללים בלבד מחיל תיקונים דטרמיניסטיים מיידיים. מודל מקומי מתייעץ בנוסף עם LLM מקומי (Ollama במחשב הזה) וחוזר לכללים אם אינו זמין או משנה את המשמעות. אוטומטי בוחר את האפשרות הטובה ביותר הזמינה.",
+      "description": "מנקה את ההכתבה בין התמלול להדבקה. כבוי משאיר הכול בדיוק כפי שתומלל. כללים בלבד מחיל תיקונים דטרמיניסטיים מיידיים.",
       "options": {
-        "auto": "אוטומטי",
         "solo_reglas": "כללים בלבד",
-        "modelo": "מודל מקומי",
         "desactivado": "כבוי"
       }
     },
     "modo": {
       "title": "רמת התיקון",
-      "description": "מילולי מתקן רק רווחים ואותיות רישיות. נקי פותר גם תיקונים עצמיים מדוברים (ביום שלישי — סליחה, רביעי). מלוטש רשאי לארגן מחדש קלות למען הבהירות, לעולם בלי לשנות משמעות, שמות, מספרים או שלילות.",
+      "description": "מילולי מתקן רק רווחים ואותיות רישיות. נקי פותר גם תיקונים עצמיים מדוברים (ביום שלישי — סליחה, רביעי).",
       "options": {
         "literal": "מילולי",
-        "limpio": "נקי",
-        "pulido": "מלוטש"
+        "limpio": "נקי"
       }
-    },
-    "estado": {
-      "detectado": "Ollama זוהה — מודל: {{modelo}}",
-      "sinModelos": "Ollama פועל אך ללא מודלים שהורדו — ייעשה שימוש בכללים הדטרמיניסטיים",
-      "noDetectado": "Ollama לא זוהה — ייעשה שימוש בכללים הדטרמיניסטיים"
     }
   },
   "pruebaMic": {
@@ -1069,18 +1061,6 @@
     "descSystem": "קולות מערכת ההפעלה. תמיד זמין, ללא הורדות.",
     "descPiper": "קול נוירוני בעברית, קליל, רץ על CPU.",
     "descKokoro": "קול נוירוני באיכות גבוהה על CPU."
-  },
-  "pulidoModelos": {
-    "intro": "Download a local model for AI Polish. It's optional: without a model, correction uses the deterministic rules. It runs in a separate process and unloads itself when idle.",
-    "nombreRecomendado": "{{nombre}} · recommended",
-    "tamanoLicencia": "{{gb}} GB · {{licencia}}",
-    "descargar": "Download ({{gb}} GB)",
-    "porcentaje": "{{pct}}%",
-    "cancelar": "Cancel",
-    "usar": "Use",
-    "activo": "Active",
-    "borrar": "Delete",
-    "errorDescarga": "Download failed: {{error}}"
   },
   "carpetaModelos": {
     "titulo": "Models folder",

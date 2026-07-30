@@ -826,27 +826,19 @@
   "correccion": {
     "motor": {
       "title": "Düzeltme motoru",
-      "description": "Diktenizi transkripsiyon ile yapıştırma arasında temizler. Kapalı her şeyi tam transkribe edildiği gibi bırakır. Yalnızca kurallar anında deterministik düzeltmeler uygular. Yerel model ayrıca yerel bir LLM'e (bu makinedeki Ollama) danışır; kullanılamıyorsa veya anlamı değiştiriyorsa kurallara geri döner. Otomatik mevcut en iyi seçeneği seçer.",
+      "description": "Diktenizi transkripsiyon ile yapıştırma arasında temizler. Kapalı her şeyi tam transkribe edildiği gibi bırakır. Yalnızca kurallar anında deterministik düzeltmeler uygular.",
       "options": {
-        "auto": "Otomatik",
         "solo_reglas": "Yalnızca kurallar",
-        "modelo": "Yerel model",
         "desactivado": "Kapalı"
       }
     },
     "modo": {
       "title": "Düzeltme düzeyi",
-      "description": "Birebir yalnızca boşlukları ve büyük harfleri düzeltir. Temiz ayrıca sözlü öz-düzeltmeleri çözer (salı günü — pardon, çarşamba). Rafine netlik için hafifçe yeniden yapılandırabilir; anlamı, adları, sayıları veya olumsuzlamaları asla değiştirmez.",
+      "description": "Birebir yalnızca boşlukları ve büyük harfleri düzeltir. Temiz ayrıca sözlü öz-düzeltmeleri çözer (salı günü — pardon, çarşamba).",
       "options": {
         "literal": "Birebir",
-        "limpio": "Temiz",
-        "pulido": "Rafine"
+        "limpio": "Temiz"
       }
-    },
-    "estado": {
-      "detectado": "Ollama algılandı — model: {{modelo}}",
-      "sinModelos": "Ollama çalışıyor ama indirilmiş model yok — deterministik kurallar kullanılacak",
-      "noDetectado": "Ollama algılanmadı — deterministik kurallar kullanılacak"
     }
   },
   "pruebaMic": {
@@ -1069,18 +1061,6 @@
     "descSystem": "İşletim sisteminin sesleri. Her zaman kullanılabilir, indirme gerekmez.",
     "descPiper": "Türkçe nöral ses, hafif, CPU'da çalışır.",
     "descKokoro": "CPU'da yüksek kaliteli nöral ses."
-  },
-  "pulidoModelos": {
-    "intro": "Download a local model for AI Polish. It's optional: without a model, correction uses the deterministic rules. It runs in a separate process and unloads itself when idle.",
-    "nombreRecomendado": "{{nombre}} · recommended",
-    "tamanoLicencia": "{{gb}} GB · {{licencia}}",
-    "descargar": "Download ({{gb}} GB)",
-    "porcentaje": "{{pct}}%",
-    "cancelar": "Cancel",
-    "usar": "Use",
-    "activo": "Active",
-    "borrar": "Delete",
-    "errorDescarga": "Download failed: {{error}}"
   },
   "carpetaModelos": {
     "titulo": "Models folder",

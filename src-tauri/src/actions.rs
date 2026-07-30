@@ -520,55 +520,6 @@ fn resolve_effective_language(app: &AppHandle, settings: &AppSettings) -> String
     }
 }
 
-/// Resuelve el motor de "Pulido con IA" local (sidecar) si el usuario eligió un
-/// modelo descargado, la corrección usa modelo, y el sidecar arranca. `None` =
-/// no hay sidecar (se usará Ollama en loopback o solo reglas). Nunca propaga
-/// errores: cualquier fallo degrada en silencio, el dictado no depende de esto.
-async fn resolver_sidecar_correccion(
-    app: &AppHandle,
-    settings: &AppSettings,
-) -> Option<crate::correccion::Motor> {
-    use crate::settings::CorreccionMotor;
-    use tauri::Manager;
-
-    if !matches!(
-        settings.correccion_motor,
-        CorreccionMotor::Auto | CorreccionMotor::Modelo
-    ) {
-        return None;
-    }
-    let id = settings.correccion_modelo_local.as_deref()?;
-    let modelo = crate::correccion::modelos::por_id(id)?;
-    // El GGUF vive en el disco elegido por el usuario (models_dir); el runtime
-    // del sidecar vive en los datos de la app (app_data).
-    let models_dir = app
-        .try_state::<std::sync::Arc<ModelManager>>()?
-        .models_dir();
-    if !crate::correccion::modelos::esta_descargado(&models_dir, &modelo) {
-        return None; // no descargado todavía → Ollama/reglas
-    }
-    let app_data = crate::portable::app_data_dir(app).ok()?;
-    let gguf = crate::correccion::modelos::ruta_gguf(&models_dir, &modelo);
-    let mgr: std::sync::Arc<crate::correccion::motor_sidecar::SidecarManager> = app
-        .try_state::<std::sync::Arc<crate::correccion::motor_sidecar::SidecarManager>>()?
-        .inner()
-        .clone();
-
-    // Ruta de dictado: SOLO la comprobación rápida (un lock, sin lanzar nada).
-    // Si el modelo ya está cargado, se usa; si no, se pide el arranque EN
-    // SEGUNDO PLANO y este dictado sale por reglas/Ollama — el modelo quedará
-    // listo para el siguiente. Así el pegado del texto nunca espera al warmup.
-    if let Some(port) = mgr.motor_listo(&modelo.id) {
-        Some(crate::correccion::Motor {
-            base_url: format!("http://127.0.0.1:{port}"),
-            modelo: modelo.id,
-        })
-    } else {
-        mgr.solicitar_arranque(app_data, modelo.id.clone(), gguf);
-        None
-    }
-}
-
 pub(crate) async fn process_transcription_output(
     app: &AppHandle,
     transcription: &str,
@@ -591,10 +542,9 @@ pub(crate) async fn process_transcription_output(
 
     // Corrección local (módulo `correccion`): con el motor por defecto
     // (`desactivado`) es passthrough byte a byte; solo transforma si el usuario
-    // la activó en ajustes. Corre antes del LLM opcional: si aquel falla, el
-    // fallback conserva al menos la corrección determinista.
-    let sidecar = resolver_sidecar_correccion(app, &settings).await;
-    final_text = crate::correccion::procesar(&final_text, &settings, sidecar).await;
+    // la activó en ajustes. Todo determinista y síncrono desde que se retiró el
+    // «Pulido con IA» — ya no hay sidecar que resolver ni nada que esperar.
+    final_text = crate::correccion::procesar(&final_text, &settings);
 
     if post_process {
         if let Some(processed_text) = post_process_transcription(&settings, &final_text).await {

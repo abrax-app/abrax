@@ -141,8 +141,10 @@ pub fn change_correccion_modo_setting(app: AppHandle, modo: String) -> Result<()
     let mut settings = settings::get_settings(&app);
     let parsed = match modo.as_str() {
         "literal" => CorreccionModo::Literal,
-        "limpio" => CorreccionModo::Limpio,
-        "pulido" => CorreccionModo::Pulido,
+        // «pulido» era el tercer modo, retirado con el «Pulido con IA» el 29/07.
+        // Se acepta y cae en `Limpio`, igual que el alias de serde: un valor
+        // legado no es un valor inválido y no debe degradar a `Literal`.
+        "limpio" | "pulido" => CorreccionModo::Limpio,
         other => {
             warn!("Modo de corrección inválido '{}', se usa literal", other);
             CorreccionModo::Literal
@@ -158,9 +160,9 @@ pub fn change_correccion_modo_setting(app: AppHandle, modo: String) -> Result<()
 pub fn change_correccion_motor_setting(app: AppHandle, motor: String) -> Result<(), String> {
     let mut settings = settings::get_settings(&app);
     let parsed = match motor.as_str() {
-        "auto" => CorreccionMotor::Auto,
-        "solo_reglas" => CorreccionMotor::SoloReglas,
-        "modelo" => CorreccionMotor::Modelo,
+        // «auto» y «modelo» pedían el LLM local, retirado el 29/07: entran en
+        // solo-reglas, que es lo que hacían de hecho sin un modelo disponible.
+        "solo_reglas" | "auto" | "modelo" => CorreccionMotor::SoloReglas,
         "desactivado" => CorreccionMotor::Desactivado,
         other => {
             // Ante un valor desconocido, el estado seguro es apagado.

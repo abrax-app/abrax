@@ -826,27 +826,19 @@
   "correccion": {
     "motor": {
       "title": "Korrektur-Engine",
-      "description": "Bereinigt dein Diktat zwischen Transkription und Einfügen. Aus lässt alles exakt wie transkribiert. Nur Regeln wendet sofortige deterministische Korrekturen an. Lokales Modell fragt zusätzlich ein lokales LLM (Ollama auf diesem Rechner) und fällt auf Regeln zurück, wenn es nicht verfügbar ist oder die Bedeutung verändert. Auto wählt die beste verfügbare Option.",
+      "description": "Bereinigt dein Diktat zwischen Transkription und Einfügen. Aus lässt alles exakt wie transkribiert. Nur Regeln wendet sofortige deterministische Korrekturen an.",
       "options": {
-        "auto": "Auto",
         "solo_reglas": "Nur Regeln",
-        "modelo": "Lokales Modell",
         "desactivado": "Aus"
       }
     },
     "modo": {
       "title": "Korrekturstufe",
-      "description": "Wörtlich korrigiert nur Leerzeichen und Großschreibung. Sauber löst zusätzlich gesprochene Selbstkorrekturen auf (am Dienstag — Entschuldigung, Mittwoch). Poliert darf für Klarheit leicht umstrukturieren, ändert aber nie Bedeutung, Namen, Zahlen oder Verneinungen.",
+      "description": "Wörtlich korrigiert nur Leerzeichen und Großschreibung. Sauber löst zusätzlich gesprochene Selbstkorrekturen auf (am Dienstag — Entschuldigung, Mittwoch).",
       "options": {
         "literal": "Wörtlich",
-        "limpio": "Sauber",
-        "pulido": "Poliert"
+        "limpio": "Sauber"
       }
-    },
-    "estado": {
-      "detectado": "Ollama erkannt — Modell: {{modelo}}",
-      "sinModelos": "Ollama läuft, hat aber keine Modelle geladen — es werden deterministische Regeln verwendet",
-      "noDetectado": "Ollama nicht erkannt — es werden deterministische Regeln verwendet"
     }
   },
   "pruebaMic": {
@@ -1069,18 +1061,6 @@
     "descSystem": "Stimmen des Betriebssystems. Immer verfügbar, ohne Downloads.",
     "descPiper": "Neuronale Stimme auf Deutsch, leichtgewichtig, läuft auf der CPU.",
     "descKokoro": "Hochwertige neuronale Stimme, läuft auf der CPU."
-  },
-  "pulidoModelos": {
-    "intro": "Download a local model for AI Polish. It's optional: without a model, correction uses the deterministic rules. It runs in a separate process and unloads itself when idle.",
-    "nombreRecomendado": "{{nombre}} · recommended",
-    "tamanoLicencia": "{{gb}} GB · {{licencia}}",
-    "descargar": "Download ({{gb}} GB)",
-    "porcentaje": "{{pct}}%",
-    "cancelar": "Cancel",
-    "usar": "Use",
-    "activo": "Active",
-    "borrar": "Delete",
-    "errorDescarga": "Download failed: {{error}}"
   },
   "carpetaModelos": {
     "titulo": "Models folder",

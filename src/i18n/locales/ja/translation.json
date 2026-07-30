@@ -826,27 +826,19 @@
   "correccion": {
     "motor": {
       "title": "補正エンジン",
-      "description": "文字起こしから貼り付けまでの間に口述を整えます。「オフ」は文字起こしのまま何も変えません。「ルールのみ」は即時の決定的な修正だけを適用します。「ローカルモデル」はさらにローカルLLM(このマシンのOllama)に問い合わせ、利用できない場合や意味が変わる場合はルールにフォールバックします。「自動」は利用可能な最善の選択肢を選びます。",
+      "description": "文字起こしから貼り付けまでの間に口述を整えます。「オフ」は文字起こしのまま何も変えません。「ルールのみ」は即時の決定的な修正だけを適用します。",
       "options": {
-        "auto": "自動",
         "solo_reglas": "ルールのみ",
-        "modelo": "ローカルモデル",
         "desactivado": "オフ"
       }
     },
     "modo": {
       "title": "補正レベル",
-      "description": "「そのまま」は空白と大文字のみ修正します。「クリーン」は話し言葉の言い直し(火曜日、すみません、水曜日)も解決します。「洗練」は明瞭さのために軽く再構成することがありますが、意味・名前・数字・否定は決して変えません。",
+      "description": "「そのまま」は空白と大文字のみ修正します。「クリーン」は話し言葉の言い直し(火曜日、すみません、水曜日)も解決します。",
       "options": {
         "literal": "そのまま",
-        "limpio": "クリーン",
-        "pulido": "洗練"
+        "limpio": "クリーン"
       }
-    },
-    "estado": {
-      "detectado": "Ollamaを検出 — モデル: {{modelo}}",
-      "sinModelos": "Ollamaは起動していますがモデルがありません — 決定的ルールを使用します",
-      "noDetectado": "Ollamaが見つかりません — 決定的ルールを使用します"
     }
   },
   "pruebaMic": {
@@ -1069,18 +1061,6 @@
     "descSystem": "OS のシステム音声。常に利用でき、ダウンロード不要です。",
     "descPiper": "軽量な日本語のニューラル音声。CPU で動作します。",
     "descKokoro": "CPU で動作する高品質なニューラル音声。"
-  },
-  "pulidoModelos": {
-    "intro": "Download a local model for AI Polish. It's optional: without a model, correction uses the deterministic rules. It runs in a separate process and unloads itself when idle.",
-    "nombreRecomendado": "{{nombre}} · recommended",
-    "tamanoLicencia": "{{gb}} GB · {{licencia}}",
-    "descargar": "Download ({{gb}} GB)",
-    "porcentaje": "{{pct}}%",
-    "cancelar": "Cancel",
-    "usar": "Use",
-    "activo": "Active",
-    "borrar": "Delete",
-    "errorDescarga": "Download failed: {{error}}"
   },
   "carpetaModelos": {
     "titulo": "Models folder",

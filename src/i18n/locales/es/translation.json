@@ -826,27 +826,19 @@
   "correccion": {
     "motor": {
       "title": "Motor de corrección",
-      "description": "Limpia tu dictado entre la transcripción y el pegado. Desactivado deja todo tal cual se transcribió. Solo reglas aplica correcciones deterministas instantáneas. Modelo local consulta además un LLM local (Ollama en este equipo) y degrada a reglas si no está disponible o altera el significado. Auto elige la mejor opción disponible.",
+      "description": "Limpia tu dictado entre la transcripción y el pegado. Desactivado deja todo tal cual se transcribió. Solo reglas aplica correcciones deterministas instantáneas.",
       "options": {
-        "auto": "Auto",
         "solo_reglas": "Solo reglas",
-        "modelo": "Modelo local",
         "desactivado": "Desactivado"
       }
     },
     "modo": {
       "title": "Nivel de corrección",
-      "description": "Literal corrige solo espacios y mayúsculas. Limpio resuelve además autocorrecciones habladas («el martes, perdón, el miércoles»). Pulido puede reestructurar levemente para mayor claridad, sin cambiar jamás significado, nombres, cifras ni negaciones.",
+      "description": "Literal corrige solo espacios y mayúsculas. Limpio resuelve además autocorrecciones habladas («el martes, perdón, el miércoles»).",
       "options": {
         "literal": "Literal",
-        "limpio": "Limpio",
-        "pulido": "Pulido"
+        "limpio": "Limpio"
       }
-    },
-    "estado": {
-      "detectado": "Ollama detectado — modelo: {{modelo}}",
-      "sinModelos": "Ollama está corriendo pero sin modelos descargados — se usarán las reglas deterministas",
-      "noDetectado": "Ollama no detectado — se usarán las reglas deterministas"
     }
   },
   "pruebaMic": {
@@ -1069,18 +1061,6 @@
     "descSystem": "Voces del sistema operativo. Siempre disponible, sin descargas.",
     "descPiper": "Voz neuronal en español, liviana, corre en CPU.",
     "descKokoro": "Voz neuronal de alta calidad en CPU."
-  },
-  "pulidoModelos": {
-    "intro": "Descarga un modelo local para el Pulido con IA. Es opcional: sin un modelo, la corrección usa las reglas deterministas. Corre en un proceso aparte y se apaga solo por inactividad.",
-    "nombreRecomendado": "{{nombre}} · recomendado",
-    "tamanoLicencia": "{{gb}} GB · {{licencia}}",
-    "descargar": "Descargar ({{gb}} GB)",
-    "porcentaje": "{{pct}}%",
-    "cancelar": "Cancelar",
-    "usar": "Usar",
-    "activo": "Activo",
-    "borrar": "Borrar",
-    "errorDescarga": "No se pudo descargar: {{error}}"
   },
   "carpetaModelos": {
     "titulo": "Carpeta de modelos",

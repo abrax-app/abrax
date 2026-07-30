@@ -14,7 +14,8 @@ import type {
 import { bytesAGb } from "@/lib/utils/format";
 
 /**
- * Selector de dónde viven los modelos (transcripción y Pulido comparten la
+ * Selector de dónde viven los modelos (transcripción; el «Pulido con IA» que
+ * compartía esta carpeta se retiró el 29/07). Comparten la
  * elección). Muestra la carpeta actual y los discos con su espacio libre; al
  * elegir uno, las DESCARGAS NUEVAS van a `<disco>/Abrax/models`. Si ya hay
  * modelos descargados, ofrece mudarlos a la carpeta nueva con progreso; la

@@ -187,21 +187,6 @@ fn initialize_core_logic(app_handle: &AppHandle) {
     app_handle.manage(transcription_manager.clone());
     app_handle.manage(history_manager.clone());
     app_handle.manage(tray::CurrentTrayIconState::new());
-    // [PULIDO IA] Sidecar LLM opcional: no lanza nada hasta que el usuario elija
-    // un modelo descargado.
-    let sidecar_mgr = Arc::new(correccion::motor_sidecar::SidecarManager::new());
-    app_handle.manage(sidecar_mgr.clone());
-    // Registro de descargas de modelos de Pulido en curso (para progreso/cancelación).
-    app_handle.manage(commands::correccion_modelos::EstadoDescargas::default());
-    // Watcher de inactividad: descarga el modelo de RAM/VRAM tras unos minutos
-    // sin uso (misma filosofía que el modelo de transcripción).
-    {
-        let sc = sidecar_mgr.clone();
-        std::thread::spawn(move || loop {
-            std::thread::sleep(std::time::Duration::from_secs(60));
-            sc.stop_si_inactivo();
-        });
-    }
     // [ESCUCHA] El motor TTS del sistema vive en su propio hilo y se inicializa
     // perezosamente en el primer uso, así que crearlo aquí no cuesta nada.
     let escucha_manager = Arc::new(managers::escucha::EscuchaManager::new());
@@ -605,12 +590,6 @@ pub fn run(cli_args: CliArgs) {
             commands::settings::change_esfera_modo_setting,
             commands::settings::change_correccion_modo_setting,
             commands::settings::change_correccion_motor_setting,
-            commands::correccion::detectar_correccion_ollama,
-            commands::correccion_modelos::listar_modelos_correccion,
-            commands::correccion_modelos::descargar_modelo_correccion,
-            commands::correccion_modelos::cancelar_descarga_correccion,
-            commands::correccion_modelos::eliminar_modelo_correccion,
-            commands::correccion_modelos::seleccionar_modelo_correccion,
             commands::discos::listar_discos,
             commands::discos::obtener_carpeta_modelos,
             commands::discos::cambiar_carpeta_modelos,
@@ -1186,12 +1165,6 @@ pub fn run(cli_args: CliArgs) {
                 }
                 if let Some(tm) = app.try_state::<Arc<TranscriptionManager>>() {
                     let _ = tm.unload_model();
-                }
-                // Mata el sidecar de Pulido para no dejar un llama-server
-                // huérfano (en Windows los hijos no mueren con el padre).
-                if let Some(sc) = app.try_state::<Arc<correccion::motor_sidecar::SidecarManager>>()
-                {
-                    sc.stop();
                 }
             }
             _ => {}

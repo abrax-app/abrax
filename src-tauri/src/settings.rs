@@ -162,26 +162,36 @@ pub enum EsferaModo {
 
 /// Cuánto transforma el módulo de corrección local (`correccion`) el dictado
 /// antes de insertarlo. `Literal` solo ortotipografía (espacios, mayúsculas);
-/// `Limpio` añade autocorrecciones habladas («el martes, perdón, el miércoles»);
-/// `Pulido` reservará la reestructuración al fraseador local cuando exista.
+/// `Limpio` añade autocorrecciones habladas («el martes, perdón, el miércoles»),
+/// tildes seguras y verbalización (numerales, identificadores, símbolos).
 #[derive(Serialize, Deserialize, Debug, Clone, Copy, PartialEq, Eq, Type)]
 #[serde(rename_all = "snake_case")]
 pub enum CorreccionModo {
     Literal,
+    /// El alias `pulido` NO es decorativo: existió un tercer modo que reservaba
+    /// la reestructuración a un LLM local, retirado el 29/07. Quien lo tuviera
+    /// guardado trae `"pulido"` en su `settings_store.json`, y sin este alias el
+    /// fichero ENTERO dejaría de parsear — perderían todos sus ajustes, no solo
+    /// este campo. `#[serde(default)]` no salva de esto: cubre claves ausentes,
+    /// no valores inválidos. Al siguiente guardado se reescribe como `limpio`.
+    #[serde(alias = "pulido")]
     Limpio,
-    Pulido,
 }
 
 /// Qué motor ejecuta la corrección. `Desactivado` (default) = passthrough
-/// exacto, el pipeline queda como si el módulo no existiera. `SoloReglas` usa
-/// únicamente las reglas deterministas. `Auto` y `Modelo` degradan a reglas
-/// mientras el micro-modelo local no exista.
+/// exacto, el pipeline queda como si el módulo no existiera. `SoloReglas` aplica
+/// la capa determinista.
+///
+/// Tuvo `Auto` y `Modelo`, que pedían el LLM local del «Pulido con IA»
+/// (retirado el 29/07). Ambos entran ahora por alias en `SoloReglas`, que es
+/// exactamente lo que hacían en la práctica siempre que no hubiera un modelo
+/// disponible. Ver el comentario de [`CorreccionModo::Limpio`] para por qué los
+/// alias son obligatorios y no un detalle.
 #[derive(Serialize, Deserialize, Debug, Clone, Copy, PartialEq, Eq, Type)]
 #[serde(rename_all = "snake_case")]
 pub enum CorreccionMotor {
-    Auto,
+    #[serde(alias = "auto", alias = "modelo")]
     SoloReglas,
-    Modelo,
     Desactivado,
 }
 
@@ -563,11 +573,6 @@ pub struct AppSettings {
     pub correccion_modo: CorreccionModo,
     #[serde(default = "default_correccion_motor")]
     pub correccion_motor: CorreccionMotor,
-    /// Id (del catálogo `correccion::modelos`) del modelo LLM descargado que se
-    /// usa para el "Pulido con IA" local. `None` = ninguno (se usa Ollama en
-    /// loopback si está, o solo reglas). Opcional por diseño.
-    #[serde(default)]
-    pub correccion_modelo_local: Option<String>,
     #[serde(default)]
     pub experimental_enabled: bool,
     #[serde(default)]
@@ -1243,7 +1248,6 @@ pub fn get_default_settings() -> AppSettings {
         ui_shell: default_ui_shell(),
         correccion_modo: default_correccion_modo(),
         correccion_motor: default_correccion_motor(),
-        correccion_modelo_local: None,
         experimental_enabled: false,
         lazy_stream_close: false,
         keyboard_implementation: KeyboardImplementation::default(),

@@ -23,10 +23,14 @@ import { RecordingRetentionPeriodSelector } from "../RecordingRetentionPeriod";
 import { VoiceActivityDetection } from "../VoiceActivityDetection";
 
 /**
- * La corrección local (motor Ollama + modos literal/limpio/pulido) se rediseña
- * por separado, así que su grupo queda oculto: el módulo entero sigue vivo en
- * `CorreccionSettings` y en `src-tauri/src/correccion/`, solo no se expone.
- * Pon esto en `true` para volver a mostrarlo tal cual estaba.
+ * El grupo de corrección local queda oculto: el módulo sigue vivo y corriendo en
+ * `CorreccionSettings` y en `src-tauri/src/correccion/`, solo no se expone su
+ * selector. Pon esto en `true` para volver a mostrarlo.
+ *
+ * Se ocultó cuando el motor iba a rediseñarse. Tras retirar el «Pulido con IA»
+ * (29/07) lo que queda son dos ejes deterministas —motor apagado/solo-reglas y
+ * modo literal/limpio—, sin Ollama ni LLM de por medio. Nada impide exponerlo,
+ * pero eso es una decisión de producto, no un efecto colateral de esta retirada.
  */
 const MOSTRAR_CORRECCION: boolean = false;
 

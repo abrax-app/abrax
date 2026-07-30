@@ -826,27 +826,19 @@
   "correccion": {
     "motor": {
       "title": "Correctie-engine",
-      "description": "Ruimt je dictaat op tussen transcriptie en plakken. Uit laat alles precies zoals getranscribeerd. Alleen regels past directe deterministische correcties toe. Lokaal model raadpleegt daarnaast een lokale LLM (Ollama op deze machine) en valt terug op regels als die niet beschikbaar is of de betekenis verandert. Automatisch kiest de beste beschikbare optie.",
+      "description": "Ruimt je dictaat op tussen transcriptie en plakken. Uit laat alles precies zoals getranscribeerd. Alleen regels past directe deterministische correcties toe.",
       "options": {
-        "auto": "Automatisch",
         "solo_reglas": "Alleen regels",
-        "modelo": "Lokaal model",
         "desactivado": "Uit"
       }
     },
     "modo": {
       "title": "Correctieniveau",
-      "description": "Letterlijk corrigeert alleen spaties en hoofdletters. Schoon lost ook gesproken zelfcorrecties op (dinsdag — sorry, woensdag). Verfijnd mag licht herstructureren voor duidelijkheid, zonder ooit betekenis, namen, getallen of ontkenningen te veranderen.",
+      "description": "Letterlijk corrigeert alleen spaties en hoofdletters. Schoon lost ook gesproken zelfcorrecties op (dinsdag — sorry, woensdag).",
       "options": {
         "literal": "Letterlijk",
-        "limpio": "Schoon",
-        "pulido": "Verfijnd"
+        "limpio": "Schoon"
       }
-    },
-    "estado": {
-      "detectado": "Ollama gedetecteerd — model: {{modelo}}",
-      "sinModelos": "Ollama draait maar heeft geen modellen gedownload — er worden deterministische regels gebruikt",
-      "noDetectado": "Ollama niet gedetecteerd — er worden deterministische regels gebruikt"
     }
   },
   "pruebaMic": {
@@ -1069,18 +1061,6 @@
     "descSystem": "Stemmen van het besturingssysteem. Altijd beschikbaar, geen downloads.",
     "descPiper": "Neurale stem in het Nederlands, licht, draait op CPU.",
     "descKokoro": "Hoogwaardige neurale stem op CPU."
-  },
-  "pulidoModelos": {
-    "intro": "Download a local model for AI Polish. It's optional: without a model, correction uses the deterministic rules. It runs in a separate process and unloads itself when idle.",
-    "nombreRecomendado": "{{nombre}} · recommended",
-    "tamanoLicencia": "{{gb}} GB · {{licencia}}",
-    "descargar": "Download ({{gb}} GB)",
-    "porcentaje": "{{pct}}%",
-    "cancelar": "Cancel",
-    "usar": "Use",
-    "activo": "Active",
-    "borrar": "Delete",
-    "errorDescarga": "Download failed: {{error}}"
   },
   "carpetaModelos": {
     "titulo": "Models folder",

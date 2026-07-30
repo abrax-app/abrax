@@ -826,27 +826,19 @@
   "correccion": {
     "motor": {
       "title": "Motor de correção",
-      "description": "Limpa o teu ditado entre a transcrição e a colagem. Desativado mantém tudo exatamente como transcrito. Apenas regras aplica correções determinísticas instantâneas. Modelo local consulta ainda um LLM local (Ollama nesta máquina) e recua para as regras se não estiver disponível ou alterar o significado. Automático escolhe a melhor opção disponível.",
+      "description": "Limpa o teu ditado entre a transcrição e a colagem. Desativado mantém tudo exatamente como transcrito. Apenas regras aplica correções determinísticas instantâneas.",
       "options": {
-        "auto": "Automático",
         "solo_reglas": "Apenas regras",
-        "modelo": "Modelo local",
         "desactivado": "Desativado"
       }
     },
     "modo": {
       "title": "Nível de correção",
-      "description": "Literal corrige apenas espaços e maiúsculas. Limpo resolve também autocorreções faladas (na terça — desculpa, na quarta). Polido pode reestruturar levemente para maior clareza, sem nunca mudar significado, nomes, números ou negações.",
+      "description": "Literal corrige apenas espaços e maiúsculas. Limpo resolve também autocorreções faladas (na terça — desculpa, na quarta).",
       "options": {
         "literal": "Literal",
-        "limpio": "Limpo",
-        "pulido": "Polido"
+        "limpio": "Limpo"
       }
-    },
-    "estado": {
-      "detectado": "Ollama detetado — modelo: {{modelo}}",
-      "sinModelos": "O Ollama está em execução mas sem modelos descarregados — serão usadas as regras determinísticas",
-      "noDetectado": "Ollama não detetado — serão usadas as regras determinísticas"
     }
   },
   "pruebaMic": {
@@ -1069,18 +1061,6 @@
     "descSystem": "Vozes do sistema operacional. Sempre disponível, sem downloads.",
     "descPiper": "Voz neural em português, leve, roda na CPU.",
     "descKokoro": "Voz neural de alta qualidade na CPU."
-  },
-  "pulidoModelos": {
-    "intro": "Download a local model for AI Polish. It's optional: without a model, correction uses the deterministic rules. It runs in a separate process and unloads itself when idle.",
-    "nombreRecomendado": "{{nombre}} · recommended",
-    "tamanoLicencia": "{{gb}} GB · {{licencia}}",
-    "descargar": "Download ({{gb}} GB)",
-    "porcentaje": "{{pct}}%",
-    "cancelar": "Cancel",
-    "usar": "Use",
-    "activo": "Active",
-    "borrar": "Delete",
-    "errorDescarga": "Download failed: {{error}}"
   },
   "carpetaModelos": {
     "titulo": "Models folder",

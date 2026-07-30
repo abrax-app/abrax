@@ -826,27 +826,19 @@
   "correccion": {
     "motor": {
       "title": "Correction engine",
-      "description": "Cleans up your dictation between transcription and paste. Off keeps everything exactly as transcribed. Rules only applies instant deterministic fixes. Local model also consults a local LLM (Ollama on this machine) and falls back to rules if it is unavailable or changes the meaning. Auto picks the best available option.",
+      "description": "Cleans up your dictation between transcription and paste. Off keeps everything exactly as transcribed. Rules only applies instant deterministic fixes.",
       "options": {
-        "auto": "Auto",
         "solo_reglas": "Rules only",
-        "modelo": "Local model",
         "desactivado": "Off"
       }
     },
     "modo": {
       "title": "Correction level",
-      "description": "Literal fixes only spacing and capitalization. Clean also resolves spoken self-corrections (on Tuesday — sorry, Wednesday). Polished may lightly restructure for clarity, never changing meaning, names, numbers or negations.",
+      "description": "Literal fixes only spacing and capitalization. Clean also resolves spoken self-corrections (on Tuesday — sorry, Wednesday).",
       "options": {
         "literal": "Literal",
-        "limpio": "Clean",
-        "pulido": "Polished"
+        "limpio": "Clean"
       }
-    },
-    "estado": {
-      "detectado": "Ollama detected — model: {{modelo}}",
-      "sinModelos": "Ollama is running but has no models downloaded — deterministic rules will be used",
-      "noDetectado": "Ollama not detected — deterministic rules will be used"
     }
   },
   "pruebaMic": {
@@ -1069,18 +1061,6 @@
     "descSystem": "Operating-system voices. Always available, no downloads.",
     "descPiper": "Lightweight neural Spanish voice, runs on CPU.",
     "descKokoro": "High-quality neural voice on CPU."
-  },
-  "pulidoModelos": {
-    "intro": "Download a local model for AI Polish. It's optional: without a model, correction uses the deterministic rules. It runs in a separate process and unloads itself when idle.",
-    "nombreRecomendado": "{{nombre}} · recommended",
-    "tamanoLicencia": "{{gb}} GB · {{licencia}}",
-    "descargar": "Download ({{gb}} GB)",
-    "porcentaje": "{{pct}}%",
-    "cancelar": "Cancel",
-    "usar": "Use",
-    "activo": "Active",
-    "borrar": "Delete",
-    "errorDescarga": "Download failed: {{error}}"
   },
   "carpetaModelos": {
     "titulo": "Models folder",
