@@ -45,22 +45,56 @@ const PUENTE: &[&str] = &["de", "del", "el", "la", "los", "las", "un", "una"];
 /// los 6; el tope acota la búsqueda sin recortar nada real.
 const MAX_TOKENS_NOMBRE: usize = 6;
 
+/// Lo que el MODELO escribe cuando el usuario dice un nombre de la tabla.
+///
+/// No son nombres de emoji, y por eso **no aparecen en el diccionario** que ve el
+/// usuario ([`listar`] lee la tabla, no esto): son erratas medidas de un modelo
+/// concreto, con su audio guardado. Cada una entra aquí solo con evidencia —una
+/// grabación reejecutada con `--transcribe-file`—, nunca por intuición.
+///
+/// El riesgo de tenerlas es minúsculo porque **solo se consultan detrás de la
+/// palabra «emoji»**: para que «calidad feliz» se convierta en nada hay que haber
+/// dicho «emoji calidad feliz», que no es una frase que exista.
+///
+/// Si el usuario cambia a un modelo mayor, estas entradas simplemente dejan de
+/// usarse. No estorban.
+const ERRATAS: &[(&str, &str)] = &[
+    // Canary 180M Flash, 30/07: dictando «emoji cara feliz» escribió
+    // «...e Molly, calidad feliz». El disparador ya lo cubre el yeísmo (ver
+    // `esqueleto_fonetico`); el nombre no lo cubría nada.
+    ("calidad feliz", "cara feliz"),
+];
+
+/// Normaliza un nombre de varias palabras a la clave con la que se busca.
+fn clave_de_nombre(nombre: &str) -> String {
+    nombre
+        .split_whitespace()
+        .map(build_match_key)
+        .collect::<Vec<_>>()
+        .join(" ")
+}
+
 static MAPA: Lazy<HashMap<String, &'static str>> = Lazy::new(|| {
-    TABLA
+    let mut mapa: HashMap<String, &'static str> = TABLA
         .lines()
         .filter_map(|l| {
             let (nombre, cp) = l.split_once('\t')?;
-            let clave = nombre
-                .split_whitespace()
-                .map(build_match_key)
-                .collect::<Vec<_>>()
-                .join(" ");
+            let clave = clave_de_nombre(nombre);
             if clave.is_empty() {
                 return None;
             }
             Some((clave, cp))
         })
-        .collect()
+        .collect();
+    // Las erratas apuntan al MISMO pictograma que el nombre de verdad. Si el
+    // nombre destino no existiera, la errata se descarta en silencio en vez de
+    // quedarse apuntando a nada; un test lo caza para que no pase inadvertido.
+    for (errata, real) in ERRATAS {
+        if let Some(cp) = mapa.get(clave_de_nombre(real).as_str()).copied() {
+            mapa.insert(clave_de_nombre(errata), cp);
+        }
+    }
+    mapa
 });
 
 /// Un nombre dictable y el pictograma que produce.
@@ -119,12 +153,22 @@ pub fn listar() -> Vec<EntradaEmoji> {
 /// `j`, y la `h` inicial es muda. Así que:
 ///
 /// 1. se cae la `h` inicial, que no suena;
-/// 2. `j`, `g`, `h`, `x` e `y` colapsan en un solo símbolo.
+/// 2. `ll` pasa a `y` — **yeísmo**: en el español de América suenan igual;
+/// 3. la `y` FINAL es la vocal /i/ («hoy», «muy», «rey»), no la consonante;
+/// 4. `j`, `g`, `h`, `x` e `y` colapsan en un solo símbolo.
 ///
 /// ```text
 /// «emoji»  → emoji      «hemohi» → emohi → emoji
 /// «emoyi»  → emoji      «emogi»  → emoji
+/// «Molly»  → moyy → moyi → moji     (con «e» delante: «e Molly» = emoji)
 /// ```
+///
+/// Los pasos 2 y 3 se añadieron el 30/07 con audio real del usuario: dictando
+/// «emoji cara feliz», Canary 180M escribió **«Me puedes escribir un mail e
+/// Molly Carita Feliz»**. «e Molly» ES «emoji» dicho en voz alta —la `ll` de
+/// Molly suena `y`, y su `y` final es una `i`—, pero el esqueleto viejo daba
+/// «emollj», a tres ediciones del disparador, y la frase no se activaba. Con el
+/// yeísmo da «emoji» exacto, que es justo lo que exige el camino de dos tokens.
 ///
 /// No pretende ser fonética del español: es una reducción mínima dirigida a
 /// ESTE problema. Colapsa cosas absurdas («gato» → «jato») y da igual, porque lo
@@ -132,8 +176,14 @@ pub fn listar() -> Vec<EntradaEmoji> {
 fn esqueleto_fonetico(token: &str) -> String {
     let clave = build_match_key(token);
     let sin_h = clave.strip_prefix('h').unwrap_or(&clave);
-    sin_h
-        .chars()
+    let yeista = sin_h.replace("ll", "y");
+    // La `y` final es vocal. Se hace ANTES del colapso, porque despues ya no se
+    // distingue de la `y` consonante.
+    let base = match yeista.strip_suffix('y') {
+        Some(cuerpo) => format!("{cuerpo}i"),
+        None => yeista,
+    };
+    base.chars()
         .map(|c| match c {
             'j' | 'g' | 'h' | 'x' | 'y' => 'j',
             otro => otro,
@@ -583,5 +633,88 @@ mod tests {
             crudas, crudas_ord,
             "sin tildes en la tabla el control no vale"
         );
+    }
+
+    // ---- yeismo: lo que de verdad escribe el modelo ------------------------
+
+    #[test]
+    fn el_audio_real_del_30_07_ahora_funciona() {
+        // Transcripcion literal de Canary 180M (handy-1785428670.wav), dictando
+        // «emoji cara feliz». Verificado reejecutando el wav con --transcribe-file.
+        assert_eq!(
+            aplicar_emoji_dictado(
+                "Me puedes escribir un mail e Molly Carita Feliz. Hola, como estas?"
+            ),
+            "Me puedes escribir un mail \u{1f642}. Hola, como estas?"
+        );
+    }
+
+    #[test]
+    fn la_ll_suena_como_y_y_la_y_final_es_vocal() {
+        // Control positivo del mecanismo, pieza a pieza.
+        assert_eq!(esqueleto_fonetico("Molly"), "moji");
+        assert_eq!(esqueleto_fonetico("moyi"), "moji");
+        // La `y` sola es la conjuncion: vocal /i/, no consonante. Importa porque
+        // de lo contrario «y» + «emoji» daria «jemoji», a una edicion del
+        // disparador, y se comeria la conjuncion.
+        assert_eq!(esqueleto_fonetico("y"), "i");
+    }
+
+    #[test]
+    fn el_yeismo_no_abre_la_puerta_a_prosa_normal() {
+        // Control negativo: palabras corrientes con `ll` o con `y` final,
+        // seguidas de nombres que SI estan en la tabla. Si alguna disparara,
+        // convertiria texto normal en pictogramas.
+        for texto in [
+            "la calle estrella brilla",
+            "hoy llueve y hay fuego en la chimenea",
+            "ella se llama Estrella",
+            "muy buena la bandera de ese pais",
+            "el bello valle con su llave y su corazon",
+            "Molly llego tarde",
+        ] {
+            assert_eq!(aplicar_emoji_dictado(texto), texto, "toco: {texto}");
+        }
+    }
+
+    // ---- erratas medidas del ASR ------------------------------------------
+
+    #[test]
+    fn cada_errata_apunta_a_un_nombre_que_existe() {
+        // Si alguien anade una errata hacia un nombre mal escrito, quedaria
+        // apuntando a nada y el mapa la descartaria EN SILENCIO. Aqui se ve.
+        for (errata, real) in ERRATAS {
+            assert!(
+                MAPA.contains_key(&clave_de_nombre(real)),
+                "la errata «{errata}» apunta a «{real}», que no esta en la tabla"
+            );
+            assert_eq!(
+                MAPA.get(&clave_de_nombre(errata)),
+                MAPA.get(&clave_de_nombre(real)),
+                "la errata «{errata}» no da el mismo emoji que «{real}»"
+            );
+        }
+    }
+
+    #[test]
+    fn las_erratas_no_ensucian_el_diccionario_visible() {
+        // El usuario ve nombres, no erratas de un modelo.
+        let v = listar();
+        for (errata, _) in ERRATAS {
+            assert!(
+                !v.iter().any(|e| e.nombre == *errata),
+                "la errata «{errata}» se colo en el diccionario"
+            );
+        }
+    }
+
+    #[test]
+    fn la_errata_solo_actua_detras_del_disparador() {
+        // Con disparador: convierte. Es el segundo audio real del 30/07.
+        assert_eq!(aplicar_emoji_dictado("emoji calidad feliz"), "\u{1f642}");
+        // Sin disparador: no toca nada. Esta es la garantia que hace que tener
+        // erratas sea barato.
+        let suelto = "la calidad feliz de este producto";
+        assert_eq!(aplicar_emoji_dictado(suelto), suelto);
     }
 }
