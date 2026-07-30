@@ -202,6 +202,11 @@ impl PyServerEngine {
             .spawn()
             .map_err(|e| TtsError::Io(format!("no se pudo lanzar el servidor: {e}")))?;
 
+        // Adoptado por el Job de la app: si ABRAX muere a la fuerza, Windows mata
+        // este servidor con ella. Sin esto quedaba huérfano reteniendo su propio
+        // ejecutable y volvía imposible reinstalar el motor.
+        crate::utils::adoptar_hijo(&child);
+
         // El stderr se drena en su propio hilo y se guarda: si el proceso muere,
         // sus últimas líneas son el diagnóstico. Se acota a las últimas para no
         // acumular sin límite si el servidor se pone a escupir avisos.

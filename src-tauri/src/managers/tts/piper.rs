@@ -314,6 +314,7 @@ impl TtsEngine for PiperEngine {
             .stderr(Stdio::piped())
             .spawn()
             .map_err(|e| TtsError::Io(format!("no se pudo lanzar piper: {e}")))?;
+        crate::utils::adoptar_hijo(&child);
 
         if let Some(mut stdin) = child.stdin.take() {
             // UTF-8 crudo directo (sin líos de encoding de consola).

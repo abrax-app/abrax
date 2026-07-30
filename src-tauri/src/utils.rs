@@ -108,3 +108,83 @@ pub fn is_kde_plasma() -> bool {
 pub fn is_kde_wayland() -> bool {
     is_wayland() && is_kde_plasma()
 }
+
+/// Asocia un proceso hijo al Job de ABRAX, para que **el sistema operativo** lo
+/// mate cuando muera la app.
+///
+/// # Por qué existe
+///
+/// Los servidores de voz son procesos aparte (`python.exe` dentro del venv, el
+/// binario de Piper). Sus destructores los matan al cerrar bien… pero **`Drop` no
+/// corre si la app muere a la fuerza**: un cierre desde el Administrador de
+/// tareas, un cuelgue, un `Stop-Process`. Ahí el hijo sobrevive.
+///
+/// Y un hijo huérfano no es solo RAM desperdiciada: retiene su propio ejecutable
+/// dentro del venv, así que `remove_dir_all` falla con «Acceso denegado», `uv
+/// venv` se niega, y **reinstalar el motor deja de ser posible desde la app**.
+/// Medido el 30/07 en un equipo real: tres pythons huérfanos bloqueando los dos
+/// motores a la vez.
+///
+/// Un Job Object con `JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE` lo resuelve en la raíz:
+/// cuando el proceso de ABRAX termina —de la forma que sea— Windows cierra el
+/// handle del Job y mata a todo lo que tenga dentro. No depende de que corra
+/// ningún código nuestro, que es justo la garantía que faltaba.
+///
+/// Es best-effort: si algo falla se registra y se sigue. Un motor de voz sin
+/// niñera es peor que no tenerlo, pero mucho mejor que no arrancar.
+#[cfg(target_os = "windows")]
+pub fn adoptar_hijo(child: &std::process::Child) {
+    use std::os::windows::io::AsRawHandle;
+    use windows::Win32::Foundation::HANDLE;
+    use windows::Win32::System::JobObjects::{
+        AssignProcessToJobObject, CreateJobObjectW, JobObjectExtendedLimitInformation,
+        SetInformationJobObject, JOBOBJECT_EXTENDED_LIMIT_INFORMATION,
+        JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE,
+    };
+
+    // Un solo Job para toda la app, creado la primera vez que se necesita. Se
+    // deja vivo a propósito durante toda la ejecución: si se cerrara su handle,
+    // KILL_ON_JOB_CLOSE mataría a los hijos EN ESE MOMENTO, que es exactamente lo
+    // contrario de lo que se busca.
+    static JOB: std::sync::OnceLock<isize> = std::sync::OnceLock::new();
+
+    let job = *JOB.get_or_init(|| unsafe {
+        let handle = match CreateJobObjectW(None, None) {
+            Ok(h) => h,
+            Err(e) => {
+                log::warn!("[job] no se pudo crear el Job Object: {e}");
+                return 0;
+            }
+        };
+        let mut info = JOBOBJECT_EXTENDED_LIMIT_INFORMATION::default();
+        info.BasicLimitInformation.LimitFlags = JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE;
+        if let Err(e) = SetInformationJobObject(
+            handle,
+            JobObjectExtendedLimitInformation,
+            &info as *const _ as *const std::ffi::c_void,
+            std::mem::size_of::<JOBOBJECT_EXTENDED_LIMIT_INFORMATION>() as u32,
+        ) {
+            log::warn!("[job] no se pudo configurar KILL_ON_JOB_CLOSE: {e}");
+            return 0;
+        }
+        log::info!("[job] Job Object listo: los hijos morirán con la app");
+        handle.0 as isize
+    });
+
+    if job == 0 {
+        return; // ya se avisó al crearlo
+    }
+    unsafe {
+        if let Err(e) = AssignProcessToJobObject(
+            HANDLE(job as *mut std::ffi::c_void),
+            HANDLE(child.as_raw_handle() as *mut std::ffi::c_void),
+        ) {
+            log::warn!("[job] no se pudo adoptar el proceso hijo: {e}");
+        }
+    }
+}
+
+/// En Unix no hace falta: el caso que motiva esto —un ejecutable en uso que no se
+/// puede borrar— no existe ahí, y los huérfanos los recoge el sistema.
+#[cfg(not(target_os = "windows"))]
+pub fn adoptar_hijo(_child: &std::process::Child) {}

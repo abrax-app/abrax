@@ -162,6 +162,20 @@ windows = { version = "0.61.3", features = [
   # atajo, o el combo sale contaminado (Ctrl+Shift+C en vez de Ctrl+C) y el
   # estado del teclado se desincroniza — teclas pegadas. Ver `input.rs`.
   "Win32_UI_Input_KeyboardAndMouse",
+  # Job Objects: los procesos hijo (servidores de voz, Piper) se asocian a un
+  # Job con KILL_ON_JOB_CLOSE para que el SO los mate cuando muera Abrax, PASE
+  # LO QUE PASE. `Drop` no corre en un cierre forzado, y sin esto quedaban
+  # huerfanos que bloqueaban reinstalar el motor. Ver `utils::adoptar_hijo`.
+  "Win32_System_JobObjects",
+  # `CreateJobObjectW` recibe `SECURITY_ATTRIBUTES` (le pasamos `None`), y la
+  # crate la deja tras `Win32_Security`. Sin esta feature el modulo compila
+  # pero la funcion no existe.
+  "Win32_Security",
+  # `JOBOBJECT_EXTENDED_LIMIT_INFORMATION` lleva dentro `IO_COUNTERS`, que vive
+  # en Threading. Hoy otra dependencia ya lo activa y compila igual sin
+  # declararlo, pero eso es unificacion de features ajena: se declara aqui para
+  # que el dia que esa dependencia cambie no se caiga este modulo.
+  "Win32_System_Threading",
   "Win32_System_Com",
   # [TTS] Lectura de VRAM dedicada por adaptador (DXGI) para la detección de
   # hardware: wgpu no expone la VRAM total, así que en Windows se consulta
