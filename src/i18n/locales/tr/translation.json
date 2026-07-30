@@ -792,6 +792,8 @@
     "recordingTooShortNoBinding": "Kayıt bir saniyeden kısa sürdü. Durdurmadan önce biraz konuş.",
     "transcriptionEmptyTitle": "Hiçbir şey anlaşılmadı",
     "transcriptionEmpty": "Hiçbir kelime tanınmadı. Biraz daha yüksek sesle veya daha yakından tekrar dene.",
+    "sistemaSinModeloAptoTitle": "Daha iyi bir model gerekiyor",
+    "sistemaSinModeloApto": "Sistem sesi yakalandı, ancak geçerli model toplantılardaki veya videolardaki konuşmayı tanımıyor. Modeller bölümünden Nemotron Streaming 3.5 (716 MB) veya Whisper Large v3 Turbo (845 MB) modelini indirin; Abrax kendiliğinden ona geçecek.",
     "shortcutRegistrationTitle": "Kısayol etkinleştirilemedi",
     "shortcutRegistration": "Abrax klavye kısayolunu kaydedemedi. Yeniden başlat; sürerse Ayarlar → Genel’den başka bir kısayol belirle."
   },

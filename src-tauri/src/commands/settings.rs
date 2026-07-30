@@ -249,12 +249,69 @@ pub fn change_diarization_num_speakers_setting(app: AppHandle, num: u32) -> Resu
     Ok(())
 }
 
+/// Conmuta «Audio del sistema» y, si hace falta, CAMBIA EL MODELO.
+///
+/// Canary es el recomendado porque arranca en un minuto y responde en 2 s, y
+/// para dictado corto eso ES el producto. Pero con audio de sistema se queda
+/// corto: medido el 29/07 sobre grabaciones reales de loopback, devolvió cadena
+/// vacía en 3 de 5 capturas donde Nemotron y Turbo sí transcribieron. El usuario
+/// no tiene por qué saber eso, así que la app elige por él.
+///
+/// Se cambia AL CONMUTAR, no en cada captura: usa el mismo camino que cuando el
+/// usuario elige un modelo a mano (`selected_model` + `reload_model_on_next_use`),
+/// que está exercitado a diario. Cambiar el motor dentro del flujo de grabación
+/// metería la orquestación de carga/descarga en la ruta crítica del dictado.
+///
+/// Si no hay ningún modelo apto descargado, NO se adivina: se avisa.
 #[tauri::command]
 #[specta::specta]
 pub fn change_capture_system_audio_setting(app: AppHandle, enabled: bool) -> Result<(), String> {
     let mut settings = settings::get_settings(&app);
     settings.capture_system_audio = enabled;
+
+    let mm = app.state::<std::sync::Arc<crate::managers::model::ModelManager>>();
+    let mut recargar_modelo = false;
+    let mut sin_modelo_apto = false;
+
+    if enabled {
+        // Solo actuamos si el modelo activo se queda corto. Si el usuario ya
+        // tiene uno bueno puesto, no se le toca nada.
+        if crate::managers::model::ModelManager::se_queda_corto_para_sistema(
+            &settings.selected_model,
+        ) {
+            match mm.modelo_para_sistema_descargado() {
+                Some(apto) => {
+                    log::info!(
+                        "audio del sistema: {} se queda corto, se cambia a {}",
+                        settings.selected_model,
+                        apto
+                    );
+                    settings.modelo_antes_de_sistema = Some(settings.selected_model.clone());
+                    settings.selected_model = apto;
+                    recargar_modelo = true;
+                }
+                None => sin_modelo_apto = true,
+            }
+        }
+    } else if let Some(previo) = settings.modelo_antes_de_sistema.take() {
+        // Solo restauramos lo que cambiamos nosotros, y solo si el modelo actual
+        // sigue siendo el que pusimos: si el usuario eligió otro a mano en el
+        // medio, su elección manda y no se pisa.
+        if !crate::managers::model::ModelManager::se_queda_corto_para_sistema(
+            &settings.selected_model,
+        ) {
+            log::info!(
+                "audio del sistema apagado: se restaura {} (estaba {})",
+                previo,
+                settings.selected_model
+            );
+            settings.selected_model = previo;
+            recargar_modelo = true;
+        }
+    }
+
     settings::write_settings(&app, settings);
+
     // El dispositivo cambia (mic <-> salida loopback): invalida la caché para que
     // la próxima grabación re-resuelva.
     if let Some(rm) =
@@ -262,6 +319,26 @@ pub fn change_capture_system_audio_setting(app: AppHandle, enabled: bool) -> Res
     {
         rm.invalidate_device_cache();
     }
+
+    if recargar_modelo {
+        if let Some(tm) =
+            app.try_state::<std::sync::Arc<crate::managers::transcription::TranscriptionManager>>()
+        {
+            tm.reload_model_on_next_use();
+        }
+    }
+
+    // El aviso va DESPUÉS de persistir: el modo queda activo (el usuario lo
+    // pidió) y se le dice qué le falta para que funcione, con el peso real.
+    if sin_modelo_apto {
+        log::info!("audio del sistema: no hay modelo apto descargado, se avisa");
+        crate::user_alerts::alert(
+            &app,
+            crate::user_alerts::AlertKind::SistemaSinModeloApto,
+            None,
+        );
+    }
+
     Ok(())
 }
 

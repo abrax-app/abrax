@@ -792,6 +792,8 @@
     "recordingTooShortNoBinding": "Bản ghi kéo dài chưa tới một giây. Hãy nói một lúc trước khi dừng.",
     "transcriptionEmptyTitle": "Không nghe được gì",
     "transcriptionEmpty": "Không nhận ra từ nào. Hãy thử lại, nói to hơn một chút hoặc gần hơn.",
+    "sistemaSinModeloAptoTitle": "Cần một mô hình tốt hơn",
+    "sistemaSinModeloApto": "Đã thu được âm thanh hệ thống, nhưng mô hình hiện tại không nhận ra giọng nói trong cuộc họp hay video. Hãy tải Nemotron Streaming 3.5 (716 MB) hoặc Whisper Large v3 Turbo (845 MB) trong phần Mô hình, và Abrax sẽ tự chuyển sang dùng mô hình đó.",
     "shortcutRegistrationTitle": "Không thể bật phím tắt",
     "shortcutRegistration": "Abrax không đăng ký được phím tắt. Hãy khởi động lại; nếu vẫn vậy, đặt phím tắt khác trong Cài đặt → Chung."
   },

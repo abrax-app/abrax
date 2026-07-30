@@ -792,6 +792,8 @@
     "recordingTooShortNoBinding": "녹음이 1초도 되지 않았습니다. 멈추기 전에 잠시 말해 보세요.",
     "transcriptionEmptyTitle": "아무것도 인식되지 않았습니다",
     "transcriptionEmpty": "단어를 인식하지 못했습니다. 조금 더 크게, 또는 마이크에 가까이서 다시 말해 보세요.",
+    "sistemaSinModeloAptoTitle": "더 나은 모델이 필요합니다",
+    "sistemaSinModeloApto": "시스템 오디오는 캡처되었지만 현재 모델은 회의나 동영상의 음성을 인식하지 못합니다. 모델 탭에서 Nemotron Streaming 3.5(716 MB) 또는 Whisper Large v3 Turbo(845 MB)를 다운로드하면 Abrax가 알아서 해당 모델로 전환합니다.",
     "shortcutRegistrationTitle": "단축키를 활성화하지 못했습니다",
     "shortcutRegistration": "Abrax가 키보드 단축키를 등록하지 못했습니다. 다시 시작하세요. 계속되면 설정 → 일반에서 다른 단축키를 지정하세요."
   },

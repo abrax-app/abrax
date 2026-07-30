@@ -1156,6 +1156,51 @@ impl ModelManager {
         list
     }
 
+    /// ¿Este modelo se queda corto para audio del sistema (reuniones, video)?
+    ///
+    /// No es una opinión: está MEDIDO el 29/07 sobre grabaciones reales de
+    /// loopback de esta app. Canary 180M devolvió **cadena vacía** en 3 de 5
+    /// capturas donde Nemotron y Turbo sí transcribieron (93/64/45 caracteres),
+    /// y coincidió con ellos en las 2 restantes. No es un fallo del audio —el
+    /// nivel era sano, −14 a −19 dBFS— es el límite de un modelo de 180M
+    /// parámetros y 4 idiomas frente a habla comprimida y mezclada.
+    ///
+    /// Se compara por REPO para que cambiar el quant no lo despiste.
+    pub fn se_queda_corto_para_sistema(model_id: &str) -> bool {
+        const CORTOS: &[&str] = &["canary-180m-flash"];
+        CORTOS.iter().any(|c| model_id.contains(c))
+    }
+
+    /// Modelo apto para audio del sistema que YA esté descargado, si hay alguno.
+    ///
+    /// Orden deliberado, no alfabético:
+    /// 1. **Nemotron** — con el audio real dio lo mismo que Turbo (96 vs 93 ·
+    ///    63 vs 64 caracteres), pesa 130 MB menos y es el ÚNICO de los cinco con
+    ///    streaming, que es justo el caso «reunión en vivo».
+    /// 2. **Whisper Turbo** — el respaldo medido.
+    /// 3. **Whisper Large v3** y **Cohere** — más lentos, pero si el usuario ya
+    ///    los tiene en disco sirven igual y no vamos a pedirle otra descarga.
+    ///
+    /// `None` = no hay ninguno bajado; el llamador debe AVISAR, no adivinar.
+    pub fn modelo_para_sistema_descargado(&self) -> Option<String> {
+        const PREFERIDOS: &[&str] = &[
+            "nemotron-3.5-asr-streaming-0.6b",
+            "whisper-large-v3-turbo",
+            "whisper-large-v3",
+            "cohere-transcribe-03-2026",
+        ];
+        let modelos = self.available_models.lock().unwrap();
+        for pref in PREFERIDOS {
+            if let Some(m) = modelos
+                .values()
+                .find(|m| m.is_downloaded && m.id.contains(pref))
+            {
+                return Some(m.id.clone());
+            }
+        }
+        None
+    }
+
     /// Seed the bundled catalog ([`crate::catalog::CATALOG`]) into the registry,
     /// inserting each model whose id isn't already present (additive).
     ///
@@ -2409,6 +2454,47 @@ mod tests {
     use super::*;
     use std::io::Write;
     use tempfile::TempDir;
+
+    // ─────────── modelo apto para audio del sistema (medido el 29/07) ────────
+
+    /// Canary devolvió cadena VACÍA en 3 de 5 capturas reales de loopback donde
+    /// Nemotron y Turbo sí transcribieron. Es el único que se declara corto: los
+    /// demás del catálogo se midieron sirviendo.
+    #[test]
+    fn solo_canary_se_declara_corto_para_sistema() {
+        assert!(ModelManager::se_queda_corto_para_sistema(
+            "handy-computer/canary-180m-flash-gguf/canary-180m-flash-Q8_0.gguf"
+        ));
+        for bueno in [
+            "handy-computer/nemotron-3.5-asr-streaming-0.6b-gguf/nemotron-3.5-asr-streaming-0.6b-Q8_0.gguf",
+            "handy-computer/whisper-large-v3-turbo-gguf/whisper-large-v3-turbo-Q8_0.gguf",
+            "handy-computer/whisper-large-v3-gguf/whisper-large-v3-Q5_K_M.gguf",
+            "handy-computer/cohere-transcribe-03-2026-gguf/cohere-transcribe-03-2026-Q5_K_M.gguf",
+        ] {
+            assert!(
+                !ModelManager::se_queda_corto_para_sistema(bueno),
+                "{bueno} no debería declararse corto"
+            );
+        }
+    }
+
+    /// Se compara por REPO, así que cambiar el quant no despista la decisión.
+    #[test]
+    fn el_quant_no_cambia_el_veredicto() {
+        for quant in ["Q4_K_M", "Q5_K_M", "Q6_K", "Q8_0", "F16", "F32"] {
+            assert!(ModelManager::se_queda_corto_para_sistema(&format!(
+                "handy-computer/canary-180m-flash-gguf/canary-180m-flash-{quant}.gguf"
+            )));
+        }
+    }
+
+    /// Un id vacío (nunca se eligió modelo) no es «corto»: no hay nada que
+    /// sustituir, y tratarlo como corto haría cambiar de modelo a quien todavía
+    /// no tiene ninguno.
+    #[test]
+    fn id_vacio_no_se_declara_corto() {
+        assert!(!ModelManager::se_queda_corto_para_sistema(""));
+    }
 
     #[test]
     fn test_effective_language_accepts_chinese_script_intent_for_zh_capability() {

@@ -135,6 +135,12 @@ function App() {
         });
       } else if (kind === "transcription_empty") {
         toast.error(title, { description: t("errors.transcriptionEmpty") });
+      } else if (kind === "sistema_sin_modelo_apto") {
+        // El modo quedó activo (lo pidió el usuario) pero el modelo puesto no
+        // alcanza y no hay otro descargado. Se nombra el que hace falta y su
+        // peso, porque «no reconocí palabras» a secas manda a revisar el audio
+        // —que está bien— en vez de la descarga que falta.
+        toast.error(title, { description: t("errors.sistemaSinModeloApto") });
       } else if (kind === "shortcut_registration") {
         toast.error(title, { description: t("errors.shortcutRegistration") });
       } else if (kind === "paste") {

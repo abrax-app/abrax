@@ -24,6 +24,8 @@ export const alertTitleKey = (kind: AlertKind): string => {
       return "errors.recordingTooShortTitle";
     case "transcription_empty":
       return "errors.transcriptionEmptyTitle";
+    case "sistema_sin_modelo_apto":
+      return "errors.sistemaSinModeloAptoTitle";
     case "shortcut_registration":
       return "errors.shortcutRegistrationTitle";
     case "recording":

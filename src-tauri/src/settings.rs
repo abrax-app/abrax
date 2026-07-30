@@ -590,6 +590,14 @@ pub struct AppSettings {
     /// («…el martes, no, perdón, el miércoles»), el texto sale ya corregido.
     /// Por REGLAS y 100% local — no usa Post Proceso/BYOK ni ningún modelo.
     /// **Apagada por defecto**: borra texto, y eso se activa a conciencia.
+    /// Modelo que estaba seleccionado ANTES de que la app lo cambiara sola al
+    /// activar «Audio del sistema», para poder devolverlo al apagarlo.
+    ///
+    /// `None` = la app no lo tocó. Si el usuario elige otro modelo a mano
+    /// mientras el modo está activo, esto se limpia y ya no se restaura nada:
+    /// una elección explícita del usuario nunca se pisa.
+    #[serde(default)]
+    pub modelo_antes_de_sistema: Option<String>,
     #[serde(default)]
     pub autocorreccion_activa: bool,
     /// Señales de borrado explícito (nivel 1). Mismo contrato que las
@@ -1208,6 +1216,7 @@ pub fn get_default_settings() -> AppSettings {
         typing_tool: default_typing_tool(),
         external_script_path: None,
         custom_filler_words: None,
+        modelo_antes_de_sistema: None,
         autocorreccion_activa: false,
         autocorreccion_senales_borrado: None,
         autocorreccion_senales_sustitucion: None,

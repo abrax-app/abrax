@@ -40,6 +40,12 @@ pub enum AlertKind {
     /// palabra. Antes esta rama ocultaba el overlay sin decir nada: el usuario
     /// veía «no pasó nada» y no tenía forma de saber por qué.
     TranscriptionEmpty,
+    /// «Audio del sistema» se activó, pero el modelo puesto se queda corto para
+    /// eso y NO hay ninguno apto descargado. Sin este aviso el modo queda
+    /// encendido y devolviendo vacío sin explicar por qué — que es exactamente
+    /// lo que pasó el 29/07: audio capturado a −14 dBFS, transcripción vacía, y
+    /// el usuario convencido de que la captura no funcionaba.
+    SistemaSinModeloApto,
     /// No se pudo registrar ningún atajo global. Sin esto la app queda abierta y
     /// aparentemente sana, pero el atajo no existe y nada lo dice.
     ShortcutRegistration,
@@ -110,6 +116,11 @@ pub fn alert(app: &AppHandle, kind: AlertKind, detail: Option<String>) {
             // No reconocer palabras es un resultado del motor: cae del mismo
             // lado que un fallo de transcripción.
             AlertKind::TranscriptionEmpty => strings.error_transcription,
+            // Falta el modelo apto: es un problema de modelo, igual que no
+            // poder cargarlo. Reusar esa cadena evita 22 traducciones más para
+            // una superficie de una línea; el mensaje fino, con el peso de la
+            // descarga, vive en el toast del frontend.
+            AlertKind::SistemaSinModeloApto => strings.error_model_load,
             // Sin atajo no se puede dictar: cae del lado de «no se pudo grabar».
             AlertKind::ShortcutRegistration => strings.error_recording,
             AlertKind::Transcription => strings.error_transcription,

@@ -1085,11 +1085,22 @@ impl ShortcutAction for TranscribeAction {
                                 // decía NADA: para el usuario era «apreté el atajo y
                                 // no pasó nada», sin una sola pista. Ahora avisa.
                                 debug!("Transcription produced no text; alerting the user");
-                                crate::user_alerts::alert(
-                                    &ah,
-                                    crate::user_alerts::AlertKind::TranscriptionEmpty,
-                                    None,
+                                // Con «Audio del sistema» y un modelo que se
+                                // queda corto, «no reconocí palabras» es
+                                // verdadero pero inútil: el 29/07 el audio
+                                // estaba a −14 dBFS y el usuario concluyó que
+                                // la captura no funcionaba. Aquí sí sabemos la
+                                // causa, así que se nombra.
+                                let s_vacio = get_settings(&ah);
+                                let corto = crate::managers::model::ModelManager::se_queda_corto_para_sistema(
+                                    &s_vacio.selected_model,
                                 );
+                                let kind = if s_vacio.capture_system_audio && corto {
+                                    crate::user_alerts::AlertKind::SistemaSinModeloApto
+                                } else {
+                                    crate::user_alerts::AlertKind::TranscriptionEmpty
+                                };
+                                crate::user_alerts::alert(&ah, kind, None);
                                 hide_recording_overlay(&ah);
                                 change_tray_icon(&ah, TrayIconState::Idle);
                             } else {

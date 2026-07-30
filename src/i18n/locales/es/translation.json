@@ -792,6 +792,8 @@
     "recordingTooShortNoBinding": "La grabación duró menos de un segundo. Habla un momento antes de detenerla.",
     "transcriptionEmptyTitle": "No se entendió nada",
     "transcriptionEmpty": "No se reconoció ninguna palabra. Prueba de nuevo, hablando un poco más fuerte o más cerca.",
+    "sistemaSinModeloAptoTitle": "Hace falta un modelo mejor",
+    "sistemaSinModeloApto": "Se capturó el audio del sistema, pero el modelo actual no reconoce habla de reuniones ni de video. Descarga Nemotron Streaming 3.5 (716 MB) o Whisper Large v3 Turbo (845 MB) en Modelos, y Abrax pasará a usarlo solo.",
     "shortcutRegistrationTitle": "No se pudo activar el atajo",
     "shortcutRegistration": "Abrax no pudo registrar su atajo de teclado. Reinícialo; si sigue igual, asigna otro atajo en Ajustes → General."
   },

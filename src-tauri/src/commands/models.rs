@@ -114,6 +114,10 @@ pub fn switch_active_model(app: &AppHandle, model_id: &str) -> Result<(), String
     let mut settings = settings;
     settings.selected_model = model_id.to_string();
     settings.onboarding_completed = true;
+    // Elección EXPLÍCITA del usuario: se olvida el modelo que «Audio del
+    // sistema» había guardado para restaurar. Si no se limpiara, apagar el modo
+    // le pisaría la elección que acaba de hacer a mano.
+    settings.modelo_antes_de_sistema = None;
 
     write_settings(app, settings);
 

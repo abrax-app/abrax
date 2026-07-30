@@ -320,6 +320,22 @@ async changeDiarizationNumSpeakersSetting(num: number) : Promise<Result<null, st
     else return { status: "error", error: e  as any };
 }
 },
+/**
+ * Conmuta «Audio del sistema» y, si hace falta, CAMBIA EL MODELO.
+ * 
+ * Canary es el recomendado porque arranca en un minuto y responde en 2 s, y
+ * para dictado corto eso ES el producto. Pero con audio de sistema se queda
+ * corto: medido el 29/07 sobre grabaciones reales de loopback, devolvió cadena
+ * vacía en 3 de 5 capturas donde Nemotron y Turbo sí transcribieron. El usuario
+ * no tiene por qué saber eso, así que la app elige por él.
+ * 
+ * Se cambia AL CONMUTAR, no en cada captura: usa el mismo camino que cuando el
+ * usuario elige un modelo a mano (`selected_model` + `reload_model_on_next_use`),
+ * que está exercitado a diario. Cambiar el motor dentro del flujo de grabación
+ * metería la orquestación de carga/descarga en la ruta crítica del dictado.
+ * 
+ * Si no hay ningún modelo apto descargado, NO se adivina: se avisa.
+ */
 async changeCaptureSystemAudioSetting(enabled: boolean) : Promise<Result<null, string>> {
     try {
     return { status: "ok", data: await TAURI_INVOKE("change_capture_system_audio_setting", { enabled }) };
@@ -1366,6 +1382,14 @@ export type AlertKind = "recording_permission_denied" | "recording_no_device" |
  */
 "transcription_empty" | 
 /**
+ * «Audio del sistema» se activó, pero el modelo puesto se queda corto para
+ * eso y NO hay ninguno apto descargado. Sin este aviso el modo queda
+ * encendido y devolviendo vacío sin explicar por qué — que es exactamente
+ * lo que pasó el 29/07: audio capturado a −14 dBFS, transcripción vacía, y
+ * el usuario convencido de que la captura no funcionaba.
+ */
+"sistema_sin_modelo_apto" | 
+/**
  * No se pudo registrar ningún atajo global. Sin esto la app queda abierta y
  * aparentemente sana, pero el atajo no existe y nada lo dice.
  */
@@ -1450,8 +1474,14 @@ correccion_modelo_local?: string | null; experimental_enabled?: boolean; lazy_st
  * («…el martes, no, perdón, el miércoles»), el texto sale ya corregido.
  * Por REGLAS y 100% local — no usa Post Proceso/BYOK ni ningún modelo.
  * **Apagada por defecto**: borra texto, y eso se activa a conciencia.
+ * Modelo que estaba seleccionado ANTES de que la app lo cambiara sola al
+ * activar «Audio del sistema», para poder devolverlo al apagarlo.
+ * 
+ * `None` = la app no lo tocó. Si el usuario elige otro modelo a mano
+ * mientras el modo está activo, esto se limpia y ya no se restaura nada:
+ * una elección explícita del usuario nunca se pisa.
  */
-autocorreccion_activa?: boolean; 
+modelo_antes_de_sistema?: string | null; autocorreccion_activa?: boolean; 
 /**
  * Señales de borrado explícito (nivel 1). Mismo contrato que las
  * muletillas: `null` = las de fábrica, `[]` = nivel apagado, lista propia

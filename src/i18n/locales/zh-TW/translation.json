@@ -792,6 +792,8 @@
     "recordingTooShortNoBinding": "錄音不到一秒。停止前先說一會兒。",
     "transcriptionEmptyTitle": "沒有聽清任何內容",
     "transcriptionEmpty": "沒有辨識到任何字詞。請再試一次，說得大聲一點或靠近一些。",
+    "sistemaSinModeloAptoTitle": "需要更好的模型",
+    "sistemaSinModeloApto": "已擷取系統音訊，但目前的模型無法辨識會議或影片中的語音。請在「模型」中下載 Nemotron Streaming 3.5（716 MB）或 Whisper Large v3 Turbo（845 MB），Abrax 會自動改用該模型。",
     "shortcutRegistrationTitle": "無法啟用快速鍵",
     "shortcutRegistration": "Abrax 無法註冊鍵盤快速鍵。請重新啟動；若仍如此，請在設定 → 一般中改用其他快速鍵。"
   },

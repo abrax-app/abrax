@@ -795,6 +795,8 @@
     "recordingTooShortNoBinding": "रेकर्डिङ एक सेकेन्डभन्दा कम रह्यो। रोक्नुअघि केही बेर बोल्नुहोस्।",
     "transcriptionEmptyTitle": "केही बुझिएन",
     "transcriptionEmpty": "कुनै शब्द चिनिएन। अलि ठूलो स्वरमा वा नजिकबाट फेरि प्रयास गर्नुहोस्।",
+    "sistemaSinModeloAptoTitle": "अझ राम्रो मोडेल आवश्यक छ",
+    "sistemaSinModeloApto": "सिस्टम अडियो क्याप्चर भयो, तर हालको मोडेलले बैठक वा भिडियोको बोली पहिचान गर्न सक्दैन। मोडेलहरूमा गएर Nemotron Streaming 3.5 (716 MB) वा Whisper Large v3 Turbo (845 MB) डाउनलोड गर्नुहोस्; Abrax आफै त्यही मोडेल प्रयोग गर्न सुरु गर्नेछ।",
     "shortcutRegistrationTitle": "सर्टकट सक्रिय गर्न सकिएन",
     "shortcutRegistration": "Abrax ले किबोर्ड सर्टकट दर्ता गर्न सकेन। पुनः सुरु गर्नुहोस्; जारी रहे सेटिङ → सामान्य मा अर्को सर्टकट राख्नुहोस्।"
   },
