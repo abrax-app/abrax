@@ -1874,6 +1874,17 @@ fn post_process_transcription_text(
         raw
     };
 
+    // 0.6 Emoji dictado: «emoji cara feliz» → 🙂. Va ANTES de las capas difusas
+    //     por lo mismo que la autocorrección: `apply_custom_words` corrige por
+    //     Levenshtein y podría deformar el nombre del emoji («fuego» → una
+    //     palabra propia parecida) antes de que la tabla lo reconozca. Aquí el
+    //     texto todavía es lo que se dijo.
+    let raw = if settings.emoji_dictado {
+        crate::correccion::emoji::aplicar_emoji_dictado(&raw)
+    } else {
+        raw
+    };
+
     // 1. Reemplazos exactos del Diccionario Vivo (F5.1): intención explícita
     //    del usuario, van primero para que el fuzzy no toque sus tokens.
     let replacement_pairs: Vec<(String, String)> = settings

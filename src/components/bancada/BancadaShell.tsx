@@ -23,7 +23,6 @@ import {
   Copy,
   Trash2,
   Users,
-  Hash,
   RotateCcw,
   MonitorSpeaker,
   type LucideIcon,
@@ -704,32 +703,26 @@ export const BancadaShell: React.FC = () => {
             updateSetting("custom_filler_words", fillerOn ? [] : null)
           }
         />
-        <Chip
-          icon={Users}
-          label={t("bancada.speakers")}
-          active={!!settings?.diarization_enabled}
-          onClick={() =>
-            updateSetting("diarization_enabled", !settings?.diarization_enabled)
-          }
-        />
-        {settings?.diarization_enabled && (
-          <Chip
-            icon={Hash}
-            label={
-              settings?.diarization_num_speakers
-                ? t("bancada.speakersN", {
-                    n: settings.diarization_num_speakers,
-                  })
-                : t("bancada.speakersAuto")
-            }
-            active={!!settings?.diarization_num_speakers}
-            onClick={() => {
-              const cur = settings?.diarization_num_speakers ?? 0;
-              const next = cur === 0 ? 2 : cur >= 7 ? 0 : cur + 1;
-              updateSetting("diarization_num_speakers", next);
-            }}
-          />
-        )}
+        {/* OCULTOS (30/07) — «Hablantes» prometía separar voces y NO podía
+            hacerlo: la diarización necesita dos modelos ONNX propios
+            (`seg.onnx` y `emb.onnx`, independientes del de transcripción) que
+            NO se empaquetan, NO se descargan desde la app y no están en el
+            equipo de nadie. `diarize_and_label` intentaba cargarlos, fallaba,
+            escribía un `warn` y devolvía `None` EN SILENCIO: el usuario pulsaba
+            el chip, dictaba, y no pasaba nada. Verificado el 30/07 sobre un
+            equipo real: la carpeta `<datadir>/diarization` no existe.
+            Y hay un segundo cerrojo: la función vive tras la variable de
+            entorno `ABRAX_DIARIZE`, vacía en cualquier instalación normal.
+
+            Un control que miente es peor que no tenerlo — mismo criterio que
+            «Carpeta de modelos». El chip del número de hablantes cuelga de este,
+            así que se va con él.
+
+            El código Rust, los comandos IPC y las traducciones quedan INTACTOS:
+            reactivar es descomentar esto. La función completa (descargar los
+            ONNX, poder borrarlos y quitar el cerrojo) está en IDEAS.md como
+            trabajo post-entrega — el spike la estimó en ~8 días y esa inferencia
+            todavía no ha corrido ni una vez. */}
         <Chip
           icon={Palette}
           label={t("bancada.dial.palette")}

@@ -456,6 +456,11 @@
           "disabled": "Poziom wyłączony"
         }
       },
+      "emojiDictado": {
+        "title": "Dyktowane emoji",
+        "description": "Powiedz słowo „emoji”, a po nim jego nazwę – emoji zostanie wstawione. Działa na podstawie tabeli, natychmiast i bez połączenia z internetem: żaden model AI nie bierze w tym udziału. Bez tego słowa nic się nie zmienia, a jeśli nazwa nie zostanie rozpoznana, tekst pozostaje dokładnie taki, jak go podyktowałeś.",
+        "ejemplo": "Przykład: „wyślij im emoji kciuk w górę” zamienia się w „wyślij im 👍”. Działa też „emoji ogień” → 🔥."
+      },
       "voiceActivityDetection": {
         "title": "Voice Activity Detection",
         "description": "Filter silence from recordings. Streaming-capable models use a longer VAD tail; disabling VAD records raw audio."

@@ -435,6 +435,11 @@
           "disabled": "المستوى معطّل"
         }
       },
+      "emojiDictado": {
+        "title": "إيموجي بالصوت",
+        "description": "قل كلمة «إيموجي» ثم اسمه، ويُدرَج الإيموجي. يعمل بجدول أسماء، فوريًا وبلا اتصال: لا يتدخل أي نموذج ذكاء اصطناعي. بدون هذه الكلمة لا يتغيّر شيء، وإذا لم يتعرّف على الاسم يترك النص كما أمليته بالضبط.",
+        "ejemplo": "مثال: «أرسل له إيموجي إعجاب» تصبح «أرسل له 👍». وتعمل أيضًا مع «إيموجي نار» ← 🔥."
+      },
       "voiceActivityDetection": {
         "title": "Voice Activity Detection",
         "description": "Filter silence from recordings. Streaming-capable models use a longer VAD tail; disabling VAD records raw audio."

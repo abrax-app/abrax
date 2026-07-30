@@ -456,6 +456,11 @@
           "disabled": "단계 꺼짐"
         }
       },
+      "emojiDictado": {
+        "title": "이모지 음성 입력",
+        "description": "\"이모지\"(emoji)라는 단어를 말한 뒤 이모지 이름을 말하면 해당 이모지가 삽입됩니다. 표 기반으로 즉시, 오프라인에서 동작하며 AI 모델은 전혀 사용하지 않습니다. 이 단어가 없으면 아무것도 바뀌지 않고, 이름을 인식하지 못하면 말한 그대로 텍스트가 남습니다.",
+        "ejemplo": "예: \"이모지 엄지척 보내줘\" → \"👍 보내줘\". \"이모지 불\" → 🔥 도 됩니다."
+      },
       "voiceActivityDetection": {
         "title": "Voice Activity Detection",
         "description": "Filter silence from recordings. Streaming-capable models use a longer VAD tail; disabling VAD records raw audio."

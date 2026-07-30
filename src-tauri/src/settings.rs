@@ -590,6 +590,15 @@ pub struct AppSettings {
     /// («…el martes, no, perdón, el miércoles»), el texto sale ya corregido.
     /// Por REGLAS y 100% local — no usa Post Proceso/BYOK ni ningún modelo.
     /// **Apagada por defecto**: borra texto, y eso se activa a conciencia.
+    /// Emoji dictado: «emoji cara feliz» → 🙂. Por tabla, sin ningún modelo.
+    ///
+    /// **Encendido de fábrica**, al contrario que la autocorrección hablada, y a
+    /// propósito: esto no puede dañar texto. Solo actúa detrás de la palabra
+    /// «emoji» —que no aparece por casualidad dictando prosa— y si no reconoce
+    /// el nombre no toca nada. La autocorrección va apagada porque BORRA; esto
+    /// solo añade, y solo cuando se lo piden.
+    #[serde(default = "default_emoji_dictado")]
+    pub emoji_dictado: bool,
     /// Modelo que estaba seleccionado ANTES de que la app lo cambiara sola al
     /// activar «Audio del sistema», para poder devolverlo al apagarlo.
     ///
@@ -772,6 +781,10 @@ fn default_debug_mode() -> bool {
 }
 
 fn default_memoria_activa() -> bool {
+    true
+}
+
+fn default_emoji_dictado() -> bool {
     true
 }
 
@@ -1216,6 +1229,7 @@ pub fn get_default_settings() -> AppSettings {
         typing_tool: default_typing_tool(),
         external_script_path: None,
         custom_filler_words: None,
+        emoji_dictado: default_emoji_dictado(),
         modelo_antes_de_sistema: None,
         autocorreccion_activa: false,
         autocorreccion_senales_borrado: None,

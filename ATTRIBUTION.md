@@ -16,6 +16,24 @@ Las licencias de terceros —modelos de reconocimiento de voz y motores de voz�
 se declaran en `LICENSES-THIRD-PARTY.md`, con las atribuciones que exige cada
 una. Lo de abajo son activos derivados que se generan en este repositorio.
 
+### Tabla de emoji en español (`src-tauri/src/correccion/emoji_es.tsv`)
+
+Nombres de emoji en español para el dictado («emoji cara feliz» → 🙂), generados
+offline por `scripts/gen_emoji_es.mjs` a partir de:
+
+- **CLDR de Unicode** — anotaciones de emoji en español
+  (`common/annotations/es.xml`), de donde salen los nombres cortos canónicos.
+  Licencia **Unicode-3.0** (permisiva, con aviso de copyright).
+  Fuente: https://github.com/unicode-org/cldr
+  © 1991-presente Unicode, Inc. Unicode y el logotipo de Unicode son marcas
+  registradas de Unicode, Inc. en Estados Unidos y otros países.
+
+La tabla **no reproduce CLDR verbatim**: es una lista derivada de pares
+`nombre → emoji` filtrada (se descartan las anotaciones de signos ASCII, los
+modificadores de tono de piel y las banderas de país), más unos 20 **alias
+escritos a mano** —«cara feliz», «me gusta», «aplausos»— que no vienen de CLDR
+y existen porque sus nombres canónicos son precisos pero nadie los dicta así.
+
 ### Mapa de restauración de tildes (`src-tauri/src/correccion/tildes_es.tsv`)
 
 Datos léxicos derivados, generados offline por `scripts/gen_tildes.mjs` a partir de:

@@ -456,6 +456,11 @@
           "disabled": "Niveau désactivé"
         }
       },
+      "emojiDictado": {
+        "title": "Emoji dictés",
+        "description": "Dites le mot « emoji » puis son nom, et l'emoji est inséré. Par table, instantanément et hors ligne : aucun modèle d'IA n'intervient. Sans ce mot, rien ne change, et si le nom n'est pas reconnu, le texte reste exactement tel que vous l'avez dicté.",
+        "ejemplo": "Exemple : « envoie-lui un emoji pouce en l'air » devient « envoie-lui un 👍 ». Marche aussi avec « emoji feu » → 🔥."
+      },
       "voiceActivityDetection": {
         "title": "Voice Activity Detection",
         "description": "Filter silence from recordings. Streaming-capable models use a longer VAD tail; disabling VAD records raw audio."

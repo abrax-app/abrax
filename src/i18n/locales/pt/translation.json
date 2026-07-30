@@ -456,6 +456,11 @@
         "resetDefaults": "Voltar aos de fábrica",
         "disable": "Desativar nível"
       },
+      "emojiDictado": {
+        "title": "Emoji ditado",
+        "description": "Diga a palavra “emoji” e em seguida o nome dele, e o emoji é inserido. Por tabela, na hora e offline: nenhum modelo de IA entra em ação. Sem essa palavra nada muda, e se o nome não for reconhecido o texto fica exatamente como você ditou.",
+        "ejemplo": "Exemplo: “manda pra ele um emoji joinha” vira “manda pra ele um 👍”. Também funciona com “emoji de fogo” → 🔥."
+      },
       "voiceActivityDetection": {
         "title": "Voice Activity Detection",
         "description": "Filter silence from recordings. Streaming-capable models use a longer VAD tail; disabling VAD records raw audio."

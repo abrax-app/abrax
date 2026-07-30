@@ -456,6 +456,11 @@
         "resetDefaults": "Вернуть встроенные",
         "disable": "Отключить уровень"
       },
+      "emojiDictado": {
+        "title": "Эмодзи голосом",
+        "description": "Скажите слово «эмодзи», а затем его название — и эмодзи будет вставлен. Работает по таблице, мгновенно и без интернета: никакая модель ИИ не задействована. Без этого слова ничего не меняется, а если название не распознано, текст остаётся точно таким, как вы его продиктовали.",
+        "ejemplo": "Пример: «отправь ему эмодзи большой палец вверх» → «отправь ему 👍». Также работает «эмодзи огонь» → 🔥."
+      },
       "voiceActivityDetection": {
         "title": "Voice Activity Detection",
         "description": "Filter silence from recordings. Streaming-capable models use a longer VAD tail; disabling VAD records raw audio."

@@ -5,6 +5,7 @@ import { ModelUnloadTimeoutSetting } from "../ModelUnloadTimeout";
 import { CustomWords } from "../CustomWords";
 import { CustomFillerWords } from "../CustomFillerWords";
 import { AutocorreccionSettings } from "../AutocorreccionSettings";
+import { EmojiDictado } from "../EmojiDictado";
 import { MemoriaSettings } from "../MemoriaSettings";
 import { CustomReplacements } from "../CustomReplacements";
 import { CorreccionSettings } from "../CorreccionSettings";
@@ -53,6 +54,7 @@ export const AdvancedSettings: React.FC = () => {
         <CustomWords descriptionMode="tooltip" grouped />
         <CustomFillerWords descriptionMode="tooltip" grouped />
         <AutocorreccionSettings descriptionMode="tooltip" grouped />
+        <EmojiDictado descriptionMode="tooltip" grouped />
         <AppendTrailingSpace descriptionMode="tooltip" grouped={true} />
       </SettingsGroup>
 

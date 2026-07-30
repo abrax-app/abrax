@@ -456,6 +456,11 @@
         "resetDefaults": "Back to the built-in ones",
         "disable": "Disable level"
       },
+      "emojiDictado": {
+        "title": "Dictated emoji",
+        "description": "Say the word \"emoji\" followed by its name and the emoji is inserted. Table-based, instant and offline: no AI model involved. Without that word nothing changes, and if the name is not recognised the text is left exactly as dictated.",
+        "ejemplo": "Example: \"send them an emoji thumbs up\" becomes \"send them a 👍\". Also works with \"emoji of fire\" → 🔥."
+      },
       "voiceActivityDetection": {
         "title": "Voice Activity Detection",
         "description": "Filter silence from recordings. Streaming-capable models use a longer VAD tail; disabling VAD records raw audio."

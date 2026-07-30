@@ -23,6 +23,7 @@
 //! Punto de enganche: `process_transcription_output` (actions.rs), después de
 //! la conversión de variante china y antes del post-proceso LLM opcional.
 
+pub mod emoji;
 pub mod fraseador;
 pub mod modelos;
 pub mod motor_sidecar;

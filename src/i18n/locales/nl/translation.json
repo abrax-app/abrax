@@ -456,6 +456,11 @@
           "disabled": "Niveau uit"
         }
       },
+      "emojiDictado": {
+        "title": "Gedicteerde emoji",
+        "description": "Zeg het woord “emoji” en daarna de naam ervan, dan wordt de emoji ingevoegd. Op basis van een tabel, direct en offline: er komt geen AI-model bij kijken. Zonder dat woord verandert er niets, en als de naam niet wordt herkend, blijft de tekst precies zoals je hem hebt gedicteerd.",
+        "ejemplo": "Voorbeeld: “stuur ze een emoji duim omhoog” wordt “stuur ze een 👍”. Werkt ook met “emoji vuur” → 🔥."
+      },
       "voiceActivityDetection": {
         "title": "Spraakactiviteitsdetectie (VAD)",
         "description": "Filter stilte uit opnames. Streaming-modellen gebruiken een langere VAD-uitloop; het uitschakelen van VAD neemt de ruwe audio op."

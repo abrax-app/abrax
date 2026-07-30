@@ -456,6 +456,11 @@
           "disabled": "Stufe deaktiviert"
         }
       },
+      "emojiDictado": {
+        "title": "Diktierte Emojis",
+        "description": "Sag das Wort „Emoji“ und danach seinen Namen, und das Emoji wird eingefügt. Tabellenbasiert, sofort und offline: kein KI-Modell ist beteiligt. Ohne dieses Wort ändert sich nichts, und wenn der Name nicht erkannt wird, bleibt der Text genau so, wie du ihn diktiert hast.",
+        "ejemplo": "Beispiel: „schick ihm ein Emoji Daumen hoch“ wird zu „schick ihm ein 👍“. Klappt auch mit „Emoji Feuer“ → 🔥."
+      },
       "voiceActivityDetection": {
         "title": "Voice Activity Detection",
         "description": "Filter silence from recordings. Streaming-capable models use a longer VAD tail; disabling VAD records raw audio."

@@ -456,6 +456,11 @@
           "disabled": "הרמה מושבתת"
         }
       },
+      "emojiDictado": {
+        "title": "אימוג'י בהכתבה",
+        "description": "אמרו את המילה \"אימוג'י\" ואחריה את שמו, והאימוג'י יוכנס. מבוסס טבלה, מיידי וללא חיבור לאינטרנט: אין כאן שום מודל בינה מלאכותית. בלי המילה הזאת שום דבר לא משתנה, ואם השם לא מזוהה הטקסט נשאר בדיוק כפי שהכתבתם.",
+        "ejemplo": "דוגמה: \"תשלחו לו אימוג'י לייק\" הופך ל\"תשלחו לו 👍\". עובד גם עם \"אימוג'י של אש\" → 🔥."
+      },
       "voiceActivityDetection": {
         "title": "Voice Activity Detection",
         "description": "Filter silence from recordings. Streaming-capable models use a longer VAD tail; disabling VAD records raw audio."

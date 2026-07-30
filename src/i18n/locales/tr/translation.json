@@ -456,6 +456,11 @@
         "resetDefaults": "Hazır olanlara dön",
         "disable": "Seviyeyi kapat"
       },
+      "emojiDictado": {
+        "title": "Dikte edilen emoji",
+        "description": "“emoji” sözcüğünü söyleyip ardından emojinin adını söyleyin; emoji metne eklenir. Tablo tabanlı, anında ve çevrimdışı: hiçbir yapay zekâ modeli devreye girmez. Bu sözcük olmadan hiçbir şey değişmez; ad tanınmazsa metin tam olarak dikte ettiğiniz gibi kalır.",
+        "ejemplo": "Örnek: “ona bir emoji başparmak yukarı gönder” → “ona bir 👍 gönder”. “emoji ateş” de çalışır → 🔥."
+      },
       "voiceActivityDetection": {
         "title": "Voice Activity Detection",
         "description": "Filter silence from recordings. Streaming-capable models use a longer VAD tail; disabling VAD records raw audio."

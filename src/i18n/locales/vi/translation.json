@@ -456,6 +456,11 @@
           "disabled": "Cấp độ đã tắt"
         }
       },
+      "emojiDictado": {
+        "title": "Emoji bằng giọng nói",
+        "description": "Nói từ “emoji” rồi đọc tên của nó, emoji sẽ được chèn vào. Dựa trên bảng tra cứu, tức thì và ngoại tuyến: không có mô hình AI nào tham gia. Không có từ đó thì không có gì thay đổi, và nếu tên không được nhận ra thì văn bản vẫn giữ đúng như bạn đã đọc.",
+        "ejemplo": "Ví dụ: “gửi cho họ một emoji like” → “gửi cho họ một 👍”. Cũng dùng được “emoji lửa” → 🔥."
+      },
       "voiceActivityDetection": {
         "title": "Voice Activity Detection",
         "description": "Filter silence from recordings. Streaming-capable models use a longer VAD tail; disabling VAD records raw audio."

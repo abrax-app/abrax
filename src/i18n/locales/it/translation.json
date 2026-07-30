@@ -456,6 +456,11 @@
           "disabled": "Livello disattivato"
         }
       },
+      "emojiDictado": {
+        "title": "Emoji dettate",
+        "description": "Di' la parola «emoji» seguita dal suo nome e l'emoji viene inserita. Funziona per tabella, all'istante e offline: non entra in gioco nessun modello di IA. Senza quella parola non cambia nulla, e se il nome non viene riconosciuto il testo resta esattamente come l'hai dettato.",
+        "ejemplo": "Esempio: «mandagli un'emoji pollice in su» diventa «mandagli un 👍». Vale anche «emoji fuoco» → 🔥."
+      },
       "voiceActivityDetection": {
         "title": "Rilevamento dell'attività vocale",
         "description": "Filtra il silenzio dalle registrazioni. I modelli che supportano lo streaming utilizzano una coda VAD più lunga; disabilitando la VAD si registra l'audio grezzo."

@@ -456,6 +456,11 @@
           "disabled": "Нивото е изключено"
         }
       },
+      "emojiDictado": {
+        "title": "Диктувани емоджи",
+        "description": "Кажете думата „емоджи“ и веднага след нея името му, и емоджито се вмъква. По таблица, мигновено и офлайн: не участва никакъв модел с изкуствен интелект. Без тази дума нищо не се променя, а ако името не бъде разпознато, текстът остава точно както сте го диктували.",
+        "ejemplo": "Пример: „изпрати му емоджи палец нагоре“ става „изпрати му 👍“. Работи и с „емоджи огън“ → 🔥."
+      },
       "voiceActivityDetection": {
         "title": "Voice Activity Detection",
         "description": "Filter silence from recordings. Streaming-capable models use a longer VAD tail; disabling VAD records raw audio."

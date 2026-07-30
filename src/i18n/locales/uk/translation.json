@@ -456,6 +456,11 @@
           "disabled": "Рівень вимкнено"
         }
       },
+      "emojiDictado": {
+        "title": "Диктування емодзі",
+        "description": "Скажіть слово «емодзі», а відразу за ним — його назву, і емодзі буде вставлено. За таблицею, миттєво й без інтернету: жодна модель ШІ не задіяна. Без цього слова нічого не змінюється, а якщо назву не розпізнано, текст залишається точно таким, як ви його продиктували.",
+        "ejemplo": "Приклад: «надішли йому емодзі великий палець» → «надішли йому 👍». Також працює «емодзі вогонь» → 🔥."
+      },
       "voiceActivityDetection": {
         "title": "Voice Activity Detection",
         "description": "Filter silence from recordings. Streaming-capable models use a longer VAD tail; disabling VAD records raw audio."

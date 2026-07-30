@@ -456,6 +456,11 @@
         "resetDefaults": "Tillbaka till inbyggda",
         "disable": "Stäng av nivån"
       },
+      "emojiDictado": {
+        "title": "Dikterade emojier",
+        "description": "Säg ordet ”emoji” och därefter dess namn, så infogas emojin. Tabellbaserat, direkt och offline: ingen AI-modell är inblandad. Utan det ordet ändras ingenting, och om namnet inte känns igen lämnas texten exakt som du dikterade den.",
+        "ejemplo": "Exempel: ”skicka dem en emoji tummen upp” blir ”skicka dem en 👍”. Fungerar även med ”emoji eld” → 🔥."
+      },
       "voiceActivityDetection": {
         "title": "Voice Activity Detection",
         "description": "Filter silence from recordings. Streaming-capable models use a longer VAD tail; disabling VAD records raw audio."

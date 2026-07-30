@@ -456,6 +456,11 @@
           "disabled": "该级别已关闭"
         }
       },
+      "emojiDictado": {
+        "title": "语音输入 emoji",
+        "description": "说出“emoji”这个词，紧接着说出它的名称，就会插入对应的表情符号。基于词表、即时且离线：不涉及任何 AI 模型。不说这个词就什么都不会变；如果名称无法识别，文字会原样保留。",
+        "ejemplo": "示例：“给他发个 emoji 点赞”会变成“给他发个 👍”。也可以说“emoji 火”→ 🔥。"
+      },
       "voiceActivityDetection": {
         "title": "Voice Activity Detection",
         "description": "Filter silence from recordings. Streaming-capable models use a longer VAD tail; disabling VAD records raw audio."

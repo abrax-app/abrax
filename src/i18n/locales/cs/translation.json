@@ -456,6 +456,11 @@
           "disabled": "Úroveň vypnuta"
         }
       },
+      "emojiDictado": {
+        "title": "Diktovaná emoji",
+        "description": "Řekněte slovo „emoji“ a hned za ním jeho název a emoji se vloží. Podle tabulky, okamžitě a bez připojení: nezapojuje se žádný model AI. Bez toho slova se nic nemění, a pokud název nerozpozná, nechá text přesně tak, jak jste ho nadiktovali.",
+        "ejemplo": "Příklad: „pošli mu emoji palec nahoru“ se změní na „pošli mu 👍“. Funguje i „emoji oheň“ → 🔥."
+      },
       "voiceActivityDetection": {
         "title": "Voice Activity Detection",
         "description": "Filter silence from recordings. Streaming-capable models use a longer VAD tail; disabling VAD records raw audio."

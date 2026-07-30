@@ -456,6 +456,11 @@
           "disabled": "此層級已關閉"
         }
       },
+      "emojiDictado": {
+        "title": "語音輸入 emoji",
+        "description": "說出「emoji」這個詞，接著說出它的名稱，就會插入對應的表情符號。以對照表為準、即時且離線：不會用到任何 AI 模型。沒有說這個詞就不會有任何變動；若名稱無法辨識，文字會完全按照你口述的內容保留。",
+        "ejemplo": "範例：「傳一個 emoji 讚給他」會變成「傳一個 👍 給他」。也可以說「emoji 火」→ 🔥。"
+      },
       "voiceActivityDetection": {
         "title": "Voice Activity Detection",
         "description": "Filter silence from recordings. Streaming-capable models use a longer VAD tail; disabling VAD records raw audio."

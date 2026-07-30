@@ -456,6 +456,11 @@
         "resetDefaults": "Volver a las de fábrica",
         "disable": "Desactivar nivel"
       },
+      "emojiDictado": {
+        "title": "Emoji dictado",
+        "description": "Di la palabra «emoji» y a continuación su nombre, y se inserta el emoji. Por tabla, al instante y sin conexión: no interviene ningún modelo de IA. Sin esa palabra no cambia nada, y si no reconoce el nombre deja el texto tal como lo dictaste.",
+        "ejemplo": "Ejemplo: «mándale un emoji me gusta» → «mándale un 👍». También vale «emoji de fuego» → 🔥."
+      },
       "voiceActivityDetection": {
         "title": "Voice Activity Detection",
         "description": "Filtra los silencios de la grabación. Los modelos con streaming usan una cola de detección más larga."
