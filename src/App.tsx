@@ -21,12 +21,47 @@ import { BancadaShell } from "./components/bancada/BancadaShell";
 import { WhatsNewGate } from "./components/whats-new";
 import { useSettings } from "./hooks/useSettings";
 import { useSettingsStore } from "./stores/settingsStore";
+import { useModelStore } from "./stores/modelStore";
 import { commands, events } from "@/bindings";
 import { getLanguageDirection, initializeRTL } from "@/lib/utils/rtl";
 import { formatKeyCombination } from "@/lib/utils/keyboard";
 import { useOsType } from "./hooks/useOsType";
 
 type OnboardingStep = "welcome" | "accessibility" | "model" | "done";
+
+/**
+ * Modelos aptos para audio del sistema, en el mismo orden que manda el backend
+ * (`ModelManager::modelo_para_sistema_descargado`, `managers/model.rs`). Se
+ * comparan por REPO, sin el quant, para que cambiar el quant por defecto no
+ * despiste.
+ *
+ * Nemotron primero: con audio real de loopback dio lo mismo que Turbo, pesa
+ * 130 MB menos y es el único de los cinco con streaming.
+ *
+ * ⚠️ Si cambia el orden en Rust, cambia aquí. Es un espejo deliberado —igual que
+ * el preset es-419 de las muletillas— para poder ofrecer el botón con el nombre
+ * y el peso REALES del registro, sin inventar ids ni tamaños.
+ */
+const REPOS_APTOS_SISTEMA = [
+  "nemotron-3.5-asr-streaming-0.6b",
+  "whisper-large-v3-turbo",
+  "whisper-large-v3",
+  "cohere-transcribe-03-2026",
+];
+
+/**
+ * El primer modelo apto que NO esté descargado, tomado del registro real (de ahí
+ * salen el id con su quant y el peso). `undefined` si no hay ninguno que ofrecer
+ * — entonces el aviso va sin botón, nunca con uno que no haga nada.
+ */
+const modeloRecomendadoParaSistema = () => {
+  const { models } = useModelStore.getState();
+  for (const repo of REPOS_APTOS_SISTEMA) {
+    const m = models.find((x) => x.id.includes(repo) && !x.is_downloaded);
+    if (m) return m;
+  }
+  return undefined;
+};
 
 const renderSettingsContent = (section: SidebarSection) => {
   const ActiveComponent =
@@ -140,7 +175,26 @@ function App() {
         // alcanza y no hay otro descargado. Se nombra el que hace falta y su
         // peso, porque «no reconocí palabras» a secas manda a revisar el audio
         // —que está bien— en vez de la descarga que falta.
-        toast.error(title, { description: t("errors.sistemaSinModeloApto") });
+        //
+        // Y se ofrece la descarga AQUÍ: decirle qué le falta y dejarlo buscando
+        // la sección de Modelos es dejarlo a mitad de camino. El botón baja el
+        // modelo y lleva a Modelos, para que el progreso sea visible en vez de
+        // ocurrir en silencio.
+        const recomendado = modeloRecomendadoParaSistema();
+        toast.error(title, {
+          description: t("errors.sistemaSinModeloApto"),
+          action: recomendado
+            ? {
+                label: t("errors.sistemaSinModeloAptoDescargar", {
+                  mb: recomendado.size_mb,
+                }),
+                onClick: () => {
+                  void useModelStore.getState().downloadModel(recomendado.id);
+                  setCurrentSection("models");
+                },
+              }
+            : undefined,
+        });
       } else if (kind === "shortcut_registration") {
         toast.error(title, { description: t("errors.shortcutRegistration") });
       } else if (kind === "paste") {

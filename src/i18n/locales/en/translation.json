@@ -797,6 +797,7 @@
     "transcriptionEmpty": "No words were recognized. Try again, speaking a bit louder or closer.",
     "sistemaSinModeloAptoTitle": "A better model is needed",
     "sistemaSinModeloApto": "System audio was captured, but the current model does not recognise speech in meetings or videos. Download Nemotron Streaming 3.5 (716 MB) or Whisper Large v3 Turbo (845 MB) in Models, and Abrax will switch to it on its own.",
+    "sistemaSinModeloAptoDescargar": "Download ({{mb}} MB)",
     "shortcutRegistrationTitle": "The shortcut could not be enabled",
     "shortcutRegistration": "Abrax couldn't register its keyboard shortcut. Restart it; if it persists, set a different shortcut in Settings → General."
   },

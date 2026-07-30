@@ -794,6 +794,7 @@
     "transcriptionEmpty": "Nenhuma palavra foi reconhecida. Tente de novo, falando um pouco mais alto ou mais perto.",
     "sistemaSinModeloAptoTitle": "É preciso um modelo melhor",
     "sistemaSinModeloApto": "O áudio do sistema foi capturado, mas o modelo atual não reconhece fala de reuniões nem de vídeos. Baixe o Nemotron Streaming 3.5 (716 MB) ou o Whisper Large v3 Turbo (845 MB) em Modelos, e o Abrax passará a usá-lo automaticamente.",
+    "sistemaSinModeloAptoDescargar": "Baixar ({{mb}} MB)",
     "shortcutRegistrationTitle": "Não foi possível ativar o atalho",
     "shortcutRegistration": "O Abrax não conseguiu registrar seu atalho de teclado. Reinicie; se continuar, defina outro em Configurações → Geral."
   },

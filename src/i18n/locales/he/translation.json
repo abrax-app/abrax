@@ -794,6 +794,7 @@
     "transcriptionEmpty": "לא זוהו מילים. נסה שוב, בקול קצת יותר חזק או קרוב יותר.",
     "sistemaSinModeloAptoTitle": "נדרש מודל טוב יותר",
     "sistemaSinModeloApto": "אודיו המערכת נקלט, אך המודל הנוכחי אינו מזהה דיבור בפגישות או בסרטונים. הורד את Nemotron Streaming 3.5 (716 MB) או את Whisper Large v3 Turbo (845 MB) בקטע מודלים, ו-Abrax יעבור להשתמש בו באופן אוטומטי.",
+    "sistemaSinModeloAptoDescargar": "הורד ({{mb}} MB)",
     "shortcutRegistrationTitle": "לא ניתן היה להפעיל את קיצור הדרך",
     "shortcutRegistration": "Abrax לא הצליח לרשום את קיצור המקלדת. הפעל אותו מחדש; אם זה נמשך, הגדר קיצור אחר בהגדרות ← כללי."
   },

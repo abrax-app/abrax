@@ -794,6 +794,7 @@
     "transcriptionEmpty": "Слова не розпізнано. Спробуйте ще раз, говорячи трохи гучніше або ближче.",
     "sistemaSinModeloAptoTitle": "Потрібна краща модель",
     "sistemaSinModeloApto": "Системний звук записано, але поточна модель не розпізнає мовлення з нарад чи відео. Завантажте Nemotron Streaming 3.5 (716 MB) або Whisper Large v3 Turbo (845 MB) у розділі «Моделі», і Abrax перейде на неї самостійно.",
+    "sistemaSinModeloAptoDescargar": "Завантажити ({{mb}} MB)",
     "shortcutRegistrationTitle": "Не вдалося увімкнути сполучення клавіш",
     "shortcutRegistration": "Abrax не зміг зареєструвати сполучення клавіш. Перезапустіть; якщо не допоможе, задайте інше в Налаштування → Загальні."
   },

@@ -794,6 +794,7 @@
     "transcriptionEmpty": "Nebyla rozpoznána žádná slova. Zkus to znovu, mluv trochu hlasitěji nebo blíž.",
     "sistemaSinModeloAptoTitle": "Je potřeba lepší model",
     "sistemaSinModeloApto": "Systémový zvuk se zachytil, ale aktuální model nerozpozná řeč z porad ani z videí. V sekci Modely si stáhněte Nemotron Streaming 3.5 (716 MB) nebo Whisper Large v3 Turbo (845 MB) a Abrax na něj přejde sám.",
+    "sistemaSinModeloAptoDescargar": "Stáhnout ({{mb}} MB)",
     "shortcutRegistrationTitle": "Zkratku se nepodařilo aktivovat",
     "shortcutRegistration": "Abrax nedokázal zaregistrovat klávesovou zkratku. Restartuj ho; pokud potíže trvají, nastav jinou v Nastavení → Obecné."
   },

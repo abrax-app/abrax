@@ -794,6 +794,7 @@
     "transcriptionEmpty": "単語を認識できませんでした。もう少し大きな声で、またはマイクに近づいて話してみてください。",
     "sistemaSinModeloAptoTitle": "より高性能なモデルが必要です",
     "sistemaSinModeloApto": "システム音声は取り込めましたが、現在のモデルでは会議や動画の音声を認識できません。「モデル」で Nemotron Streaming 3.5（716 MB）または Whisper Large v3 Turbo（845 MB）をダウンロードしてください。Abrax が自動的にそのモデルに切り替えます。",
+    "sistemaSinModeloAptoDescargar": "ダウンロード ({{mb}} MB)",
     "shortcutRegistrationTitle": "ショートカットを有効にできませんでした",
     "shortcutRegistration": "Abrax はキーボードショートカットを登録できませんでした。再起動してください。続く場合は設定 → 一般で別のショートカットを指定してください。"
   },

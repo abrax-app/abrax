@@ -794,6 +794,7 @@
     "transcriptionEmpty": "Не бяха разпознати думи. Опитайте отново, като говорите малко по-силно или по-близо.",
     "sistemaSinModeloAptoTitle": "Нужен е по-добър модел",
     "sistemaSinModeloApto": "Системният звук беше прихванат, но текущият модел не разпознава реч от срещи или видеа. Изтеглете Nemotron Streaming 3.5 (716 MB) или Whisper Large v3 Turbo (845 MB) в „Модели“ и Abrax сам ще премине към него.",
+    "sistemaSinModeloAptoDescargar": "Изтегляне ({{mb}} MB)",
     "shortcutRegistrationTitle": "Прекият път не можа да се активира",
     "shortcutRegistration": "Abrax не можа да регистрира клавишната комбинация. Рестартирайте; ако продължи, задайте друга в Настройки → Общи."
   },

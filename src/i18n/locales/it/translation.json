@@ -794,6 +794,7 @@
     "transcriptionEmpty": "Non è stata riconosciuta nessuna parola. Riprova parlando un po' più forte o più vicino.",
     "sistemaSinModeloAptoTitle": "Serve un modello migliore",
     "sistemaSinModeloApto": "L'audio di sistema è stato acquisito, ma il modello attuale non riconosce il parlato di riunioni o video. Scarica Nemotron Streaming 3.5 (716 MB) o Whisper Large v3 Turbo (845 MB) in Modelli e Abrax passerà a usarlo automaticamente.",
+    "sistemaSinModeloAptoDescargar": "Scarica ({{mb}} MB)",
     "shortcutRegistrationTitle": "Non è stato possibile attivare la scorciatoia",
     "shortcutRegistration": "Abrax non è riuscito a registrare la sua scorciatoia. Riavvialo; se persiste, impostane un’altra in Impostazioni → Generali."
   },

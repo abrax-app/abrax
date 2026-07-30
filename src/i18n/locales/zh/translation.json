@@ -794,6 +794,7 @@
     "transcriptionEmpty": "没有识别到任何词。请再试一次，说得大声一点或靠近一些。",
     "sistemaSinModeloAptoTitle": "需要更好的模型",
     "sistemaSinModeloApto": "已捕获系统音频，但当前模型无法识别会议或视频中的语音。请在“模型”中下载 Nemotron Streaming 3.5（716 MB）或 Whisper Large v3 Turbo（845 MB），Abrax 会自动切换到该模型。",
+    "sistemaSinModeloAptoDescargar": "下载 ({{mb}} MB)",
     "shortcutRegistrationTitle": "无法启用快捷键",
     "shortcutRegistration": "Abrax 无法注册键盘快捷键。请重启；若仍如此，请在设置 → 常规中改用其他快捷键。"
   },
