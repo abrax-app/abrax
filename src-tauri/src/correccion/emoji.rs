@@ -63,17 +63,118 @@ static MAPA: Lazy<HashMap<String, &'static str>> = Lazy::new(|| {
         .collect()
 });
 
-/// ¿El token es la palabra disparadora? Se compara por clave normalizada, así
-/// «Emoji», «emojis» no (plural distinto) y «emoji,» con coma sí caen.
-fn es_disparador(token: &str) -> bool {
-    build_match_key(token) == "emoji"
+/// Esqueleto fonético de un token, para reconocer «emoji» como lo oye el ASR.
+///
+/// **Por qué hace falta.** «Emoji» es un préstamo del japonés y ningún modelo lo
+/// transcribe fiablemente. Medido el 29/07 con Canary dictando «emoji, cara
+/// feliz»: salieron **«Hemohi»**, **«emoyi»** y **«emogi»**. Con coincidencia
+/// exacta la función no se activaba nunca, así que estaba muerta en la práctica.
+///
+/// Los tres errores son fonéticos y del mismo tipo: en español el sonido /x/ se
+/// escribe `j`, `g` (ante e/i) o se oye como `h` aspirada, la `y` se confunde con
+/// `j`, y la `h` inicial es muda. Así que:
+///
+/// 1. se cae la `h` inicial, que no suena;
+/// 2. `j`, `g`, `h`, `x` e `y` colapsan en un solo símbolo.
+///
+/// ```text
+/// «emoji»  → emoji      «hemohi» → emohi → emoji
+/// «emoyi»  → emoji      «emogi»  → emoji
+/// ```
+///
+/// No pretende ser fonética del español: es una reducción mínima dirigida a
+/// ESTE problema. Colapsa cosas absurdas («gato» → «jato») y da igual, porque lo
+/// único con lo que se compara es «emoji».
+fn esqueleto_fonetico(token: &str) -> String {
+    let clave = build_match_key(token);
+    let sin_h = clave.strip_prefix('h').unwrap_or(&clave);
+    sin_h
+        .chars()
+        .map(|c| match c {
+            'j' | 'g' | 'h' | 'x' | 'y' => 'j',
+            otro => otro,
+        })
+        .collect()
+}
+
+/// Distancia de edición acotada: en cuanto pasa de `tope` se corta. No hace falta
+/// el valor exacto, solo saber si cabe en el presupuesto.
+fn distancia_hasta(a: &str, b: &str, tope: usize) -> usize {
+    let (a, b): (Vec<char>, Vec<char>) = (a.chars().collect(), b.chars().collect());
+    if a.len().abs_diff(b.len()) > tope {
+        return tope + 1;
+    }
+    let mut fila: Vec<usize> = (0..=b.len()).collect();
+    for (i, ca) in a.iter().enumerate() {
+        let mut previa = fila[0];
+        fila[0] = i + 1;
+        for (j, cb) in b.iter().enumerate() {
+            let coste = usize::from(ca != cb);
+            let actual = fila[j + 1];
+            fila[j + 1] = (fila[j] + 1).min(actual + 1).min(previa + coste);
+            previa = actual;
+        }
+        if fila.iter().min().copied().unwrap_or(0) > tope {
+            return tope + 1;
+        }
+    }
+    fila[b.len()]
+}
+
+const DISPARADOR: &str = "emoji";
+/// El plural NO dispara: hablar **de** los emoji no debe convertir nada
+/// («los emojis de fuego son populares» tiene que quedarse igual). Se excluye por
+/// esqueleto, así que «emoyis» y «emogis» caen con él.
+const DISPARADOR_PLURAL: &str = "emojis";
+
+/// ¿El esqueleto es el disparador? Exacto, o a una edición de distancia para
+/// aguantar errores de vocal de otros modelos («imoji», «emji»).
+///
+/// Puede permitirse ser generoso porque **hay una segunda puerta**: si detrás no
+/// viene un nombre de emoji conocido, no se toca nada. Un falso disparo sin
+/// nombre válido detrás es un no-op, no un destrozo.
+fn es_esqueleto_disparador(esq: &str) -> bool {
+    if esq == DISPARADOR_PLURAL {
+        return false;
+    }
+    esq == DISPARADOR || (esq.chars().count() >= 4 && distancia_hasta(esq, DISPARADOR, 1) <= 1)
+}
+
+/// ¿Empieza el disparador en `i`? Devuelve cuántos tokens ocupa (1 o 2).
+///
+/// Los 2 tokens son para cuando el ASR PARTE la palabra («emo yi», «e moji»),
+/// que con un préstamo raro pasa. Se prueba primero suelto y luego unido, así el
+/// caso normal no paga nada.
+///
+/// **El caso partido exige coincidencia EXACTA, sin el margen de una edición.**
+/// Juntar dos reglas permisivas multiplica los falsos positivos, y aquí hubo uno
+/// real: la `y` de la conjunción colapsa a `j` en el esqueleto, así que «y emoji»
+/// unido daba «jemoji», que está a UNA edición de «emoji» — y «emoji de fuego y
+/// emoji cohete» se comía la «y». Lo cazó un test que ya existía.
+fn disparador_en(esqueletos: &[String], i: usize) -> Option<usize> {
+    if es_esqueleto_disparador(&esqueletos[i]) {
+        return Some(1);
+    }
+    let siguiente = esqueletos.get(i + 1)?;
+    if !esqueletos[i].is_empty()
+        && !siguiente.is_empty()
+        && format!("{}{}", esqueletos[i], siguiente) == DISPARADOR
+    {
+        return Some(2);
+    }
+    None
 }
 
 /// Sustituye los emoji dictados. Sin la palabra «emoji» devuelve el texto tal
 /// cual, byte a byte.
 pub fn aplicar_emoji_dictado(texto: &str) -> String {
     let tokens: Vec<&str> = texto.split_whitespace().collect();
-    if !tokens.iter().any(|t| es_disparador(t)) {
+    if tokens.is_empty() {
+        return texto.to_string();
+    }
+
+    let esqueletos: Vec<String> = tokens.iter().map(|t| esqueleto_fonetico(t)).collect();
+    if !(0..tokens.len()).any(|i| disparador_en(&esqueletos, i).is_some()) {
         return texto.to_string();
     }
 
@@ -82,15 +183,16 @@ pub fn aplicar_emoji_dictado(texto: &str) -> String {
     let mut i = 0;
 
     while i < tokens.len() {
-        if !es_disparador(tokens[i]) {
+        let Some(ancho) = disparador_en(&esqueletos, i) else {
             salida.push(tokens[i].to_string());
             i += 1;
             continue;
-        }
+        };
 
         // Tras «emoji» se saltan los puentes («de», «la», …) para localizar
-        // dónde empieza el nombre.
-        let mut inicio = i + 1;
+        // dónde empieza el nombre. `ancho` puede ser 2 si el ASR partió la
+        // palabra en dos tokens.
+        let mut inicio = i + ancho;
         while inicio < tokens.len() && PUENTE.contains(&claves[inicio].as_str()) {
             inicio += 1;
         }
@@ -244,6 +346,115 @@ mod tests {
         assert_eq!(aplicar_emoji_dictado(""), "");
         let t = "una frase cualquiera sin nada especial";
         assert_eq!(aplicar_emoji_dictado(t), t);
+    }
+
+    // ───────── el ASR no dice «emoji»: los casos REALES medidos ─────────────
+
+    #[test]
+    fn los_tres_errores_reales_de_canary() {
+        // Medidos el 29/07 dictando «emoji, cara feliz» con Canary 180M. Con
+        // coincidencia exacta la función no se activaba NUNCA: estaba muerta.
+        for dicho in [
+            "Hemohi cara feliz",
+            "emoyi cara feliz",
+            "emogi cara feliz",
+            "emoji cara feliz",
+        ] {
+            assert_eq!(
+                aplicar_emoji_dictado(dicho),
+                "🙂",
+                "no reconoció el disparador en «{dicho}»"
+            );
+        }
+    }
+
+    #[test]
+    fn el_esqueleto_colapsa_las_variantes_del_sonido_x() {
+        for v in [
+            "emoji", "emoyi", "emogi", "emohi", "hemohi", "Hemoji", "emoxi",
+        ] {
+            assert_eq!(esqueleto_fonetico(v), "emoji", "falló con «{v}»");
+        }
+    }
+
+    #[test]
+    fn aguanta_errores_de_vocal_de_otros_modelos() {
+        // «independiente del modelo»: una edición de margen cubre confusiones de
+        // vocal y letras comidas que otros modelos producen.
+        for dicho in ["imoji cara feliz", "emojo cara feliz", "emji cara feliz"] {
+            assert_eq!(aplicar_emoji_dictado(dicho), "🙂", "falló con «{dicho}»");
+        }
+    }
+
+    #[test]
+    fn si_el_asr_parte_la_palabra_en_dos() {
+        assert_eq!(aplicar_emoji_dictado("emo yi cara feliz"), "🙂");
+        assert_eq!(aplicar_emoji_dictado("e moji de fuego"), "🔥");
+    }
+
+    #[test]
+    fn la_conjuncion_y_no_se_come_al_unir_tokens() {
+        // REGRESIÓN REAL. La `y` colapsa a `j` en el esqueleto, así que «y emoji»
+        // unido da «jemoji», a UNA edición de «emoji». Con margen difuso en el
+        // caso partido, «y» desaparecía. Por eso la unión exige coincidencia
+        // exacta. Lo cazó `varios_en_una_frase`, que ya existía.
+        assert_eq!(
+            aplicar_emoji_dictado("emoji de fuego y emoji cohete"),
+            "🔥 y 🚀"
+        );
+        assert_eq!(aplicar_emoji_dictado("fuego y agua"), "fuego y agua");
+        assert!(disparador_en(&["j".to_string(), "emoji".to_string()], 0).is_none());
+    }
+
+    #[test]
+    fn el_margen_no_se_come_palabras_reales() {
+        // LA TRAMPA: «enojo» está a dos ediciones de «emoji» y ES una palabra
+        // española. Con margen 2 se habría convertido «el enojo de fuego» en
+        // «el 🔥». Por eso el margen es 1 y no 2.
+        assert_eq!(esqueleto_fonetico("enojo"), "enojo");
+        assert!(!es_esqueleto_disparador("enojo"));
+        for t in [
+            "el enojo de fuego le duró poco",
+            "un mojito de fuego no existe",
+            "el remojo de fuego",
+            "no seas majo",
+        ] {
+            assert_eq!(aplicar_emoji_dictado(t), t, "tocó «{t}»");
+        }
+    }
+
+    #[test]
+    fn el_plural_no_dispara_ni_deformado() {
+        // «emojis» queda fuera, y con él sus variantes fonéticas: hablar DE los
+        // emoji no puede convertir nada.
+        for t in [
+            "los emojis de fuego son populares",
+            "los emoyis de fuego son populares",
+            "los emogis de fuego son populares",
+        ] {
+            assert_eq!(aplicar_emoji_dictado(t), t, "tocó «{t}»");
+        }
+    }
+
+    #[test]
+    fn la_distancia_acotada_se_comporta() {
+        assert_eq!(distancia_hasta("emoji", "emoji", 1), 0);
+        assert_eq!(distancia_hasta("emoji", "emojo", 1), 1);
+        assert_eq!(distancia_hasta("emoji", "emoj", 1), 1);
+        assert_eq!(distancia_hasta("emoji", "emojis", 1), 1);
+        // Se corta al pasar del tope: solo importa que NO quepa.
+        assert!(distancia_hasta("emoji", "enojo", 1) > 1);
+        assert!(distancia_hasta("emoji", "cualquiera", 1) > 1);
+        assert!(distancia_hasta("", "emoji", 1) > 1);
+    }
+
+    #[test]
+    fn el_disparador_deformado_sin_nombre_detras_no_toca_nada() {
+        // La segunda puerta sigue en pie: sin nombre válido detrás, un disparo
+        // (aunque sea un falso positivo) es un no-op.
+        for t in ["mándame un emoyi", "no uso ningún emogi en esto"] {
+            assert_eq!(aplicar_emoji_dictado(t), t, "tocó «{t}»");
+        }
     }
 
     #[test]
