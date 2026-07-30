@@ -1135,6 +1135,19 @@ pub fn run(cli_args: CliArgs) {
             }
             // Teardown transcribe.cpp before exit
             tauri::RunEvent::Exit => {
+                // Marca de SALIDA ORDENADA. Es la unica linea que distingue «la
+                // app se cerro sola» de «a la app la mataron», y esa diferencia
+                // decide si un cierre inesperado hay que investigarlo o no.
+                //
+                // Investigando un `exit code: 1` del 30/07 hubo que deducirlo por
+                // ausencia, mirando si aparecian las lineas de descarga del
+                // modelo — un marcador prestado, que dejaria de valer el dia que
+                // ese codigo cambie. Este no depende de nadie.
+                //
+                // Si un cierre no deja esta linea, el proceso murio desde fuera:
+                // ninguna ruta interna sale sin pasar por aqui.
+                log::info!("[salida] cierre ordenado de Abrax");
+
                 // El silencio de «silenciar al grabar» es del SISTEMA, no de
                 // Abrax: si el proceso muere con él puesto, NO se deshace solo
                 // —ni reiniciando Abrax— y el usuario se queda sin sonido en
