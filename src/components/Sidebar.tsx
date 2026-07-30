@@ -6,7 +6,6 @@ import {
   FlaskConical,
   History,
   Info,
-  Sparkles,
   Cpu,
 } from "lucide-react";
 import AbraxLogo from "./icons/AbraxLogo";
