@@ -124,6 +124,57 @@ fn entrelazar(segs: &[String], cons: &[&str]) -> String {
     s
 }
 
+/// Proveedores de correo de consumo: lista CERRADA. Es lo que hace seguro el
+/// rescate de la arroba comida — «algo.gmail.com» solo puede ser un correo.
+const PROVEEDORES_CORREO: &[&str] = &[
+    "gmail",
+    "hotmail",
+    "outlook",
+    "yahoo",
+    "icloud",
+    "protonmail",
+    "proton",
+    "live",
+    "msn",
+];
+
+/// Prefijos de web: si el «usuario» empieza así, es una URL, no un correo.
+const PREFIJOS_WEB: &[&str] = &["www", "http", "https", "mail", "smtp", "webmail", "correo"];
+
+/// Rescata la arroba que el ASR se comió: algunos modelos entregan el correo
+/// ya unido pero con TODO en puntos («antonio.prueba.gmail.com»). Si un token
+/// con puntos termina en PROVEEDOR-de-correo + TLD conocidos y lo que precede
+/// no es un prefijo de web, el punto anterior al proveedor era una arroba.
+/// `None` = no es ese caso; el token queda tal cual.
+fn rescatar_arroba(token: &str) -> Option<String> {
+    let nuc = nucleo(token);
+    let sufijo = &token[nuc.len()..];
+    if nuc.contains('@') || !nuc.contains('.') {
+        return None;
+    }
+    let partes: Vec<&str> = nuc.split('.').collect();
+    let n = partes.len();
+    // usuario(.mas)? . proveedor . tld — mínimo tres tramos, ninguno vacío.
+    if n < 3 || partes.iter().any(|p| p.is_empty()) {
+        return None;
+    }
+    let proveedor = partes[n - 2].to_lowercase();
+    let tld = partes[n - 1].to_lowercase();
+    if !PROVEEDORES_CORREO.contains(&proveedor.as_str()) || !EXT.contains(&tld.as_str()) {
+        return None;
+    }
+    if PREFIJOS_WEB.contains(&partes[0].to_lowercase().as_str()) {
+        return None;
+    }
+    Some(format!(
+        "{}@{}.{}{}",
+        partes[..n - 2].join("."),
+        partes[n - 2],
+        partes[n - 1],
+        sufijo
+    ))
+}
+
 /// Reescribe la puntuación dictada de identificadores. Conservador: cada rama
 /// exige su evidencia y ante la duda no toca nada. Trabaja línea a línea (los
 /// saltos de línea del dictado sobreviven) y una línea sin conversiones se
@@ -256,7 +307,13 @@ fn convertir_tokens(texto: &str) -> String {
                     break;
                 }
                 let ks = clave(toks[j + 2]);
-                if ks.is_empty() || es_funcion(&ks) || conector(&ks).is_some() {
+                // Un segmento que ya trae arroba es un correo formado:
+                // unirse a él lo corrompería («tiene@antonio@gmail.com»).
+                if ks.is_empty()
+                    || es_funcion(&ks)
+                    || conector(&ks).is_some()
+                    || toks[j + 2].contains('@')
+                {
                     break;
                 }
                 cons.push(sim);
@@ -303,6 +360,8 @@ fn convertir_tokens(texto: &str) -> String {
             let mut j = i;
             while j + 1 < toks.len() && matches!(clave(toks[j]).as_str(), "barra" | "slash") {
                 let ks = clave(toks[j + 1]);
+                // Un segmento que ya trae arroba es un correo formado:
+                // unirse a él lo corrompería («tiene@antonio@gmail.com»).
                 if ks.is_empty() || es_funcion(&ks) || conector(&ks).is_some() {
                     break;
                 }
@@ -320,7 +379,11 @@ fn convertir_tokens(texto: &str) -> String {
             }
         }
 
-        out.push(toks[i].to_string());
+        // Token que no casó con nada: última oportunidad, la arroba comida.
+        match rescatar_arroba(toks[i]) {
+            Some(correo) => out.push(correo),
+            None => out.push(toks[i].to_string()),
+        }
         i += 1;
     }
 
@@ -446,6 +509,31 @@ mod tests {
             "dos puntos de vista",
             "de punto a punto",
             "subimos por la barra",
+        ] {
+            assert_eq!(normalizar_identificadores(t), t, "no debía tocar «{t}»");
+        }
+    }
+
+    #[test]
+    fn arroba_comida_por_el_asr() {
+        // Algunos modelos entregan el correo TODO en puntos. Con proveedor de
+        // correo conocido, el punto anterior al proveedor era una arroba.
+        assert_eq!(
+            normalizar_identificadores(
+                "mi correo es antonio.prueba.gmail.com y la reunión es a las 17:30"
+            ),
+            "mi correo es antonio.prueba@gmail.com y la reunión es a las 17:30"
+        );
+        assert_eq!(
+            normalizar_identificadores("escríbele a jimmy.hotmail.com."),
+            "escríbele a jimmy@hotmail.com."
+        );
+        // Dominios normales, URLs y subdominios ajenos NO se tocan.
+        for t in [
+            "la página es abrax.app",
+            "visita www.gmail.com",
+            "el docs está en mail.google.com",
+            "ya tiene arroba antonio@gmail.com",
         ] {
             assert_eq!(normalizar_identificadores(t), t, "no debía tocar «{t}»");
         }
