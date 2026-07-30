@@ -348,8 +348,51 @@ pub fn is_installed(app: &AppHandle) -> bool {
         .unwrap_or(false)
 }
 
+/// Solo un aprovisionamiento a la vez.
+///
+/// Desde que el arranque lo intenta solo (ver [`aprovisionar_en_segundo_plano`]),
+/// hay DOS caminos que pueden pedirlo: ese y el botón «Habilitar». Si coincidieran,
+/// dos `uv` trabajarían sobre la misma carpeta y `limpiar_venv` borraría el venv
+/// que el otro está creando — exactamente el estado a medias que tanto costó
+/// arreglar. El cerrojo los serializa.
+static CERROJO: std::sync::OnceLock<tokio::sync::Mutex<()>> = std::sync::OnceLock::new();
+
+/// Aprovisiona en segundo plano al arrancar, si hace falta.
+///
+/// La voz online venía apagada de fábrica: había que entrar a Escucha y pulsar
+/// «Habilitar» para que existiera. Eso es un paso que nadie descubre, así que en
+/// la práctica la mitad buena de Escucha no la veía nadie. Ahora se prepara sola.
+///
+/// Es **best-effort y silenciosa**: si no hay red, si PyPI está caído o si `uv`
+/// falla, se anota en el log y no se molesta a nadie — el botón «Habilitar»
+/// sigue ahí para reintentarlo a mano, y el motor del sistema (local, siempre
+/// disponible) no depende de esto para nada.
+///
+/// Se reintenta en cada arranque a propósito: instalar sin red y abrir la app más
+/// tarde con conexión es el caso normal, no una excepción.
+pub fn aprovisionar_en_segundo_plano(app: &AppHandle) {
+    if is_installed(app) {
+        // Se anota el camino de salida a propósito. Sin esta línea, «no hay log
+        // de [online]» significaba dos cosas incompatibles —ya estaba puesto, o
+        // este código no llegó a correr— y no había forma de distinguirlas.
+        log::info!("[online] runtime ya aprovisionado, nada que hacer");
+        return;
+    }
+    let app = app.clone();
+    tauri::async_runtime::spawn(async move {
+        log::info!("[online] runtime ausente: aprovisionando en segundo plano");
+        match install_runtime(&app).await {
+            Ok(()) => log::info!("[online] runtime listo"),
+            // `warn` y no `error`: no es un fallo de la app, es que hoy no se
+            // pudo. La app funciona igual sin esto.
+            Err(e) => log::warn!("[online] no se pudo aprovisionar ahora: {e}"),
+        }
+    });
+}
+
 /// Aprovisiona el runtime online (venv + edge-tts + miniaudio). Liviano, sin torch.
 pub async fn install_runtime(app: &AppHandle) -> Result<(), String> {
+    let _cerrojo = CERROJO.get_or_init(Default::default).lock().await;
     let dir = download::runtime_dir(app, RUNTIME_NAME)?;
     std::fs::create_dir_all(&dir).map_err(|e| e.to_string())?;
     // Restos de una instalación anterior fuera ANTES de crear: reinstalar debe

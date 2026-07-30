@@ -1118,6 +1118,30 @@ Section Uninstall
     DeleteRegValue HKCU "Software\Microsoft\Windows\CurrentVersion\Run" "${PRODUCTNAME}"
   ${EndIf}
 
+  ; --- RUNTIME DE VOZ --- Se borra SIEMPRE, marque o no el usuario «eliminar mis
+  ; datos». No es un dato suyo: es un entorno de Python que instalo Abrax dentro
+  ; de su datadir, ~100 MB que el no puso ahi y que no le sirven de nada sin la
+  ; app. Dejarlo seria basura escondida en AppData tras desinstalar.
+  ;
+  ; Lo que si es dato del usuario —ajustes, historial, diccionario— sigue
+  ; dependiendo de la casilla, que es de lo que habla la casilla.
+  ${If} $UpdateMode <> 1
+    SetShellVarContext current
+    ; Igual que abajo: matar primero lo que corra DESDE esa carpeta, o el borrado
+    ; se lleva lo que puede y deja un venv a medias. Filtrado por RUTA.
+    nsExec::ExecToLog 'powershell -NoProfile -NonInteractive -ExecutionPolicy Bypass -Command "Get-CimInstance Win32_Process | Where-Object { $$_.ExecutablePath -and $$_.ExecutablePath -like $\'$APPDATA\${BUNDLEID}\tts\*$\' } | ForEach-Object { try { Stop-Process -Id $$_.ProcessId -Force -ErrorAction Stop } catch {} }"'
+    Pop $R9
+    Sleep 400
+    RmDir /r "$APPDATA\${BUNDLEID}\tts"
+    ${If} ${FileExists} "$APPDATA\${BUNDLEID}\tts\*.*"
+      Sleep 800
+      RmDir /r "$APPDATA\${BUNDLEID}\tts"
+      ${If} ${FileExists} "$APPDATA\${BUNDLEID}\tts\*.*"
+        DetailPrint "Aviso: quedaron archivos del motor de voz en uso."
+      ${EndIf}
+    ${EndIf}
+  ${EndIf}
+
   ; Delete app data if the checkbox is selected
   ; and if not updating
   ${If} $DeleteAppDataCheckboxState = 1

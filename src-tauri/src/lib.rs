@@ -992,6 +992,12 @@ pub fn run(cli_args: CliArgs) {
             // si está apagado o no hay índice en el datadir).
             dictionary::refresh_active(&app_handle);
 
+            // Voz online de Escucha: prepararla sola, en segundo plano, si no
+            // está. Antes exigía entrar a Escucha y pulsar «Habilitar», un paso
+            // que nadie descubre. No bloquea el arranque ni avisa si falla.
+            #[cfg(feature = "advanced-tts")]
+            managers::tts::online::aprovisionar_en_segundo_plano(&app_handle);
+
             // Pre-warm GPU/accelerator enumeration on a background thread. The first
             // get_available_accelerators call enumerates ORT execution providers and
             // transcribe-cpp compute devices, which can take a moment; without this
