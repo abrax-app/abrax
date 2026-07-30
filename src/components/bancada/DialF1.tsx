@@ -16,7 +16,8 @@ interface Props {
 }
 
 // ángulo de la posición i en el arco de 270° abierto abajo (-135°..+135°)
-const angleOf = (i: number, n: number) => (n > 1 ? (i / (n - 1)) * 270 - 135 : 0);
+const angleOf = (i: number, n: number) =>
+  n > 1 ? (i / (n - 1)) * 270 - 135 : 0;
 
 export const DialF1: React.FC<Props> = ({
   label,

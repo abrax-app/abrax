@@ -1,9 +1,4 @@
-import React, {
-  forwardRef,
-  useImperativeHandle,
-  useMemo,
-  useRef,
-} from "react";
+import React, { forwardRef, useImperativeHandle, useMemo, useRef } from "react";
 
 // Tira de shift-lights (LEDs de cambio de marcha) del shell Bancada, estilo
 // volante de F1: verde → ámbar → rojo por zonas. Se actualiza por REFS directas
