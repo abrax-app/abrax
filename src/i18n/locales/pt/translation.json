@@ -766,7 +766,8 @@
   "overlay": {
     "transcribing": "Transcrevendo...",
     "processing": "Processando...",
-    "leyendo": "Lendo em voz alta"
+    "leyendo": "Lendo em voz alta",
+    "preparando": "Preparando a leitura"
   },
   "whatsNew": {
     "title": "Novidades no Abrax v{{version}}"

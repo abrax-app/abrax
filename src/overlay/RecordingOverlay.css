@@ -488,6 +488,43 @@
   }
 }
 
+/* Tres puntos mientras el motor sintetiza, antes de que suene la voz. Comparten
+   la tarjeta y el tamaño de `.leyendo` a propósito: al arrancar la voz el
+   contenido se cambia en el sitio y la ventana NO se redimensiona ni salta. */
+.prep {
+  color: var(--s-accent);
+  display: block;
+}
+.prep-pt {
+  fill: currentColor;
+  opacity: 0.3;
+  /* En SVG el origen de transformación es el (0,0) del viewBox, no el centro de
+     la figura: sin esto los puntos no crecerían en su sitio, se irían hacia la
+     esquina superior izquierda. `fill-box` lo ancla a cada círculo. */
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: prep-pt 1.05s ease-in-out infinite;
+}
+.prep-pt-2 {
+  animation-delay: 0.15s;
+}
+.prep-pt-3 {
+  animation-delay: 0.3s;
+}
+
+@keyframes prep-pt {
+  0%,
+  70%,
+  100% {
+    opacity: 0.3;
+    transform: scale(0.85);
+  }
+  35% {
+    opacity: 1;
+    transform: scale(1.15);
+  }
+}
+
 /* Reduced motion: se detiene el latido y las ondas quedan visibles y quietas.
    El overlay sigue apareciendo y desapareciendo, que es la señal que de verdad
    importa — lo que se retira es la animación continua, no la información. */
@@ -497,6 +534,10 @@
     animation: none;
   }
   .spk-onda {
+    opacity: 0.85;
+  }
+  .prep-pt {
+    animation: none;
     opacity: 0.85;
   }
 }

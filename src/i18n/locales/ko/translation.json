@@ -766,7 +766,8 @@
   "overlay": {
     "transcribing": "텍스트로 변환 중...",
     "processing": "처리 중...",
-    "leyendo": "읽는 중"
+    "leyendo": "읽는 중",
+    "preparando": "읽기 준비 중"
   },
   "whatsNew": {
     "title": "Abrax v{{version}}의 새 소식"

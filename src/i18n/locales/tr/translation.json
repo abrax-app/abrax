@@ -766,7 +766,8 @@
   "overlay": {
     "transcribing": "Transkribe ediliyor...",
     "processing": "İşleniyor...",
-    "leyendo": "Sesli okunuyor"
+    "leyendo": "Sesli okunuyor",
+    "preparando": "Okuma hazırlanıyor"
   },
   "whatsNew": {
     "title": "Abrax v{{version}} yenilikleri"

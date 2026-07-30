@@ -766,7 +766,8 @@
   "overlay": {
     "transcribing": "Transkribiere...",
     "processing": "Verarbeite...",
-    "leyendo": "Wird vorgelesen"
+    "leyendo": "Wird vorgelesen",
+    "preparando": "Vorlesen wird vorbereitet"
   },
   "whatsNew": {
     "title": "Neu in Abrax v{{version}}"

@@ -24,7 +24,11 @@ type OverlayState =
   | "processing"
   // Escucha leyendo en voz alta. No es dictado: no lleva micro, ni onda, ni
   // temporizador — solo el parlante.
-  | "leyendo";
+  | "leyendo"
+  // Paso previo a `leyendo`: la selección ya se capturó y el motor está
+  // sintetizando. En un motor neuronal eso son SEGUNDOS de silencio, y sin
+  // señal alguna el atajo parecía no haber hecho nada.
+  | "preparando";
 
 // ── ONDA REACTIVA ───────────────────────────────────────────────────────────
 // Una SEÑAL EN EL TIEMPO, no barras y tampoco un espectro. El upstream (Handy)
@@ -211,13 +215,13 @@ const RecordingOverlay: React.FC = () => {
         // Subscribe to spectrum frames only while visible (R8): the backend
         // gates FFT + emission on this subscription.
         //
-        // Y SOLO SI EL ESTADO LO NECESITA. `leyendo` es Escucha leyendo un texto
-        // en voz alta: no hay micrófono de por medio y no se dibuja onda alguna.
-        // Suscribirse ahí encendería la FFT del micro mientras al usuario
-        // simplemente le leen algo — desperdicio, y una activación del micrófono
-        // que nadie pidió. La letra de R8 se cumplía (el overlay está visible),
-        // pero no su intención.
-        if (overlayState !== "leyendo") {
+        // Y SOLO SI EL ESTADO LO NECESITA. `leyendo`/`preparando` son Escucha
+        // leyendo un texto en voz alta: no hay micrófono de por medio y no se
+        // dibuja onda alguna. Suscribirse ahí encendería la FFT del micro
+        // mientras al usuario simplemente le leen algo — desperdicio, y una
+        // activación del micrófono que nadie pidió. La letra de R8 se cumplía
+        // (el overlay está visible), pero no su intención.
+        if (overlayState !== "leyendo" && overlayState !== "preparando") {
           void commands.startSpectrum();
         }
       });
@@ -402,6 +406,38 @@ const RecordingOverlay: React.FC = () => {
       <div className="sbase-r">{showCancel && cancelBtn}</div>
     </div>
   );
+
+  // ---- Overlay de PREPARACIÓN (Escucha) ------------------------------------
+  // El texto ya está capturado y el motor lo está sintetizando. En el motor del
+  // sistema eso es instantáneo, pero en uno neuronal son SEGUNDOS de silencio
+  // absoluto: se pulsaba el atajo y no pasaba nada visible, así que parecía
+  // roto. Esto dice «te oí, estoy trabajando» hasta que arranca la voz.
+  //
+  // Tres puntos y no una barra de progreso: no sabemos cuánto falta, y una
+  // barra que avanza sin medir nada sería un instrumento que miente.
+  if (state === "preparando") {
+    return (
+      <div
+        dir={direction}
+        className={`ov-stage ${position} ov-fade ${isVisible ? "show" : ""}`}
+      >
+        <div className="scard compact leyendo">
+          <svg
+            className="prep"
+            viewBox="0 0 24 24"
+            width="22"
+            height="22"
+            role="img"
+            aria-label={t("overlay.preparando")}
+          >
+            <circle className="prep-pt prep-pt-1" cx="5" cy="12" r="2.2" />
+            <circle className="prep-pt prep-pt-2" cx="12" cy="12" r="2.2" />
+            <circle className="prep-pt prep-pt-3" cx="19" cy="12" r="2.2" />
+          </svg>
+        </div>
+      </div>
+    );
+  }
 
   // ---- Overlay de LECTURA (Escucha) ----------------------------------------
   // Un parlante y nada más, mientras se lee en voz alta. Va ANTES de mirar el

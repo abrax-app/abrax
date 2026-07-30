@@ -1016,7 +1016,67 @@ impl ShortcutAction for LeerSeleccionAction {
             info!("[leer] hablando con voz {voz:?} tras {:?}", t0.elapsed());
             // Se muestra AQUÍ y no al capturar: si no había selección, el overlay
             // habría aparecido y desaparecido de golpe, un parpadeo sin sentido.
-            crate::overlay::show_leyendo_overlay(&app);
+            //
+            // Y arranca en «preparando», no en «leyendo». Entre este punto y la
+            // primera muestra de audio hay un hueco que en el motor del sistema
+            // es imperceptible pero en uno neuronal son SEGUNDOS de síntesis. Un
+            // parlante «retumbando» durante ese silencio sería un instrumento que
+            // miente: diría que está sonando algo que aún no suena.
+            crate::overlay::show_preparando_overlay(&app);
+
+            // Cadencia y techos, compartidos por el vigía de arranque y por la
+            // espera del final. 120 ms es imperceptible para el ojo y no le pesa
+            // a nadie; los techos existen para que ningún fallo de `status` deje
+            // el overlay clavado en pantalla.
+            const SONDEO: Duration = Duration::from_millis(120);
+            const ESPERA_ARRANQUE: Duration = Duration::from_secs(2);
+            // Cuánto se espera a que ARRANQUE la voz mostrando «preparando». Un
+            // motor neuronal sintetizando un texto largo en CPU puede tardar de
+            // verdad, así que es generoso; si se agota, no se finge nada.
+            const TECHO_ARRANQUE: Duration = Duration::from_secs(120);
+            // Techo duro del total: si `status` mintiera, el overlay no puede
+            // quedarse en pantalla para siempre. Diez minutos es más de lo que
+            // dura cualquier selección razonable y es un final garantizado.
+            const TECHO: Duration = Duration::from_secs(600);
+
+            // Vigía que cambia el overlay a «leyendo» en cuanto empieza a sonar
+            // de verdad. Va en su propia tarea porque `speak` BLOQUEA todo el
+            // tiempo que dura la lectura en los motores neuronales: si el cambio
+            // se hiciera después de esperarlo, llegaría cuando ya terminó.
+            //
+            // `hablando` viene de `is_playing()` del servicio de reproducción, es
+            // decir de audio saliendo — no de «se aceptó el encargo».
+            {
+                let app_vigia = app.clone();
+                let tts_vigia = tts.clone();
+                tauri::async_runtime::spawn(async move {
+                    let inicio = Instant::now();
+                    loop {
+                        // Si la lectura ya terminó o el usuario la paró, salir sin
+                        // tocar nada: el overlay ya lo ocultó el guard, y mostrarlo
+                        // aquí dejaría un parlante huérfano en pantalla.
+                        if !LEYENDO.load(Ordering::SeqCst) {
+                            return;
+                        }
+                        if matches!(tts_vigia.status(), Ok(e) if e.hablando) {
+                            // Se vuelve a comprobar pegado al cambio para cerrar la
+                            // carrera con el guard.
+                            if LEYENDO.load(Ordering::SeqCst) {
+                                info!("[leer] la voz arrancó tras {:?}", inicio.elapsed());
+                                crate::overlay::show_leyendo_overlay(&app_vigia);
+                            }
+                            return;
+                        }
+                        if inicio.elapsed() > TECHO_ARRANQUE {
+                            // Nunca sonó. Se deja en «preparando» y el guard lo
+                            // ocultará: no se finge una voz que no existe.
+                            warn!("[leer] la voz no arrancó en {TECHO_ARRANQUE:?}");
+                            return;
+                        }
+                        tokio::time::sleep(SONDEO).await;
+                    }
+                });
+            }
 
             // `speak` va a un hilo de bloqueo porque en los motores neuronales SÍ
             // bloquea hasta sintetizar y reproducir.
@@ -1039,13 +1099,6 @@ impl ShortcutAction for LeerSeleccionAction {
             // Se espera a que el motor DEJE de hablar de verdad. Primero a que
             // EMPIECE (encolar tarda un momento y preguntar demasiado pronto
             // devuelve «no habla»), y después a que termine.
-            const SONDEO: Duration = Duration::from_millis(120);
-            const ESPERA_ARRANQUE: Duration = Duration::from_secs(2);
-            // Techo duro: si `status` mintiera, el overlay no puede quedarse en
-            // pantalla para siempre. Diez minutos es más de lo que dura cualquier
-            // selección razonable y sigue siendo un final garantizado.
-            const TECHO: Duration = Duration::from_secs(600);
-
             let hablando = || matches!(tts_sonda.status(), Ok(e) if e.hablando);
             let arranque = Instant::now();
             while !hablando() && arranque.elapsed() < ESPERA_ARRANQUE {

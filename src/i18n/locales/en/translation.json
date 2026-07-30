@@ -769,7 +769,8 @@
   "overlay": {
     "transcribing": "Transcribing...",
     "processing": "Processing...",
-    "leyendo": "Reading aloud"
+    "leyendo": "Reading aloud",
+    "preparando": "Preparing to read"
   },
   "correccion": {
     "motor": {

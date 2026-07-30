@@ -70,7 +70,10 @@ fn overlay_dimensions(style: OverlayStyle, state: &str) -> (f64, f64) {
     // `leyendo` se comprueba ANTES que el estilo: leer en voz alta no es dictar, y
     // no debe heredar el tamaño de la esfera ni del panel Live. Es el mismo
     // overlay reutilizado, con su propia forma.
-    if state == "leyendo" {
+    // `preparando` mide IGUAL que `leyendo` a propósito: es el paso previo del
+    // mismo overlay y el cambio ocurre en el sitio, así que la ventana no debe
+    // redimensionarse ni saltar cuando arranca la voz.
+    if state == "leyendo" || state == "preparando" {
         (OVERLAY_LEYENDO_WIDTH, OVERLAY_LEYENDO_HEIGHT)
     } else if style == OverlayStyle::Esfera {
         (OVERLAY_ESFERA_WIDTH, OVERLAY_ESFERA_HEIGHT)
@@ -446,6 +449,17 @@ pub fn show_recording_overlay(app_handle: &AppHandle) {
 /// apagó los overlays, este tampoco aparece.
 pub fn show_leyendo_overlay(app_handle: &AppHandle) {
     show_overlay_state(app_handle, "leyendo");
+}
+
+/// Muestra el overlay de PREPARACIÓN: el texto ya se capturó y el motor está
+/// sintetizando, pero todavía no suena nada.
+///
+/// Existe porque un motor neuronal tarda segundos en producir la primera
+/// muestra, y en ese hueco no había señal ninguna: se pulsaba el atajo y la
+/// pantalla no cambiaba, así que parecía que no se había hecho nada. Es la misma
+/// ventana y el mismo tamaño que `leyendo`; solo cambia lo que se dibuja dentro.
+pub fn show_preparando_overlay(app_handle: &AppHandle) {
+    show_overlay_state(app_handle, "preparando");
 }
 
 /// Shows the larger streaming overlay that displays live transcription text

@@ -769,7 +769,8 @@
   "overlay": {
     "transcribing": "Transcriberen...",
     "processing": "Verwerken...",
-    "leyendo": "Wordt voorgelezen"
+    "leyendo": "Wordt voorgelezen",
+    "preparando": "Voorlezen wordt voorbereid"
   },
   "correccion": {
     "motor": {

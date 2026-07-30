@@ -766,7 +766,8 @@
   "overlay": {
     "transcribing": "Транскрибиране...",
     "processing": "Обработка...",
-    "leyendo": "Чете на глас"
+    "leyendo": "Чете на глас",
+    "preparando": "Подготовка за четене"
   },
   "whatsNew": {
     "title": "Ново в Abrax v{{version}}"
