@@ -70,7 +70,128 @@ pub fn autocorreccion_hablada(texto: &str) -> String {
             None => break,
         }
     }
+    for _ in 0..3 {
+        match aplicar_una_correccion_tras_cierre(&actual) {
+            Some(nuevo) => actual = nuevo,
+            None => break,
+        }
+    }
     actual
+}
+
+/// Marcadores que anuncian corrección justo DESPUÉS de un cierre de oración.
+/// El ASR real puntúa la pausa del que se corrige con un punto: «…terminar la
+/// landing. No, mejor terminar el video.» — la forma con comas jamás llega.
+/// Solo entran señales inequívocas de corrección; «no» a secas queda fuera.
+const MARCADORES_TRAS_CIERRE: &[&[&str]] = &[
+    &["no", "mejor"],
+    &["bueno", "no"],
+    &["mejor", "dicho"],
+    &["mas", "bien"],
+    &["quise", "decir"],
+    &["quiero", "decir"],
+    &["digo"],
+    &["corrijo"],
+    &["miento"],
+    &["mentira"],
+    &["me", "equivoque"],
+];
+
+/// Marcadores DÉBILES tras cierre: «Perdón, …» abre disculpas normales
+/// («Perdón, no volverá a pasar»), así que solo disparan con un ancla de
+/// contenido — jamás con una palabra función.
+const MARCADORES_TRAS_CIERRE_DEBILES: &[&[&str]] = &[&["perdon"], &["perdona"], &["disculpa"]];
+
+/// Palabras función: un ancla así tras un marcador débil es casi seguro una
+/// frase nueva («Perdón, no te escuché»), no una corrección.
+const ANCLAS_FUNCION: &[&str] = &[
+    "el", "la", "los", "las", "un", "una", "unos", "unas", "de", "del", "al", "a", "en", "por",
+    "para", "con", "sin", "no", "ni", "que", "se", "te", "le", "lo", "me", "mi", "tu", "su", "y",
+    "o", "es",
+];
+
+/// ¿El token termina cerrando oración? El «?» queda fuera a propósito: tras
+/// una pregunta, «No, …» es una RESPUESTA, no un falso comienzo.
+fn cierra_para_correccion(token: &str) -> bool {
+    token.ends_with(['.', '…', '!']) || token.ends_with("...")
+}
+
+/// Una pasada del falso comienzo tras cierre: «X…/. MARCADOR, corrección.» →
+/// la corrección reemplaza desde su ancla hacia atrás, comiéndose el cierre
+/// intermedio y el marcador. Mismo principio conservador que la forma con
+/// comas: sin ancla no se toca nada.
+fn aplicar_una_correccion_tras_cierre(texto: &str) -> Option<String> {
+    let rangos = tokens_con_rango(texto);
+    let toks: Vec<&str> = rangos.iter().map(|&(a, b)| &texto[a..b]).collect();
+    let claves: Vec<String> = toks
+        .iter()
+        .map(|t| build_match_key(t.trim_end_matches(PUNT_FINAL)))
+        .collect();
+
+    for i in 1..toks.len() {
+        if !cierra_para_correccion(toks[i - 1]) {
+            continue;
+        }
+        // ¿Empieza aquí un marcador (fuerte o débil)?
+        let casa = |tabla: &[&[&str]]| -> Option<usize> {
+            tabla
+                .iter()
+                .filter(|m| i + m.len() <= toks.len())
+                .find(|m| {
+                    m.iter().zip(&claves[i..]).all(|(a, b)| a == b)
+                        // El marcador no cruza otro cierre de oración.
+                        && !toks[i..i + m.len() - 1].iter().any(|t| cierra_para_correccion(t))
+                })
+                .map(|m| m.len())
+        };
+        let (n, debil) = match casa(MARCADORES_TRAS_CIERRE) {
+            Some(n) => (n, false),
+            None => match casa(MARCADORES_TRAS_CIERRE_DEBILES) {
+                Some(n) => (n, true),
+                None => continue,
+            },
+        };
+
+        // La corrección: tokens tras el marcador hasta el primer cierre
+        // (incluido) o el final del texto, con el tope de siempre.
+        let ini_corr = i + n;
+        if ini_corr >= toks.len() {
+            return None;
+        }
+        let mut fin_corr = ini_corr;
+        while fin_corr < toks.len() {
+            if fin_corr - ini_corr + 1 > MAX_TOKENS_CORRECCION {
+                return None; // demasiado larga: ya no es una autocorrección
+            }
+            if cierra_para_correccion(toks[fin_corr]) || toks[fin_corr].ends_with(',') {
+                break;
+            }
+            fin_corr += 1;
+        }
+        let fin_corr = fin_corr.min(toks.len() - 1);
+
+        // Ancla: última aparición de la primera palabra de la corrección en
+        // los tokens ANTERIORES al cierre.
+        let clave_ancla = &claves[ini_corr];
+        if clave_ancla.is_empty() {
+            return None;
+        }
+        if debil && ANCLAS_FUNCION.contains(&clave_ancla.as_str()) {
+            return None; // «Perdón, no…» es una disculpa, no una corrección
+        }
+        let ancla = (i.saturating_sub(MAX_TOKENS_CORRECCION)..i)
+            .rev()
+            .find(|&k| &claves[k] == clave_ancla)?;
+
+        // Reconstrucción por tokens: prefijo + corrección (con su puntuación)
+        // + lo que siga después de la corrección.
+        let mut salida: Vec<&str> = Vec::with_capacity(toks.len());
+        salida.extend(&toks[..ancla]);
+        salida.extend(&toks[ini_corr..=fin_corr]);
+        salida.extend(&toks[fin_corr + 1..]);
+        return Some(salida.join(" "));
+    }
+    None
 }
 
 /// Una pasada: encuentra el primer `, marcador,` y lo resuelve. `None` si no
@@ -189,9 +310,15 @@ fn colapsar_linea(texto: &str) -> String {
                     .get(i + 1)
                     .is_some_and(|n| es_deletreo(n.trim_end_matches(PUNT_FINAL)))
                     || (i >= 2 && es_deletreo(toks[i - 2].trim_end_matches(PUNT_FINAL))));
+            // El ASR real le pone COMAS al tartamudeo («después, después,»):
+            // una coma pegada al primer token no es frontera de frase y no
+            // impide el colapso. El punto y los demás cierres sí — esos
+            // separan oraciones de verdad.
+            let sufijo_prev = &prev[nucleo.len()..];
+            let sufijo_no_bloquea = sufijo_prev.is_empty() || sufijo_prev == ",";
             if !clave_prev.is_empty()
                 && clave_prev == clave_act
-                && nucleo.len() == prev.len()
+                && sufijo_no_bloquea
                 && !NO_COLAPSAR.contains(&clave_prev.as_str())
                 && !mayuscula_media
                 && !numerico
@@ -469,6 +596,18 @@ mod tests {
             colapsar_repeticiones("y después después revisamos el diseño"),
             "y después revisamos el diseño"
         );
+        // La forma REAL del ASR: comas alrededor del tartamudeo. Cazada en el
+        // E2E con micrófono — el corpus escrito nunca la produjo.
+        assert_eq!(
+            colapsar_repeticiones("Y después, después, revisar el diseño de Abrax."),
+            "Y después, revisar el diseño de Abrax."
+        );
+        // El punto SÍ es frontera: dos oraciones que empiezan igual no se
+        // tocan («Listo. listo del todo» sería otra frase).
+        assert_eq!(
+            colapsar_repeticiones("ya está listo. listo del todo"),
+            "ya está listo. listo del todo"
+        );
         // Conserva la puntuación del segundo token.
         assert_eq!(
             colapsar_repeticiones("la aplicación tarda tarda, mucho"),
@@ -547,6 +686,62 @@ mod tests {
     fn mentira_sin_estructura_de_marcador_no_dispara() {
         // «mentira» como sustantivo normal: sin comas alrededor no es señal.
         let t = "eso es mentira y lo sabes";
+        assert_eq!(autocorreccion_hablada(t), t);
+    }
+
+    // ── falso comienzo tras cierre de oración (la forma real del ASR) ─────
+
+    #[test]
+    fn falso_comienzo_tras_punto_con_no_mejor() {
+        // Whisper puntúa la pausa del que se corrige con un punto, no con
+        // comas: esta es la frase estrella tal como salió del micrófono.
+        assert_eq!(
+            autocorreccion_hablada(
+                "mañana tenemos que terminar la landing. No, mejor terminar el video. Y después revisamos."
+            ),
+            "mañana tenemos que terminar el video. Y después revisamos."
+        );
+    }
+
+    #[test]
+    fn redundancia_tras_punto_con_perdon() {
+        // «…de Abrax. Perdón, Abrax.» — el diccionario ya corrigió las dos y
+        // queda la reformulación redundante. El ancla la colapsa.
+        assert_eq!(
+            autocorreccion_hablada("y después revisamos el diseño de Abrax. Perdón, Abrax."),
+            "y después revisamos el diseño de Abrax."
+        );
+    }
+
+    #[test]
+    fn digo_tras_punto_corrige_con_ancla() {
+        assert_eq!(
+            autocorreccion_hablada("Vamos el lunes. Digo, el martes."),
+            "Vamos el martes."
+        );
+    }
+
+    #[test]
+    fn tras_interrogacion_no_es_falso_comienzo() {
+        // Tras una pregunta, «No, …» es una respuesta. No se toca.
+        let t = "¿Vamos el lunes? No, mejor el martes.";
+        assert_eq!(autocorreccion_hablada(t), t);
+    }
+
+    #[test]
+    fn perdon_tras_punto_como_disculpa_no_dispara() {
+        // Marcador débil + ancla de palabra función = disculpa normal.
+        for t in [
+            "Pasé por tu casa. Perdón, por la demora.",
+            "Llegué tarde. Perdón, no volverá a pasar.",
+        ] {
+            assert_eq!(autocorreccion_hablada(t), t, "no debía tocar «{t}»");
+        }
+    }
+
+    #[test]
+    fn falso_comienzo_sin_ancla_no_toca_nada() {
+        let t = "La reunión terminó. Mentira, sigue en pie.";
         assert_eq!(autocorreccion_hablada(t), t);
     }
 

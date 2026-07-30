@@ -498,7 +498,7 @@ pub struct AppSettings {
     /// Reemplazos exactos por token (F5.1): "Ruth"→"rut" solo dispara con el
     /// token exacto "Ruth" (case-sensitive) — colisión con "ruta" imposible
     /// por diseño. Es la vía inmune del Diccionario Vivo.
-    #[serde(default)]
+    #[serde(default = "default_custom_replacements")]
     pub custom_replacements: Vec<CustomReplacement>,
     /// Memoria de correcciones: pares `de → a` aprendidos de las ediciones
     /// del usuario en el Historial. Se aplican como reemplazo exacto por
@@ -790,6 +790,21 @@ fn default_emoji_dictado() -> bool {
 
 fn default_log_level() -> LogLevel {
     LogLevel::Debug
+}
+
+/// La marca se escribe sola de fábrica: el ASR transcribe «Abrax»/«abrax» y
+/// el producto se llama ABRAX. Solo variantes de caja del nombre propio —
+/// jamás palabras reales del idioma («abraza» es un verbo y queda fuera; si
+/// alguien la quiere, la añade a su lista). Reemplazo exacto por token: no
+/// puede colisionar con nada más.
+fn default_custom_replacements() -> Vec<CustomReplacement> {
+    ["Abrax", "abrax", "ábrax", "Ábrax"]
+        .into_iter()
+        .map(|from| CustomReplacement {
+            from: from.to_string(),
+            to: "ABRAX".to_string(),
+        })
+        .collect()
 }
 
 fn default_word_correction_threshold() -> f64 {
@@ -1191,7 +1206,7 @@ pub fn get_default_settings() -> AppSettings {
         debug_mode: false,
         log_level: default_log_level(),
         custom_words: default_custom_words(),
-        custom_replacements: Vec::new(),
+        custom_replacements: default_custom_replacements(),
         memoria_activa: default_memoria_activa(),
         memoria_en_sitio: default_memoria_activa(),
         memoria_correcciones: Vec::new(),
@@ -1894,6 +1909,22 @@ mod tests {
     }
 
     #[cfg(not(target_os = "linux"))]
+    #[test]
+    fn la_marca_se_escribe_sola_de_fabrica() {
+        // ABRAX debe salir en mayúsculas desde la primera instalación: las
+        // variantes de caja del nombre están en los reemplazos por defecto.
+        // «abraza» (el verbo) NO puede estar: es una palabra real del idioma.
+        let s = get_default_settings();
+        let de: Vec<&str> = s
+            .custom_replacements
+            .iter()
+            .map(|r| r.from.as_str())
+            .collect();
+        assert!(de.contains(&"Abrax") && de.contains(&"abrax"));
+        assert!(!de.contains(&"abraza"));
+        assert!(s.custom_replacements.iter().all(|r| r.to == "ABRAX"));
+    }
+
     #[test]
     fn default_overlay_style_is_esfera_when_overlay_defaults_on() {
         // La esfera es la imagen de marca: si alguien vuelve a poner `Live` aquí,

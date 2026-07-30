@@ -270,7 +270,11 @@ fn convertir_tokens(texto: &str) -> String {
             }
 
             if !cons.is_empty() {
-                let ultimo = clave(&segs[segs.len() - 1]);
+                // El ASR a veces entrega segmentos YA unidos («gmail.com»
+                // como un token): la evidencia de extensión/TLD se busca en el
+                // último componente tras el punto, no en el token entero.
+                let ultimo_seg = &segs[segs.len() - 1];
+                let ultimo = clave(ultimo_seg.rsplit('.').next().unwrap_or(ultimo_seg));
                 let hay_arroba = claves_con.iter().any(|c| c == "arroba");
                 let barras = claves_con
                     .iter()
@@ -445,6 +449,16 @@ mod tests {
         ] {
             assert_eq!(normalizar_identificadores(t), t, "no debía tocar «{t}»");
         }
+    }
+
+    #[test]
+    fn segmentos_ya_unidos_por_el_asr() {
+        // Whisper a veces entrega «gmail.com» como un solo token: la arroba
+        // dictada debe unirse igual.
+        assert_eq!(
+            normalizar_identificadores("mi correo es antonio.prueba arroba gmail.com"),
+            "mi correo es antonio.prueba@gmail.com"
+        );
     }
 
     #[test]
