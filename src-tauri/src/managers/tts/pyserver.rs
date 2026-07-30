@@ -9,7 +9,7 @@
 use std::io::{BufRead, Write};
 use std::net::TcpListener;
 use std::path::PathBuf;
-use std::process::{Child, Command, Stdio};
+use std::process::{Child, Stdio};
 use std::sync::mpsc;
 use std::time::Duration;
 
@@ -143,7 +143,7 @@ impl PyServerEngine {
         // segundos). Se libera con `tts-engine-ready`.
         let _ = self.app.emit("tts-engine-loading", self.cfg.id);
 
-        let mut child = Command::new(&python)
+        let mut child = crate::utils::comando_silencioso(&python)
             .arg(&script)
             .arg("--port")
             .arg(port.to_string())
@@ -308,7 +308,7 @@ pub fn venv_python(runtime_dir: &std::path::Path) -> PathBuf {
 pub async fn run_uv(args: &[&str]) -> Result<(), String> {
     let owned: Vec<String> = args.iter().map(|s| s.to_string()).collect();
     tokio::task::spawn_blocking(move || {
-        let out = std::process::Command::new("uv")
+        let out = crate::utils::comando_silencioso("uv")
             .args(&owned)
             .output()
             .map_err(|e| format!("no se pudo ejecutar 'uv' (¿instalado?): {e}"))?;

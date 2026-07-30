@@ -157,6 +157,11 @@ windows = { version = "0.61.3", features = [
   # Memoria en el sitio: leer el campo de texto enfocado vía UI Automation
   # (100% local) para aprender de las correcciones hechas donde se dicta.
   "Win32_UI_Accessibility",
+  # Estado FISICO del teclado (`GetAsyncKeyState`): antes de sintetizar un
+  # Copiar hay que esperar a que el usuario SUELTE los modificadores del
+  # atajo, o el combo sale contaminado (Ctrl+Shift+C en vez de Ctrl+C) y el
+  # estado del teclado se desincroniza — teclas pegadas. Ver `input.rs`.
+  "Win32_UI_Input_KeyboardAndMouse",
   "Win32_System_Com",
   # [TTS] Lectura de VRAM dedicada por adaptador (DXGI) para la detección de
   # hardware: wgpu no expone la VRAM total, así que en Windows se consulta

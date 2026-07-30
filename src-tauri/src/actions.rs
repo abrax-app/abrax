@@ -913,8 +913,23 @@ struct CancelAction;
 /// el hilo que atiende el teclado, o la pulsación se sentiría pegajosa.
 struct LeerSeleccionAction;
 
+/// ¿Hay una lectura EN CURSO pedida por el atajo?
+///
+/// No basta con preguntarle al motor si está hablando, y esa fue una carrera real
+/// (encontrada el 30/07 probando con voz neuronal): entre pulsar el atajo y que
+/// empiece a sonar, un motor neuronal tarda SEGUNDOS sintetizando, y en esa
+/// ventana `hablando` es `false`. Pulsar otra vez para callar no callaba: capturaba
+/// la selección otra vez y arrancaba una SEGUNDA lectura encima.
+///
+/// Esta bandera se levanta al pedir la lectura y se baja al terminarla, así que
+/// cubre también el tramo de síntesis. El toggle pregunta por ella, no por el
+/// motor.
+static LEYENDO: std::sync::atomic::AtomicBool = std::sync::atomic::AtomicBool::new(false);
+
 impl ShortcutAction for LeerSeleccionAction {
     fn start(&self, app: &AppHandle, _binding_id: &str, _shortcut_str: &str) {
+        use std::sync::atomic::Ordering;
+
         let app = app.clone();
         tauri::async_runtime::spawn(async move {
             let Some(tts) = app.try_state::<Arc<TtsManager>>() else {
@@ -923,13 +938,31 @@ impl ShortcutAction for LeerSeleccionAction {
             };
             let tts = tts.inner().clone();
 
-            // Toggle: si está leyendo, esta pulsación calla y no captura nada.
-            if matches!(tts.status(), Ok(e) if e.hablando) {
+            // Toggle. Se pregunta por NUESTRA bandera además del motor: la bandera
+            // cubre el tramo de síntesis (donde el motor dice que no habla) y el
+            // motor cubre el caso de que algo la dejara colgada.
+            let leyendo =
+                LEYENDO.load(Ordering::SeqCst) || matches!(tts.status(), Ok(e) if e.hablando);
+            if leyendo {
+                LEYENDO.store(false, Ordering::SeqCst);
                 if let Err(e) = tts.stop() {
                     warn!("leer selección: no se pudo detener la lectura: {e}");
                 }
                 return;
             }
+            LEYENDO.store(true, Ordering::SeqCst);
+
+            // La bandera se baja en TODAS las salidas. Si una rama de error se
+            // olvidara de bajarla, el atajo quedaría creyendo que sigue leyendo y
+            // la siguiente pulsación intentaría callar algo que no suena: el atajo
+            // quedaría muerto hasta reiniciar. El guard lo hace por construcción.
+            struct BajarAlSalir;
+            impl Drop for BajarAlSalir {
+                fn drop(&mut self) {
+                    LEYENDO.store(false, std::sync::atomic::Ordering::SeqCst);
+                }
+            }
+            let _guard = BajarAlSalir;
 
             let seleccion = match crate::clipboard::leer_seleccion(&app) {
                 Ok(Some(t)) => t,
@@ -945,6 +978,13 @@ impl ShortcutAction for LeerSeleccionAction {
                 }
             };
 
+            // DESENVOLVER antes de leer. Un PDF no guarda párrafos, guarda líneas
+            // colocadas en la página: al copiar, cada línea VISUAL trae su salto y
+            // el motor lo lee como fin de frase — una pausa cada seis palabras.
+            // Word no sufre esto porque copia el párrafo entero en una línea, y por
+            // eso ahí sonaba bien y en PDF no. Reportado el 30/07 leyendo una ley.
+            let seleccion = crate::managers::escucha::preproceso::desenvolver_lineas(&seleccion);
+
             // Misma voz y mismos ajustes de velocidad/tono que el panel Escucha:
             // el atajo no es un modo aparte, es el mismo lector.
             let settings = get_settings(&app);
@@ -952,8 +992,9 @@ impl ShortcutAction for LeerSeleccionAction {
             let velocidad = settings.tts_velocidad;
             let tono = settings.tts_tono;
 
-            // `speak` bloquea hasta terminar de sintetizar, así que va a un hilo
-            // de bloqueo y no al ejecutor async.
+            // `speak` bloquea hasta terminar de sintetizar Y de reproducir, así que
+            // va a un hilo de bloqueo y no al ejecutor async. Cuando vuelve, la
+            // lectura acabó y el guard baja la bandera.
             let _ = tauri::async_runtime::spawn_blocking(move || {
                 if let Err(e) = tts.speak(seleccion, voz, Some(velocidad), Some(tono)) {
                     warn!("leer selección: la síntesis falló: {e}");

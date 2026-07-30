@@ -6,6 +6,33 @@ use log::info;
 use std::sync::Arc;
 use tauri::{AppHandle, Manager};
 
+/// Construye un `Command` que **no abre consola en Windows**.
+///
+/// En Windows, un proceso hijo lanzado desde una app GUI abre su propia ventana
+/// de consola —el recuadro negro que parpadea— salvo que se pida lo contrario con
+/// `CREATE_NO_WINDOW`. Nada de lo que ABRAX lanza por dentro debe ser visible: el
+/// usuario descargó una voz, no pidió abrir una terminal.
+///
+/// Encontrado el 30/07 al descargar un modelo de voz: `uv` creando el entorno de
+/// Python abría una consola que aparecía y desaparecía. Ningún `Command` del
+/// proyecto usaba el flag, así que pasaba en los cinco sitios que lanzan procesos
+/// en Windows.
+///
+/// **Úsalo en vez de `Command::new` para cualquier proceso que pueda correr en
+/// Windows.** En el resto de plataformas es exactamente `Command::new`.
+pub fn comando_silencioso(programa: impl AsRef<std::ffi::OsStr>) -> std::process::Command {
+    let mut cmd = std::process::Command::new(programa);
+    #[cfg(target_os = "windows")]
+    {
+        use std::os::windows::process::CommandExt;
+        // CREATE_NO_WINDOW. Se escribe el literal en vez de depender de la crate
+        // `windows-sys` solo para esta constante.
+        const CREATE_NO_WINDOW: u32 = 0x0800_0000;
+        cmd.creation_flags(CREATE_NO_WINDOW);
+    }
+    cmd
+}
+
 /// Centralized cancellation function that can be called from anywhere in the app.
 /// Handles cancelling both recording and transcription operations and updates UI state.
 pub fn cancel_current_operation(app: &AppHandle) {

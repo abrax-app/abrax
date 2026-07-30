@@ -505,6 +505,128 @@ pub fn parece_codigo(texto: &str) -> bool {
     con_pinta * 100 / lineas.len() >= 35
 }
 
+/// Deshace el corte de líneas de un texto copiado, para que se lea de corrido.
+///
+/// # El problema
+///
+/// Un PDF no guarda párrafos: guarda líneas colocadas en la página. Al copiar,
+/// cada línea VISUAL llega con su propio salto, y el motor de voz lee cada salto
+/// como fin de frase — una pausa a media oración, cada seis palabras. Medido el
+/// 30/07 leyendo una ley en PDF. Word no sufre esto porque copia el párrafo
+/// entero en una línea, y por eso ahí sonaba bien.
+///
+/// # Qué hace
+///
+/// Une las líneas que están cortadas a media frase y **respeta** las que son
+/// cortes de verdad:
+///
+/// ```text
+/// «…planificación urbana, urbanización\ny construcción…»  → una sola frase
+/// «…dicte el Presidente de la República,\nregirán en…»    → una sola frase
+/// «Fin del artículo.\nArtículo 2°.-»                      → dos, se conserva
+/// «construc-\nción»                                        → «construcción»
+/// «\n\n»  (línea en blanco)                                → párrafo, se conserva
+/// «• primero\n• segundo»                                   → lista, se conserva
+/// ```
+///
+/// Es conservador por diseño: ante la duda **conserva** el salto. Unir dos frases
+/// que no debían unirse suena peor que una pausa de más.
+pub fn desenvolver_lineas(texto: &str) -> String {
+    /// ¿La línea termina una oración de verdad?
+    fn cierra_oracion(l: &str) -> bool {
+        l.chars()
+            .rev()
+            .find(|c| !c.is_whitespace())
+            .is_some_and(|c| matches!(c, '.' | '!' | '?' | ':' | ';' | '»' | '"' | '…' | '”'))
+    }
+
+    /// ¿La línea empieza algo que NO debe pegarse a la anterior? Viñetas,
+    /// numeración, encabezados markdown y artículos de ley.
+    fn empieza_bloque(l: &str) -> bool {
+        let t = l.trim_start();
+        if t.is_empty() {
+            return true;
+        }
+        let primera = t.chars().next().unwrap_or(' ');
+        if matches!(primera, '•' | '-' | '*' | '#' | '>' | '|' | '–' | '—') {
+            return true;
+        }
+        // «1.» «1)» «a)» «IV.» — numeración de lista al abrir línea.
+        //
+        // Las MINÚSCULAS cuentan, y no es un detalle: «a) primero» es un marcador
+        // tan válido como «1.», y dejarlas fuera se comía el salto de las listas
+        // alfabéticas (lo cazó el test `respeta_las_listas`). Pero una minúscula
+        // solo cuenta con PARÉNTESIS: «a.» podría ser el final de una frase, y
+        // unir dos oraciones suena peor que una pausa de más.
+        let cabeza: String = t.chars().take(6).collect();
+        if let Some(p) = cabeza.split(['.', ')']).next() {
+            let corto = !p.is_empty() && p.chars().count() <= 4;
+            let digitos_o_mayusculas = p
+                .chars()
+                .all(|c| c.is_ascii_digit() || (c.is_alphabetic() && c.is_uppercase()));
+            let letra_con_parentesis = p.chars().count() == 1
+                && p.chars().next().is_some_and(|c| c.is_alphabetic())
+                && cabeza[p.len()..].starts_with(')');
+            if corto
+                && cabeza.contains(['.', ')'])
+                && (digitos_o_mayusculas || letra_con_parentesis)
+            {
+                return true;
+            }
+        }
+        false
+    }
+
+    let normalizado = texto.replace("\r\n", "\n").replace('\r', "\n");
+    let lineas: Vec<&str> = normalizado.split('\n').collect();
+    let mut salida = String::with_capacity(normalizado.len());
+
+    for (i, linea) in lineas.iter().enumerate() {
+        let actual = linea.trim_end();
+        let ultima = i + 1 == lineas.len();
+
+        // Guion de partición de palabra: «construc-» + «ción» → «construcción».
+        // Solo si detrás hay letra y la línea siguiente abre en minúscula; un
+        // guion de lista o un compuesto («norte-» / «Sur») no se toca.
+        let siguiente = lineas.get(i + 1).map(|s| s.trim_start()).unwrap_or("");
+        let parte_palabra = actual.ends_with('-')
+            && actual
+                .chars()
+                .rev()
+                .nth(1)
+                .is_some_and(|c| c.is_alphabetic())
+            && siguiente
+                .chars()
+                .next()
+                .is_some_and(|c| c.is_lowercase() && c.is_alphabetic());
+
+        if parte_palabra {
+            salida.push_str(actual.trim_end_matches('-'));
+            continue; // sin espacio ni salto: la palabra sigue
+        }
+
+        salida.push_str(actual);
+
+        if ultima {
+            continue;
+        }
+
+        // ¿Salto de verdad o corte de página?
+        let conservar = actual.trim().is_empty()
+            || cierra_oracion(actual)
+            || empieza_bloque(siguiente)
+            || siguiente.is_empty();
+
+        if conservar {
+            salida.push('\n');
+        } else if !actual.is_empty() {
+            salida.push(' ');
+        }
+    }
+
+    salida
+}
+
 /// Punto de entrada del preprocesador.
 pub fn preprocesar(
     contenido: &str,
@@ -532,6 +654,93 @@ fn nivel_de(level: HeadingLevel) -> u32 {
         HeadingLevel::H4 => 4,
         HeadingLevel::H5 => 5,
         HeadingLevel::H6 => 6,
+    }
+}
+
+#[cfg(test)]
+mod tests_desenvolver {
+    use super::desenvolver_lineas;
+
+    /// EL CASO REPORTADO, con el texto exacto de la captura: una ley en PDF donde
+    /// cada línea visual traía su salto y el motor pausaba a media frase.
+    #[test]
+    fn el_pdf_de_la_ley_se_lee_de_corrido() {
+        let pdf = concat!(
+            "Artículo 1°.-   Las disposiciones de la presente ley, relativas a ",
+            "planificación urbana, urbanización\n",
+            "y construcción, y las de la Ordenanza que sobre la materia dicte el ",
+            "Presidente de la República,\n",
+            "regirán en todo el territorio nacional."
+        );
+        let r = desenvolver_lineas(pdf);
+        assert!(!r.contains('\n'), "quedó un salto a media frase: {r}");
+        assert!(r.contains("urbanización y construcción"));
+        assert!(r.contains("República, regirán"));
+    }
+
+    /// Lo que NO debe unir: dos oraciones distintas.
+    #[test]
+    fn respeta_el_fin_de_oracion() {
+        let r = desenvolver_lineas("Fin del artículo.\nArtículo 2°.- Empieza otro.");
+        assert_eq!(r, "Fin del artículo.\nArtículo 2°.- Empieza otro.");
+    }
+
+    #[test]
+    fn respeta_los_parrafos() {
+        let r = desenvolver_lineas("Primer párrafo cortado\naquí.\n\nSegundo párrafo.");
+        assert_eq!(r, "Primer párrafo cortado aquí.\n\nSegundo párrafo.");
+    }
+
+    #[test]
+    fn respeta_las_listas() {
+        for lista in [
+            "Los requisitos son\n• primero\n• segundo",
+            "Los requisitos son\n- primero\n- segundo",
+            "Los requisitos son\n1. primero\n2. segundo",
+            "Los requisitos son\na) primero\nb) segundo",
+        ] {
+            let r = desenvolver_lineas(lista);
+            assert_eq!(
+                r.lines().count(),
+                3,
+                "se comió un salto de lista en «{lista}» -> «{r}»"
+            );
+        }
+    }
+
+    /// Los PDF parten palabras con guion al final de línea.
+    #[test]
+    fn une_las_palabras_partidas_por_guion() {
+        assert_eq!(
+            desenvolver_lineas("la construc-\nción de la obra"),
+            "la construcción de la obra"
+        );
+    }
+
+    /// Pero un guion que NO parte palabra se respeta: viñeta, o compuesto con
+    /// mayúscula detrás.
+    #[test]
+    fn el_guion_que_no_parte_palabra_se_respeta() {
+        let r = desenvolver_lineas("eje norte-\nSur del terreno");
+        assert!(r.contains("norte-"), "se comió el guion: {r}");
+        let lista = desenvolver_lineas("Requisitos\n- uno\n- dos");
+        assert_eq!(lista.lines().count(), 3);
+    }
+
+    #[test]
+    fn el_texto_de_word_no_se_toca() {
+        // Word copia el párrafo entero en una línea: no hay nada que desenvolver.
+        let word = "Las disposiciones de la presente ley regirán en todo el territorio nacional.";
+        assert_eq!(desenvolver_lineas(word), word);
+    }
+
+    #[test]
+    fn casos_degenerados() {
+        assert_eq!(desenvolver_lineas(""), "");
+        assert_eq!(desenvolver_lineas("una línea"), "una línea");
+        assert_eq!(desenvolver_lineas("\n\n\n"), "\n\n\n");
+        // CRLF de Windows.
+        assert_eq!(desenvolver_lineas("cortado\r\naquí"), "cortado aquí");
     }
 }
 

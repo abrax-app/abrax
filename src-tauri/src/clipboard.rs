@@ -4,6 +4,10 @@ use crate::settings::TypingTool;
 use crate::settings::{get_settings, AutoSubmitKey, ClipboardHandling, PasteMethod};
 use enigo::{Direction, Enigo, Key, Keyboard};
 use log::info;
+// Solo Linux: las rutas de wtype/ydotool/wl-copy lo usan. En Windows y macOS
+// no queda ningún `Command::new` directo (todos pasan por
+// `utils::comando_silencioso`), así que ahí el import sobraría.
+#[cfg(target_os = "linux")]
 use std::process::Command;
 use std::time::Duration;
 use tauri::{AppHandle, Manager};
@@ -596,7 +600,7 @@ fn send_key_combo_via_xdotool(paste_method: &PasteMethod) -> Result<(), String> 
 fn paste_via_external_script(text: &str, script_path: &str) -> Result<(), String> {
     info!("Pasting via external script: {}", script_path);
 
-    let output = Command::new(script_path)
+    let output = crate::utils::comando_silencioso(script_path)
         .arg(text)
         .output()
         .map_err(|e| format!("Failed to execute external script '{}': {}", script_path, e))?;

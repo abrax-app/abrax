@@ -7,7 +7,7 @@
 
 use std::io::Write;
 use std::path::{Path, PathBuf};
-use std::process::{Command, Stdio};
+use std::process::Stdio;
 use std::sync::Arc;
 
 use tauri::AppHandle;
@@ -301,7 +301,7 @@ impl TtsEngine for PiperEngine {
         // El runtime resuelve espeak-ng-data y sus DLLs relativo a su carpeta.
         let work_dir = bin.parent().unwrap_or(self.runtime_dir.as_path());
 
-        let mut child = Command::new(&bin)
+        let mut child = crate::utils::comando_silencioso(&bin)
             .arg("--model")
             .arg(&model_path)
             .arg("--output_file")
