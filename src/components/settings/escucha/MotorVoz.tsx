@@ -32,6 +32,19 @@ const OS_LABEL: Record<string, string> = {
   linux: "Linux",
   other: "—",
 };
+/**
+ * La DETECCIÓN DE HARDWARE queda oculta (decisión de producto del 30/07). La
+ * detección sigue corriendo —de ella sale la recomendación de motor y el aviso de
+ * «este motor pide GPU»— pero no se le informa al usuario de qué GPU tiene ni
+ * cuánta VRAM, ni se le ofrece re-detectar.
+ *
+ * Motivo: es información técnica que no le sirve para decidir nada. Lo que sí ve
+ * es el motor recomendado y el activo, que es la conclusión, no el dato crudo.
+ *
+ * Pon esto en `true` para volver a mostrarlo tal cual estaba.
+ */
+const MOSTRAR_HARDWARE: boolean = false;
+
 const VENDOR_LABEL: Record<string, string> = {
   nvidia: "NVIDIA",
   apple: "Apple",
@@ -334,19 +347,23 @@ export const MotorVoz: React.FC<MotorVozProps> = ({ onInterrumpir }) => {
       )}
 
       {cargando && !hardware ? (
-        <p className="text-xs text-text/50">{t("tts.detecting")}</p>
+        MOSTRAR_HARDWARE ? (
+          <p className="text-xs text-text/50">{t("tts.detecting")}</p>
+        ) : null
       ) : hardware ? (
         <div className="space-y-1">
-          <p className="text-sm">
-            <span className="text-text/60">{t("tts.detected")} </span>
-            <span className="font-medium">{humano(hardware)}</span>
-            {hardware.vram_mb != null && (
-              <span className="text-text/40">
-                {" "}
-                {t("tts.vram", { gb: Math.round(hardware.vram_mb / 1024) })}
-              </span>
-            )}
-          </p>
+          {MOSTRAR_HARDWARE && (
+            <p className="text-sm">
+              <span className="text-text/60">{t("tts.detected")} </span>
+              <span className="font-medium">{humano(hardware)}</span>
+              {hardware.vram_mb != null && (
+                <span className="text-text/40">
+                  {" "}
+                  {t("tts.vram", { gb: Math.round(hardware.vram_mb / 1024) })}
+                </span>
+              )}
+            </p>
+          )}
           {recommended && (
             <p className="text-sm text-text/70 flex items-center gap-1.5">
               <Sparkles
@@ -362,9 +379,9 @@ export const MotorVoz: React.FC<MotorVozProps> = ({ onInterrumpir }) => {
             })}
           </p>
         </div>
-      ) : (
+      ) : MOSTRAR_HARDWARE ? (
         <p className="text-xs text-text/50">{t("tts.detectFailed")}</p>
-      )}
+      ) : null}
 
       <div className="flex flex-wrap items-center gap-2">
         <Button
@@ -390,19 +407,21 @@ export const MotorVoz: React.FC<MotorVozProps> = ({ onInterrumpir }) => {
           />
           {t("tts.chooseOther")}
         </Button>
-        <Button
-          onClick={redetectar}
-          variant="ghost"
-          size="sm"
-          disabled={cargando}
-          className="flex items-center gap-1.5"
-        >
-          <RefreshCw
-            className={`w-4 h-4 ${cargando ? "animate-spin" : ""}`}
-            aria-hidden="true"
-          />
-          {t("tts.redetect")}
-        </Button>
+        {MOSTRAR_HARDWARE && (
+          <Button
+            onClick={redetectar}
+            variant="ghost"
+            size="sm"
+            disabled={cargando}
+            className="flex items-center gap-1.5"
+          >
+            <RefreshCw
+              className={`w-4 h-4 ${cargando ? "animate-spin" : ""}`}
+              aria-hidden="true"
+            />
+            {t("tts.redetect")}
+          </Button>
+        )}
         <Button
           onClick={probarVoz}
           variant="ghost"

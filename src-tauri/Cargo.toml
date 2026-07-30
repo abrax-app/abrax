@@ -26,7 +26,18 @@ crate-type = ["staticlib", "cdylib", "rlib"]
 # Piper/Kokoro/Online + la detección de hardware, para demos/uso avanzado.
 # "Diferir, no borrar": el código neuronal sigue en el árbol, solo no entra al
 # build por defecto. Ver kit/informes/ESTADO_TTS_2026-07-14.md.
-default = []
+# ENCENDIDA EL 30/07 por decisión de producto: Escucha vuelve a ofrecer los
+# motores neuronales (Piper y Kokoro locales) y el Online de Microsoft, como
+# antes de que se difirieran el 14/07. Verificado que el módulo compila tras dos
+# semanas sin entrar al build (`cargo check --features advanced-tts`, exit 0).
+#
+# El Online sigue etiquetado y APAGADO de fábrica: es la única excepción al
+# principio 100% local, nunca se recomienda y nunca es fallback (ver
+# `managers/tts/online.rs`).
+#
+# La DETECCIÓN DE HARDWARE que trae wgpu se compila pero NO se muestra: se ocultó
+# en la UI a propósito (ver `MOSTRAR_HARDWARE` en `escucha/MotorVoz.tsx`).
+default = ["advanced-tts"]
 advanced-tts = ["dep:wgpu", "dep:pollster"]
 
 [build-dependencies]
