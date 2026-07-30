@@ -1,7 +1,8 @@
-import React from "react";
+import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useSettings } from "../../hooks/useSettings";
 import { ToggleSwitch } from "../ui/ToggleSwitch";
+import { EmojiDiccionario } from "./EmojiDiccionario";
 
 interface EmojiDictadoProps {
   descriptionMode?: "inline" | "tooltip";
@@ -21,6 +22,7 @@ export const EmojiDictado: React.FC<EmojiDictadoProps> = React.memo(
     const { t } = useTranslation();
     const { getSetting, updateSetting, isUpdating } = useSettings();
     const activo = getSetting("emoji_dictado") ?? true;
+    const [verDiccionario, setVerDiccionario] = useState(false);
 
     return (
       <>
@@ -35,13 +37,26 @@ export const EmojiDictado: React.FC<EmojiDictadoProps> = React.memo(
         />
         {activo && (
           <div
-            className={`px-4 p-2 ${grouped ? "" : "rounded-lg border border-mid-gray/20"}`}
+            className={`px-4 p-2 flex items-center justify-between gap-3 ${grouped ? "" : "rounded-lg border border-mid-gray/20"}`}
           >
             <p className="text-xs opacity-70">
               {t("settings.advanced.emojiDictado.ejemplo")}
             </p>
+            {/* Sin esto la función era adivinanza: reconoce 1 531 nombres y no
+                había forma de saber ninguno. */}
+            <button
+              type="button"
+              onClick={() => setVerDiccionario(true)}
+              className="text-xs underline underline-offset-2 opacity-80 hover:opacity-100 shrink-0"
+            >
+              {t("settings.advanced.emojiDictado.verDiccionario")}
+            </button>
           </div>
         )}
+        <EmojiDiccionario
+          open={verDiccionario}
+          onOpenChange={setVerDiccionario}
+        />
       </>
     );
   },

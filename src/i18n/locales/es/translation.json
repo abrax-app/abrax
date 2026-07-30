@@ -462,7 +462,21 @@
       "emojiDictado": {
         "title": "Emoji dictado",
         "description": "Di la palabra «emoji» y a continuación su nombre, y se inserta el emoji. Por tabla, al instante y sin conexión: no interviene ningún modelo de IA. Sin esa palabra no cambia nada, y si no reconoce el nombre deja el texto tal como lo dictaste.",
-        "ejemplo": "Ejemplo: «mándale un emoji me gusta» → «mándale un 👍». También vale «emoji de fuego» → 🔥."
+        "ejemplo": "Ejemplo: «mándale un emoji me gusta» → «mándale un 👍». También vale «emoji de fuego» → 🔥.",
+        "verDiccionario": "Ver los nombres",
+        "copiado": "{{emoji}} copiado",
+        "noCopiado": "No se pudo copiar",
+        "diccionario": {
+          "titulo": "Nombres de emoji",
+          "ayuda": "Di el nombre precedido de «emoji». Toca uno para copiarlo.",
+          "buscar": "Buscar un nombre",
+          "copiar": "Copiar",
+          "cargando": "Cargando…",
+          "error": "No se pudo cargar la lista.",
+          "sinResultados": "Ningún nombre coincide.",
+          "total": "{{total}} nombres",
+          "recorte": "Mostrando {{mostrados}} de {{total}}. Afina la búsqueda."
+        }
       },
       "voiceActivityDetection": {
         "title": "Voice Activity Detection",

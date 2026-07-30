@@ -113,6 +113,17 @@ async changeCorreccionMotorSetting(motor: string) : Promise<Result<null, string>
 }
 },
 /**
+ * Los 1 531 nombres que reconoce el emoji dictado, para consultarlos en la app.
+ * 
+ * La tabla esta compilada dentro del binario, asi que esto no toca disco ni
+ * red: es leer un `&'static str` y partirlo. Se manda entera de una vez (unos
+ * 50 KB) porque filtrar en el frontend es instantaneo y evita un viaje de IPC
+ * por cada letra tecleada en el buscador.
+ */
+async listarEmojis() : Promise<EntradaEmoji[]> {
+    return await TAURI_INVOKE("listar_emojis");
+},
+/**
  * Lista los discos con su espacio libre, deduplicados por punto de montaje y
  * ordenados. Best-effort: si el SO no expone discos, devuelve lista vacía.
  */
@@ -1544,6 +1555,18 @@ export type EngineType =
  * the file, so this one variant covers the whole transcribe-cpp family.
  */
 "TranscribeCpp" | "Parakeet" | "Moonshine" | "MoonshineStreaming" | "SenseVoice" | "GigaAM" | "Canary" | "Cohere"
+/**
+ * Un nombre dictable y el pictograma que produce.
+ */
+export type EntradaEmoji = { 
+/**
+ * Cómo se dice, tal cual va escrito en la tabla («cara feliz»).
+ */
+nombre: string; 
+/**
+ * El pictograma resultante.
+ */
+emoji: string }
 /**
  * Behaviour of the `Esfera` overlay. `Audio` is the original audio-reactive
  * sphere (unchanged). `Palabras` keeps that pulse but also receives the words

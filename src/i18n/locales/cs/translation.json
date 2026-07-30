@@ -462,7 +462,21 @@
       "emojiDictado": {
         "title": "Diktovaná emoji",
         "description": "Řekněte slovo „emoji“ a hned za ním jeho název a emoji se vloží. Podle tabulky, okamžitě a bez připojení: nezapojuje se žádný model AI. Bez toho slova se nic nemění, a pokud název nerozpozná, nechá text přesně tak, jak jste ho nadiktovali.",
-        "ejemplo": "Příklad: „pošli mu emoji palec nahoru“ se změní na „pošli mu 👍“. Funguje i „emoji oheň“ → 🔥."
+        "ejemplo": "Příklad: „pošli mu emoji palec nahoru“ se změní na „pošli mu 👍“. Funguje i „emoji oheň“ → 🔥.",
+        "verDiccionario": "Zobrazit názvy",
+        "copiado": "{{emoji}} zkopírováno",
+        "noCopiado": "Nepodařilo se zkopírovat",
+        "diccionario": {
+          "titulo": "Názvy emodži",
+          "ayuda": "Řekni název s „emoji“ před ním. Klepnutím ho zkopíruješ.",
+          "buscar": "Hledat název",
+          "copiar": "Kopírovat",
+          "cargando": "Načítá se…",
+          "error": "Seznam se nepodařilo načíst.",
+          "sinResultados": "Žádný název neodpovídá.",
+          "total": "Názvů: {{total}}",
+          "recorte": "Zobrazeno {{mostrados}} z {{total}}. Zpřesni hledání."
+        }
       },
       "voiceActivityDetection": {
         "title": "Voice Activity Detection",

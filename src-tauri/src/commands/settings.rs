@@ -785,3 +785,15 @@ pub async fn get_available_accelerators() -> crate::managers::transcription::Ava
         .await
         .expect("get_available_accelerators panicked")
 }
+
+/// Los 1 531 nombres que reconoce el emoji dictado, para consultarlos en la app.
+///
+/// La tabla esta compilada dentro del binario, asi que esto no toca disco ni
+/// red: es leer un `&'static str` y partirlo. Se manda entera de una vez (unos
+/// 50 KB) porque filtrar en el frontend es instantaneo y evita un viaje de IPC
+/// por cada letra tecleada en el buscador.
+#[tauri::command]
+#[specta::specta]
+pub fn listar_emojis() -> Vec<crate::correccion::emoji::EntradaEmoji> {
+    crate::correccion::emoji::listar()
+}

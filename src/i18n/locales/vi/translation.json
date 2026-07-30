@@ -462,7 +462,21 @@
       "emojiDictado": {
         "title": "Emoji bằng giọng nói",
         "description": "Nói từ “emoji” rồi đọc tên của nó, emoji sẽ được chèn vào. Dựa trên bảng tra cứu, tức thì và ngoại tuyến: không có mô hình AI nào tham gia. Không có từ đó thì không có gì thay đổi, và nếu tên không được nhận ra thì văn bản vẫn giữ đúng như bạn đã đọc.",
-        "ejemplo": "Ví dụ: “gửi cho họ một emoji like” → “gửi cho họ một 👍”. Cũng dùng được “emoji lửa” → 🔥."
+        "ejemplo": "Ví dụ: “gửi cho họ một emoji like” → “gửi cho họ một 👍”. Cũng dùng được “emoji lửa” → 🔥.",
+        "verDiccionario": "Xem tên gọi",
+        "copiado": "Đã sao chép {{emoji}}",
+        "noCopiado": "Không sao chép được",
+        "diccionario": {
+          "titulo": "Tên các emoji",
+          "ayuda": "Nói tên có kèm “emoji” phía trước. Chạm để sao chép.",
+          "buscar": "Tìm một tên gọi",
+          "copiar": "Sao chép",
+          "cargando": "Đang tải…",
+          "error": "Không tải được danh sách.",
+          "sinResultados": "Không có tên nào khớp.",
+          "total": "{{total}} tên gọi",
+          "recorte": "Đang hiện {{mostrados}} trong {{total}}. Hãy thu hẹp tìm kiếm."
+        }
       },
       "voiceActivityDetection": {
         "title": "Voice Activity Detection",

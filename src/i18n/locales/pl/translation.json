@@ -462,7 +462,21 @@
       "emojiDictado": {
         "title": "Dyktowane emoji",
         "description": "Powiedz słowo „emoji”, a po nim jego nazwę – emoji zostanie wstawione. Działa na podstawie tabeli, natychmiast i bez połączenia z internetem: żaden model AI nie bierze w tym udziału. Bez tego słowa nic się nie zmienia, a jeśli nazwa nie zostanie rozpoznana, tekst pozostaje dokładnie taki, jak go podyktowałeś.",
-        "ejemplo": "Przykład: „wyślij im emoji kciuk w górę” zamienia się w „wyślij im 👍”. Działa też „emoji ogień” → 🔥."
+        "ejemplo": "Przykład: „wyślij im emoji kciuk w górę” zamienia się w „wyślij im 👍”. Działa też „emoji ogień” → 🔥.",
+        "verDiccionario": "Zobacz nazwy",
+        "copiado": "Skopiowano {{emoji}}",
+        "noCopiado": "Nie udało się skopiować",
+        "diccionario": {
+          "titulo": "Nazwy emoji",
+          "ayuda": "Powiedz nazwę poprzedzoną słowem „emoji”. Dotknij, aby skopiować.",
+          "buscar": "Szukaj nazwy",
+          "copiar": "Kopiuj",
+          "cargando": "Wczytywanie…",
+          "error": "Nie udało się wczytać listy.",
+          "sinResultados": "Żadna nazwa nie pasuje.",
+          "total": "Nazwy: {{total}}",
+          "recorte": "Pokazano {{mostrados}} z {{total}}. Zawęź wyszukiwanie."
+        }
       },
       "voiceActivityDetection": {
         "title": "Voice Activity Detection",

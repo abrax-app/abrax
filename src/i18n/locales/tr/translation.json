@@ -462,7 +462,21 @@
       "emojiDictado": {
         "title": "Dikte edilen emoji",
         "description": "“emoji” sözcüğünü söyleyip ardından emojinin adını söyleyin; emoji metne eklenir. Tablo tabanlı, anında ve çevrimdışı: hiçbir yapay zekâ modeli devreye girmez. Bu sözcük olmadan hiçbir şey değişmez; ad tanınmazsa metin tam olarak dikte ettiğiniz gibi kalır.",
-        "ejemplo": "Örnek: “ona bir emoji başparmak yukarı gönder” → “ona bir 👍 gönder”. “emoji ateş” de çalışır → 🔥."
+        "ejemplo": "Örnek: “ona bir emoji başparmak yukarı gönder” → “ona bir 👍 gönder”. “emoji ateş” de çalışır → 🔥.",
+        "verDiccionario": "Adlara bak",
+        "copiado": "{{emoji}} kopyalandı",
+        "noCopiado": "Kopyalanamadı",
+        "diccionario": {
+          "titulo": "Emoji adları",
+          "ayuda": "Adın önüne “emoji” ekleyerek söyle. Kopyalamak için birine dokun.",
+          "buscar": "Bir ad ara",
+          "copiar": "Kopyala",
+          "cargando": "Yükleniyor…",
+          "error": "Liste yüklenemedi.",
+          "sinResultados": "Eşleşen ad yok.",
+          "total": "{{total}} ad",
+          "recorte": "{{total}} sonuçtan {{mostrados}} tanesi gösteriliyor. Aramayı daralt."
+        }
       },
       "voiceActivityDetection": {
         "title": "Voice Activity Detection",

@@ -462,7 +462,21 @@
       "emojiDictado": {
         "title": "語音輸入 emoji",
         "description": "說出「emoji」這個詞，接著說出它的名稱，就會插入對應的表情符號。以對照表為準、即時且離線：不會用到任何 AI 模型。沒有說這個詞就不會有任何變動；若名稱無法辨識，文字會完全按照你口述的內容保留。",
-        "ejemplo": "範例：「傳一個 emoji 讚給他」會變成「傳一個 👍 給他」。也可以說「emoji 火」→ 🔥。"
+        "ejemplo": "範例：「傳一個 emoji 讚給他」會變成「傳一個 👍 給他」。也可以說「emoji 火」→ 🔥。",
+        "verDiccionario": "檢視名稱",
+        "copiado": "已複製 {{emoji}}",
+        "noCopiado": "無法複製",
+        "diccionario": {
+          "titulo": "表情符號名稱",
+          "ayuda": "先說「emoji」，再說名稱。點按即可複製。",
+          "buscar": "搜尋名稱",
+          "copiar": "複製",
+          "cargando": "正在載入…",
+          "error": "無法載入清單。",
+          "sinResultados": "沒有相符的名稱。",
+          "total": "{{total}} 個名稱",
+          "recorte": "顯示 {{total}} 個中的 {{mostrados}} 個。請縮小搜尋範圍。"
+        }
       },
       "voiceActivityDetection": {
         "title": "Voice Activity Detection",

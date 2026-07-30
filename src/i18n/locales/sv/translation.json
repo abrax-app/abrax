@@ -462,7 +462,21 @@
       "emojiDictado": {
         "title": "Dikterade emojier",
         "description": "Säg ordet ”emoji” och därefter dess namn, så infogas emojin. Tabellbaserat, direkt och offline: ingen AI-modell är inblandad. Utan det ordet ändras ingenting, och om namnet inte känns igen lämnas texten exakt som du dikterade den.",
-        "ejemplo": "Exempel: ”skicka dem en emoji tummen upp” blir ”skicka dem en 👍”. Fungerar även med ”emoji eld” → 🔥."
+        "ejemplo": "Exempel: ”skicka dem en emoji tummen upp” blir ”skicka dem en 👍”. Fungerar även med ”emoji eld” → 🔥.",
+        "verDiccionario": "Visa namnen",
+        "copiado": "{{emoji}} kopierad",
+        "noCopiado": "Kunde inte kopiera",
+        "diccionario": {
+          "titulo": "Emojinamn",
+          "ayuda": "Säg namnet med ”emoji” före. Tryck på ett för att kopiera det.",
+          "buscar": "Sök ett namn",
+          "copiar": "Kopiera",
+          "cargando": "Läser in…",
+          "error": "Kunde inte läsa in listan.",
+          "sinResultados": "Inget namn matchar.",
+          "total": "{{total}} namn",
+          "recorte": "Visar {{mostrados}} av {{total}}. Förfina sökningen."
+        }
       },
       "voiceActivityDetection": {
         "title": "Voice Activity Detection",

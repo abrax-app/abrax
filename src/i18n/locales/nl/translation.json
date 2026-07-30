@@ -462,7 +462,21 @@
       "emojiDictado": {
         "title": "Gedicteerde emoji",
         "description": "Zeg het woord “emoji” en daarna de naam ervan, dan wordt de emoji ingevoegd. Op basis van een tabel, direct en offline: er komt geen AI-model bij kijken. Zonder dat woord verandert er niets, en als de naam niet wordt herkend, blijft de tekst precies zoals je hem hebt gedicteerd.",
-        "ejemplo": "Voorbeeld: “stuur ze een emoji duim omhoog” wordt “stuur ze een 👍”. Werkt ook met “emoji vuur” → 🔥."
+        "ejemplo": "Voorbeeld: “stuur ze een emoji duim omhoog” wordt “stuur ze een 👍”. Werkt ook met “emoji vuur” → 🔥.",
+        "verDiccionario": "Namen bekijken",
+        "copiado": "{{emoji}} gekopieerd",
+        "noCopiado": "Kopiëren mislukt",
+        "diccionario": {
+          "titulo": "Emojinamen",
+          "ayuda": "Zeg de naam met “emoji” ervoor. Tik erop om te kopiëren.",
+          "buscar": "Zoek een naam",
+          "copiar": "Kopiëren",
+          "cargando": "Laden…",
+          "error": "Kan de lijst niet laden.",
+          "sinResultados": "Geen naam komt overeen.",
+          "total": "{{total}} namen",
+          "recorte": "{{mostrados}} van {{total}} getoond. Verfijn je zoekopdracht."
+        }
       },
       "voiceActivityDetection": {
         "title": "Spraakactiviteitsdetectie (VAD)",

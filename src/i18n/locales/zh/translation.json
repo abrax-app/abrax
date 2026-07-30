@@ -462,7 +462,21 @@
       "emojiDictado": {
         "title": "语音输入 emoji",
         "description": "说出“emoji”这个词，紧接着说出它的名称，就会插入对应的表情符号。基于词表、即时且离线：不涉及任何 AI 模型。不说这个词就什么都不会变；如果名称无法识别，文字会原样保留。",
-        "ejemplo": "示例：“给他发个 emoji 点赞”会变成“给他发个 👍”。也可以说“emoji 火”→ 🔥。"
+        "ejemplo": "示例：“给他发个 emoji 点赞”会变成“给他发个 👍”。也可以说“emoji 火”→ 🔥。",
+        "verDiccionario": "查看名称",
+        "copiado": "已复制 {{emoji}}",
+        "noCopiado": "无法复制",
+        "diccionario": {
+          "titulo": "表情符号名称",
+          "ayuda": "先说“emoji”，再说名称。点按可复制。",
+          "buscar": "搜索名称",
+          "copiar": "复制",
+          "cargando": "正在加载…",
+          "error": "无法加载列表。",
+          "sinResultados": "没有匹配的名称。",
+          "total": "{{total}} 个名称",
+          "recorte": "显示 {{total}} 个中的 {{mostrados}} 个。请缩小搜索范围。"
+        }
       },
       "voiceActivityDetection": {
         "title": "Voice Activity Detection",

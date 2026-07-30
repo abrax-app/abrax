@@ -587,6 +587,7 @@ pub fn run(cli_args: CliArgs) {
             commands::settings::change_esfera_modo_setting,
             commands::settings::change_correccion_modo_setting,
             commands::settings::change_correccion_motor_setting,
+            commands::settings::listar_emojis,
             commands::discos::listar_discos,
             commands::discos::obtener_carpeta_modelos,
             commands::discos::cambiar_carpeta_modelos,

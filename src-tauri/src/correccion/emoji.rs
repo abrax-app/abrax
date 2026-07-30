@@ -63,6 +63,50 @@ static MAPA: Lazy<HashMap<String, &'static str>> = Lazy::new(|| {
         .collect()
 });
 
+/// Un nombre dictable y el pictograma que produce.
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize, specta::Type)]
+pub struct EntradaEmoji {
+    /// Cómo se dice, tal cual va escrito en la tabla («cara feliz»).
+    pub nombre: String,
+    /// El pictograma resultante.
+    pub emoji: String,
+}
+
+/// La tabla entera, para poder CONSULTARLA desde la app.
+///
+/// Sin esto la función era adivinanza: reconoce 1 531 nombres y el usuario no
+/// tenía forma de saber ninguno. Una función que solo responde a las palabras
+/// exactas que nadie te dijo es, en la práctica, una función que no existe.
+///
+/// Devuelve los nombres **tal como se dictan**, no la clave normalizada: la
+/// pantalla es para leer y copiar en voz alta, no para depurar el emparejador.
+/// Ordenado alfabéticamente por nombre, que es como se busca en una lista.
+pub fn listar() -> Vec<EntradaEmoji> {
+    let mut v: Vec<EntradaEmoji> = TABLA
+        .lines()
+        .filter_map(|l| {
+            let (nombre, emoji) = l.split_once('\t')?;
+            let (nombre, emoji) = (nombre.trim(), emoji.trim());
+            if nombre.is_empty() || emoji.is_empty() {
+                return None;
+            }
+            Some(EntradaEmoji {
+                nombre: nombre.to_string(),
+                emoji: emoji.to_string(),
+            })
+        })
+        .collect();
+    // `sort_by_key` con la clave normalizada: ordenar por los bytes crudos
+    // pondría «árbol» detrás de «zorro», porque en UTF-8 la «á» va después de
+    // la «z». Se ordena por el mismo esqueleto sin tildes que usa la búsqueda.
+    v.sort_by(|a, b| {
+        build_match_key(&a.nombre)
+            .cmp(&build_match_key(&b.nombre))
+            .then_with(|| a.nombre.cmp(&b.nombre))
+    });
+    v
+}
+
 /// Esqueleto fonético de un token, para reconocer «emoji» como lo oye el ASR.
 ///
 /// **Por qué hace falta.** «Emoji» es un préstamo del japonés y ningún modelo lo
@@ -490,5 +534,54 @@ mod tests {
                 "clave sin normalizar: {clave}"
             );
         }
+    }
+
+    // ---- listar(): la tabla como diccionario consultable ------------------
+
+    #[test]
+    fn listar_devuelve_la_tabla_entera() {
+        let v = listar();
+        // Control positivo: se compara contra las lineas utiles del TSV, que es
+        // la cifra que la pantalla le promete al usuario.
+        assert_eq!(v.len(), TABLA.lines().filter(|l| l.contains('\t')).count());
+        assert!(v.len() > 1_500, "la tabla se quedo corta: {}", v.len());
+    }
+
+    #[test]
+    fn listar_trae_los_nombres_como_se_dictan() {
+        let v = listar();
+        // El nombre viaja tal cual se dice, no la clave normalizada.
+        let feliz = v.iter().find(|e| e.nombre == "cara feliz");
+        assert_eq!(feliz.map(|e| e.emoji.as_str()), Some("\u{1f642}"));
+        // Y lo que se lista es exactamente lo que el emparejador reconoce: si un
+        // nombre apareciera aqui pero no funcionara al dictarlo, la pantalla
+        // seria un catalogo de promesas falsas.
+        for e in v.iter().take(200) {
+            assert_eq!(
+                aplicar_emoji_dictado(&format!("emoji {}", e.nombre)),
+                e.emoji,
+                "listado pero no reconocido: {}",
+                e.nombre
+            );
+        }
+    }
+
+    #[test]
+    fn listar_va_ordenado_sin_que_las_tildes_lo_rompan() {
+        let v = listar();
+        let claves: Vec<String> = v.iter().map(|e| build_match_key(&e.nombre)).collect();
+        let mut ordenadas = claves.clone();
+        ordenadas.sort();
+        assert_eq!(claves, ordenadas, "la lista no salio ordenada");
+        // Control negativo del criterio: ordenar por los bytes crudos SI habria
+        // dado otro orden (en UTF-8 la vocal con tilde va detras de la z), asi
+        // que el assert de arriba no pasa por casualidad.
+        let crudas: Vec<&str> = v.iter().map(|e| e.nombre.as_str()).collect();
+        let mut crudas_ord = crudas.clone();
+        crudas_ord.sort();
+        assert_ne!(
+            crudas, crudas_ord,
+            "sin tildes en la tabla el control no vale"
+        );
     }
 }

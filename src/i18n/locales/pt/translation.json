@@ -462,7 +462,21 @@
       "emojiDictado": {
         "title": "Emoji ditado",
         "description": "Diga a palavra “emoji” e em seguida o nome dele, e o emoji é inserido. Por tabela, na hora e offline: nenhum modelo de IA entra em ação. Sem essa palavra nada muda, e se o nome não for reconhecido o texto fica exatamente como você ditou.",
-        "ejemplo": "Exemplo: “manda pra ele um emoji joinha” vira “manda pra ele um 👍”. Também funciona com “emoji de fogo” → 🔥."
+        "ejemplo": "Exemplo: “manda pra ele um emoji joinha” vira “manda pra ele um 👍”. Também funciona com “emoji de fogo” → 🔥.",
+        "verDiccionario": "Ver os nomes",
+        "copiado": "{{emoji}} copiado",
+        "noCopiado": "Não foi possível copiar",
+        "diccionario": {
+          "titulo": "Nomes de emoji",
+          "ayuda": "Diga o nome precedido de “emoji”. Toque num para copiar.",
+          "buscar": "Procurar um nome",
+          "copiar": "Copiar",
+          "cargando": "A carregar…",
+          "error": "Não foi possível carregar a lista.",
+          "sinResultados": "Nenhum nome corresponde.",
+          "total": "{{total}} nomes",
+          "recorte": "A mostrar {{mostrados}} de {{total}}. Refine a procura."
+        }
       },
       "voiceActivityDetection": {
         "title": "Voice Activity Detection",

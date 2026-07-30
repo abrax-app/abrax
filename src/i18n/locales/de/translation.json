@@ -462,7 +462,21 @@
       "emojiDictado": {
         "title": "Diktierte Emojis",
         "description": "Sag das Wort „Emoji“ und danach seinen Namen, und das Emoji wird eingefügt. Tabellenbasiert, sofort und offline: kein KI-Modell ist beteiligt. Ohne dieses Wort ändert sich nichts, und wenn der Name nicht erkannt wird, bleibt der Text genau so, wie du ihn diktiert hast.",
-        "ejemplo": "Beispiel: „schick ihm ein Emoji Daumen hoch“ wird zu „schick ihm ein 👍“. Klappt auch mit „Emoji Feuer“ → 🔥."
+        "ejemplo": "Beispiel: „schick ihm ein Emoji Daumen hoch“ wird zu „schick ihm ein 👍“. Klappt auch mit „Emoji Feuer“ → 🔥.",
+        "verDiccionario": "Namen ansehen",
+        "copiado": "{{emoji}} kopiert",
+        "noCopiado": "Kopieren nicht möglich",
+        "diccionario": {
+          "titulo": "Emoji-Namen",
+          "ayuda": "Sag den Namen mit „emoji“ davor. Tippe einen an, um ihn zu kopieren.",
+          "buscar": "Namen suchen",
+          "copiar": "Kopieren",
+          "cargando": "Wird geladen…",
+          "error": "Liste konnte nicht geladen werden.",
+          "sinResultados": "Kein Name passt.",
+          "total": "{{total}} Namen",
+          "recorte": "{{mostrados}} von {{total}} werden gezeigt. Suche eingrenzen."
+        }
       },
       "voiceActivityDetection": {
         "title": "Voice Activity Detection",

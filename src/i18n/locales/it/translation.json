@@ -462,7 +462,21 @@
       "emojiDictado": {
         "title": "Emoji dettate",
         "description": "Di' la parola «emoji» seguita dal suo nome e l'emoji viene inserita. Funziona per tabella, all'istante e offline: non entra in gioco nessun modello di IA. Senza quella parola non cambia nulla, e se il nome non viene riconosciuto il testo resta esattamente come l'hai dettato.",
-        "ejemplo": "Esempio: «mandagli un'emoji pollice in su» diventa «mandagli un 👍». Vale anche «emoji fuoco» → 🔥."
+        "ejemplo": "Esempio: «mandagli un'emoji pollice in su» diventa «mandagli un 👍». Vale anche «emoji fuoco» → 🔥.",
+        "verDiccionario": "Vedi i nomi",
+        "copiado": "{{emoji}} copiato",
+        "noCopiado": "Impossibile copiare",
+        "diccionario": {
+          "titulo": "Nomi degli emoji",
+          "ayuda": "Di' il nome preceduto da «emoji». Toccane uno per copiarlo.",
+          "buscar": "Cerca un nome",
+          "copiar": "Copia",
+          "cargando": "Caricamento…",
+          "error": "Impossibile caricare l'elenco.",
+          "sinResultados": "Nessun nome corrisponde.",
+          "total": "{{total}} nomi",
+          "recorte": "Mostrati {{mostrados}} di {{total}}. Affina la ricerca."
+        }
       },
       "voiceActivityDetection": {
         "title": "Rilevamento dell'attività vocale",
