@@ -58,11 +58,31 @@ pub fn leer_seleccion(app_handle: &AppHandle) -> Result<Option<String>, String> 
         input::send_copy_ctrl_c(&mut enigo)?;
     }
 
-    // Margen para que la app en foco atienda el Copiar y escriba. El de dentro de
-    // `send_copy_ctrl_c` cubre la pulsación; este, la escritura al portapapeles.
-    std::thread::sleep(Duration::from_millis(120));
-
-    let copiado = clipboard.read_text().ok();
+    // SONDEO en vez de espera a ciegas. Antes había un `sleep(120ms)` fijo: se
+    // pagaban los 120 ms completos SIEMPRE, aunque la app hubiera escrito el
+    // portapapeles en 20. Ahora se pregunta cada 10 ms hasta que el contenido
+    // CAMBIE respecto a lo que había, con un tope.
+    //
+    // Dos ganancias, no una: se recorta la latencia hasta que la voz empieza —
+    // que es la queja— y la detección de «no había selección» deja de ser una
+    // comparación a posteriori: si el tope se agota sin que cambie nada, es que el
+    // Copiar no copió.
+    const SONDEO: Duration = Duration::from_millis(10);
+    const TOPE_COPIA: Duration = Duration::from_millis(400);
+    let inicio = std::time::Instant::now();
+    let mut copiado = None;
+    loop {
+        let ahora = clipboard.read_text().ok();
+        // Cambió respecto a lo previo → eso es la selección.
+        if ahora.is_some() && ahora.as_ref() != texto_previo.as_ref() {
+            copiado = ahora;
+            break;
+        }
+        if inicio.elapsed() >= TOPE_COPIA {
+            break;
+        }
+        std::thread::sleep(SONDEO);
+    }
 
     // Restaurar SIEMPRE, y en el mismo orden de prioridad que el pegado: una
     // imagen copiada es lo que más duele perder.
@@ -84,10 +104,9 @@ pub fn leer_seleccion(app_handle: &AppHandle) -> Result<Option<String>, String> 
     }
 
     match copiado {
-        // Sin cambio respecto a lo que ya había: no había selección.
-        Some(ref c) if Some(c) == texto_previo.as_ref() => Ok(None),
         Some(c) if c.trim().is_empty() => Ok(None),
         Some(c) => Ok(Some(c)),
+        // El sondeo agotó el tope sin ver un cambio: no había selección.
         None => Ok(None),
     }
 }

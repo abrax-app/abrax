@@ -180,8 +180,48 @@ impl TtsManager {
         let prev = self.active.swap(active, Ordering::SeqCst);
         if prev != active {
             let _ = self.stop();
+            // La voz guardada es del motor VIEJO y hay que sanearla, o el usuario
+            // cambia de motor y sigue oyendo la voz del sistema. Ver abajo.
+            self.sanear_voz_guardada();
         }
         Ok(())
+    }
+
+    /// Tras cambiar de motor, descarta la voz guardada si NO pertenece al nuevo.
+    ///
+    /// # El fallo que arregla
+    ///
+    /// Cada motor tiene su propio catálogo: los ids de Piper no existen en Kokoro,
+    /// ni los del sistema en el Online. `set_engine` persistía el motor pero
+    /// dejaba intacto `escucha_voz_prosa`, así que al leer se le pasaba al motor
+    /// nuevo un id que no conoce, ese motor fallaba, y `speak` **degradaba al
+    /// sistema en silencio**. El usuario veía su motor seleccionado en Ajustes y
+    /// oía la voz básica del SO, sin ninguna pista de por qué. Reportado el 30/07.
+    ///
+    /// Se elige una voz del motor nuevo, en español si la hay: dejarlo en `None`
+    /// también funcionaría (el motor usaría su default) pero perdería la
+    /// preferencia de idioma, que en un producto es-419 no es un detalle.
+    ///
+    /// Nunca falla hacia arriba: si no se puede listar las voces del motor nuevo
+    /// (un servidor que aún no arrancó, por ejemplo), se deja en `None` y que el
+    /// motor decida. Peor sería bloquear el cambio de motor por esto.
+    fn sanear_voz_guardada(&self) {
+        let voces = self.list_voices().unwrap_or_default();
+        let mut s = settings::get_settings(&self.app);
+
+        let prosa = voz_para_el_motor(&s.escucha_voz_prosa, &voces);
+        let codigo = voz_para_el_motor(&s.escucha_voz_codigo, &voces);
+        if prosa.is_none() && codigo.is_none() {
+            return; // las dos siguen valiendo
+        }
+        if let Some(nueva) = prosa {
+            log::info!("[tts] la voz de prosa era de otro motor; se cambia a {nueva:?}");
+            s.escucha_voz_prosa = nueva;
+        }
+        if let Some(nueva) = codigo {
+            s.escucha_voz_codigo = nueva;
+        }
+        settings::write_settings(&self.app, s);
     }
 
     /// Vuelve a detectar hardware y recomputa el activo (comando "volver a detectar").
@@ -446,5 +486,116 @@ impl TtsManager {
     pub fn list_voices(&self) -> Result<Vec<VozEscucha>, String> {
         self.with_active(|eng| eng.list_voices())?
             .map_err(|e| e.to_string())
+    }
+}
+
+/// Decide si una voz guardada sigue sirviendo para el catálogo dado.
+///
+/// `None` = la actual vale, no hay que tocar nada.
+/// `Some(nueva)` = hay que reemplazarla por `nueva` (que puede ser `None` si el
+/// motor no ofrece ninguna voz).
+///
+/// Se separa de [`TtsManager::sanear_voz_guardada`] para poder PROBARLA: aquella
+/// necesita un `AppHandle` de Tauri y un test no puede construirlo. Toda la
+/// decisión vive aquí; el método solo lee settings, llama a esto y escribe.
+fn voz_para_el_motor(
+    actual: &Option<String>,
+    voces: &[crate::managers::escucha::VozEscucha],
+) -> Option<Option<String>> {
+    // Sin voz guardada no hay nada que sanear: el motor usará su default.
+    let Some(id) = actual else {
+        return None;
+    };
+    if voces.iter().any(|v| &v.id == id) {
+        return None; // pertenece a este motor
+    }
+    // Español primero: en un producto es-419 caer en una voz inglesa por orden
+    // alfabético sería un arreglo peor que el fallo.
+    Some(
+        voces
+            .iter()
+            .find(|v| v.es_espanol)
+            .or_else(|| voces.first())
+            .map(|v| v.id.clone()),
+    )
+}
+
+#[cfg(test)]
+mod tests_voz_motor {
+    use super::voz_para_el_motor;
+    use crate::managers::escucha::VozEscucha;
+
+    fn voz(id: &str, es: bool) -> VozEscucha {
+        VozEscucha {
+            id: id.to_string(),
+            nombre: id.to_string(),
+            idioma: if es { "es-MX".into() } else { "en-US".into() },
+            es_espanol: es,
+        }
+    }
+
+    /// EL CASO REPORTADO: se cambia de motor y la voz guardada es del anterior.
+    /// Sin esto, `speak` fallaba y degradaba al sistema EN SILENCIO — el usuario
+    /// veía su motor elegido y oía la voz básica del SO.
+    #[test]
+    fn una_voz_de_otro_motor_se_reemplaza() {
+        let catalogo = [
+            voz("es-MX-DaliaNeural", true),
+            voz("en-US-AriaNeural", false),
+        ];
+        let guardada = Some("Microsoft Sabina Desktop".to_string()); // voz del SO
+        assert_eq!(
+            voz_para_el_motor(&guardada, &catalogo),
+            Some(Some("es-MX-DaliaNeural".to_string()))
+        );
+    }
+
+    #[test]
+    fn una_voz_del_mismo_motor_no_se_toca() {
+        let catalogo = [voz("es-MX-DaliaNeural", true)];
+        let guardada = Some("es-MX-DaliaNeural".to_string());
+        assert_eq!(voz_para_el_motor(&guardada, &catalogo), None);
+    }
+
+    #[test]
+    fn sin_voz_guardada_no_hay_nada_que_sanear() {
+        let catalogo = [voz("es-MX-DaliaNeural", true)];
+        assert_eq!(voz_para_el_motor(&None, &catalogo), None);
+    }
+
+    /// Prefiere ESPAÑOL aunque el catálogo empiece por otro idioma: caer en una
+    /// voz inglesa sería un arreglo peor que el fallo en un producto es-419.
+    #[test]
+    fn prefiere_espanol_aunque_no_sea_la_primera() {
+        let catalogo = [
+            voz("en-GB-RyanNeural", false),
+            voz("en-US-AriaNeural", false),
+            voz("es-CL-CatalinaNeural", true),
+        ];
+        let guardada = Some("otra-cosa".to_string());
+        assert_eq!(
+            voz_para_el_motor(&guardada, &catalogo),
+            Some(Some("es-CL-CatalinaNeural".to_string()))
+        );
+    }
+
+    /// Sin voces en español se coge la primera que haya: mejor una voz inglesa
+    /// que ninguna. (Piper recién instalado con una sola voz, por ejemplo.)
+    #[test]
+    fn sin_espanol_cae_en_la_primera() {
+        let catalogo = [voz("en-US-AriaNeural", false)];
+        let guardada = Some("es-MX-DaliaNeural".to_string());
+        assert_eq!(
+            voz_para_el_motor(&guardada, &catalogo),
+            Some(Some("en-US-AriaNeural".to_string()))
+        );
+    }
+
+    /// Catálogo vacío: se limpia a `None` y decide el motor. Lo que NO puede
+    /// pasar es conservar un id que no existe, que es el fallo original.
+    #[test]
+    fn catalogo_vacio_limpia_la_voz() {
+        let guardada = Some("es-MX-DaliaNeural".to_string());
+        assert_eq!(voz_para_el_motor(&guardada, &[]), Some(None));
     }
 }

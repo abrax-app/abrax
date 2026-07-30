@@ -109,9 +109,12 @@ pub fn send_copy_ctrl_c(enigo: &mut Enigo) -> Result<(), String> {
         Ok(())
     };
 
-    // Mismo margen que el pegado: la app en foco necesita un instante para
-    // atender la combinación y dejar la selección en el portapapeles.
-    std::thread::sleep(std::time::Duration::from_millis(100));
+    // Margen para que la app en foco vea la combinación. 30 ms y no los 100 del
+    // pegado: aquí solo hace falta que el `keydown` llegue, porque **quien espera
+    // el resultado es el sondeo del portapapeles** en `clipboard::leer_seleccion`,
+    // que pregunta cada 10 ms hasta que el contenido cambie. Esperar aquí de más
+    // era latencia pura antes de que la voz empiece, que es la queja del 30/07.
+    std::thread::sleep(std::time::Duration::from_millis(30));
 
     // Liberar SIEMPRE, y en orden inverso. Un `Release` de una tecla que ya está
     // suelta es inofensivo; dejarla pulsada, no.

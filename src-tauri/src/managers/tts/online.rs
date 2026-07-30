@@ -132,6 +132,173 @@ pub static CONFIG: PyServerConfig = PyServerConfig {
             lang: "es",
             es_espanol: true,
         },
+        // — Los 11 acentos que FALTABAN —
+        //
+        // El catálogo del endpoint gratuito de Edge trae 44 voces en español y
+        // aquí solo entraban 22: faltaban países enteros. Para un producto es-419
+        // eso no es un detalle — un uruguayo o un boliviano no encontraba su
+        // acento y tenía que leer con voz de otro país.
+        //
+        // Verificado el 30/07 contra un listado real de `edge-tts --list-voices`:
+        // los 22 ids de abajo existen exactos, y NO hay voces `Multilingual` ni
+        // `DragonHD` en español en ese endpoint (esas son de la API de pago de
+        // Azure). Así que esto es todo lo que el motor gratis puede dar.
+        VoiceSpec {
+            id: "es-UY-ValentinaNeural",
+            display: "Valentina · femenina · Uruguay",
+            lang: "es",
+            es_espanol: true,
+        },
+        VoiceSpec {
+            id: "es-UY-MateoNeural",
+            display: "Mateo · masculino · Uruguay",
+            lang: "es",
+            es_espanol: true,
+        },
+        VoiceSpec {
+            id: "es-BO-SofiaNeural",
+            display: "Sofía · femenina · Bolivia",
+            lang: "es",
+            es_espanol: true,
+        },
+        VoiceSpec {
+            id: "es-BO-MarceloNeural",
+            display: "Marcelo · masculino · Bolivia",
+            lang: "es",
+            es_espanol: true,
+        },
+        VoiceSpec {
+            id: "es-EC-AndreaNeural",
+            display: "Andrea · femenina · Ecuador",
+            lang: "es",
+            es_espanol: true,
+        },
+        VoiceSpec {
+            id: "es-EC-LuisNeural",
+            display: "Luis · masculino · Ecuador",
+            lang: "es",
+            es_espanol: true,
+        },
+        VoiceSpec {
+            id: "es-PY-TaniaNeural",
+            display: "Tania · femenina · Paraguay",
+            lang: "es",
+            es_espanol: true,
+        },
+        VoiceSpec {
+            id: "es-PY-MarioNeural",
+            display: "Mario · masculino · Paraguay",
+            lang: "es",
+            es_espanol: true,
+        },
+        VoiceSpec {
+            id: "es-GT-MartaNeural",
+            display: "Marta · femenina · Guatemala",
+            lang: "es",
+            es_espanol: true,
+        },
+        VoiceSpec {
+            id: "es-GT-AndresNeural",
+            display: "Andrés · masculino · Guatemala",
+            lang: "es",
+            es_espanol: true,
+        },
+        VoiceSpec {
+            id: "es-PA-MargaritaNeural",
+            display: "Margarita · femenina · Panamá",
+            lang: "es",
+            es_espanol: true,
+        },
+        VoiceSpec {
+            id: "es-PA-RobertoNeural",
+            display: "Roberto · masculino · Panamá",
+            lang: "es",
+            es_espanol: true,
+        },
+        VoiceSpec {
+            id: "es-DO-RamonaNeural",
+            display: "Ramona · femenina · Rep. Dominicana",
+            lang: "es",
+            es_espanol: true,
+        },
+        VoiceSpec {
+            id: "es-DO-EmilioNeural",
+            display: "Emilio · masculino · Rep. Dominicana",
+            lang: "es",
+            es_espanol: true,
+        },
+        VoiceSpec {
+            id: "es-PR-KarinaNeural",
+            display: "Karina · femenina · Puerto Rico",
+            lang: "es",
+            es_espanol: true,
+        },
+        VoiceSpec {
+            id: "es-PR-VictorNeural",
+            display: "Víctor · masculino · Puerto Rico",
+            lang: "es",
+            es_espanol: true,
+        },
+        VoiceSpec {
+            id: "es-CU-BelkysNeural",
+            display: "Belkys · femenina · Cuba",
+            lang: "es",
+            es_espanol: true,
+        },
+        VoiceSpec {
+            id: "es-HN-KarlaNeural",
+            display: "Karla · femenina · Honduras",
+            lang: "es",
+            es_espanol: true,
+        },
+        VoiceSpec {
+            id: "es-HN-CarlosNeural",
+            display: "Carlos · masculino · Honduras",
+            lang: "es",
+            es_espanol: true,
+        },
+        VoiceSpec {
+            id: "es-NI-YolandaNeural",
+            display: "Yolanda · femenina · Nicaragua",
+            lang: "es",
+            es_espanol: true,
+        },
+        VoiceSpec {
+            id: "es-NI-FedericoNeural",
+            display: "Federico · masculino · Nicaragua",
+            lang: "es",
+            es_espanol: true,
+        },
+        VoiceSpec {
+            id: "es-SV-LorenaNeural",
+            display: "Lorena · femenina · El Salvador",
+            lang: "es",
+            es_espanol: true,
+        },
+        VoiceSpec {
+            id: "es-CU-ManuelNeural",
+            display: "Manuel · masculino · Cuba",
+            lang: "es",
+            es_espanol: true,
+        },
+        VoiceSpec {
+            id: "es-SV-RodrigoNeural",
+            display: "Rodrigo · masculino · El Salvador",
+            lang: "es",
+            es_espanol: true,
+        },
+        VoiceSpec {
+            id: "es-GQ-TeresaNeural",
+            display: "Teresa · femenina · Guinea Ecuatorial",
+            lang: "es",
+            es_espanol: true,
+        },
+        VoiceSpec {
+            id: "es-GQ-JavierNeural",
+            display: "Javier · masculino · Guinea Ecuatorial",
+            lang: "es",
+            es_espanol: true,
+        },
         // — Español · España —
         VoiceSpec {
             id: "es-ES-ElviraNeural",
