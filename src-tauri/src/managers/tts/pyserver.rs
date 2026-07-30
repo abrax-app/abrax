@@ -399,11 +399,63 @@ pub fn venv_python(runtime_dir: &std::path::Path) -> PathBuf {
 /// y que `uv` lo intente — fallar aquí sería peor que intentarlo.
 pub fn limpiar_venv(runtime_dir: &std::path::Path) {
     let venv = runtime_dir.join(".venv");
-    if venv.exists() {
-        log::info!("[tts] limpiando venv previo en {}", venv.display());
-        if let Err(e) = std::fs::remove_dir_all(&venv) {
-            log::warn!("[tts] no se pudo limpiar el venv ({e}); se intenta igual");
+    if !venv.exists() {
+        return;
+    }
+    // PRIMERO matar lo que corra DESDE ahí, o el borrado falla con «Acceso
+    // denegado» y todo lo demás es inútil.
+    matar_procesos_del_runtime(runtime_dir);
+    log::info!("[tts] limpiando venv previo en {}", venv.display());
+    if let Err(e) = std::fs::remove_dir_all(&venv) {
+        log::warn!("[tts] no se pudo limpiar el venv ({e}); se intenta igual");
+    }
+}
+
+/// Mata los servidores de voz HUÉRFANOS que corran desde `runtime_dir`.
+///
+/// # Por qué hace falta
+///
+/// El servidor es un `python.exe` que vive DENTRO del venv. Si la app muere sin
+/// pasar por `Drop` —un cierre forzado, un cuelgue— el hijo sobrevive y se queda
+/// reteniendo su propio ejecutable. Entonces:
+///
+///   · `remove_dir_all` falla con «Acceso denegado» (os error 5);
+///   · `uv venv` se niega con «A directory already exists»;
+///   · y reinstalar deja de ser posible PARA SIEMPRE desde la app.
+///
+/// Medido el 30/07 en un equipo real: TRES pythons huérfanos de arranques
+/// anteriores bloqueando los dos motores a la vez.
+///
+/// Se filtra por RUTA, nunca por nombre: matar todos los `python.exe` del sistema
+/// se llevaría por delante el trabajo del usuario.
+fn matar_procesos_del_runtime(runtime_dir: &std::path::Path) {
+    let patron = format!("{}*", runtime_dir.display());
+    let script = format!(
+        "Get-CimInstance Win32_Process | Where-Object {{ $_.ExecutablePath -and          $_.ExecutablePath -like '{patron}' }} | ForEach-Object {{          try {{ Stop-Process -Id $_.ProcessId -Force -ErrorAction Stop }} catch {{}} }}"
+    );
+    #[cfg(target_os = "windows")]
+    {
+        let salida = crate::utils::comando_silencioso("powershell")
+            .args(["-NoProfile", "-NonInteractive", "-Command", &script])
+            .output();
+        match salida {
+            Ok(o) if o.status.success() => {
+                log::info!("[tts] procesos huérfanos del runtime cerrados")
+            }
+            Ok(o) => log::warn!(
+                "[tts] no se pudieron cerrar los huérfanos: {}",
+                String::from_utf8_lossy(&o.stderr).trim()
+            ),
+            Err(e) => log::warn!("[tts] no se pudo consultar los procesos: {e}"),
         }
+        // Windows tarda un instante en soltar el archivo tras terminar el proceso.
+        std::thread::sleep(std::time::Duration::from_millis(300));
+    }
+    #[cfg(not(target_os = "windows"))]
+    {
+        // En Unix un ejecutable en uso SÍ se puede borrar, así que el bloqueo no
+        // se da: no hace falta matar nada para reinstalar.
+        let _ = script;
     }
 }
 

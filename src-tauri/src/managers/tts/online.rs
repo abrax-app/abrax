@@ -357,7 +357,10 @@ pub async fn install_runtime(app: &AppHandle) -> Result<(), String> {
     pyserver::limpiar_venv(&dir);
     let venv = dir.join(".venv");
     let venv_str = venv.to_string_lossy().to_string();
-    pyserver::run_uv(&["venv", &venv_str, "--python", "3.12"]).await?;
+    // `--clear` lo recomienda el propio uv en su mensaje de error: si la
+    // carpeta sigue ahí (porque el borrado de arriba no pudo con ella), que
+    // la reemplace él en vez de negarse. Cinturón y tirantes.
+    pyserver::run_uv(&["venv", &venv_str, "--python", "3.12", "--clear"]).await?;
     let py = pyserver::venv_python(&dir);
     let py_str = py.to_string_lossy().to_string();
     pyserver::run_uv(&[
