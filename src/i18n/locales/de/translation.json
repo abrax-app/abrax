@@ -737,7 +737,9 @@
     "sistemaSinModeloApto": "Das Systemaudio wurde aufgenommen, aber das aktuelle Modell erkennt keine Sprache aus Besprechungen oder Videos. Lade unter Modelle Nemotron Streaming 3.5 (716 MB) oder Whisper Large v3 Turbo (845 MB) herunter, dann wechselt Abrax von selbst dazu.",
     "sistemaSinModeloAptoDescargar": "Herunterladen ({{mb}} MB)",
     "shortcutRegistrationTitle": "Das Tastenkürzel konnte nicht aktiviert werden",
-    "shortcutRegistration": "Abrax konnte sein Tastenkürzel nicht registrieren. Starte es neu; wenn es bleibt, lege in Einstellungen → Allgemein ein anderes fest."
+    "shortcutRegistration": "Abrax konnte sein Tastenkürzel nicht registrieren. Starte es neu; wenn es bleibt, lege in Einstellungen → Allgemein ein anderes fest.",
+    "atajoOcupado": "Eine andere App verwendet dieses Tastenkürzel bereits: {{atajos}}. Ändere es in den Einstellungen, damit es funktioniert.",
+    "atajoOcupadoCambiar": "Kürzel ändern"
   },
   "appLanguage": {
     "title": "Anwendungssprache",

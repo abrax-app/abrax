@@ -411,6 +411,29 @@ fn es_atajo_global_seguro(raw: &str) -> Result<(), String> {
 /// llama al arrancar por CUALQUIER implementación (handy_keys y tauri) y en el
 /// fallback, para curar configs peligrosas heredadas de versiones sin la
 /// validación de `change_binding`. `cancel` se salta (se registra aparte).
+/// Avisa al usuario de los atajos que NO se pudieron registrar, con su id y su
+/// combinación, para que sepa cuál reasignar.
+///
+/// Existe porque el aviso que había solo saltaba cuando NINGUNO se registraba: si
+/// el dictado entraba y otro chocaba, nadie decía nada y el usuario pulsaba una
+/// tecla muerta sin explicación. Encontrado el 30/07 con `ctrl+shift+l`, que en
+/// ese equipo lo ocupaba Loom con un hook global.
+///
+/// Ningún default puede garantizarse —depende del software instalado—, así que la
+/// defensa real es avisar y dejar reasignar, no acertar la tecla.
+pub(crate) fn avisar_atajos_ocupados(app: &AppHandle, ocupados: &[String]) {
+    if ocupados.is_empty() {
+        return;
+    }
+    let lista = ocupados.join(", ");
+    warn!("atajos que otra aplicación ya tenía tomados: {lista}");
+    crate::user_alerts::alert(
+        app,
+        crate::user_alerts::AlertKind::AtajoOcupado,
+        Some(lista),
+    );
+}
+
 fn sanear_bindings_peligrosos(app: &AppHandle) {
     let defaults = settings::get_default_settings().bindings;
     let mut s = settings::load_or_create_app_settings(app);

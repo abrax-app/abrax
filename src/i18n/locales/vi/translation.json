@@ -737,7 +737,9 @@
     "sistemaSinModeloApto": "Đã thu được âm thanh hệ thống, nhưng mô hình hiện tại không nhận ra giọng nói trong cuộc họp hay video. Hãy tải Nemotron Streaming 3.5 (716 MB) hoặc Whisper Large v3 Turbo (845 MB) trong phần Mô hình, và Abrax sẽ tự chuyển sang dùng mô hình đó.",
     "sistemaSinModeloAptoDescargar": "Tải xuống ({{mb}} MB)",
     "shortcutRegistrationTitle": "Không thể bật phím tắt",
-    "shortcutRegistration": "Abrax không đăng ký được phím tắt. Hãy khởi động lại; nếu vẫn vậy, đặt phím tắt khác trong Cài đặt → Chung."
+    "shortcutRegistration": "Abrax không đăng ký được phím tắt. Hãy khởi động lại; nếu vẫn vậy, đặt phím tắt khác trong Cài đặt → Chung.",
+    "atajoOcupado": "Một ứng dụng khác đang dùng phím tắt này: {{atajos}}. Hãy đổi trong Cài đặt để nó hoạt động.",
+    "atajoOcupadoCambiar": "Đổi phím tắt"
   },
   "appLanguage": {
     "title": "Ngôn ngữ ứng dụng",

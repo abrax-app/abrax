@@ -197,6 +197,20 @@ function App() {
         });
       } else if (kind === "shortcut_registration") {
         toast.error(title, { description: t("errors.shortcutRegistration") });
+      } else if (kind === "atajo_ocupado") {
+        // Otra aplicación ya tenía esa combinación. Se NOMBRA el atajo (viene en
+        // `detail`) y se lleva a Ajustes, porque «un atajo no se registró» sin
+        // decir cuál deja al usuario probando teclas a ciegas.
+        //
+        // Ningún default puede garantizarse: depende del software instalado. Este
+        // aviso es la defensa real, no acertar la tecla.
+        toast.error(title, {
+          description: t("errors.atajoOcupado", { atajos: detail ?? "" }),
+          action: {
+            label: t("errors.atajoOcupadoCambiar"),
+            onClick: () => setCurrentSection("general"),
+          },
+        });
       } else if (kind === "paste") {
         toast.error(title, { description: t("errors.pasteFailed") });
       } else {

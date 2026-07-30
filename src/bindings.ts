@@ -1228,7 +1228,20 @@ export type AlertKind = "recording_permission_denied" | "recording_no_device" |
  * No se pudo registrar ningún atajo global. Sin esto la app queda abierta y
  * aparentemente sana, pero el atajo no existe y nada lo dice.
  */
-"shortcut_registration" | "recording" | "transcription" | "paste" | "model_load" | "model_download"
+"shortcut_registration" | 
+/**
+ * Un atajo CONCRETO no se pudo registrar, normalmente porque otra aplicación
+ * ya se quedó con esa combinación.
+ * 
+ * `ShortcutRegistration` no cubre este caso: solo salta cuando NINGUNO se
+ * registró. Si el dictado entra y el de lectura choca, el contador no es cero
+ * y no avisaba nadie — el usuario pulsa y no pasa nada, sin explicación.
+ * Encontrado el 30/07: `ctrl+shift+l` lo ocupaba Loom con un hook global.
+ * 
+ * `detail` lleva los ids que fallaron, para que el aviso diga CUÁL y el
+ * usuario sepa qué reasignar en Ajustes.
+ */
+"atajo_ocupado" | "recording" | "transcription" | "paste" | "model_load" | "model_download"
 /**
  * The container-level `serde(default)` (backed by the `Default` impl below)
  * guarantees every field — including ones added in the future — falls back to

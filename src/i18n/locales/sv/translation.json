@@ -737,7 +737,9 @@
     "sistemaSinModeloApto": "Systemljudet spelades in, men den nuvarande modellen känner inte igen tal från möten eller videor. Ladda ner Nemotron Streaming 3.5 (716 MB) eller Whisper Large v3 Turbo (845 MB) under Modeller, så byter Abrax till den automatiskt.",
     "sistemaSinModeloAptoDescargar": "Ladda ner ({{mb}} MB)",
     "shortcutRegistrationTitle": "Kortkommandot kunde inte aktiveras",
-    "shortcutRegistration": "Abrax kunde inte registrera sitt kortkommando. Starta om; kvarstår det, välj ett annat i Inställningar → Allmänt."
+    "shortcutRegistration": "Abrax kunde inte registrera sitt kortkommando. Starta om; kvarstår det, välj ett annat i Inställningar → Allmänt.",
+    "atajoOcupado": "En annan app använder redan detta kortkommando: {{atajos}}. Ändra det i Inställningar så att det fungerar.",
+    "atajoOcupadoCambiar": "Ändra kortkommando"
   },
   "appLanguage": {
     "title": "Applikationsspråk",

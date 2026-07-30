@@ -737,7 +737,9 @@
     "sistemaSinModeloApto": "Se capturó el audio del sistema, pero el modelo actual no reconoce habla de reuniones ni de video. Descarga Nemotron Streaming 3.5 (716 MB) o Whisper Large v3 Turbo (845 MB) en Modelos, y Abrax pasará a usarlo solo.",
     "sistemaSinModeloAptoDescargar": "Descargar ({{mb}} MB)",
     "shortcutRegistrationTitle": "No se pudo activar el atajo",
-    "shortcutRegistration": "Abrax no pudo registrar su atajo de teclado. Reinícialo; si sigue igual, asigna otro atajo en Ajustes → General."
+    "shortcutRegistration": "Abrax no pudo registrar su atajo de teclado. Reinícialo; si sigue igual, asigna otro atajo en Ajustes → General.",
+    "atajoOcupado": "Otra aplicación ya usa este atajo: {{atajos}}. Cámbialo en Ajustes para que funcione.",
+    "atajoOcupadoCambiar": "Cambiar el atajo"
   },
   "appLanguage": {
     "title": "Idioma de la aplicación",

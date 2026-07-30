@@ -740,7 +740,9 @@
     "sistemaSinModeloApto": "De systeemaudio is opgenomen, maar het huidige model herkent geen spraak uit vergaderingen of video's. Download Nemotron Streaming 3.5 (716 MB) of Whisper Large v3 Turbo (845 MB) bij Modellen, dan schakelt Abrax er automatisch naartoe over.",
     "sistemaSinModeloAptoDescargar": "Downloaden ({{mb}} MB)",
     "shortcutRegistrationTitle": "De sneltoets kon niet worden ingeschakeld",
-    "shortcutRegistration": "Abrax kon zijn sneltoets niet registreren. Start opnieuw; blijft het, stel dan een andere in bij Instellingen → Algemeen."
+    "shortcutRegistration": "Abrax kon zijn sneltoets niet registreren. Start opnieuw; blijft het, stel dan een andere in bij Instellingen → Algemeen.",
+    "atajoOcupado": "Een andere app gebruikt deze sneltoets al: {{atajos}}. Wijzig hem in Instellingen zodat hij werkt.",
+    "atajoOcupadoCambiar": "Sneltoets wijzigen"
   },
   "appLanguage": {
     "title": "Interfacetaal",

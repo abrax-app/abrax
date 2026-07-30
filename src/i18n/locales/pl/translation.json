@@ -737,7 +737,9 @@
     "sistemaSinModeloApto": "Dźwięk systemowy został przechwycony, ale obecny model nie rozpoznaje mowy ze spotkań ani z filmów. Pobierz Nemotron Streaming 3.5 (716 MB) lub Whisper Large v3 Turbo (845 MB) w sekcji Modele — Abrax sam się na niego przełączy.",
     "sistemaSinModeloAptoDescargar": "Pobierz ({{mb}} MB)",
     "shortcutRegistrationTitle": "Nie udało się włączyć skrótu",
-    "shortcutRegistration": "Abrax nie zarejestrował skrótu klawiszowego. Uruchom ponownie; jeśli to nie pomoże, ustaw inny w Ustawienia → Ogólne."
+    "shortcutRegistration": "Abrax nie zarejestrował skrótu klawiszowego. Uruchom ponownie; jeśli to nie pomoże, ustaw inny w Ustawienia → Ogólne.",
+    "atajoOcupado": "Inna aplikacja już używa tego skrótu: {{atajos}}. Zmień go w Ustawieniach, aby działał.",
+    "atajoOcupadoCambiar": "Zmień skrót"
   },
   "appLanguage": {
     "title": "Język aplikacji",

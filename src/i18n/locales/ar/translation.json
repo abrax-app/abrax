@@ -737,7 +737,9 @@
     "sistemaSinModeloApto": "تم التقاط صوت النظام، لكن النموذج الحالي لا يتعرّف على الكلام في الاجتماعات أو مقاطع الفيديو. نزّل Nemotron Streaming 3.5 (716 MB) أو Whisper Large v3 Turbo (845 MB) من قسم «النماذج»، وسينتقل Abrax إليه تلقائيًا.",
     "sistemaSinModeloAptoDescargar": "تنزيل ({{mb}} MB)",
     "shortcutRegistrationTitle": "تعذّر تفعيل الاختصار",
-    "shortcutRegistration": "لم يتمكن Abrax من تسجيل اختصار لوحة المفاتيح. أعد تشغيله؛ وإذا استمر، عيّن اختصارًا آخر من الإعدادات ← عام."
+    "shortcutRegistration": "لم يتمكن Abrax من تسجيل اختصار لوحة المفاتيح. أعد تشغيله؛ وإذا استمر، عيّن اختصارًا آخر من الإعدادات ← عام.",
+    "atajoOcupado": "تطبيق آخر يستخدم هذا الاختصار بالفعل: {{atajos}}. غيّره من الإعدادات ليعمل.",
+    "atajoOcupadoCambiar": "تغيير الاختصار"
   },
   "appLanguage": {
     "title": "لغة التطبيق",

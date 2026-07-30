@@ -437,6 +437,7 @@ pub fn init_shortcuts(app: &AppHandle) -> Result<(), String> {
     // Register all bindings except cancel (which is dynamic)
     let mut intentados = 0usize;
     let mut registrados = 0usize;
+    let mut ocupados: Vec<String> = Vec::new();
     for (id, default_binding) in default_bindings {
         if id == "cancel" {
             continue;
@@ -449,15 +450,21 @@ pub fn init_shortcuts(app: &AppHandle) -> Result<(), String> {
             .unwrap_or(default_binding);
 
         intentados += 1;
+        let combinacion = binding.current_binding.clone();
         if let Err(e) = state.register(&binding) {
             error!(
                 "Failed to register handy-keys shortcut {} during init: {}",
                 id, e
             );
+            ocupados.push(format!("{id} ({combinacion})"));
         } else {
             registrados += 1;
         }
     }
+
+    // Los que fallaron UNO A UNO. El aviso de abajo solo cubre el caso de que no
+    // entrara ninguno; sin esto, chocar un atajo con otra app era silencioso.
+    super::avisar_atajos_ocupados(app, &ocupados);
 
     // Si NINGUNO se pudo registrar, este backend no está operativo: `HandyKeysState::new`
     // devuelve `Ok` siempre (solo lanza el hilo), así que si el `HotkeyManager` muere

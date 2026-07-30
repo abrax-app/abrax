@@ -49,6 +49,17 @@ pub enum AlertKind {
     /// No se pudo registrar ningún atajo global. Sin esto la app queda abierta y
     /// aparentemente sana, pero el atajo no existe y nada lo dice.
     ShortcutRegistration,
+    /// Un atajo CONCRETO no se pudo registrar, normalmente porque otra aplicación
+    /// ya se quedó con esa combinación.
+    ///
+    /// `ShortcutRegistration` no cubre este caso: solo salta cuando NINGUNO se
+    /// registró. Si el dictado entra y el de lectura choca, el contador no es cero
+    /// y no avisaba nadie — el usuario pulsa y no pasa nada, sin explicación.
+    /// Encontrado el 30/07: `ctrl+shift+l` lo ocupaba Loom con un hook global.
+    ///
+    /// `detail` lleva los ids que fallaron, para que el aviso diga CUÁL y el
+    /// usuario sepa qué reasignar en Ajustes.
+    AtajoOcupado,
     Recording,
     Transcription,
     Paste,
@@ -123,6 +134,10 @@ pub fn alert(app: &AppHandle, kind: AlertKind, detail: Option<String>) {
             AlertKind::SistemaSinModeloApto => strings.error_model_load,
             // Sin atajo no se puede dictar: cae del lado de «no se pudo grabar».
             AlertKind::ShortcutRegistration => strings.error_recording,
+            // Mismo cajón: el usuario esperaba que una tecla hiciera algo y no lo
+            // hizo. El detalle de QUÉ atajo va en el toast del frontend, que sí
+            // tiene sitio para nombrarlo.
+            AlertKind::AtajoOcupado => strings.error_recording,
             AlertKind::Transcription => strings.error_transcription,
             AlertKind::Paste => strings.error_paste,
             AlertKind::ModelLoad => strings.error_model_load,

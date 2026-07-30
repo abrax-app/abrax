@@ -28,6 +28,12 @@ export const alertTitleKey = (kind: AlertKind): string => {
       return "errors.sistemaSinModeloAptoTitle";
     case "shortcut_registration":
       return "errors.shortcutRegistrationTitle";
+    // Mismo título: «No se pudo activar el atajo» describe exacto este caso
+    // (otra app se quedó con la combinación). Reusarlo ahorra 22 traducciones
+    // para un título de banner; el mensaje fino, que NOMBRA el atajo, vive en el
+    // toast (`errors.atajoOcupado`), que sí tiene sitio.
+    case "atajo_ocupado":
+      return "errors.shortcutRegistrationTitle";
     case "recording":
       return "errors.recordingFailedTitle";
     case "transcription":

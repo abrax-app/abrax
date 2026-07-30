@@ -930,13 +930,25 @@ pub fn get_default_settings() -> AppSettings {
     // el navegador. `es_atajo_global_seguro` no lo frenaría: solo rechaza teclas
     // sueltas sin modificador, no colisiones con aplicaciones.
     //
-    // `ctrl+shift+l` en Windows/Linux y `ctrl+option+l` en macOS: libres en las
-    // apps corrientes, y el macOS sigue la convención que ya eligió el dictado
-    // (Control+Option, ver el default de arriba). Se cambia en Ajustes.
+    // ELECCIÓN DEL USUARIO (30/07), tras descartar dos candidatos por colisión:
+    //   · `ctrl+l`       — barra de direcciones en Chrome/Edge/Firefox y en el
+    //                      Explorador; limpiar pantalla en una terminal.
+    //   · `ctrl+shift+l` — lo ocupa Loom con un hook global.
+    //
+    // `ctrl+shift+r` es recarga forzada en los navegadores. Se acepta a sabiendas:
+    // es un gesto de desarrollador, no navegación básica como la barra de
+    // direcciones. Y es lo que pidió el dueño del producto.
+    //
+    // NINGÚN default puede garantizarse: depende del software instalado en cada
+    // equipo. Por eso lo que de verdad protege no es la elección de la tecla sino
+    // que el fallo al registrarla AVISE (ver `AlertKind::AtajoOcupado`), y que se
+    // pueda cambiar desde Ajustes → General.
+    //
+    // macOS usa Control+Option, la convención que ya eligió el dictado.
     #[cfg(target_os = "macos")]
-    let leer_shortcut = "ctrl+option+l";
+    let leer_shortcut = "ctrl+option+r";
     #[cfg(not(target_os = "macos"))]
-    let leer_shortcut = "ctrl+shift+l";
+    let leer_shortcut = "ctrl+shift+r";
     bindings.insert(
         "leer_seleccion".to_string(),
         ShortcutBinding {
@@ -1801,11 +1813,16 @@ mod tests {
         assert_eq!(b.default_binding, b.current_binding);
     }
 
-    /// NO puede ser `ctrl+l`. Está ocupadísimo: barra de direcciones en Chrome,
-    /// Edge, Firefox y el Explorador de Windows; limpiar pantalla en una terminal.
-    /// Un atajo global lo captura antes que la app en foco, así que dejaría a
-    /// cualquiera sin barra de direcciones. Si alguien lo pone aquí a mano, este
-    /// test explica por qué no.
+    /// NO puede ser `ctrl+l` ni `ctrl+shift+l`, los dos candidatos descartados:
+    ///
+    ///   · `ctrl+l` es la barra de direcciones en Chrome, Edge, Firefox y el
+    ///     Explorador de Windows, y limpiar pantalla en una terminal. Un atajo
+    ///     global lo captura ANTES que la app en foco, así que dejaría a
+    ///     cualquiera sin barra de direcciones.
+    ///   · `ctrl+shift+l` lo ocupa Loom con un hook global (medido el 30/07 en el
+    ///     equipo de desarrollo).
+    ///
+    /// Si alguien pone uno de los dos a mano, este test explica por qué no.
     #[test]
     fn el_atajo_de_leer_seleccion_no_secuestra_ctrl_l() {
         let settings = get_default_settings();
@@ -1813,13 +1830,15 @@ mod tests {
             .default_binding
             .to_ascii_lowercase();
         let tokens: Vec<&str> = atajo.split('+').map(str::trim).collect();
-        let solo_ctrl_l = tokens.len() == 2
-            && tokens.contains(&"l")
-            && tokens.iter().any(|t| *t == "ctrl" || *t == "control");
+        let con_ctrl = tokens.iter().any(|t| *t == "ctrl" || *t == "control");
+        let solo_ctrl_l = tokens.len() == 2 && tokens.contains(&"l") && con_ctrl;
         assert!(
             !solo_ctrl_l,
             "«{atajo}» secuestraría la barra de direcciones del navegador"
         );
+        let ctrl_shift_l =
+            tokens.len() == 3 && tokens.contains(&"l") && tokens.contains(&"shift") && con_ctrl;
+        assert!(!ctrl_shift_l, "«{atajo}» lo ocupa Loom");
         // Y sigue siendo un atajo global válido para el validador del repo.
         assert!(tokens.len() >= 2, "sin modificador secuestraría el teclado");
     }

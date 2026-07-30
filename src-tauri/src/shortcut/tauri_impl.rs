@@ -25,6 +25,10 @@ pub fn init_shortcuts(app: &AppHandle) {
     let user_settings = settings::load_or_create_app_settings(app);
 
     // Register all default shortcuts, applying user customizations
+    // Los que fallan se ACUMULAN y se avisan de una vez al final: un aviso por
+    // atajo sería una ráfaga de notificaciones al arrancar.
+    let mut ocupados: Vec<String> = Vec::new();
+
     for (id, default_binding) in default_bindings {
         if id == "cancel" {
             continue; // Skip cancel shortcut, it will be registered dynamically
@@ -34,11 +38,15 @@ pub fn init_shortcuts(app: &AppHandle) {
             .get(&id)
             .cloned()
             .unwrap_or(default_binding);
+        let combinacion = binding.current_binding.clone();
 
         if let Err(e) = register_shortcut(app, binding) {
             error!("Failed to register shortcut {} during init: {}", id, e);
+            ocupados.push(format!("{id} ({combinacion})"));
         }
     }
+
+    super::avisar_atajos_ocupados(app, &ocupados);
 }
 
 /// Validate a shortcut string for the Tauri global-shortcut implementation.
