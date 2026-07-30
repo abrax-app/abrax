@@ -19,7 +19,6 @@
     "general": "一般",
     "models": "模型",
     "advanced": "進階",
-    "postProcessing": "後處理",
     "history": "歷史紀錄",
     "debug": "偵錯",
     "about": "關於",
@@ -505,60 +504,6 @@
         "enSitioDescription": "開始聽寫時，ABRAX 會重新讀取你正在書寫的輸入框（透過無障礙介面，100% 本機），並從你在那裡對上次聽寫所做的修改中學習。輸入框內容不會被儲存，也不會離開你的裝置。"
       }
     },
-    "postProcessing": {
-      "hotkey": {
-        "title": "快捷鍵"
-      },
-      "api": {
-        "title": "API（相容 OpenAI）",
-        "provider": {
-          "title": "供應商",
-          "description": "選擇一個相容 OpenAI 的供應商"
-        },
-        "appleIntelligence": {
-          "unavailable": "Apple Intelligence 在此裝置上不可用。需要執行 macOS Tahoe（26.0）或更高版本的 Apple Silicon Mac，並在系統設定中啟用 Apple Intelligence"
-        },
-        "baseUrl": {
-          "title": "基礎網址",
-          "description": "所選供應商的 API 基礎網址，僅自訂供應商可編輯",
-          "placeholder": "https://api.openai.com/v1"
-        },
-        "apiKey": {
-          "title": "API 金鑰",
-          "description": "所選供應商的 API 金鑰",
-          "placeholder": "sk-..."
-        },
-        "model": {
-          "title": "模型",
-          "descriptionCustom": "輸入自訂端點所需的模型 ID",
-          "descriptionDefault": "從所選供應商的可用模型中選擇",
-          "placeholderWithOptions": "搜尋或選擇模型",
-          "placeholderNoOptions": "輸入模型名稱",
-          "refreshModels": "重新整理模型"
-        }
-      },
-      "prompts": {
-        "title": "提示詞",
-        "selectedPrompt": {
-          "title": "已選提示詞",
-          "description": "選擇用於最佳化轉錄的範本或建立新範本。在提示詞文字中使用 ${output} 來引用轉錄結果"
-        },
-        "noPrompts": "沒有可用的提示詞",
-        "selectPrompt": "選擇提示詞",
-        "createNew": "建立新提示詞",
-        "promptLabel": "提示詞名稱",
-        "promptLabelPlaceholder": "輸入提示詞名稱",
-        "promptInstructions": "提示詞指令",
-        "promptInstructionsPlaceholder": "撰寫轉錄後要執行的指令。範例：改善以下文字的語法和清晰度: ${output}",
-        "promptTip": "提示：使用 <code>${output}</code> 將轉錄文字插入到您的提示詞中",
-        "updatePrompt": "更新提示詞",
-        "deletePrompt": "刪除提示詞",
-        "createPrompt": "建立提示詞",
-        "cancel": "取消",
-        "selectToEdit": "選擇上方的提示詞以檢視和編輯其詳細資訊",
-        "createFirst": "點選上方的「建立新提示詞」來建立您的第一個後處理提示詞"
-      }
-    },
     "history": {
       "title": "歷史紀錄",
       "openFolder": "開啟錄音資料夾",
@@ -639,10 +584,6 @@
       "clamshellMicrophone": {
         "title": "闔蓋麥克風",
         "description": "筆記型電腦闔蓋時使用的麥克風"
-      },
-      "postProcessingToggle": {
-        "label": "後處理",
-        "description": "啟用轉錄後的 AI 文字最佳化"
       },
       "muteWhileRecording": {
         "label": "錄製時靜音",

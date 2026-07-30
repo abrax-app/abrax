@@ -19,7 +19,6 @@
     "general": "Allmänt",
     "models": "Modeller",
     "advanced": "Avancerat",
-    "postProcessing": "Efterbearbetning",
     "history": "Historik",
     "debug": "Felsökning",
     "about": "Om",
@@ -505,60 +504,6 @@
         "enSitioDescription": "När du börjar diktera läser ABRAX om fältet du skriver i (via hjälpmedel, 100 % lokalt) och lär sig av de rättelser du gjorde där i förra dikteringen. Inget från fältet sparas eller lämnar din enhet."
       }
     },
-    "postProcessing": {
-      "hotkey": {
-        "title": "Snabbkommando"
-      },
-      "api": {
-        "title": "API (OpenAI-kompatibelt)",
-        "provider": {
-          "title": "Leverantör",
-          "description": "Välj en OpenAI-kompatibel leverantör."
-        },
-        "appleIntelligence": {
-          "unavailable": "Apple Intelligence är inte tillgängligt på den här enheten. Kräver en Apple Silicon Mac som kör macOS Tahoe (26.0) eller senare med Apple Intelligence aktiverat i systeminställningarna."
-        },
-        "baseUrl": {
-          "title": "Bas-URL",
-          "description": "API-bas-URL för den valda leverantören. Endast den anpassade leverantören kan redigeras.",
-          "placeholder": "https://api.openai.com/v1"
-        },
-        "apiKey": {
-          "title": "API-nyckel",
-          "description": "API-nyckel för den valda leverantören.",
-          "placeholder": "sk-..."
-        },
-        "model": {
-          "title": "Modell",
-          "descriptionCustom": "Ange den modellidentifierare som förväntas av din anpassade slutpunkt.",
-          "descriptionDefault": "Välj en modell som exponeras av den valda leverantören.",
-          "placeholderWithOptions": "Sök eller välj en modell",
-          "placeholderNoOptions": "Ange ett modellnamn",
-          "refreshModels": "Uppdatera modeller"
-        }
-      },
-      "prompts": {
-        "title": "Prompt",
-        "selectedPrompt": {
-          "title": "Vald prompt",
-          "description": "Välj en mall för att förfina transkriptioner eller skapa en ny. Använd ${output} inuti prompttexten för att referera till den fångade transkriptionen."
-        },
-        "noPrompts": "Inga prompter tillgängliga",
-        "selectPrompt": "Välj en prompt",
-        "createNew": "Skapa ny prompt",
-        "promptLabel": "Prompt-etikett",
-        "promptLabelPlaceholder": "Ange namn på prompt",
-        "promptInstructions": "Prompt-instruktioner",
-        "promptInstructionsPlaceholder": "Skriv instruktionerna som ska köras efter transkription. Exempel: Förbättra grammatik och tydlighet för följande text: ${output}",
-        "promptTip": "Tips: Använd <code>${output}</code> för att infoga den transkriberade texten i din prompt.",
-        "updatePrompt": "Uppdatera prompt",
-        "deletePrompt": "Ta bort prompt",
-        "createPrompt": "Skapa prompt",
-        "cancel": "Avbryt",
-        "selectToEdit": "Välj en prompt ovan för att visa och redigera dess detaljer.",
-        "createFirst": "Klicka på 'Skapa ny prompt' ovan för att skapa din första prompt för efterbearbetning."
-      }
-    },
     "history": {
       "title": "Historik",
       "openFolder": "Öppna mapp för inspelningar",
@@ -639,10 +584,6 @@
       "clamshellMicrophone": {
         "title": "Clamshell-mikrofon",
         "description": "Mikrofon som ska användas när bärbara datorns lock är stängt"
-      },
-      "postProcessingToggle": {
-        "label": "Efterbearbetning",
-        "description": "Aktivera AI-driven textförfining efter transkription"
       },
       "muteWhileRecording": {
         "label": "Ljudlös under inspelning",

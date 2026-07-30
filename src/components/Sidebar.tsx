@@ -18,7 +18,6 @@ import {
   HistorySettings,
   DebugSettings,
   AboutSettings,
-  PostProcessingSettings,
   ModelsSettings,
   // [ESCUCHA]
   EscuchaSettings,
@@ -71,15 +70,6 @@ export const SECTIONS_CONFIG = {
     labelKey: "sidebar.escucha",
     icon: AudioLines,
     component: EscuchaSettings,
-    enabled: () => true,
-  },
-  postprocessing: {
-    labelKey: "sidebar.postProcessing",
-    icon: Sparkles,
-    component: PostProcessingSettings,
-    // Siempre visible: su propio interruptor vive dentro de la sección, así que
-    // ocultarla tras `post_process_enabled` la volvía inalcanzable al retirar
-    // el grupo Experimental que antes hospedaba el toggle.
     enabled: () => true,
   },
   debug: {

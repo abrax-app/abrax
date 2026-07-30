@@ -113,76 +113,6 @@ async changeCorreccionMotorSetting(motor: string) : Promise<Result<null, string>
 }
 },
 /**
- * Detecta si hay un Ollama vivo en 127.0.0.1 y qué modelos tiene descargados.
- * `None` = no corre (o no respondió en 500 ms); `Some(vec![])` = corre pero
- * sin modelos. La UI usa la distinción para explicar el estado del motor:
- * «no detectado» vs «detectado, sin modelos» vs «detectado (nombre)».
- */
-async detectarCorreccionOllama() : Promise<Result<string[] | null, string>> {
-    try {
-    return { status: "ok", data: await TAURI_INVOKE("detectar_correccion_ollama") };
-} catch (e) {
-    if(e instanceof Error) throw e;
-    else return { status: "error", error: e  as any };
-}
-},
-/**
- * Lista el catálogo con el estado de cada modelo (descargado / descargando /
- * seleccionado).
- */
-async listarModelosCorreccion() : Promise<Result<ModeloEstado[], string>> {
-    try {
-    return { status: "ok", data: await TAURI_INVOKE("listar_modelos_correccion") };
-} catch (e) {
-    if(e instanceof Error) throw e;
-    else return { status: "error", error: e  as any };
-}
-},
-/**
- * Descarga el GGUF de un modelo a la carpeta de modelos de corrección, con
- * eventos de progreso, verificación sha256 y `.partial` + rename atómico.
- * Cancelable con [`cancelar_descarga_correccion`].
- */
-async descargarModeloCorreccion(modeloId: string) : Promise<Result<null, string>> {
-    try {
-    return { status: "ok", data: await TAURI_INVOKE("descargar_modelo_correccion", { modeloId }) };
-} catch (e) {
-    if(e instanceof Error) throw e;
-    else return { status: "error", error: e  as any };
-}
-},
-/**
- * Marca una descarga en curso para que se cancele (el bucle la ve y aborta).
- */
-async cancelarDescargaCorreccion(modeloId: string) : Promise<void> {
-    await TAURI_INVOKE("cancelar_descarga_correccion", { modeloId });
-},
-/**
- * Borra un modelo descargado. Si era el seleccionado, lo deselecciona y apaga
- * el sidecar.
- */
-async eliminarModeloCorreccion(modeloId: string) : Promise<Result<null, string>> {
-    try {
-    return { status: "ok", data: await TAURI_INVOKE("eliminar_modelo_correccion", { modeloId }) };
-} catch (e) {
-    if(e instanceof Error) throw e;
-    else return { status: "error", error: e  as any };
-}
-},
-/**
- * Elige (o deselecciona con `None`) el modelo activo de Pulido. Si el elegido
- * está descargado, lo pre-calienta en segundo plano para que esté listo antes
- * del primer dictado.
- */
-async seleccionarModeloCorreccion(modeloId: string | null) : Promise<Result<null, string>> {
-    try {
-    return { status: "ok", data: await TAURI_INVOKE("seleccionar_modelo_correccion", { modeloId }) };
-} catch (e) {
-    if(e instanceof Error) throw e;
-    else return { status: "error", error: e  as any };
-}
-},
-/**
  * Lista los discos con su espacio libre, deduplicados por punto de montaje y
  * ordenados. Best-effort: si el SO no expone discos, devuelve lista vacía.
  */
@@ -459,89 +389,9 @@ async changeAutoSubmitKeySetting(key: string) : Promise<Result<null, string>> {
     else return { status: "error", error: e  as any };
 }
 },
-async changePostProcessEnabledSetting(enabled: boolean) : Promise<Result<null, string>> {
-    try {
-    return { status: "ok", data: await TAURI_INVOKE("change_post_process_enabled_setting", { enabled }) };
-} catch (e) {
-    if(e instanceof Error) throw e;
-    else return { status: "error", error: e  as any };
-}
-},
 async changeExperimentalEnabledSetting(enabled: boolean) : Promise<Result<null, string>> {
     try {
     return { status: "ok", data: await TAURI_INVOKE("change_experimental_enabled_setting", { enabled }) };
-} catch (e) {
-    if(e instanceof Error) throw e;
-    else return { status: "error", error: e  as any };
-}
-},
-async changePostProcessBaseUrlSetting(providerId: string, baseUrl: string) : Promise<Result<null, string>> {
-    try {
-    return { status: "ok", data: await TAURI_INVOKE("change_post_process_base_url_setting", { providerId, baseUrl }) };
-} catch (e) {
-    if(e instanceof Error) throw e;
-    else return { status: "error", error: e  as any };
-}
-},
-async changePostProcessApiKeySetting(providerId: string, apiKey: string) : Promise<Result<null, string>> {
-    try {
-    return { status: "ok", data: await TAURI_INVOKE("change_post_process_api_key_setting", { providerId, apiKey }) };
-} catch (e) {
-    if(e instanceof Error) throw e;
-    else return { status: "error", error: e  as any };
-}
-},
-async changePostProcessModelSetting(providerId: string, model: string) : Promise<Result<null, string>> {
-    try {
-    return { status: "ok", data: await TAURI_INVOKE("change_post_process_model_setting", { providerId, model }) };
-} catch (e) {
-    if(e instanceof Error) throw e;
-    else return { status: "error", error: e  as any };
-}
-},
-async setPostProcessProvider(providerId: string) : Promise<Result<null, string>> {
-    try {
-    return { status: "ok", data: await TAURI_INVOKE("set_post_process_provider", { providerId }) };
-} catch (e) {
-    if(e instanceof Error) throw e;
-    else return { status: "error", error: e  as any };
-}
-},
-async fetchPostProcessModels(providerId: string) : Promise<Result<string[], string>> {
-    try {
-    return { status: "ok", data: await TAURI_INVOKE("fetch_post_process_models", { providerId }) };
-} catch (e) {
-    if(e instanceof Error) throw e;
-    else return { status: "error", error: e  as any };
-}
-},
-async addPostProcessPrompt(name: string, prompt: string) : Promise<Result<LLMPrompt, string>> {
-    try {
-    return { status: "ok", data: await TAURI_INVOKE("add_post_process_prompt", { name, prompt }) };
-} catch (e) {
-    if(e instanceof Error) throw e;
-    else return { status: "error", error: e  as any };
-}
-},
-async updatePostProcessPrompt(id: string, name: string, prompt: string) : Promise<Result<null, string>> {
-    try {
-    return { status: "ok", data: await TAURI_INVOKE("update_post_process_prompt", { id, name, prompt }) };
-} catch (e) {
-    if(e instanceof Error) throw e;
-    else return { status: "error", error: e  as any };
-}
-},
-async deletePostProcessPrompt(id: string) : Promise<Result<null, string>> {
-    try {
-    return { status: "ok", data: await TAURI_INVOKE("delete_post_process_prompt", { id }) };
-} catch (e) {
-    if(e instanceof Error) throw e;
-    else return { status: "error", error: e  as any };
-}
-},
-async setPostProcessSelectedPrompt(id: string) : Promise<Result<null, string>> {
-    try {
-    return { status: "ok", data: await TAURI_INVOKE("set_post_process_selected_prompt", { id }) };
 } catch (e) {
     if(e instanceof Error) throw e;
     else return { status: "error", error: e  as any };
@@ -806,13 +656,6 @@ async openAppDataDir() : Promise<Result<null, string>> {
     if(e instanceof Error) throw e;
     else return { status: "error", error: e  as any };
 }
-},
-/**
- * Check if Apple Intelligence is available on this device.
- * Called by the frontend when the user selects Apple Intelligence provider.
- */
-async checkAppleIntelligenceAvailable() : Promise<boolean> {
-    return await TAURI_INVOKE("check_apple_intelligence_available");
 },
 /**
  * Try to initialize Enigo (keyboard/mouse simulation).
@@ -1112,14 +955,6 @@ async updateCustomReplacements(replacements: CustomReplacement[]) : Promise<Resu
     else return { status: "error", error: e  as any };
 }
 },
-/**
- * Comando: compila un dictado en prompt estructurado. El CONTEXTO se
- * enriquece con el proyecto activo del Diccionario Vivo y los términos del
- * repo que aparezcan en el texto.
- */
-async compilePrompt(text: string) : Promise<CompiledPrompt> {
-    return await TAURI_INVOKE("compile_prompt", { text });
-},
 async escuchaListVoices() : Promise<Result<VozEscucha[], string>> {
     try {
     return { status: "ok", data: await TAURI_INVOKE("escucha_list_voices") };
@@ -1394,15 +1229,6 @@ export type AlertKind = "recording_permission_denied" | "recording_no_device" |
  * aparentemente sana, pero el atajo no existe y nada lo dice.
  */
 "shortcut_registration" | "recording" | "transcription" | "paste" | "model_load" | "model_download"
-export type AmbiguityWarning = { 
-/**
- * El término vago tal como apareció en el dictado.
- */
-term: string; 
-/**
- * Pregunta concreta que lo desarma.
- */
-question: string }
 /**
  * The container-level `serde(default)` (backed by the `Default` impl below)
  * guarantees every field — including ones added in the future — falls back to
@@ -1462,13 +1288,7 @@ memoria_en_sitio?: boolean; memoria_correcciones?: ParMemoria[];
  * del código indexándolo localmente. El índice vive en el datadir;
  * nada sale del equipo.
  */
-dictionary_project?: DictionaryProject | null; model_unload_timeout?: ModelUnloadTimeout; word_correction_threshold?: number; history_limit?: number; recording_retention_period?: RecordingRetentionPeriod; paste_method?: PasteMethod; clipboard_handling?: ClipboardHandling; auto_submit?: boolean; auto_submit_key?: AutoSubmitKey; post_process_enabled?: boolean; post_process_provider_id?: string; post_process_providers?: PostProcessProvider[]; post_process_api_keys?: SecretMap; post_process_models?: Partial<{ [key in string]: string }>; post_process_prompts?: LLMPrompt[]; post_process_selected_prompt_id?: string | null; mute_while_recording?: boolean; append_trailing_space?: boolean; app_language?: string; theme?: Theme; ui_theme?: UiTheme; ui_shell?: UiShell; correccion_modo?: CorreccionModo; correccion_motor?: CorreccionMotor; 
-/**
- * Id (del catálogo `correccion::modelos`) del modelo LLM descargado que se
- * usa para el "Pulido con IA" local. `None` = ninguno (se usa Ollama en
- * loopback si está, o solo reglas). Opcional por diseño.
- */
-correccion_modelo_local?: string | null; experimental_enabled?: boolean; lazy_stream_close?: boolean; keyboard_implementation?: KeyboardImplementation; show_tray_icon?: boolean; paste_delay_ms?: number; paste_delay_after_ms?: number; typing_tool?: TypingTool; external_script_path?: string | null; custom_filler_words?: string[] | null; 
+dictionary_project?: DictionaryProject | null; model_unload_timeout?: ModelUnloadTimeout; word_correction_threshold?: number; history_limit?: number; recording_retention_period?: RecordingRetentionPeriod; paste_method?: PasteMethod; clipboard_handling?: ClipboardHandling; auto_submit?: boolean; auto_submit_key?: AutoSubmitKey; mute_while_recording?: boolean; append_trailing_space?: boolean; app_language?: string; theme?: Theme; ui_theme?: UiTheme; ui_shell?: UiShell; correccion_modo?: CorreccionModo; correccion_motor?: CorreccionMotor; experimental_enabled?: boolean; lazy_stream_close?: boolean; keyboard_implementation?: KeyboardImplementation; show_tray_icon?: boolean; paste_delay_ms?: number; paste_delay_after_ms?: number; typing_tool?: TypingTool; external_script_path?: string | null; custom_filler_words?: string[] | null; 
 /**
  * Autocorrección hablada: si quien dicta se corrige a sí mismo en voz alta
  * («…el martes, no, perdón, el miércoles»), el texto sale ya corregido.
@@ -1589,21 +1409,34 @@ por_defecto: string;
  */
 personalizada: boolean }
 export type ClipboardHandling = "dont_modify" | "copy_to_clipboard"
-export type CompiledPrompt = { markdown: string; warnings: AmbiguityWarning[] }
 /**
  * Cuánto transforma el módulo de corrección local (`correccion`) el dictado
  * antes de insertarlo. `Literal` solo ortotipografía (espacios, mayúsculas);
- * `Limpio` añade autocorrecciones habladas («el martes, perdón, el miércoles»);
- * `Pulido` reservará la reestructuración al fraseador local cuando exista.
+ * `Limpio` añade autocorrecciones habladas («el martes, perdón, el miércoles»),
+ * tildes seguras y verbalización (numerales, identificadores, símbolos).
  */
-export type CorreccionModo = "literal" | "limpio" | "pulido"
+export type CorreccionModo = "literal" | 
+/**
+ * El alias `pulido` NO es decorativo: existió un tercer modo que reservaba
+ * la reestructuración a un LLM local, retirado el 29/07. Quien lo tuviera
+ * guardado trae `"pulido"` en su `settings_store.json`, y sin este alias el
+ * fichero ENTERO dejaría de parsear — perderían todos sus ajustes, no solo
+ * este campo. `#[serde(default)]` no salva de esto: cubre claves ausentes,
+ * no valores inválidos. Al siguiente guardado se reescribe como `limpio`.
+ */
+"limpio"
 /**
  * Qué motor ejecuta la corrección. `Desactivado` (default) = passthrough
- * exacto, el pipeline queda como si el módulo no existiera. `SoloReglas` usa
- * únicamente las reglas deterministas. `Auto` y `Modelo` degradan a reglas
- * mientras el micro-modelo local no exista.
+ * exacto, el pipeline queda como si el módulo no existiera. `SoloReglas` aplica
+ * la capa determinista.
+ * 
+ * Tuvo `Auto` y `Modelo`, que pedían el LLM local del «Pulido con IA»
+ * (retirado el 29/07). Ambos entran ahora por alias en `SoloReglas`, que es
+ * exactamente lo que hacían en la práctica siempre que no hubiera un modelo
+ * disponible. Ver el comentario de [`CorreccionModo::Limpio`] para por qué los
+ * alias son obligatorios y no un detalle.
  */
-export type CorreccionMotor = "auto" | "solo_reglas" | "modelo" | "desactivado"
+export type CorreccionMotor = "solo_reglas" | "desactivado"
 /**
  * Un reemplazo exacto del Diccionario Vivo: token transcrito → texto final.
  */
@@ -1748,7 +1581,6 @@ export type ImplementationChangeResult = { success: boolean;
  */
 reset_bindings: string[] }
 export type KeyboardImplementation = "tauri" | "handy_keys"
-export type LLMPrompt = { id: string; name: string; prompt: string }
 export type LogLevel = "trace" | "debug" | "info" | "warn" | "error"
 /**
  * Evento hacia la UI cuando el aprendizaje en el sitio suma pares (para el
@@ -1783,34 +1615,6 @@ sha256: string | null } } |
  */
 "Local"
 export type ModelUnloadTimeout = "never" | "immediately" | "min_2" | "min_5" | "min_10" | "min_15" | "hour_1" | "sec_15"
-/**
- * Una entrada del catálogo de modelos de corrección descargables.
- */
-export type ModeloCorreccion = { 
-/**
- * Identificador estable (se usa en ajustes y como nombre de archivo).
- */
-id: string; nombre: string; descripcion: string; 
-/**
- * Repo de Hugging Face y archivo GGUF concreto a descargar.
- */
-repo_hf: string; archivo: string; 
-/**
- * SHA-256 del archivo, para verificar integridad tras la descarga.
- */
-sha256: string; tamano_bytes: number; 
-/**
- * RAM (o VRAM en GPU) aproximada recomendada para que corra con soltura.
- */
-ram_min_mb: number; licencia: string; 
-/**
- * Sugerido para la mayoría (mejor equilibrio calidad/tamaño).
- */
-recomendado: boolean }
-/**
- * Un modelo del catálogo con su estado local, para la UI.
- */
-export type ModeloEstado = { modelo: ModeloCorreccion; descargado: boolean; descargando: boolean; seleccionado: boolean }
 /**
  * Cómo interpretar el contenido a leer.
  */
@@ -1872,7 +1676,6 @@ export type PiperVoiceInfo = { id: string; display: string; lang: string; size_m
  * Voz pensada para leer código (cadencia neutra) vs. prosa.
  */
 for_code: boolean; installed: boolean }
-export type PostProcessProvider = { id: string; label: string; base_url: string; allow_base_url_edit?: boolean; models_endpoint?: string | null; supports_structured_output?: boolean }
 export type PruebaMicrofono = { 
 /**
  * Nombre real del dispositivo usado — revela qué hay detrás de "Default".
@@ -1887,7 +1690,6 @@ es_default: boolean; duracion_s: number; rms_db: number; pico_db: number; clip_p
  */
 wav: string }
 export type RecordingRetentionPeriod = "never" | "preserve_limit" | "days_3" | "weeks_2" | "months_3"
-export type SecretMap = Partial<{ [key in string]: string }>
 export type ShortcutBinding = { id: string; name: string; description: string; default_binding: string; current_binding: string }
 export type SoundTheme = "abrax" | "marimba" | "pop" | "custom"
 /**

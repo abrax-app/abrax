@@ -57,7 +57,6 @@ const fmtHora = (secs: number): string => {
 const MAS_SECCIONES = [
   "advanced",
   "escucha",
-  "postprocessing",
   "about",
 ] as const satisfies readonly SidebarSection[];
 type MasSeccion = (typeof MAS_SECCIONES)[number];

@@ -438,10 +438,10 @@ pub fn show_transcribing_overlay(app_handle: &AppHandle) {
     show_overlay_state(app_handle, "transcribing");
 }
 
-/// Shows the processing overlay window
-pub fn show_processing_overlay(app_handle: &AppHandle) {
-    show_overlay_state(app_handle, "processing");
-}
+// `show_processing_overlay` estaba aquí y se retiró el 29/07: el estado
+// «processing» del overlay solo lo disparaba el paso del LLM del «Post Proceso».
+// El frontend aún lo tiene en su unión de tipos, inofensivo, pero ya no puede
+// llegar: si algún día vuelve un paso de trabajo largo, esta es su forma.
 
 /// Updates the overlay window position based on current settings
 pub fn update_overlay_position(app_handle: &AppHandle) {

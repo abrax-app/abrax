@@ -1,6 +1,4 @@
 mod actions;
-#[cfg(all(target_os = "macos", target_arch = "aarch64"))]
-mod apple_intelligence;
 mod audio_feedback;
 pub mod audio_toolkit;
 mod catalog;
@@ -12,7 +10,6 @@ mod dictionary;
 mod hashing;
 mod helpers;
 mod input;
-mod llm_client;
 mod managers;
 mod memoria;
 mod memoria_en_sitio;
@@ -620,17 +617,7 @@ pub fn run(cli_args: CliArgs) {
             commands::settings::change_clipboard_handling_setting,
             commands::settings::change_auto_submit_setting,
             commands::settings::change_auto_submit_key_setting,
-            commands::settings::change_post_process_enabled_setting,
             commands::settings::change_experimental_enabled_setting,
-            commands::settings::change_post_process_base_url_setting,
-            commands::settings::change_post_process_api_key_setting,
-            commands::settings::change_post_process_model_setting,
-            commands::settings::set_post_process_provider,
-            commands::settings::fetch_post_process_models,
-            commands::settings::add_post_process_prompt,
-            commands::settings::update_post_process_prompt,
-            commands::settings::delete_post_process_prompt,
-            commands::settings::set_post_process_selected_prompt,
             commands::settings::update_custom_words,
             commands::settings::update_custom_filler_words,
             shortcut::suspend_binding,
@@ -662,7 +649,6 @@ pub fn run(cli_args: CliArgs) {
             commands::open_recordings_folder,
             commands::open_log_dir,
             commands::open_app_data_dir,
-            commands::check_apple_intelligence_available,
             commands::initialize_enigo,
             commands::initialize_shortcuts,
             commands::models::get_available_models,
@@ -813,10 +799,13 @@ pub fn run(cli_args: CliArgs) {
     // instance instead.
     if !headless_mode {
         builder = builder.plugin(tauri_plugin_single_instance::init(|app, args, _cwd| {
+            // `--toggle-post-process` existía aquí y se retiró con la función
+            // «Post Proceso» (29/07). La rama entera se va, no solo su cuerpo:
+            // dejarla vacía haría que el flag se tragara en silencio sin ni
+            // abrir la ventana. Ahora cae en el `else`, que es lo que ya hacía
+            // cualquier argumento no reconocido.
             if args.iter().any(|a| a == "--toggle-transcription") {
                 signal_handle::send_transcription_input(app, "transcribe", "CLI");
-            } else if args.iter().any(|a| a == "--toggle-post-process") {
-                signal_handle::send_transcription_input(app, "transcribe_with_post_process", "CLI");
             } else if args.iter().any(|a| a == "--cancel") {
                 crate::utils::cancel_current_operation(app);
             } else {
