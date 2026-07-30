@@ -574,15 +574,6 @@
       "transcribing": "Trascrizione in corso...",
       "transcriptionFailed": "Trascrizione fallita. Puoi ri-trascrivere usando l'icona di ripetizione.",
       "loadError": "Impossibile caricare la cronologia. Le tue dettature sono ancora sul disco.",
-      "compiler": {
-        "action": "Compila in prompt",
-        "title": "Compilatore di prompt",
-        "description": "La tua dettatura, strutturata per un'IA: contesto, compito, requisiti e formato — con i termini vaghi segnalati. Tutto locale, senza LLM.",
-        "raw": "Dettatura grezza",
-        "compiled": "Prompt compilato",
-        "copy": "Copia prompt",
-        "error": "Impossibile compilare il prompt"
-      },
       "edit": {
         "action": "Modifica trascrizione",
         "save": "Salva",

@@ -574,15 +574,6 @@
       "transcribing": "Đang phiên âm...",
       "transcriptionFailed": "Phiên âm thất bại. Bạn có thể phiên âm lại bằng biểu tượng thử lại.",
       "loadError": "Không thể tải lịch sử. Các bản đọc chính tả vẫn còn trên đĩa.",
-      "compiler": {
-        "action": "Biên dịch thành prompt",
-        "title": "Trình biên dịch prompt",
-        "description": "Bản đọc chính tả của bạn, được cấu trúc cho AI: ngữ cảnh, nhiệm vụ, yêu cầu và định dạng — các thuật ngữ mơ hồ được gắn cờ. Hoàn toàn cục bộ, không dùng LLM.",
-        "raw": "Bản đọc thô",
-        "compiled": "Prompt đã biên dịch",
-        "copy": "Sao chép prompt",
-        "error": "Không thể biên dịch prompt"
-      },
       "edit": {
         "action": "Chỉnh sửa bản ghi",
         "save": "Lưu",

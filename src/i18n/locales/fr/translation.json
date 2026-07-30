@@ -574,15 +574,6 @@
       "transcribing": "Transcription en cours...",
       "transcriptionFailed": "La transcription a échoué. Vous pouvez re-transcrire en utilisant l'icône de réessai.",
       "loadError": "Impossible de charger l'historique. Vos dictées sont toujours sur le disque.",
-      "compiler": {
-        "action": "Compiler en prompt",
-        "title": "Compilateur de prompts",
-        "description": "Votre dictée, structurée pour une IA : contexte, tâche, exigences et format — les termes vagues sont signalés. Tout est local, sans LLM.",
-        "raw": "Dictée brute",
-        "compiled": "Prompt compilé",
-        "copy": "Copier le prompt",
-        "error": "Le prompt n'a pas pu être compilé"
-      },
       "edit": {
         "action": "Modifier la transcription",
         "save": "Enregistrer",

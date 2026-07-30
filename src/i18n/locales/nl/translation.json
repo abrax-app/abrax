@@ -574,15 +574,6 @@
       "transcribing": "Transcriberen...",
       "transcriptionFailed": "Transcriptie mislukt. Je kunt het opnieuw proberen via het herlaad-pictogram.",
       "loadError": "De geschiedenis kon niet worden geladen. Je dictaten staan nog op de schijf.",
-      "compiler": {
-        "action": "Compileren tot prompt",
-        "title": "Prompt-compiler",
-        "description": "Je dictaat, gestructureerd voor een AI: context, taak, vereisten en formaat — vage termen gemarkeerd. Alles lokaal, zonder LLM.",
-        "raw": "Ruw dictaat",
-        "compiled": "Gecompileerde prompt",
-        "copy": "Prompt kopiëren",
-        "error": "De prompt kon niet worden gecompileerd"
-      },
       "edit": {
         "action": "Transcriptie bewerken",
         "save": "Opslaan",

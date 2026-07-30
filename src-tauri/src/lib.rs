@@ -18,7 +18,6 @@ mod memoria;
 mod memoria_en_sitio;
 mod overlay;
 pub mod portable;
-mod prompt_compiler;
 mod settings;
 mod shortcut;
 mod signal_handle;
@@ -723,7 +722,6 @@ pub fn run(cli_args: CliArgs) {
             dictionary::get_dictionary_stats,
             dictionary::set_dictionary_enabled,
             dictionary::update_custom_replacements,
-            prompt_compiler::compile_prompt,
             // [ESCUCHA] Lectura en voz alta (TTS del sistema)
             commands::escucha::escucha_list_voices,
             commands::escucha::escucha_speak,

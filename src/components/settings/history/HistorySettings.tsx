@@ -9,7 +9,6 @@ import {
   RotateCcw,
   Star,
   Trash2,
-  Wand2,
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
@@ -24,7 +23,6 @@ import { useSettingsStore } from "@/stores/settingsStore";
 import { formatDateTime } from "@/lib/utils/dateFormat";
 import { AudioPlayer } from "../../ui/AudioPlayer";
 import { Button } from "../../ui/Button";
-import { PromptCompilerDialog } from "./PromptCompilerDialog";
 
 const IconButton: React.FC<{
   onClick: () => void;
@@ -343,7 +341,6 @@ const HistoryEntryComponent: React.FC<HistoryEntryProps> = ({
   const refreshSettings = useSettingsStore((s) => s.refreshSettings);
   const [showCopied, setShowCopied] = useState(false);
   const [retrying, setRetrying] = useState(false);
-  const [compilerOpen, setCompilerOpen] = useState(false);
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState("");
   const [saving, setSaving] = useState(false);
@@ -441,13 +438,6 @@ const HistoryEntryComponent: React.FC<HistoryEntryProps> = ({
             ) : (
               <Copy width={16} height={16} />
             )}
-          </IconButton>
-          <IconButton
-            onClick={() => setCompilerOpen(true)}
-            disabled={!hasTranscription || retrying || editing}
-            title={t("settings.history.compiler.action")}
-          >
-            <Wand2 width={16} height={16} />
           </IconButton>
           <IconButton
             onClick={startEditing}
@@ -565,12 +555,6 @@ const HistoryEntryComponent: React.FC<HistoryEntryProps> = ({
       )}
 
       <AudioPlayer onLoadRequest={handleLoadAudio} className="w-full" />
-
-      <PromptCompilerDialog
-        open={compilerOpen}
-        onOpenChange={setCompilerOpen}
-        rawText={entry.transcription_text}
-      />
     </div>
   );
 };

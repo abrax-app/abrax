@@ -574,15 +574,6 @@
       "transcribing": "Transcribiendo...",
       "transcriptionFailed": "La transcripción falló. Puedes re-transcribir usando el ícono de reintentar.",
       "loadError": "No se pudo cargar el historial. Tus dictados siguen en el disco.",
-      "compiler": {
-        "action": "Compilar como prompt",
-        "title": "Compilador de prompts",
-        "description": "Tu dictado, estructurado para una IA: contexto, tarea, requisitos y formato — con los términos vagos marcados. Todo local, sin ningún LLM.",
-        "raw": "Dictado crudo",
-        "compiled": "Prompt compilado",
-        "copy": "Copiar prompt",
-        "error": "No se pudo compilar el prompt"
-      },
       "edit": {
         "action": "Editar transcripción",
         "save": "Guardar",

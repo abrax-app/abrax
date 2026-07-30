@@ -574,15 +574,6 @@
       "transcribing": "Transcrevendo...",
       "transcriptionFailed": "A transcrição falhou. Você pode re-transcrever usando o ícone de tentar novamente.",
       "loadError": "Não foi possível carregar o histórico. Seus ditados continuam no disco.",
-      "compiler": {
-        "action": "Compilar em prompt",
-        "title": "Compilador de prompts",
-        "description": "Seu ditado, estruturado para uma IA: contexto, tarefa, requisitos e formato — com os termos vagos sinalizados. Tudo local, sem LLM.",
-        "raw": "Ditado bruto",
-        "compiled": "Prompt compilado",
-        "copy": "Copiar prompt",
-        "error": "Não foi possível compilar o prompt"
-      },
       "edit": {
         "action": "Editar transcrição",
         "save": "Salvar",

@@ -574,15 +574,6 @@
       "transcribing": "Přepisuji...",
       "transcriptionFailed": "Přepis selhal. Můžete zkusit přepis znovu pomocí ikony opakování.",
       "loadError": "Historii se nepodařilo načíst. Vaše diktáty jsou stále na disku.",
-      "compiler": {
-        "action": "Zkompilovat do promptu",
-        "title": "Kompilátor promptů",
-        "description": "Váš diktát, strukturovaný pro AI: kontext, úkol, požadavky a formát — vágní termíny označeny. Vše lokálně, bez LLM.",
-        "raw": "Surový diktát",
-        "compiled": "Zkompilovaný prompt",
-        "copy": "Kopírovat prompt",
-        "error": "Prompt se nepodařilo zkompilovat"
-      },
       "edit": {
         "action": "Upravit přepis",
         "save": "Uložit",

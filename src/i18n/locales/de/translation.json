@@ -574,15 +574,6 @@
       "transcribing": "Transkribiere...",
       "transcriptionFailed": "Transkription fehlgeschlagen. Du kannst über das Wiederholen-Symbol erneut transkribieren.",
       "loadError": "Der Verlauf konnte nicht geladen werden. Deine Diktate sind weiterhin auf der Festplatte.",
-      "compiler": {
-        "action": "Zu Prompt kompilieren",
-        "title": "Prompt-Compiler",
-        "description": "Dein Diktat, strukturiert für eine KI: Kontext, Aufgabe, Anforderungen und Format — vage Begriffe markiert. Alles lokal, ohne LLM.",
-        "raw": "Rohes Diktat",
-        "compiled": "Kompilierter Prompt",
-        "copy": "Prompt kopieren",
-        "error": "Der Prompt konnte nicht kompiliert werden"
-      },
       "edit": {
         "action": "Transkription bearbeiten",
         "save": "Speichern",
