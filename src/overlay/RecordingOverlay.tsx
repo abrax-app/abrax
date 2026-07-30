@@ -20,21 +20,69 @@ import type { SpectrumPayload } from "@/lib/types/events";
 type OverlayState = "recording" | "streaming" | "transcribing" | "processing";
 
 /** Payload del evento `spectrum` (overlay.rs::emit_spectrum). */
-// Number of reactive bars in the waveform (the simple, smoothed style shared by
-// the pill overlay forms). The spectrum arrives as 32 log bands over 70–8000 Hz;
-// each bar averages 3 consecutive bands across the voice range.
-const WAVE_BARS = 9;
-// First spectrum band the waveform samples from (~130 Hz upward — skips the
-// lowest bands, which carry rumble rather than voice).
+// ── ONDA REACTIVA ───────────────────────────────────────────────────────────
+// Una SEÑAL continua, no barras. El upstream (Handy) usa barras de ecualizador,
+// que es el cliché de cualquier grabadora; una onda que ondula con la voz se
+// reconoce de un vistazo y es nuestra. La forma la comparten todas las variantes
+// de la píldora: un solo lenguaje visual.
+//
+// El espectro llega como 32 bandas log de 70–8000 Hz. Cada punto de la onda
+// promedia bandas consecutivas del rango de voz; más puntos que las 9 barras de
+// antes porque una curva necesita muestras para no verse angulosa.
+const WAVE_PUNTOS = 14;
+// Primera banda que se muestrea (~130 Hz hacia arriba): las más bajas llevan
+// retumbe de la sala, no voz.
 const WAVE_FIRST_BAND = 2;
-const WAVE_BANDS_PER_BAR = 3;
+const WAVE_BANDS_PER_PUNTO = 2;
+
+/** Lienzo de la onda, en unidades de viewBox (y también su tamaño en píxeles). */
+const ONDA_ANCHO = 60;
+const ONDA_ALTO = 18;
+/** Grosor del trazo; se descuenta de la amplitud para que no se recorte. */
+const ONDA_TRAZO = 2;
+
+type Punto = { x: number; y: number };
+
+/**
+ * Ruta SVG suave que pasa POR los puntos (spline de Catmull-Rom convertido a
+ * bezieres cúbicas). Sin suavizado la onda sería una línea quebrada, que es el
+ * aspecto anguloso que queremos evitar al dejar las barras.
+ *
+ * Tiene que pasar por los puntos, no cerca. La versión obvia —bezieres
+ * cuadráticas ancladas en los puntos medios— aquí se comporta pésimo: como la
+ * onda alterna el signo, TODOS los puntos medios caen justo en el centro y la
+ * curva resultante solo alcanza la mitad de la amplitud calculada. Se vería
+ * apagada y usaría medio lienzo.
+ */
+const rutaSuave = (puntos: Punto[]): string => {
+  if (puntos.length < 2) return "";
+  const en = (i: number): Punto =>
+    puntos[Math.max(0, Math.min(puntos.length - 1, i))];
+  const n2 = (v: number) => v.toFixed(2);
+
+  let d = `M ${n2(puntos[0].x)} ${n2(puntos[0].y)}`;
+  for (let i = 0; i < puntos.length - 1; i++) {
+    // Los extremos se repiten a sí mismos: la tangente inicial y final sale de
+    // los puntos que hay, sin inventar muestras.
+    const p0 = en(i - 1);
+    const p1 = en(i);
+    const p2 = en(i + 1);
+    const p3 = en(i + 2);
+    const c1x = p1.x + (p2.x - p0.x) / 6;
+    const c1y = p1.y + (p2.y - p0.y) / 6;
+    const c2x = p2.x - (p3.x - p1.x) / 6;
+    const c2y = p2.y - (p3.y - p1.y) / 6;
+    d += ` C ${n2(c1x)} ${n2(c1y)} ${n2(c2x)} ${n2(c2y)} ${n2(p2.x)} ${n2(p2.y)}`;
+  }
+  return d;
+};
 
 const RecordingOverlay: React.FC = () => {
   const { t } = useTranslation();
   const [isVisible, setIsVisible] = useState(false);
   const [state, setState] = useState<OverlayState>("recording");
   const [style, setStyle] = useState<OverlayStyle>("minimal");
-  const [levels, setLevels] = useState<number[]>(Array(WAVE_BARS).fill(0));
+  const [levels, setLevels] = useState<number[]>(Array(WAVE_PUNTOS).fill(0));
   const [streamText, setStreamText] = useState<StreamTextEvent>({
     committed: "",
     tentative: "",
@@ -52,7 +100,14 @@ const RecordingOverlay: React.FC = () => {
   // while overflowing, so the resting first line stays crisp flush under the pill.
   const [overflowing, setOverflowing] = useState(false);
 
-  const smoothedLevelsRef = useRef<number[]>(Array(WAVE_BARS).fill(0));
+  const smoothedLevelsRef = useRef<number[]>(Array(WAVE_PUNTOS).fill(0));
+  // Se lee una vez al montar: la onda es movimiento continuo y hay que poder
+  // apagarla. No es un `useState` porque no necesita re-render propio — el de
+  // la onda ya llega con cada trama de espectro.
+  const reducirMovimiento = useRef(
+    typeof window !== "undefined" &&
+      window.matchMedia?.("(prefers-reduced-motion: reduce)").matches === true,
+  ).current;
   // Live-text scroll-back: the text region "sticks" to the newest line while the
   // user is at the bottom; if they scroll up to read history, auto-follow pauses
   // until they scroll back down.
@@ -112,15 +167,16 @@ const RecordingOverlay: React.FC = () => {
         "spectrum",
         (event) => {
           const { bands } = event.payload;
-          // Each bar averages a group of consecutive log bands across the
-          // voice range, then exponential smoothing keeps the motion calm.
+          // Cada punto de la onda promedia un grupo de bandas log contiguas del
+          // rango de voz; la media exponencial mantiene el movimiento sereno y
+          // es la que hace innecesaria una transición CSS sobre `d`.
           const smoothed = smoothedLevelsRef.current.map((prev, i) => {
-            const start = WAVE_FIRST_BAND + i * WAVE_BANDS_PER_BAR;
+            const start = WAVE_FIRST_BAND + i * WAVE_BANDS_PER_PUNTO;
             let sum = 0;
-            for (let b = start; b < start + WAVE_BANDS_PER_BAR; b++) {
+            for (let b = start; b < start + WAVE_BANDS_PER_PUNTO; b++) {
               sum += bands[b] ?? 0;
             }
-            const target = sum / WAVE_BANDS_PER_BAR;
+            const target = sum / WAVE_BANDS_PER_PUNTO;
             return prev * 0.7 + target * 0.3;
           });
           smoothedLevelsRef.current = smoothed;
@@ -194,16 +250,39 @@ const RecordingOverlay: React.FC = () => {
     `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`;
 
   // ---- Shared building blocks (one visual language for every overlay form) ----
+  // La onda oscila a ambos lados de la línea central alternando el signo por
+  // punto: el espectro da MAGNITUD por banda, no una señal con signo, así que la
+  // alternancia es lo que la hace leerse como onda y no como un lomo. En
+  // silencio todos los puntos valen 0 y queda una línea recta — «no oigo nada»
+  // se ve sin leer nada.
+  //
+  // Con `prefers-reduced-motion` la amplitud se anula y la línea queda quieta:
+  // el estado lo sigue comunicando el punto de la izquierda.
   const waveform = (
     <div className="swave">
-      {levels.map((v, i) => (
-        <i
-          key={i}
-          style={{
-            height: `${Math.max(3, Math.min(18, 3 + Math.pow(v, 0.7) * 15))}px`,
-          }}
+      <svg
+        width={ONDA_ANCHO}
+        height={ONDA_ALTO}
+        viewBox={`0 0 ${ONDA_ANCHO} ${ONDA_ALTO}`}
+        aria-hidden="true"
+      >
+        <path
+          d={rutaSuave(
+            levels.map((v, i) => {
+              const x =
+                levels.length > 1
+                  ? (i / (levels.length - 1)) * ONDA_ANCHO
+                  : ONDA_ANCHO / 2;
+              const maxAmp = ONDA_ALTO / 2 - ONDA_TRAZO / 2;
+              const amp = reducirMovimiento ? 0 : Math.pow(v, 0.7) * maxAmp;
+              return {
+                x,
+                y: ONDA_ALTO / 2 + (i % 2 === 0 ? -amp : amp),
+              };
+            }),
+          )}
         />
-      ))}
+      </svg>
     </div>
   );
 

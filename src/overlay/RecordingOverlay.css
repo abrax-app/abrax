@@ -310,22 +310,30 @@
   opacity: 1;
 }
 
-/* Waveform — simple reactive bars, themed; heights set inline from mic levels. */
+/* Onda reactiva — una SEÑAL continua, no barras de ecualizador (ese es el
+   cliché de toda grabadora, y es lo que usa el upstream). La ruta se calcula en
+   JS desde los niveles del micro; aquí solo va el aspecto del trazo.
+
+   Sin `transition`: el suavizado ya está hecho en JS (media exponencial sobre
+   cada trama de espectro) y `d` no es interpolable de forma fiable por CSS. */
 .swave {
   display: flex;
   align-items: center;
-  gap: 3px;
   padding-right: 8px;
   height: 18px;
   flex: none;
 }
-.swave i {
-  width: 4px;
-  min-height: 3px;
-  max-height: 18px;
-  border-radius: 2px;
-  background: var(--s-accent);
-  transition: height 80ms linear;
+.swave svg {
+  display: block;
+  /* El trazo redondeado sobresale medio grosor en los picos. */
+  overflow: visible;
+}
+.swave path {
+  fill: none;
+  stroke: var(--s-accent);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
 .sx {
   width: 22px;
