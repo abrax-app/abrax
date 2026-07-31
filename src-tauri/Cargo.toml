@@ -26,10 +26,23 @@ crate-type = ["staticlib", "cdylib", "rlib"]
 # Piper/Kokoro/Online + la detección de hardware, para demos/uso avanzado.
 # "Diferir, no borrar": el código neuronal sigue en el árbol, solo no entra al
 # build por defecto. Ver kit/informes/ESTADO_TTS_2026-07-14.md.
-# ENCENDIDA EL 30/07 por decisión de producto: Escucha vuelve a ofrecer los
-# motores neuronales (Piper y Kokoro locales) y el Online de Microsoft, como
-# antes de que se difirieran el 14/07. Verificado que el módulo compila tras dos
-# semanas sin entrar al build (`cargo check --features advanced-tts`, exit 0).
+# ENCENDIDA el 30/07 y APAGADA OTRA VEZ el 31/07, en el build de entrega.
+#
+# Al encenderla, «Ajustes de voz» volvió a ofrecer Kokoro, Piper y Online con un
+# botón «Habilitar» —y Kokoro con la insignia «Recomendado»—, pero el requisito
+# de ejecución no viaja con la app: al pulsarlo sale
+#
+#   No se pudo descargar el motor.
+#   no se pudo ejecutar 'uv' (¿instalado?): No such file or directory
+#
+# en cualquier equipo que no tenga `uv` instalado a mano, que son todos los de
+# quien acaba de instalar. Lo que se comprobó el 30/07 fue que el módulo
+# COMPILA, no que el motor se pueda habilitar en una máquina limpia. Recomendar
+# lo que no se puede habilitar es peor que no ofrecerlo, que es exactamente por
+# lo que se difirió el 14/07: «sin un botón que pueda fallar».
+#
+# El código neuronal NO se borra: sigue entero en el árbol y vuelve con
+# `--features advanced-tts` en cuanto se resuelva el aprovisionamiento de `uv`.
 #
 # El Online sigue etiquetado y APAGADO de fábrica: es la única excepción al
 # principio 100% local, nunca se recomienda y nunca es fallback (ver
@@ -37,7 +50,7 @@ crate-type = ["staticlib", "cdylib", "rlib"]
 #
 # La DETECCIÓN DE HARDWARE que trae wgpu se compila pero NO se muestra: se ocultó
 # en la UI a propósito (ver `MOSTRAR_HARDWARE` en `escucha/MotorVoz.tsx`).
-default = ["advanced-tts"]
+default = []
 advanced-tts = ["dep:wgpu", "dep:pollster"]
 
 [build-dependencies]
