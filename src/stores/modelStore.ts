@@ -184,6 +184,24 @@ export const useModelStore = create<ModelsStore>()(
     },
 
     downloadModel: async (modelId: string) => {
+      // UNA descarga por modelo. Dos a la vez del MISMO archivo no se pisan
+      // sin más: la segunda choca con el candado que puso la primera en la
+      // caché de Hugging Face y muere con
+      //
+      //   Hugging Face download failed: Lock acquisition failed: ...blobs\<sha>.lock
+      //
+      // que es un mensaje que no dice nada y parece que el modelo está roto.
+      // Peor: el `catch` de abajo limpia `downloadingModels` al fallar la
+      // SEGUNDA, así que la barra de progreso de la primera —que sigue viva y
+      // bajando gigas— desaparece de la pantalla.
+      //
+      // Pasó el 31/07 con Cohere (1,77 GB): dos descargas separadas por UN
+      // segundo en el log, la segunda con el error, y 1,7 GB bajados que se
+      // quedaron sin terminar de instalar.
+      //
+      // No se avisa de nada: pedir dos veces lo que ya está en marcha no es un
+      // error del usuario, es la misma petición.
+      if (get().downloadingModels[modelId]) return true;
       try {
         set({ error: null });
         set(

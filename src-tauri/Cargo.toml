@@ -1,6 +1,6 @@
 [package]
 name = "abrax"
-version = "0.1.0"
+version = "1.0.0"
 description = "Dictado con IA 100% local, en español de primera clase."
 authors = ["Equipo Abrax"]
 edition = "2021"
