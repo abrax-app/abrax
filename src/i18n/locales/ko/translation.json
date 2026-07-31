@@ -1081,12 +1081,6 @@
       "sinModelo": "모델 없음",
       "descargar": "다운로드",
       "descargando": "{{modelo}} 다운로드 중 · {{pct}}%",
-      "wpm": "분당 단어 수",
-      "wpmSinDatos": "아직 측정값 없음",
-      "entrada": "오디오 입력",
-      "entradaEspera": "받아쓰는 동안 움직입니다",
-      "entradaSi": "오디오 들어오는 중",
-      "entradaSilencio": "무음",
       "voz": "음성",
       "hint": {
         "fillers": "받아쓴 내용에서 군말(\"음\", \"어\")을 지웁니다.",

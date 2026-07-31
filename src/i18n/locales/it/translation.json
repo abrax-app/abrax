@@ -1081,12 +1081,6 @@
       "sinModelo": "Nessun modello",
       "descargar": "scarica",
       "descargando": "Download di {{modelo}} · {{pct}}%",
-      "wpm": "Parole al minuto",
-      "wpmSinDatos": "Ancora nessuna misura",
-      "entrada": "Ingresso audio",
-      "entradaEspera": "Si muove mentre detti",
-      "entradaSi": "Audio in arrivo",
-      "entradaSilencio": "Silenzio",
       "voz": "Voce",
       "hint": {
         "fillers": "Toglie gli intercalari («ehm», «cioè») da ciò che detti.",

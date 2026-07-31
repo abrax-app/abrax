@@ -1081,12 +1081,6 @@
       "sinModelo": "אין מודל",
       "descargar": "הורדה",
       "descargando": "מוריד את {{modelo}} · {{pct}}%",
-      "wpm": "מילים לדקה",
-      "wpmSinDatos": "עדיין אין מדידה",
-      "entrada": "קלט אודיו",
-      "entradaEspera": "זז בזמן ההכתבה",
-      "entradaSi": "נכנס אודיו",
-      "entradaSilencio": "שקט",
       "voz": "קול",
       "hint": {
         "fillers": "מסיר מילות מילוי («אה», «כאילו») ממה שאתה מכתיב.",

@@ -1081,12 +1081,6 @@
       "sinModelo": "Kein Modell",
       "descargar": "herunterladen",
       "descargando": "{{modelo}} wird heruntergeladen · {{pct}} %",
-      "wpm": "Wörter pro Minute",
-      "wpmSinDatos": "Noch kein Messwert",
-      "entrada": "Audioeingang",
-      "entradaEspera": "Bewegt sich, während du diktierst",
-      "entradaSi": "Audio kommt an",
-      "entradaSilencio": "Stille",
       "voz": "Stimme",
       "hint": {
         "fillers": "Entfernt Füllwörter («äh», «ähm») aus dem Diktierten.",

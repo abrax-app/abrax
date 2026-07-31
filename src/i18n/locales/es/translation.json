@@ -1081,12 +1081,6 @@
       "sinModelo": "Sin modelo",
       "descargar": "descargar",
       "descargando": "Descargando {{modelo}} · {{pct}}%",
-      "wpm": "Palabras por minuto",
-      "wpmSinDatos": "Aún sin medida",
-      "entrada": "Entrada de audio",
-      "entradaEspera": "Se mueve mientras dictas",
-      "entradaSi": "Entrando audio",
-      "entradaSilencio": "Silencio",
       "voz": "Voz",
       "hint": {
         "fillers": "Quita las muletillas («eh», «este») de lo que dictas.",

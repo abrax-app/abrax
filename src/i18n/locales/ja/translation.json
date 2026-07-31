@@ -1081,12 +1081,6 @@
       "sinModelo": "モデルなし",
       "descargar": "ダウンロード",
       "descargando": "{{modelo}} をダウンロード中 · {{pct}}%",
-      "wpm": "1分あたりの単語数",
-      "wpmSinDatos": "まだ計測なし",
-      "entrada": "音声入力",
-      "entradaEspera": "話しているあいだ動きます",
-      "entradaSi": "音声が入っています",
-      "entradaSilencio": "無音",
       "voz": "音声",
       "hint": {
         "fillers": "口ぐせ（「えー」「あの」）を書き起こしから取り除きます。",

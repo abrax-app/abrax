@@ -1081,12 +1081,6 @@
       "sinModelo": "无模型",
       "descargar": "下载",
       "descargando": "正在下载 {{modelo}} · {{pct}}%",
-      "wpm": "每分钟字数",
-      "wpmSinDatos": "暂无读数",
-      "entrada": "音频输入",
-      "entradaEspera": "口述时会跳动",
-      "entradaSi": "有音频进入",
-      "entradaSilencio": "静音",
       "voz": "语音",
       "hint": {
         "fillers": "从口述内容中去掉口头禅（“嗯”“那个”）。",

@@ -1081,12 +1081,6 @@
       "sinModelo": "Brak modelu",
       "descargar": "pobierz",
       "descargando": "Pobieranie {{modelo}} · {{pct}}%",
-      "wpm": "Słowa na minutę",
-      "wpmSinDatos": "Brak pomiaru",
-      "entrada": "Wejście audio",
-      "entradaEspera": "Porusza się podczas dyktowania",
-      "entradaSi": "Dźwięk dociera",
-      "entradaSilencio": "Cisza",
       "voz": "Głos",
       "hint": {
         "fillers": "Usuwa przerywniki («yyy», «no») z tego, co dyktujesz.",

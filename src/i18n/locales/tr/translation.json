@@ -1081,12 +1081,6 @@
       "sinModelo": "Model yok",
       "descargar": "indir",
       "descargando": "{{modelo}} indiriliyor · %{{pct}}",
-      "wpm": "Dakikadaki kelime",
-      "wpmSinDatos": "Henüz ölçüm yok",
-      "entrada": "Ses girişi",
-      "entradaEspera": "Dikte ederken hareket eder",
-      "entradaSi": "Ses geliyor",
-      "entradaSilencio": "Sessizlik",
       "voz": "Ses",
       "hint": {
         "fillers": "Dikte ettiklerinden dolgu sözcüklerini («ıı», «şey») çıkarır.",

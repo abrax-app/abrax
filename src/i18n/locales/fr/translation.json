@@ -1081,12 +1081,6 @@
       "sinModelo": "Aucun modèle",
       "descargar": "télécharger",
       "descargando": "Téléchargement de {{modelo}} · {{pct}} %",
-      "wpm": "Mots par minute",
-      "wpmSinDatos": "Pas encore de mesure",
-      "entrada": "Entrée audio",
-      "entradaEspera": "Elle bouge pendant que vous dictez",
-      "entradaSi": "Audio entrant",
-      "entradaSilencio": "Silence",
       "voz": "Voix",
       "hint": {
         "fillers": "Supprime les mots de remplissage («euh», «ben») de ce que vous dictez.",

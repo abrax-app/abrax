@@ -1081,12 +1081,6 @@
       "sinModelo": "لا يوجد نموذج",
       "descargar": "تنزيل",
       "descargando": "جارٍ تنزيل {{modelo}} · {{pct}}%",
-      "wpm": "كلمات في الدقيقة",
-      "wpmSinDatos": "لا يوجد قياس بعد",
-      "entrada": "مدخل الصوت",
-      "entradaEspera": "يتحرك أثناء الإملاء",
-      "entradaSi": "يصل صوت",
-      "entradaSilencio": "صمت",
       "voz": "الصوت",
       "hint": {
         "fillers": "يزيل كلمات الحشو («أه»، «يعني») مما تمليه.",

@@ -1081,12 +1081,6 @@
       "sinModelo": "No model",
       "descargar": "download",
       "descargando": "Downloading {{modelo}} · {{pct}}%",
-      "wpm": "Words per minute",
-      "wpmSinDatos": "No reading yet",
-      "entrada": "Audio input",
-      "entradaEspera": "It moves while you dictate",
-      "entradaSi": "Audio coming in",
-      "entradaSilencio": "Silence",
       "voz": "Voice",
       "hint": {
         "fillers": "Removes filler words (\"uh\", \"um\") from what you dictate.",

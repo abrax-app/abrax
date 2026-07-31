@@ -1,14 +1,6 @@
-import React, {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { listen } from "@tauri-apps/api/event";
 import {
-  AudioLines,
   Eraser,
   Headphones,
   LayoutGrid,
@@ -28,8 +20,6 @@ import {
   type ModelInfo,
   type VozEscucha,
 } from "@/bindings";
-import { events } from "@/bindings";
-import type { SpectrumPayload } from "@/lib/types/events";
 import { useSettings } from "@/hooks/useSettings";
 import { useModelStore } from "@/stores/modelStore";
 import { confirmarDescarga } from "@/lib/utils/modelDialogs";
@@ -54,11 +44,6 @@ import { Dropdown } from "../ui/Dropdown";
  * los controles de aquí son LOS MISMOS componentes que usan esas pantallas, así
  * que no puede haber dos verdades.
  */
-
-const contarPalabras = (s: string): number => {
-  const limpio = s.trim();
-  return limpio ? limpio.split(/\s+/).length : 0;
-};
 
 /* ─────────────────────────── piezas de la tarjeta ─────────────────────────── */
 
@@ -382,156 +367,6 @@ const SelectorModelo: React.FC<{
   );
 };
 
-/* ─────────────────────── palabras por minuto + entrada ─────────────────────── */
-
-/**
- * Las dos lecturas en vivo del modo Streaming: a qué ritmo se está escribiendo
- * y si de verdad está entrando audio.
- *
- * Las dos son medidas REALES, no adorno. Las palabras por minuto salen del texto
- * transcrito de la sesión dividido por los segundos que duró —el mismo cálculo
- * del tablero Karting, con su misma trampa evitada: se recalcula también con el
- * texto FINAL, porque solo Nemotron transmite en vivo y con cualquier otro
- * modelo el parcial no existe y el número se quedaría clavado en cero.
- *
- * La barra de entrada se suscribe al espectro SOLO mientras hay captura (R8):
- * mientras no se dicta no hay nada que medir, y en vez de una barra plana que
- * parece rota se dice con palabras que se moverá al dictar.
- */
-const MedidoresStreaming: React.FC<{ grabando: boolean }> = ({ grabando }) => {
-  const { t } = useTranslation();
-  const [nivel, setNivel] = useState(0);
-  const [seg, setSeg] = useState(0);
-  const [parcial, setParcial] = useState("");
-  const [finalTexto, setFinalTexto] = useState("");
-  const wpmRef = useRef(0);
-  const suscritoRef = useRef(false);
-  const suaveRef = useRef(0);
-
-  // Texto de la sesión: el parcial mientras se dicta, el definitivo al soltar.
-  useEffect(() => {
-    let vivo = true;
-    let unText: (() => void) | null = null;
-    let unHist: (() => void) | null = null;
-    void events.streamTextEvent
-      .listen((e) => {
-        const { committed, tentative } = e.payload;
-        setParcial(`${committed} ${tentative}`.trim());
-      })
-      .then((fn) => (vivo ? (unText = fn) : fn()));
-    void events.historyUpdatePayload
-      .listen((e) => {
-        if (e.payload.action !== "added") return;
-        const txt = e.payload.entry.transcription_text?.trim();
-        if (txt) setFinalTexto(txt);
-        setParcial("");
-      })
-      .then((fn) => (vivo ? (unHist = fn) : fn()));
-    return () => {
-      vivo = false;
-      unText?.();
-      unHist?.();
-    };
-  }, []);
-
-  // Cronómetro de la sesión + reinicio de la cuenta al empezar a dictar.
-  useEffect(() => {
-    if (!grabando) return;
-    setSeg(0);
-    setParcial("");
-    setFinalTexto("");
-    const id = setInterval(() => setSeg((s) => s + 1), 1000);
-    return () => clearInterval(id);
-  }, [grabando]);
-
-  // Espectro: suscripción explícita y solo con captura viva (R8). El `emit_to`
-  // del backend va por etiqueta de ventana, así que esta ventana recibe sus
-  // propios cuadros sin que el overlay tenga que estar abierto.
-  useEffect(() => {
-    let vivo = true;
-    let un: (() => void) | null = null;
-    if (grabando) {
-      void commands.startSpectrum();
-      suscritoRef.current = true;
-      void listen<SpectrumPayload>("spectrum", (e) => {
-        const { rms, bass } = e.payload;
-        const objetivo = Math.min(1, Math.max(0, rms * 0.7 + bass * 0.5));
-        suaveRef.current = suaveRef.current * 0.6 + objetivo * 0.4;
-        setNivel(suaveRef.current);
-      }).then((fn) => (vivo ? (un = fn) : fn()));
-    } else {
-      suaveRef.current = 0;
-      setNivel(0);
-    }
-    return () => {
-      vivo = false;
-      un?.();
-      if (suscritoRef.current) {
-        void commands.stopSpectrum();
-        suscritoRef.current = false;
-      }
-    };
-  }, [grabando]);
-
-  const palabras = contarPalabras(parcial || finalTexto);
-  if (seg >= 2 && palabras > 0) {
-    wpmRef.current = Math.round(palabras / (seg / 60));
-  }
-  const wpm = wpmRef.current;
-
-  const estado = !grabando
-    ? t("quiet.panel.entradaEspera")
-    : nivel > 0.02
-      ? t("quiet.panel.entradaSi")
-      : t("quiet.panel.entradaSilencio");
-
-  return (
-    <>
-      <div className="px-4 p-2 flex items-center justify-between gap-3 min-h-12">
-        <h3 className="text-sm font-medium">{t("quiet.panel.wpm")}</h3>
-        <p className="text-sm tabular-nums" aria-live="off">
-          {wpm > 0 ? (
-            <>
-              <span className="font-semibold">{wpm}</span>{" "}
-              <span className="text-text/50 text-xs uppercase">
-                {t("bancada.wpmUnit")}
-              </span>
-            </>
-          ) : (
-            <span className="text-text/50 text-xs">
-              {t("quiet.panel.wpmSinDatos")}
-            </span>
-          )}
-        </p>
-      </div>
-      <div className="px-4 p-2 space-y-2">
-        <div className="flex items-center justify-between gap-3">
-          <h3 className="text-sm font-medium flex items-center gap-2">
-            <AudioLines
-              size={15}
-              className="text-mid-gray"
-              aria-hidden="true"
-            />
-            {t("quiet.panel.entrada")}
-          </h3>
-          {/* El estado va en PALABRAS además de en la barra: una barra de color
-              no es una respuesta para quien no la ve moverse. */}
-          <p className="text-xs text-text/60" aria-live="polite">
-            {estado}
-          </p>
-        </div>
-        <div
-          className="q-pa-bar"
-          role="img"
-          aria-label={`${t("quiet.panel.entrada")}: ${estado}`}
-        >
-          <i style={{ width: `${Math.round(nivel * 100)}%` }} />
-        </div>
-      </div>
-    </>
-  );
-};
-
 /* ───────────────────────────────── voz de VOX ─────────────────────────────── */
 
 /** La voz con la que VOX lee. Es «el modelo» de este modo: lo que cambia cómo
@@ -586,7 +421,7 @@ const SelectorVoz: React.FC = () => {
 
 /* ──────────────────────────────── el panel ────────────────────────────────── */
 
-export const PanelAtajos: React.FC<{ grabando: boolean }> = ({ grabando }) => {
+export const PanelAtajos: React.FC = () => {
   const { t } = useTranslation();
   const { settings, updateSetting } = useSettings();
   const { models, currentModel } = useModelStore();
@@ -692,11 +527,14 @@ export const PanelAtajos: React.FC<{ grabando: boolean }> = ({ grabando }) => {
             />
           </div>
         </div>
+        {/* «Palabras por minuto» y la barra de entrada vivieron aquí el 31/07 y
+            se quitaron a pedido: dos filas de alto para dos lecturas que solo
+            dicen algo mientras se dicta, en una pantalla cuyo encargo era
+            caber. El tablero Karting sigue teniendo su tacómetro. */}
         <SelectorModelo
           capacidad="sistema"
           preferidosSistema={aptitud?.preferidos}
         />
-        <MedidoresStreaming grabando={grabando} />
       </Tarjeta>
 
       <Tarjeta icon={Volume2} titulo={t("sidebar.escucha")}>

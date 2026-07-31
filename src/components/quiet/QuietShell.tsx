@@ -362,7 +362,7 @@ export const QuietShell: React.FC = () => {
               // de la ventana. Los atajos de cancelar y pulsar-para-hablar
               // siguen en «Avanzado»: aqui va lo que se toca a diario.
               <div className="q-sec q-sec-ancha">
-                <PanelAtajos grabando={grabando} />
+                <PanelAtajos />
               </div>
             ) : view === "streaming" ? (
               <div className="q-sec q-ajustes">

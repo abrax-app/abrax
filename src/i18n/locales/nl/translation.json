@@ -1081,12 +1081,6 @@
       "sinModelo": "Geen model",
       "descargar": "downloaden",
       "descargando": "{{modelo}} downloaden · {{pct}}%",
-      "wpm": "Woorden per minuut",
-      "wpmSinDatos": "Nog geen meting",
-      "entrada": "Audio-invoer",
-      "entradaEspera": "Beweegt terwijl je dicteert",
-      "entradaSi": "Audio komt binnen",
-      "entradaSilencio": "Stilte",
       "voz": "Stem",
       "hint": {
         "fillers": "Haalt stopwoorden («eh», «uhm») uit wat je dicteert.",

@@ -462,28 +462,6 @@
   }
 }
 
-/* Barra de entrada de audio: nivel real de la captura, no una animación. */
-.q-pa-bar {
-  height: 8px;
-  border-radius: 999px;
-  background: rgb(255 255 255 / 8%);
-  overflow: hidden;
-}
-.q-pa-bar i {
-  display: block;
-  height: 100%;
-  border-radius: 999px;
-  background: var(--q-grad);
-  transition: width 0.08s linear;
-}
-/* Con movimiento reducido la barra salta al valor en vez de deslizarse: el dato
-   sigue estando, y es lo único que esta barra promete. */
-@media (prefers-reduced-motion: reduce) {
-  .q-pa-bar i {
-    transition: none;
-  }
-}
-
 /* ── sub-pestañas del ítem «Más» ──
    Hospedan las secciones reales (Avanzado, Escucha, Post Proceso, Acerca de).
    `flex-wrap` es el requisito de cierre: en el ancho mínimo de la ventana Quiet

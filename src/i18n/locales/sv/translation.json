@@ -1081,12 +1081,6 @@
       "sinModelo": "Ingen modell",
       "descargar": "ladda ner",
       "descargando": "Laddar ner {{modelo}} · {{pct}} %",
-      "wpm": "Ord per minut",
-      "wpmSinDatos": "Ingen mätning ännu",
-      "entrada": "Ljudingång",
-      "entradaEspera": "Den rör sig medan du dikterar",
-      "entradaSi": "Ljud kommer in",
-      "entradaSilencio": "Tystnad",
       "voz": "Röst",
       "hint": {
         "fillers": "Tar bort utfyllnadsord («eh», «öh») från det du dikterar.",

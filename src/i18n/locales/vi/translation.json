@@ -1081,12 +1081,6 @@
       "sinModelo": "Không có mô hình",
       "descargar": "tải xuống",
       "descargando": "Đang tải {{modelo}} · {{pct}}%",
-      "wpm": "Số từ mỗi phút",
-      "wpmSinDatos": "Chưa có số đo",
-      "entrada": "Đầu vào âm thanh",
-      "entradaEspera": "Nó chuyển động khi bạn đọc",
-      "entradaSi": "Đang có âm thanh",
-      "entradaSilencio": "Im lặng",
       "voz": "Giọng nói",
       "hint": {
         "fillers": "Bỏ các từ đệm («à», «ừm») khỏi những gì bạn đọc.",

@@ -1081,12 +1081,6 @@
       "sinModelo": "मोडेल छैन",
       "descargar": "डाउनलोड",
       "descargando": "{{modelo}} डाउनलोड हुँदै · {{pct}}%",
-      "wpm": "प्रति मिनेट शब्द",
-      "wpmSinDatos": "अहिलेसम्म नाप छैन",
-      "entrada": "अडियो इनपुट",
-      "entradaEspera": "बोल्दा यो चल्छ",
-      "entradaSi": "अडियो आइरहेको छ",
-      "entradaSilencio": "मौन",
       "voz": "आवाज",
       "hint": {
         "fillers": "तपाईंले बोलेको कुरामा भरिने शब्दहरू («अँ», «त») हटाउँछ।",
