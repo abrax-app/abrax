@@ -71,6 +71,37 @@ const WAVE_LEVELS = WAVE_HALF + 1;
 const WAVE_FIRST_BAND = 2;
 const WAVE_BANDS_PER_BAR = 4;
 
+// ── SENSIBILIDAD DE LA ONDA ────────────────────────────────────
+// Medido el 31/07 sobre la pildora en marcha, contando pixeles de acento por
+// columna: EN SILENCIO la barra mas alta daba 6-8 px fisicos, o sea el suelo.
+// Con la curva anterior eso significa una banda por debajo de 0.033. Todo el
+// recorrido util quedaba por encima, y el habla normal apenas lo mordia.
+//
+// PUERTA: por debajo de esto es ruido de sala, y se planta en el suelo. Es lo
+// que permite subir la ganancia sin que la pildora en reposo parezca que esta
+// oyendo algo — la mentira contraria, y peor.
+const WAVE_GATE = 0.04;
+/** Ganancia sobre lo que queda tras la puerta. Satura cerca de banda 0.46. */
+const WAVE_GAIN = 2.4;
+/** Curva mas plana que la anterior (0.7): el habla baja usa mas recorrido. */
+const WAVE_CURVE = 0.5;
+const WAVE_FLOOR_PX = 5;
+/** Techo: 24 y no 18. La fila de la pildora mide 40 px, asi que sobra sitio. */
+const WAVE_CEIL_PX = 24;
+/** Sube rapido y baja despacio, como un medidor de pico: con el suavizado
+ *  simetrico de antes (0.3 en los dos sentidos) los picos se promediaban y la
+ *  onda no llegaba nunca a donde llego la voz. */
+const WAVE_ATTACK = 0.6;
+const WAVE_RELEASE = 0.22;
+
+/** Altura en px de una barra a partir del nivel 0..1 de su grupo de bandas. */
+const alturaBarra = (v: number): number => {
+  const g = Math.min(1, Math.max(0, v - WAVE_GATE) * WAVE_GAIN);
+  return (
+    WAVE_FLOOR_PX + Math.pow(g, WAVE_CURVE) * (WAVE_CEIL_PX - WAVE_FLOOR_PX)
+  );
+};
+
 const RecordingOverlay: React.FC = () => {
   const { t } = useTranslation();
   const [isVisible, setIsVisible] = useState(false);
@@ -173,7 +204,11 @@ const RecordingOverlay: React.FC = () => {
               sum += bands[b] ?? 0;
             }
             const target = sum / WAVE_BANDS_PER_BAR;
-            return prev * 0.7 + target * 0.3;
+            // Asimetrico: el pico se alcanza, la caida se acompaña.
+            return (
+              prev +
+              (target - prev) * (target > prev ? WAVE_ATTACK : WAVE_RELEASE)
+            );
           });
           smoothedLevelsRef.current = smoothed;
           setLevels(smoothed);
@@ -259,14 +294,10 @@ const RecordingOverlay: React.FC = () => {
         <i
           key={bar}
           style={{
-            // `pow(v, 0.7)` comprime el rango para que los niveles bajos del
-            // habla normal se vean, en vez de quedar pegados al minimo.
-            //
             // El suelo es 5 y no 3: en silencio TODAS las barras estan ahi, y a
             // 3px con 13 barras la pildora se leia como una fila de puntos en
-            // vez de como una onda en reposo. No se toca el techo ni la curva,
-            // asi que lo que se mide sigue siendo lo mismo.
-            height: `${Math.max(5, Math.min(18, 5 + Math.pow(v, 0.7) * 15))}px`,
+            // vez de como una onda en reposo.
+            height: `${alturaBarra(v).toFixed(1)}px`,
           }}
         />
       ))}

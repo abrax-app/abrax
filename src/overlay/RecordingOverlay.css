@@ -315,23 +315,27 @@
 
 /* Barras reactivas del microfono, la forma del upstream (Handy). Tematizadas
    por `--s-accent`; las alturas llegan en linea desde JS. */
+/* 24 px y no 18: la fila de la pildora mide 40, asi que el recorrido de la
+   onda pasa de 13 px a 19 sin tocar el tamaño de nada. Con 13 px de margen, el
+   habla normal movia las barras un pelo y la pildora parecia dormida. */
 .swave {
   display: flex;
   align-items: center;
   gap: 3px;
   padding-right: 8px;
-  height: 18px;
+  height: 24px;
   flex: none;
 }
 /* Las alturas las pone JS en linea, desde los niveles del microfono. La
-   transicion solo lima el escalon entre trama y trama. */
+   transicion solo lima el escalon entre trama y trama: a 80 ms se comia los
+   picos —las tramas llegan cada 33— asi que baja a 55. */
 .swave i {
   width: 3px;
   min-height: 4px;
-  max-height: 18px;
+  max-height: 24px;
   border-radius: 2px;
   background: var(--s-accent);
-  transition: height 80ms linear;
+  transition: height 55ms linear;
 }
 
 /* ── Fila de SOLO ONDA (overlay Minimal, grabando) ─────────────────────────
