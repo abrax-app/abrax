@@ -1412,3 +1412,34 @@ h2::before {
     padding-top: 100px;
   }
 }
+
+/* ── celular: menos aire entre piezas para que la página no se haga
+   «infinita» — se compacta el ritmo, no el contenido ── */
+@media (max-width: 640px) {
+  .display {
+    font-size: clamp(30px, 8.6vw, 40px);
+  }
+  .sub-seccion {
+    margin: 8px 0 24px;
+  }
+  .fila-funcion,
+  .fila-funcion--invertida {
+    margin-bottom: 34px;
+  }
+  .fila-funcion .desc {
+    font-size: 15px;
+  }
+  .cards {
+    gap: 12px;
+  }
+  .card {
+    padding: 18px;
+  }
+  .mini-grid,
+  .paleta-ej {
+    gap: 12px;
+  }
+  .tabla-nota {
+    margin-top: 10px;
+  }
+}
