@@ -1071,7 +1071,7 @@
     "preview": "Preview sound theme (start and stop)"
   },
   "vox": {
-    "atajoHint": "Select text in any app and press <k>{{atajo}}</k>: VOX reads it aloud.",
-    "atajoSinBinding": "Set a shortcut in Settings so VOX can read your selection aloud."
+    "atajoHint": "For VOX, press <k>{{atajo}}</k> and it reads aloud the text you have selected in any app.",
+    "atajoSinBinding": "For VOX, set a shortcut in Settings and it will read aloud the text you have selected."
   }
 }

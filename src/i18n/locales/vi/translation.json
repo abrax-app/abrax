@@ -1071,7 +1071,7 @@
     "preview": "Nghe thử chủ đề âm thanh (bắt đầu và kết thúc)"
   },
   "vox": {
-    "atajoHint": "Chọn văn bản trong bất kỳ ứng dụng nào rồi nhấn <k>{{atajo}}</k>: VOX sẽ đọc to.",
-    "atajoSinBinding": "Đặt phím tắt trong Cài đặt để VOX đọc to phần bạn chọn."
+    "atajoHint": "Với VOX, nhấn <k>{{atajo}}</k> và nó đọc to văn bản bạn đang chọn trong bất kỳ ứng dụng nào.",
+    "atajoSinBinding": "Với VOX, hãy đặt phím tắt trong Cài đặt và nó sẽ đọc to văn bản bạn chọn."
   }
 }

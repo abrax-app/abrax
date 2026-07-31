@@ -1071,7 +1071,7 @@
     "preview": "Thema beluisteren (start en stop)"
   },
   "vox": {
-    "atajoHint": "Selecteer tekst in elke app en druk op <k>{{atajo}}</k>: VOX leest het voor.",
-    "atajoSinBinding": "Stel een sneltoets in bij Instellingen zodat VOX je selectie kan voorlezen."
+    "atajoHint": "Voor VOX druk je op <k>{{atajo}}</k> en leest het de tekst voor die je in een app hebt geselecteerd.",
+    "atajoSinBinding": "Stel voor VOX een sneltoets in bij Instellingen; dan leest het je geselecteerde tekst voor."
   }
 }

@@ -1071,7 +1071,7 @@
     "preview": "Ouvir o tema (início e fim)"
   },
   "vox": {
-    "atajoHint": "Seleciona texto em qualquer app e prime <k>{{atajo}}</k>: o VOX lê em voz alta.",
-    "atajoSinBinding": "Define um atalho nas Definições para o VOX ler a seleção em voz alta."
+    "atajoHint": "Para o VOX, prime <k>{{atajo}}</k> e lê em voz alta o texto que tiveres selecionado em qualquer app.",
+    "atajoSinBinding": "Para o VOX, define um atalho nas Definições e lerá em voz alta o texto que tiveres selecionado."
   }
 }

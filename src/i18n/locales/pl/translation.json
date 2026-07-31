@@ -1071,7 +1071,7 @@
     "preview": "Odsłuchaj motyw (start i stop)"
   },
   "vox": {
-    "atajoHint": "Zaznacz tekst w dowolnej aplikacji i naciśnij <k>{{atajo}}</k>: VOX przeczyta go na głos.",
-    "atajoSinBinding": "Ustaw skrót w Ustawieniach, aby VOX czytał zaznaczenie na głos."
+    "atajoHint": "Dla VOX naciśnij <k>{{atajo}}</k>, a przeczyta na głos tekst zaznaczony w dowolnej aplikacji.",
+    "atajoSinBinding": "Dla VOX ustaw skrót w Ustawieniach, a przeczyta na głos zaznaczony tekst."
   }
 }

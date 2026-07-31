@@ -1071,7 +1071,7 @@
     "preview": "Klangthema anhören (Start und Stopp)"
   },
   "vox": {
-    "atajoHint": "Markiere Text in einer beliebigen App und drücke <k>{{atajo}}</k>: VOX liest ihn vor.",
-    "atajoSinBinding": "Lege in den Einstellungen ein Tastenkürzel fest, damit VOX die Auswahl vorlesen kann."
+    "atajoHint": "Für VOX drücke <k>{{atajo}}</k>, und der markierte Text wird in jeder App vorgelesen.",
+    "atajoSinBinding": "Für VOX lege in den Einstellungen ein Tastenkürzel fest; dann wird der markierte Text vorgelesen."
   }
 }

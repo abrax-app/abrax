@@ -1071,7 +1071,7 @@
     "preview": "試聽音效主題（開始與結束）"
   },
   "vox": {
-    "atajoHint": "在任意應用程式中選取文字並按 <k>{{atajo}}</k>，VOX 就會朗讀。",
-    "atajoSinBinding": "在設定中指定快速鍵，VOX 就能朗讀你選取的文字。"
+    "atajoHint": "使用 VOX：按 <k>{{atajo}}</k>，它就會朗讀你在任意應用程式中選取的文字。",
+    "atajoSinBinding": "使用 VOX：在設定中指定快速鍵，它就會朗讀你選取的文字。"
   }
 }

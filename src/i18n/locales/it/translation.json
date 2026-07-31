@@ -1071,7 +1071,7 @@
     "preview": "Ascolta il tema (inizio e fine)"
   },
   "vox": {
-    "atajoHint": "Seleziona del testo in qualsiasi app e premi <k>{{atajo}}</k>: VOX lo legge ad alta voce.",
-    "atajoSinBinding": "Imposta una scorciatoia nelle Impostazioni perché VOX legga la selezione ad alta voce."
+    "atajoHint": "Per VOX, premi <k>{{atajo}}</k> e legge ad alta voce il testo selezionato in qualsiasi app.",
+    "atajoSinBinding": "Per VOX, imposta una scorciatoia nelle Impostazioni e leggerà ad alta voce il testo selezionato."
   }
 }

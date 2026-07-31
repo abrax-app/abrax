@@ -1071,7 +1071,7 @@
     "preview": "试听声音主题（开始与结束）"
   },
   "vox": {
-    "atajoHint": "在任意应用中选中文字并按 <k>{{atajo}}</k>，VOX 就会朗读。",
-    "atajoSinBinding": "在设置中指定快捷键，VOX 就能朗读你选中的文字。"
+    "atajoHint": "使用 VOX：按 <k>{{atajo}}</k>，它就会朗读你在任意应用中选中的文字。",
+    "atajoSinBinding": "使用 VOX：在设置中指定快捷键，它就会朗读你选中的文字。"
   }
 }

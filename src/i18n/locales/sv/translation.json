@@ -1071,7 +1071,7 @@
     "preview": "Lyssna på temat (start och stopp)"
   },
   "vox": {
-    "atajoHint": "Markera text i valfri app och tryck på <k>{{atajo}}</k>: VOX läser upp den.",
-    "atajoSinBinding": "Ställ in ett kortkommando i Inställningar så att VOX kan läsa upp markeringen."
+    "atajoHint": "För VOX, tryck <k>{{atajo}}</k> så läses den text du markerat i valfri app upp.",
+    "atajoSinBinding": "För VOX, ställ in ett kortkommando i Inställningar så läses den markerade texten upp."
   }
 }

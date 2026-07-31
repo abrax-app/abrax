@@ -1071,7 +1071,7 @@
     "preview": "Temayı dinle (başlangıç ve bitiş)"
   },
   "vox": {
-    "atajoHint": "Herhangi bir uygulamada metni seç ve <k>{{atajo}}</k> tuşuna bas: VOX sesli okur.",
-    "atajoSinBinding": "VOX’un seçimi sesli okuması için Ayarlar’dan bir kısayol belirle."
+    "atajoHint": "VOX için <k>{{atajo}}</k> tuşuna bas; herhangi bir uygulamada seçtiğin metni sesli okur.",
+    "atajoSinBinding": "VOX için Ayarlar’dan bir kısayol belirle; seçtiğin metni sesli okur."
   }
 }
