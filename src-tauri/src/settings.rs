@@ -546,7 +546,7 @@ pub struct AppSettings {
     /// una elección explícita del usuario nunca se pisa.
     #[serde(default)]
     pub modelo_antes_de_sistema: Option<String>,
-    #[serde(default)]
+    #[serde(default = "default_autocorreccion_activa")]
     pub autocorreccion_activa: bool,
     /// Señales de borrado explícito (nivel 1). Mismo contrato que las
     /// muletillas: `null` = las de fábrica, `[]` = nivel apagado, lista propia
@@ -729,6 +729,21 @@ fn default_debug_mode() -> bool {
 }
 
 fn default_memoria_activa() -> bool {
+    true
+}
+
+/// Encendida de fábrica desde el 30/07.
+///
+/// Estuvo apagada por una razón buena: el nivel 1 (borrado explícito) disparaba
+/// con sus señales EN MITAD de una frase, y como borra la oración anterior
+/// completa, destrozaba prosa corriente —medido, seis de ocho frases—. Ahora el
+/// nivel 1 exige que la señal CIERRE el dictado (`borrado_cierra_el_dictado`),
+/// que es como se dicta una orden de verdad, y con eso las mismas frases salen
+/// intactas mientras las correcciones siguen funcionando.
+///
+/// El nivel 2 nunca fue el problema: su regla de oro es no tocar nada sin un
+/// paralelo claro.
+fn default_autocorreccion_activa() -> bool {
     true
 }
 
@@ -1020,7 +1035,7 @@ pub fn get_default_settings() -> AppSettings {
         custom_filler_words: None,
         emoji_dictado: default_emoji_dictado(),
         modelo_antes_de_sistema: None,
-        autocorreccion_activa: false,
+        autocorreccion_activa: default_autocorreccion_activa(),
         autocorreccion_senales_borrado: None,
         autocorreccion_senales_sustitucion: None,
         transcribe_accelerator: TranscribeAcceleratorSetting::default(),

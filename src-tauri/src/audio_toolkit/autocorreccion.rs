@@ -415,6 +415,16 @@ fn fin_de_oracion(tokens: &[Token], desde: usize, tope: usize) -> usize {
 }
 
 /// Nivel 1: borra la oración anterior completa y la señal.
+/// ¿La señal de borrado CIERRA el dictado? Es lo que separa una orden de una
+/// frase que casualmente contiene esas palabras.
+///
+/// Cierra si no queda nada detrás, o si la propia señal termina en puntuación de
+/// cierre («… borra eso. Y ahora otra cosa»: ahí sí fue una orden y lo que sigue
+/// es dictado nuevo).
+fn borrado_cierra_el_dictado(tokens: &[Token], i: usize, n: usize) -> bool {
+    i + n >= tokens.len() || tokens[i + n - 1].cierra
+}
+
 fn aplicar_borrado(tokens: &[Token], i: usize, n: usize) -> String {
     let mut inicio = i;
     if i > 0 {
@@ -497,9 +507,33 @@ fn una_pasada(
     let tokens = tokenizar(texto);
     let mut i = 0;
     while i < tokens.len() {
-        // Nivel 1 primero: es inequívoco.
+        // Nivel 1 primero: es inequívoco… PERO SOLO SI CIERRA EL DICTADO.
+        //
+        // Sin esa condición no era inequívoco en absoluto: las cuatro señales de
+        // fábrica son español corriente en mitad de una frase, y como el nivel 1
+        // borra LA ORACIÓN ANTERIOR COMPLETA, el destrozo era total. Medido el
+        // 30/07 sobre prosa normal, con las señales de fábrica:
+        //
+        //   «Termina el informe y déjalo para el lunes»  → «para el lunes»
+        //   «El archivo está en el escritorio, déjalo ahí» → «ahí»
+        //   «Le dije que no, nada más»                   → «más»
+        //   «Borra eso del pizarrón por favor»           → «del pizarrón por favor»
+        //
+        // Seis de ocho frases mutiladas. Por eso la función venía apagada de
+        // fábrica, y por eso no se podía encender sin esto.
+        //
+        // La condición sale de cómo se usa de verdad: «borra eso» es una ORDEN,
+        // y una orden se dicta al final —dices el texto, te arrepientes, dices
+        // «borra eso» y callas—. Si detrás sigue habiendo frase, no era una
+        // orden: era la frase.
         if let Some(n) = casa_senal(&tokens, i, borrado) {
-            return Some(aplicar_borrado(&tokens, i, n));
+            if borrado_cierra_el_dictado(&tokens, i, n) {
+                return Some(aplicar_borrado(&tokens, i, n));
+            }
+            // No era orden: se sigue buscando, igual que hace el nivel 2 cuando
+            // una señal suya no encuentra paralelo.
+            i += n;
+            continue;
         }
         if let Some(n) = casa_senal(&tokens, i, sustitucion) {
             if let Some(nuevo) = aplicar_sustitucion(&tokens, i, n) {
@@ -896,5 +930,65 @@ mod tests {
         // nivel, apagadas ellas — identidad exacta.
         let t = "Voy a las ocho… no, a las nueve.";
         assert_eq!(aplicar_autocorreccion(t, &None, &Some(vec![])), t);
+    }
+
+    // ── Nivel 1: orden sí, frase no ────────────────────────────────────────
+    //
+    // Este bloque es la razón por la que la función se puede encender de
+    // fábrica. Antes de la guarda, las seis primeras salían mutiladas.
+
+    #[test]
+    fn nivel1_no_toca_prosa_donde_la_senal_va_en_medio() {
+        for texto in [
+            "Termina el informe y déjalo para el lunes",
+            "El archivo está en el escritorio, déjalo ahí",
+            "Ya revisé el contrato. Déjalo como está",
+            "No, nada que ver con eso",
+            "Le dije que no, nada más",
+            "Borra eso del pizarrón por favor",
+            "Olvida eso que te conté y sigamos",
+        ] {
+            assert_eq!(corrige(texto), texto, "mutiló: «{texto}»");
+        }
+    }
+
+    #[test]
+    fn nivel1_sigue_borrando_cuando_es_una_orden_de_verdad() {
+        // Dictas una frase, te arrepientes y dices la orden: la frase se va
+        // entera y no queda nada. Es lo que se pidió.
+        assert_eq!(corrige("Agenda la reunión para el martes. Borra eso"), "");
+        assert_eq!(corrige("Nos juntamos el lunes, borra eso"), "");
+        // Se borra SOLO la oración anterior, no todo lo dictado antes.
+        assert_eq!(
+            corrige("Primero esto. Segundo lo otro. Borra eso"),
+            "Primero esto."
+        );
+        // Con la señal cerrada por punto y dictado nuevo detrás.
+        assert_eq!(
+            corrige("Confirmo el envío. Olvida eso. Mando el correo mañana"),
+            "Mando el correo mañana"
+        );
+    }
+
+    #[test]
+    fn los_valores_de_fabrica_corrigen_sin_destrozar() {
+        // Control POSITIVO: lo que la función promete, con los ajustes de
+        // fábrica exactos (ambas listas en `None`).
+        assert_eq!(
+            corrige("Llegamos a las tres, digo, a las cuatro"),
+            "Llegamos a las cuatro"
+        );
+        assert_eq!(
+            corrige("Manda el correo a Pedro, mejor dicho, a Ana"),
+            "Manda el correo a Ana"
+        );
+        // Control NEGATIVO: prosa que usa las mismas palabras sin corregir nada.
+        for texto in [
+            "Perdón por la demora, ya voy.",
+            "Digo que sí a la propuesta.",
+            "Te pido perdón por lo de ayer.",
+        ] {
+            assert_eq!(corrige(texto), texto, "tocó: «{texto}»");
+        }
     }
 }
