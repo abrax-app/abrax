@@ -35,6 +35,19 @@ const VIGENCIA: Duration = Duration::from_secs(10 * 60);
 /// Coincidencia mínima (razón de LCS por claves) para aceptar que una ventana
 /// del campo ES el dictado anterior editado, y no otro texto.
 const MIN_COINCIDENCIA: f64 = 0.5;
+/// Rescate de dictados CORTOS totalmente reescritos: con 1–3 palabras editadas
+/// todas, el LCS queda en cero y el ancla desaparece («An Jumab» → «anhumave»
+/// no compartía ni una clave) — justo el caso del nombre de empresa mal oído.
+/// Se acepta la ventana si su distancia Levenshtein normalizada (claves
+/// unidas) es baja; después `pasa_puertas` vuelve a filtrar cada par.
+const CORTO_MAX_PALABRAS: usize = 3;
+/// Distancia máxima (dist/len) para el rescate corto. Más estricta que la
+/// puerta general de similitud: aquí no hay ancla que respalde.
+const CORTO_SIMILITUD_MAX: f64 = 0.4;
+/// Largo mínimo de la clave unida del dictado corto: por debajo de esto
+/// («hola», «vale») cualquier palabra vecina parece una edición y se
+/// aprendería veneno (hola→bola de un campo ajeno).
+const CORTO_CLAVE_MIN: usize = 6;
 /// Cota de palabras del campo leído (campos enormes no se rastrillan).
 const MAX_PALABRAS_CAMPO: usize = 4000;
 /// Máximo de caracteres pedidos al control enfocado.
@@ -164,9 +177,56 @@ pub fn comparar_con_campo(tipeado: &str, campo: &str) -> Vec<(String, String)> {
         return Vec::new();
     };
     if razon < MIN_COINCIDENCIA {
+        // Dictado corto totalmente reescrito: sin una sola clave compartida el
+        // LCS no puede ubicarlo, pero un nombre mal oído y corregido entero
+        // («An Jumab» → «anhumave», «Grafify» → «Krafify») sigue estando ahí,
+        // parecidísimo. Se busca la ventana más CERCANA por Levenshtein.
+        if let Some((j, k)) = ventana_corta_parecida(&claves_obj, &claves_campo) {
+            return memoria::aprender_de_edicion(tipeado, &palabras[j..j + k].join(" "));
+        }
         return Vec::new(); // el dictado anterior ya no está reconocible en el campo
     }
     memoria::aprender_de_edicion(tipeado, &palabras[i..i + m].join(" "))
+}
+
+/// Ventana del campo más parecida a un dictado CORTO, por distancia
+/// Levenshtein normalizada sobre las claves unidas. `None` si el dictado no
+/// aplica (largo, o clave demasiado corta) o si nada se parece lo suficiente.
+fn ventana_corta_parecida(
+    claves_obj: &[String],
+    claves_campo: &[String],
+) -> Option<(usize, usize)> {
+    let n = claves_obj.len();
+    if n == 0 || n > CORTO_MAX_PALABRAS {
+        return None;
+    }
+    let obj = claves_obj.concat();
+    if obj.chars().count() < CORTO_CLAVE_MIN {
+        return None; // «hola» editado: cualquier vecina parecería corrección
+    }
+    let mut mejor: Option<(f64, usize, usize)> = None;
+    for delta in -1isize..=1 {
+        let m = n as isize + delta;
+        if m < 1 || m as usize > claves_campo.len() {
+            continue;
+        }
+        let m = m as usize;
+        for j in 0..=claves_campo.len() - m {
+            let ventana = claves_campo[j..j + m].concat();
+            let largo = obj.chars().count().max(ventana.chars().count());
+            if largo == 0 {
+                continue;
+            }
+            let dist = strsim::levenshtein(&obj, &ventana) as f64 / largo as f64;
+            if mejor.is_none_or(|(d, _, _)| dist < d) {
+                mejor = Some((dist, j, m));
+            }
+        }
+    }
+    match mejor {
+        Some((dist, j, m)) if dist <= CORTO_SIMILITUD_MAX => Some((j, m)),
+        _ => None,
+    }
 }
 
 fn lcs_len(a: &[String], b: &[String]) -> usize {
@@ -272,6 +332,37 @@ fn leer_texto_enfocado() -> Option<String> {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    // ── rescate de dictados cortos totalmente reescritos ──────────────────
+
+    #[test]
+    fn nombre_corto_reescrito_entero_se_aprende() {
+        // El caso real del 30/07: el ASR oyó «An Jumab», el usuario lo dejó
+        // como «anhumave». Cero claves compartidas → el LCS no lo ubicaba y
+        // no se aprendía nada.
+        let pares = comparar_con_campo("An Jumab", "escríbele a anhumave por favor");
+        assert_eq!(
+            pares,
+            vec![("An Jumab".to_string(), "anhumave".to_string())]
+        );
+        // El nombre de empresa mal oído, corregido en el campo.
+        let pares = comparar_con_campo("Grafify", "la empresa Krafify factura");
+        assert_eq!(pares, vec![("Grafify".to_string(), "Krafify".to_string())]);
+    }
+
+    #[test]
+    fn corto_sin_parecido_no_aprende_de_campos_ajenos() {
+        // El campo no contiene nada parecido al dictado: no hay edición que
+        // atribuir, aunque el dictado sea corto.
+        assert!(comparar_con_campo("Grafify", "no tiene nada que ver esto").is_empty());
+    }
+
+    #[test]
+    fn corto_de_clave_diminuta_no_entra_al_rescate() {
+        // «hola» (clave de 4) editado: cualquier palabra vecina («bola»)
+        // parecería una corrección — veneno. El rescate exige clave ≥ 6.
+        assert!(comparar_con_campo("hola", "escribe bola aquí").is_empty());
+    }
 
     #[test]
     fn campo_intacto_no_aprende() {
