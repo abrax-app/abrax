@@ -643,7 +643,7 @@ fn default_model() -> String {
     "".to_string()
 }
 
-const CURRENT_SETTINGS_SCHEMA_VERSION: u32 = 3;
+const CURRENT_SETTINGS_SCHEMA_VERSION: u32 = 4;
 
 fn default_settings_schema_version() -> u32 {
     CURRENT_SETTINGS_SCHEMA_VERSION
@@ -1268,6 +1268,31 @@ fn apply_settings_migrations(
         if !settings.autocorreccion_activa {
             settings.autocorreccion_activa = default_autocorreccion_activa();
             log::info!("migracion: autocorreccion hablada encendida (venia del default viejo)");
+        }
+    }
+
+    if stored_schema_version < 4 {
+        // Una lista de señales VACIA ya no significa nada.
+        //
+        // Significaba «nivel apagado», un tercer estado que la pantalla ofrecia
+        // y que se retiro el 31/07 por redundante: el interruptor
+        // «Autocorreccion hablada» ya es el on/off. Pero quien lo hubiera
+        // pulsado antes se quedo con `Some([])` guardado, y ese valor apaga la
+        // funcion en el backend MIENTRAS la pantalla nueva lo dibuja como «las
+        // de fabrica». La interfaz diciendo una cosa y el motor haciendo otra.
+        //
+        // Le paso a Winston en su propia maquina: la app no corregia nada y la
+        // pantalla juraba que estaba todo en orden.
+        //
+        // Vacia pasa a `None` = las de fabrica. No se pierde nada: si tenia una
+        // lista propia, vive aparte en `autocorreccion_propias_sustitucion`.
+        if settings
+            .autocorreccion_senales_sustitucion
+            .as_ref()
+            .is_some_and(|v| v.is_empty())
+        {
+            settings.autocorreccion_senales_sustitucion = None;
+            log::info!("migracion: lista de señales vacia -> las de fabrica");
         }
     }
 
@@ -2185,6 +2210,49 @@ mod tests {
         assert_eq!(
             settings.settings_schema_version,
             CURRENT_SETTINGS_SCHEMA_VERSION
+        );
+    }
+
+    /// El estado «nivel apagado» (`Some([])`) desaparecio de la pantalla, pero
+    /// quedo guardado en las maquinas de quien lo pulso, apagando la funcion en
+    /// silencio mientras la pantalla decia «las de fabrica».
+    #[test]
+    fn migracion_rescata_la_lista_vacia_que_apagaba_todo() {
+        let mut stored = default_settings_json();
+        {
+            let obj = stored.as_object_mut().unwrap();
+            obj.insert("settings_schema_version".into(), serde_json::json!(3));
+            obj.insert(
+                "autocorreccion_senales_sustitucion".into(),
+                serde_json::json!([]),
+            );
+        }
+        let mut settings: AppSettings = serde_json::from_value(stored.clone()).unwrap();
+        assert_eq!(settings.autocorreccion_senales_sustitucion, Some(vec![]));
+        apply_settings_migrations(&mut settings, &stored);
+        assert_eq!(
+            settings.autocorreccion_senales_sustitucion, None,
+            "la lista vacia debe volver a las de fabrica"
+        );
+    }
+
+    /// Control NEGATIVO: una lista propia con contenido NO se toca.
+    #[test]
+    fn migracion_no_pisa_una_lista_propia() {
+        let mut stored = default_settings_json();
+        {
+            let obj = stored.as_object_mut().unwrap();
+            obj.insert("settings_schema_version".into(), serde_json::json!(3));
+            obj.insert(
+                "autocorreccion_senales_sustitucion".into(),
+                serde_json::json!(["ojo", "corrijo"]),
+            );
+        }
+        let mut settings: AppSettings = serde_json::from_value(stored.clone()).unwrap();
+        apply_settings_migrations(&mut settings, &stored);
+        assert_eq!(
+            settings.autocorreccion_senales_sustitucion,
+            Some(vec!["ojo".to_string(), "corrijo".to_string()])
         );
     }
 }
