@@ -135,20 +135,34 @@
 }
 
 /* Aviso del atajo de VOX. Vive en los cuatro shells, asi que el estilo base va
-   aqui y cada shell solo ajusta el color con su propia clase. */
+   aqui y cada shell solo ajusta el color con su propia clase.
+
+   `nowrap` en la tecla es el detalle que importa: sin el, «Ctrl + Shift + R» se
+   partia DENTRO del recuadro («Ctrl + Shift +» arriba, «R» abajo) y el chip
+   quedaba de dos pisos. Una tecla partida en dos no se lee como una tecla. */
 .vox-hint {
-  display: inline-flex;
+  display: flex;
   align-items: center;
-  gap: 6px;
-  font-size: 12px;
-  opacity: 0.72;
+  justify-content: center;
+  flex-wrap: nowrap;
+  gap: 7px;
+  font-size: 12.5px;
+  line-height: 1.4;
+  opacity: 0.68;
   margin: 0;
 }
+.vox-hint svg {
+  flex: none;
+  opacity: 0.75;
+}
 .vox-kbd {
-  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-  font-size: 11px;
-  padding: 1px 6px;
-  border-radius: 4px;
+  display: inline-block;
+  white-space: nowrap;
+  margin: 0 3px;
+  padding: 1px 8px;
+  border-radius: 6px;
   border: 1px solid currentColor;
-  opacity: 0.85;
+  font-family: ui-monospace, "Cascadia Code", monospace;
+  font-size: 11.5px;
+  opacity: 0.9;
 }
