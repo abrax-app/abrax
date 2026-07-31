@@ -184,6 +184,7 @@
     },
     "legacy": "מדור קודם",
     "downloadFailed": "ההורדה נכשלה",
+    "downloadFailedHelp": "לא ניתן היה להוריד את המודל. בדוק את החיבור ונסה שוב.",
     "checkFailed": "לא ניתן היה לבדוק את מצב המודל",
     "loadFailed": "לא ניתן היה לטעון את המודל",
     "switchFailed": "לא ניתן היה להחליף מודל",
@@ -707,7 +708,8 @@
     "pause": "השהה",
     "seek": "מיקום הניגון",
     "moreInfo": "מידע נוסף",
-    "selectOption": "בחרו אפשרות…"
+    "selectOption": "בחרו אפשרות…",
+    "systemDefault": "ברירת מחדל"
   },
   "accessibility": {
     "permissionsDescription": "Abrax צריך הרשאות נגישות כדי להקליד את הטקסט המתומלל.",

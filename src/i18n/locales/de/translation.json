@@ -184,6 +184,7 @@
     "cancelDownload": "Download abbrechen",
     "legacy": "Veraltet",
     "downloadFailed": "Download fehlgeschlagen",
+    "downloadFailedHelp": "Das Modell konnte nicht heruntergeladen werden. Prüfe deine Verbindung und versuche es erneut.",
     "checkFailed": "Modellstatus konnte nicht geprüft werden",
     "loadFailed": "Modell konnte nicht geladen werden",
     "switchFailed": "Modellwechsel fehlgeschlagen",
@@ -707,7 +708,8 @@
     "pause": "Pausieren",
     "seek": "Wiedergabeposition",
     "moreInfo": "Weitere Informationen",
-    "selectOption": "Option auswählen…"
+    "selectOption": "Option auswählen…",
+    "systemDefault": "Standard"
   },
   "accessibility": {
     "permissionsDescription": "Abrax benötigt Bedienungshilfen-Berechtigungen, um transkribierten Text einzugeben.",

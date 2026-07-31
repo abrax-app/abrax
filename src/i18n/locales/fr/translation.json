@@ -184,6 +184,7 @@
     "cancelDownload": "Annuler le téléchargement",
     "legacy": "Hérité",
     "downloadFailed": "Échec du téléchargement",
+    "downloadFailedHelp": "Impossible de télécharger le modèle. Vérifie ta connexion et réessaie.",
     "checkFailed": "Impossible de vérifier l'état du modèle",
     "loadFailed": "Impossible de charger le modèle",
     "switchFailed": "Impossible de changer de modèle",
@@ -707,7 +708,8 @@
     "pause": "Pause",
     "seek": "Position de lecture",
     "moreInfo": "Plus d'informations",
-    "selectOption": "Sélectionnez une option…"
+    "selectOption": "Sélectionnez une option…",
+    "systemDefault": "Par défaut"
   },
   "accessibility": {
     "permissionsDescription": "Abrax a besoin des autorisations d'accessibilité pour taper le texte transcrit.",

@@ -184,6 +184,7 @@
     },
     "legacy": "舊版",
     "downloadFailed": "下載失敗",
+    "downloadFailedHelp": "無法下載模型。請檢查網路連線後重試。",
     "checkFailed": "無法檢查模型狀態",
     "loadFailed": "無法載入模型",
     "switchFailed": "無法切換模型",
@@ -707,7 +708,8 @@
     "pause": "暫停",
     "seek": "播放位置",
     "moreInfo": "更多資訊",
-    "selectOption": "選擇一個選項…"
+    "selectOption": "選擇一個選項…",
+    "systemDefault": "預設"
   },
   "accessibility": {
     "permissionsDescription": "Abrax 需要輔助使用權限才能輸入轉錄的文字",

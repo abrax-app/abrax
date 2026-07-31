@@ -3,7 +3,7 @@
     "settings": "Configuración...",
     "checkUpdates": "Buscar actualizaciones...",
     "copyLastTranscript": "Copiar la última transcripción",
-    "unloadModel": "Descargar modelo",
+    "unloadModel": "Liberar el modelo de la memoria",
     "model": "Modelo",
     "quit": "Salir",
     "cancel": "Cancelar",
@@ -105,13 +105,13 @@
         "description": "Rápido — para dictar al vuelo en cualquier equipo, hasta en un portátil viejo. Es el que recomendamos para empezar: se descarga en menos de un minuto."
       },
       "handy-computer_whisper-large-v3-turbo-gguf": {
-        "description": "Equilibrado — el de todos los días: entiende 100 idiomas y no te hace esperar."
+        "description": "Equilibrado — el de todos los días: entiende 100 idiomas. Tarda unos segundos más que Canary."
       },
       "handy-computer_whisper-large-v3-gguf": {
         "description": "Máxima cobertura — el Whisper grande, el que nombran todos. Más lento, pero completo."
       },
       "handy-computer_nemotron-3_5-asr-streaming-0_6b-gguf": {
-        "description": "En vivo — escribe mientras hablas, palabra por palabra. Es el que hace bailar la esfera."
+        "description": "Transcripción continua, en pruebas — va escribiendo mientras hablas. En español se equivoca bastante más que los demás: elígelo solo si quieres probar esa forma de dictar."
       },
       "handy-computer_cohere-transcribe-03-2026-gguf": {
         "description": "Máxima precisión — el más exacto del catálogo. Pide un equipo con músculo."
@@ -184,6 +184,7 @@
     "cancelDownload": "Cancelar descarga",
     "legacy": "Heredado",
     "downloadFailed": "La descarga falló",
+    "downloadFailedHelp": "No se pudo descargar el modelo. Comprueba tu conexión y vuelve a intentarlo.",
     "checkFailed": "No se pudo comprobar el estado del modelo",
     "loadFailed": "No se pudo cargar el modelo",
     "switchFailed": "No se pudo cambiar de modelo",
@@ -401,7 +402,7 @@
         "description": "Traducir automáticamente el habla de otros idiomas al inglés durante la transcripción."
       },
       "modelUnload": {
-        "title": "Descargar Modelo",
+        "title": "Liberar de la memoria",
         "description": "Liberar automáticamente la memoria GPU/CPU cuando el modelo no se ha usado durante el tiempo especificado",
         "options": {
           "never": "Nunca",
@@ -707,7 +708,8 @@
     "pause": "Pausar",
     "seek": "Posición de reproducción",
     "moreInfo": "Más información",
-    "selectOption": "Selecciona una opción…"
+    "selectOption": "Selecciona una opción…",
+    "systemDefault": "Predeterminado"
   },
   "accessibility": {
     "permissionsDescription": "Abrax necesita permisos de accesibilidad para escribir texto transcrito.",
@@ -828,7 +830,7 @@
   },
   "shell": {
     "title": "Forma de la ventana",
-    "description": "Elige la forma de la ventana de Abrax. Clásico es la ventana de ajustes estándar; Quiet es un panel minimalista oscuro con la esfera en el inicio. El marco de la ventana termina de actualizarse al reiniciar Abrax.",
+    "description": "Elige la forma de la ventana de Abrax. Clásico es la ventana de ajustes estándar; Quiet es un panel minimalista oscuro, con los atajos y los controles de dictado en el inicio. El marco de la ventana termina de actualizarse al reiniciar Abrax.",
     "options": {
       "classic": "Clásico",
       "retro": "Retro",
@@ -1072,7 +1074,7 @@
     "preview": "Escuchar el tema (inicio y fin)"
   },
   "vox": {
-    "atajoHint": "Para VOX, pulsa <k>{{atajo}}</k> y lee en voz alta el texto que tengas seleccionado en cualquier app.",
-    "atajoSinBinding": "Para VOX, configura un atajo en Ajustes y leerá en voz alta el texto que tengas seleccionado."
+    "atajoHint": "Para VOX, pulsa <k>{{atajo}}</k> y Abrax leerá en voz alta el texto que tengas seleccionado en cualquier app.",
+    "atajoSinBinding": "Para VOX, configura un atajo en Ajustes y Abrax leerá en voz alta el texto que tengas seleccionado."
   }
 }

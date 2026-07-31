@@ -184,6 +184,7 @@
     "cancelDownload": "Zrušit stahování",
     "legacy": "Zastaralé",
     "downloadFailed": "Stažení selhalo",
+    "downloadFailedHelp": "Model se nepodařilo stáhnout. Zkontroluj připojení a zkus to znovu.",
     "checkFailed": "Stav modelu se nepodařilo ověřit",
     "loadFailed": "Model se nepodařilo načíst",
     "switchFailed": "Model se nepodařilo přepnout",
@@ -707,7 +708,8 @@
     "pause": "Pozastavit",
     "seek": "Pozice přehrávání",
     "moreInfo": "Více informací",
-    "selectOption": "Vyberte možnost…"
+    "selectOption": "Vyberte možnost…",
+    "systemDefault": "Výchozí"
   },
   "accessibility": {
     "permissionsDescription": "Abrax potřebuje oprávnění usnadnění přístupu, aby mohlo psát přepsaný text.",

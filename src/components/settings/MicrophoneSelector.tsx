@@ -36,9 +36,13 @@ export const MicrophoneSelector: React.FC<MicrophoneSelectorProps> = React.memo(
       await resetSetting("selected_microphone");
     };
 
+    // "Default" es el nombre del dispositivo sintetico que crea el backend, y
+    // ademas el valor que compara para saber que no hay uno elegido: se traduce
+    // lo que se LEE, nunca lo que se guarda.
     const microphoneOptions = audioDevices.map((device) => ({
       value: device.name,
-      label: device.name,
+      label:
+        device.name === "Default" ? t("common.systemDefault") : device.name,
     }));
 
     return (

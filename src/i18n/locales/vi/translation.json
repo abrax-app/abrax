@@ -184,6 +184,7 @@
     "cancelDownload": "Hủy tải xuống",
     "legacy": "Cũ",
     "downloadFailed": "Tải xuống thất bại",
+    "downloadFailedHelp": "Không tải được mô hình. Hãy kiểm tra kết nối và thử lại.",
     "checkFailed": "Không thể kiểm tra trạng thái mô hình",
     "loadFailed": "Không thể tải mô hình",
     "switchFailed": "Không thể đổi mô hình",
@@ -707,7 +708,8 @@
     "pause": "Tạm dừng",
     "seek": "Vị trí phát",
     "moreInfo": "Thông tin thêm",
-    "selectOption": "Chọn một tùy chọn…"
+    "selectOption": "Chọn một tùy chọn…",
+    "systemDefault": "Mặc định"
   },
   "accessibility": {
     "permissionsDescription": "Abrax cần quyền truy cập để gõ văn bản đã chuyển đổi.",

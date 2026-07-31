@@ -184,6 +184,7 @@
     "cancelDownload": "Anuluj pobieranie",
     "legacy": "Przestarzałe",
     "downloadFailed": "Pobieranie nie powiodło się",
+    "downloadFailedHelp": "Nie udało się pobrać modelu. Sprawdź połączenie i spróbuj ponownie.",
     "checkFailed": "Nie udało się sprawdzić stanu modelu",
     "loadFailed": "Nie udało się wczytać modelu",
     "switchFailed": "Nie udało się zmienić modelu",
@@ -707,7 +708,8 @@
     "pause": "Wstrzymaj",
     "seek": "Pozycja odtwarzania",
     "moreInfo": "Więcej informacji",
-    "selectOption": "Wybierz opcję…"
+    "selectOption": "Wybierz opcję…",
+    "systemDefault": "Domyślny"
   },
   "accessibility": {
     "permissionsDescription": "Abrax potrzebuje uprawnień dostępności, aby wpisywać transkrybowany tekst.",

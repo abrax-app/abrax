@@ -184,6 +184,7 @@
     },
     "legacy": "قديم",
     "downloadFailed": "فشل التنزيل",
+    "downloadFailedHelp": "تعذّر تنزيل النموذج. تحقّق من اتصالك وحاول مرة أخرى.",
     "checkFailed": "تعذّر التحقق من حالة النموذج",
     "loadFailed": "تعذّر تحميل النموذج",
     "switchFailed": "تعذّر تبديل النموذج",
@@ -707,7 +708,8 @@
     "pause": "إيقاف مؤقت",
     "seek": "موضع التشغيل",
     "moreInfo": "مزيد من المعلومات",
-    "selectOption": "اختر خيارًا…"
+    "selectOption": "اختر خيارًا…",
+    "systemDefault": "الافتراضي"
   },
   "accessibility": {
     "permissionsDescription": ".يحتاج Abrax إلى أذونات إمكانية الوصول لكتابة النص المفرغ",

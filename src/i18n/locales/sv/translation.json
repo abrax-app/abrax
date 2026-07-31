@@ -184,6 +184,7 @@
     },
     "legacy": "Äldre",
     "downloadFailed": "Nedladdningen misslyckades",
+    "downloadFailedHelp": "Det gick inte att ladda ner modellen. Kontrollera din anslutning och försök igen.",
     "checkFailed": "Kunde inte kontrollera modellens status",
     "loadFailed": "Kunde inte läsa in modellen",
     "switchFailed": "Kunde inte byta modell",
@@ -707,7 +708,8 @@
     "pause": "Pausa",
     "seek": "Uppspelningsposition",
     "moreInfo": "Mer information",
-    "selectOption": "Välj ett alternativ…"
+    "selectOption": "Välj ett alternativ…",
+    "systemDefault": "Standard"
   },
   "accessibility": {
     "permissionsDescription": "Abrax behöver behörighet för hjälpmedel för att kunna skriva transkriberad text.",

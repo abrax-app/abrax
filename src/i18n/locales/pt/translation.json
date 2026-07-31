@@ -184,6 +184,7 @@
     "cancelDownload": "Cancelar download",
     "legacy": "Legado",
     "downloadFailed": "Falha no download",
+    "downloadFailedHelp": "Não foi possível baixar o modelo. Verifique sua conexão e tente novamente.",
     "checkFailed": "Não foi possível verificar o estado do modelo",
     "loadFailed": "Não foi possível carregar o modelo",
     "switchFailed": "Não foi possível trocar de modelo",
@@ -707,7 +708,8 @@
     "pause": "Pausar",
     "seek": "Posição de reprodução",
     "moreInfo": "Mais informações",
-    "selectOption": "Selecione uma opção…"
+    "selectOption": "Selecione uma opção…",
+    "systemDefault": "Padrão"
   },
   "accessibility": {
     "permissionsDescription": "O Abrax precisa de permissões de acessibilidade para digitar o texto transcrito.",

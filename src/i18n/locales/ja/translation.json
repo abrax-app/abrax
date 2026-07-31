@@ -184,6 +184,7 @@
     "cancelDownload": "ダウンロードをキャンセル",
     "legacy": "旧式",
     "downloadFailed": "ダウンロードに失敗しました",
+    "downloadFailedHelp": "モデルをダウンロードできませんでした。接続を確認して、もう一度お試しください。",
     "checkFailed": "モデルの状態を確認できませんでした",
     "loadFailed": "モデルを読み込めませんでした",
     "switchFailed": "モデルを切り替えられませんでした",
@@ -707,7 +708,8 @@
     "pause": "一時停止",
     "seek": "再生位置",
     "moreInfo": "詳細情報",
-    "selectOption": "オプションを選択…"
+    "selectOption": "オプションを選択…",
+    "systemDefault": "既定"
   },
   "accessibility": {
     "permissionsDescription": "Abrax が文字起こしテキストを入力するには、アクセシビリティ権限が必要です。",

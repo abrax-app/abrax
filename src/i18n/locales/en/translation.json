@@ -105,13 +105,13 @@
         "description": "Fast — dictate on the fly on any machine, even an old laptop. The one we recommend to start with: downloads in under a minute."
       },
       "handy-computer_whisper-large-v3-turbo-gguf": {
-        "description": "Balanced — the everyday pick: understands 100 languages and doesn't keep you waiting."
+        "description": "Balanced — the everyday pick: understands 100 languages. A few seconds slower than Canary."
       },
       "handy-computer_whisper-large-v3-gguf": {
         "description": "Widest coverage — the big Whisper, the one everyone names. Slower, but complete."
       },
       "handy-computer_nemotron-3_5-asr-streaming-0_6b-gguf": {
-        "description": "Live — writes as you speak, word by word. This is the one that makes the sphere dance."
+        "description": "Continuous transcription, experimental — it writes as you speak. Noticeably less accurate than the others in our tests: pick it only if you want to try dictating that way."
       },
       "handy-computer_cohere-transcribe-03-2026-gguf": {
         "description": "Highest accuracy — the most exact in the catalog. Wants a machine with some muscle."
@@ -184,6 +184,7 @@
       "streaming": "Shows live transcription as you speak"
     },
     "downloadFailed": "Download failed",
+    "downloadFailedHelp": "Couldn't download the model. Check your connection and try again.",
     "checkFailed": "Couldn't check the model status",
     "loadFailed": "Couldn't load the model",
     "switchFailed": "Couldn't switch models",
@@ -710,7 +711,8 @@
     "pause": "Pause",
     "seek": "Playback position",
     "moreInfo": "More information",
-    "selectOption": "Select an option…"
+    "selectOption": "Select an option…",
+    "systemDefault": "Default"
   },
   "accessibility": {
     "permissionsDescription": "Abrax needs accessibility permissions to type transcribed text.",
@@ -828,7 +830,7 @@
   },
   "shell": {
     "title": "Window shell",
-    "description": "Choose the shape of the Abrax window. Classic is the standard settings window; Quiet is a minimalist dark panel with the sphere on its home screen. The window frame finishes updating when you restart Abrax.",
+    "description": "Choose the shape of the Abrax window. Classic is the standard settings window; Quiet is a minimalist dark panel with the shortcuts and dictation controls on its home screen. The window frame finishes updating when you restart Abrax.",
     "options": {
       "classic": "Classic",
       "retro": "Retro",

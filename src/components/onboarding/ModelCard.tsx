@@ -356,11 +356,15 @@ const ModelCard: React.FC<ModelCardProps> = ({
             <p className="text-xs font-medium text-text">
               {t("modelSelector.downloadFailed")}
             </p>
+            {/* El detalle tecnico llega del backend en ingles y en jerga de
+                protocolo («Header content-range is missing»): no se le enseña a
+                quien acaba de instalar. Se queda en el `title`, que es donde lo
+                busca quien sabe leerlo. */}
             <p
               className="text-xs text-text/60 break-words"
               title={errorMessage}
             >
-              {errorMessage}
+              {t("modelSelector.downloadFailedHelp")}
             </p>
           </div>
           {onDownload && (

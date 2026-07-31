@@ -184,6 +184,7 @@
     "cancelDownload": "取消下载",
     "legacy": "旧版",
     "downloadFailed": "下载失败",
+    "downloadFailedHelp": "无法下载模型。请检查网络连接后重试。",
     "checkFailed": "无法检查模型状态",
     "loadFailed": "无法加载模型",
     "switchFailed": "无法切换模型",
@@ -707,7 +708,8 @@
     "pause": "暂停",
     "seek": "播放位置",
     "moreInfo": "更多信息",
-    "selectOption": "选择一个选项…"
+    "selectOption": "选择一个选项…",
+    "systemDefault": "默认"
   },
   "accessibility": {
     "permissionsDescription": "Abrax 需要辅助功能权限才能输入转录的文字。",

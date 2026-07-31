@@ -184,6 +184,7 @@
     },
     "legacy": "레거시",
     "downloadFailed": "다운로드 실패",
+    "downloadFailedHelp": "모델을 내려받지 못했습니다. 연결을 확인한 뒤 다시 시도해 주세요.",
     "checkFailed": "모델 상태를 확인하지 못했습니다",
     "loadFailed": "모델을 불러오지 못했습니다",
     "switchFailed": "모델을 전환하지 못했습니다",
@@ -707,7 +708,8 @@
     "pause": "일시정지",
     "seek": "재생 위치",
     "moreInfo": "자세한 정보",
-    "selectOption": "옵션을 선택하세요…"
+    "selectOption": "옵션을 선택하세요…",
+    "systemDefault": "기본값"
   },
   "accessibility": {
     "permissionsDescription": "Abrax는 녹음된 텍스트를 입력하기 위해 접근성 권한이 필요합니다.",

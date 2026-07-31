@@ -184,6 +184,7 @@
     "cancelDownload": "İndirmeyi iptal et",
     "legacy": "Eski",
     "downloadFailed": "İndirme başarısız",
+    "downloadFailedHelp": "Model indirilemedi. Bağlantını kontrol edip yeniden dene.",
     "checkFailed": "Model durumu kontrol edilemedi",
     "loadFailed": "Model yüklenemedi",
     "switchFailed": "Model değiştirilemedi",
@@ -707,7 +708,8 @@
     "pause": "Duraklat",
     "seek": "Oynatma konumu",
     "moreInfo": "Daha fazla bilgi",
-    "selectOption": "Bir seçenek seçin…"
+    "selectOption": "Bir seçenek seçin…",
+    "systemDefault": "Varsayılan"
   },
   "accessibility": {
     "permissionsDescription": "Abrax, transkribe edilen metni yazabilmek için erişilebilirlik izinlerine ihtiyaç duyar.",

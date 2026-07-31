@@ -184,6 +184,7 @@
       "streaming": "Toont live transcriptie tijdens het spreken"
     },
     "downloadFailed": "Download mislukt",
+    "downloadFailedHelp": "Het model kon niet worden gedownload. Controleer je verbinding en probeer het opnieuw.",
     "checkFailed": "Kon de modelstatus niet controleren",
     "loadFailed": "Kon het model niet laden",
     "switchFailed": "Kon niet van model wisselen",
@@ -710,7 +711,8 @@
     "pause": "Pauzeren",
     "seek": "Afspeelpositie",
     "moreInfo": "Meer informatie",
-    "selectOption": "Kies een optie…"
+    "selectOption": "Kies een optie…",
+    "systemDefault": "Standaard"
   },
   "accessibility": {
     "permissionsDescription": "Abrax heeft toegankelijkheidsmachtigingen nodig om getranscribeerde tekst te kunnen typen.",
