@@ -753,7 +753,9 @@
     "shortcutRegistrationTitle": "Le raccourci n’a pas pu être activé",
     "shortcutRegistration": "Abrax n’a pas pu enregistrer son raccourci clavier. Redémarre-le ; si ça persiste, définis-en un autre dans Réglages → Général.",
     "atajoOcupado": "Une autre application utilise déjà ce raccourci : {{atajos}}. Modifiez-le dans les Réglages pour qu'il fonctionne.",
-    "atajoOcupadoCambiar": "Modifier le raccourci"
+    "atajoOcupadoCambiar": "Modifier le raccourci",
+    "sistemaModeloCambiadoTitle": "Modèle changé pour l’audio du système",
+    "sistemaModeloCambiado": "Abrax est passé à {{modelo}}, qui comprend l’audio du système. Ce modèle n’affiche ni le texte pendant que vous parlez ni les mots par minute : tout apparaît au relâchement. Pour le direct, téléchargez Nemotron Streaming 3.5 (716 Mo) dans Modèles."
   },
   "appLanguage": {
     "title": "Langue de l'application",

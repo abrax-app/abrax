@@ -753,7 +753,9 @@
     "shortcutRegistrationTitle": "Không thể bật phím tắt",
     "shortcutRegistration": "Abrax không đăng ký được phím tắt. Hãy khởi động lại; nếu vẫn vậy, đặt phím tắt khác trong Cài đặt → Chung.",
     "atajoOcupado": "Một ứng dụng khác đang dùng phím tắt này: {{atajos}}. Hãy đổi trong Cài đặt để nó hoạt động.",
-    "atajoOcupadoCambiar": "Đổi phím tắt"
+    "atajoOcupadoCambiar": "Đổi phím tắt",
+    "sistemaModeloCambiadoTitle": "Đã đổi mô hình cho âm thanh hệ thống",
+    "sistemaModeloCambiado": "Abrax đã chuyển sang {{modelo}}, mô hình hiểu được âm thanh hệ thống. Mô hình đó không hiện chữ khi bạn đang nói, cũng không hiện số từ mỗi phút: mọi thứ xuất hiện khi bạn thả phím. Muốn chữ trực tiếp, hãy tải Nemotron Streaming 3.5 (716 MB) trong Mô hình."
   },
   "appLanguage": {
     "title": "Ngôn ngữ ứng dụng",

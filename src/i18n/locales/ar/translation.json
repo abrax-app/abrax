@@ -753,7 +753,9 @@
     "shortcutRegistrationTitle": "تعذّر تفعيل الاختصار",
     "shortcutRegistration": "لم يتمكن Abrax من تسجيل اختصار لوحة المفاتيح. أعد تشغيله؛ وإذا استمر، عيّن اختصارًا آخر من الإعدادات ← عام.",
     "atajoOcupado": "تطبيق آخر يستخدم هذا الاختصار بالفعل: {{atajos}}. غيّره من الإعدادات ليعمل.",
-    "atajoOcupadoCambiar": "تغيير الاختصار"
+    "atajoOcupadoCambiar": "تغيير الاختصار",
+    "sistemaModeloCambiadoTitle": "تم تغيير النموذج لصوت النظام",
+    "sistemaModeloCambiado": "انتقل Abrax إلى {{modelo}}، وهو يفهم صوت النظام. هذا النموذج لا يعرض النص أثناء التحدث ولا الكلمات في الدقيقة: يظهر كل شيء عند الإفلات. للنص المباشر، نزّل Nemotron Streaming 3.5 ‏(716 ميغابايت) من «النماذج»."
   },
   "appLanguage": {
     "title": "لغة التطبيق",

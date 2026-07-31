@@ -26,6 +26,8 @@ export const alertTitleKey = (kind: AlertKind): string => {
       return "errors.transcriptionEmptyTitle";
     case "sistema_sin_modelo_apto":
       return "errors.sistemaSinModeloAptoTitle";
+    case "sistema_modelo_cambiado_sin_vivo":
+      return "errors.sistemaModeloCambiadoTitle";
     case "shortcut_registration":
       return "errors.shortcutRegistrationTitle";
     // Mismo título: «No se pudo activar el atajo» describe exacto este caso

@@ -753,7 +753,9 @@
     "shortcutRegistrationTitle": "לא ניתן היה להפעיל את קיצור הדרך",
     "shortcutRegistration": "Abrax לא הצליח לרשום את קיצור המקלדת. הפעל אותו מחדש; אם זה נמשך, הגדר קיצור אחר בהגדרות ← כללי.",
     "atajoOcupado": "יישום אחר כבר משתמש בקיצור הזה: {{atajos}}. שנה אותו בהגדרות כדי שיעבוד.",
-    "atajoOcupadoCambiar": "שינוי הקיצור"
+    "atajoOcupadoCambiar": "שינוי הקיצור",
+    "sistemaModeloCambiadoTitle": "המודל הוחלף עבור שמע המערכת",
+    "sistemaModeloCambiado": "‏Abrax עבר אל {{modelo}}, שמבין את שמע המערכת. המודל הזה לא מציג טקסט תוך כדי דיבור ולא מילים לדקה — הכול מופיע בשחרור. לטקסט חי, הורידו את Nemotron Streaming 3.5 ‏(716 MB) במסך המודלים."
   },
   "appLanguage": {
     "title": "שפת האפליקציה",

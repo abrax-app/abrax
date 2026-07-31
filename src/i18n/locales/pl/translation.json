@@ -753,7 +753,9 @@
     "shortcutRegistrationTitle": "Nie udało się włączyć skrótu",
     "shortcutRegistration": "Abrax nie zarejestrował skrótu klawiszowego. Uruchom ponownie; jeśli to nie pomoże, ustaw inny w Ustawienia → Ogólne.",
     "atajoOcupado": "Inna aplikacja już używa tego skrótu: {{atajos}}. Zmień go w Ustawieniach, aby działał.",
-    "atajoOcupadoCambiar": "Zmień skrót"
+    "atajoOcupadoCambiar": "Zmień skrót",
+    "sistemaModeloCambiadoTitle": "Zmieniono model na potrzeby dźwięku systemowego",
+    "sistemaModeloCambiado": "Abrax przełączył się na {{modelo}}, który rozumie dźwięk systemowy. Ten model nie pokazuje tekstu podczas mówienia ani słów na minutę – wszystko pojawia się po zwolnieniu. Aby mieć tekst na żywo, pobierz Nemotron Streaming 3.5 (716 MB) w Modelach."
   },
   "appLanguage": {
     "title": "Język aplikacji",

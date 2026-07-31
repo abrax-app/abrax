@@ -170,6 +170,16 @@ function App() {
         });
       } else if (kind === "transcription_empty") {
         toast.error(title, { description: t("errors.transcriptionEmpty") });
+      } else if (kind === "sistema_modelo_cambiado_sin_vivo") {
+        // NO es un error: la app hizo lo correcto. Va como aviso informativo,
+        // nombrando el modelo que puso y lo que se pierde con el —de los cinco
+        // del catalogo solo Nemotron transmite en vivo—. Sin esto el usuario ve
+        // el texto en vivo y las palabras por minuto desaparecer sin motivo.
+        toast.info(title, {
+          description: t("errors.sistemaModeloCambiado", {
+            modelo: detail ?? "",
+          }),
+        });
       } else if (kind === "sistema_sin_modelo_apto") {
         // El modo quedó activo (lo pidió el usuario) pero el modelo puesto no
         // alcanza y no hay otro descargado. Se nombra el que hace falta y su

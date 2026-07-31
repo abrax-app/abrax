@@ -273,6 +273,7 @@ pub fn change_capture_system_audio_setting(app: AppHandle, enabled: bool) -> Res
     let mm = app.state::<std::sync::Arc<crate::managers::model::ModelManager>>();
     let mut recargar_modelo = false;
     let mut sin_modelo_apto = false;
+    let mut cambiado_sin_vivo: Option<String> = None;
 
     if enabled {
         // Solo actuamos si el modelo activo se queda corto. Si el usuario ya
@@ -288,6 +289,11 @@ pub fn change_capture_system_audio_setting(app: AppHandle, enabled: bool) -> Res
                         apto
                     );
                     settings.modelo_antes_de_sistema = Some(settings.selected_model.clone());
+                    // ¿El que elegimos transmite en vivo? Si no, el usuario
+                    // pierde el texto mientras habla y las palabras por minuto,
+                    // y tiene que enterarse por nosotros y no por el silencio.
+                    cambiado_sin_vivo =
+                        Some(apto.clone()).filter(|id| !mm.modelo_transmite_en_vivo(id));
                     settings.selected_model = apto;
                     recargar_modelo = true;
                 }
@@ -331,6 +337,16 @@ pub fn change_capture_system_audio_setting(app: AppHandle, enabled: bool) -> Res
 
     // El aviso va DESPUÉS de persistir: el modo queda activo (el usuario lo
     // pidió) y se le dice qué le falta para que funcione, con el peso real.
+    if let Some(id) = cambiado_sin_vivo {
+        let nombre = mm.nombre_visible(&id);
+        log::info!("audio del sistema: se cambio a {id}, que no transmite en vivo; se avisa");
+        crate::user_alerts::alert(
+            &app,
+            crate::user_alerts::AlertKind::SistemaModeloCambiadoSinVivo,
+            Some(nombre),
+        );
+    }
+
     if sin_modelo_apto {
         log::info!("audio del sistema: no hay modelo apto descargado, se avisa");
         crate::user_alerts::alert(

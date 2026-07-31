@@ -756,7 +756,9 @@
     "shortcutRegistrationTitle": "सर्टकट सक्रिय गर्न सकिएन",
     "shortcutRegistration": "Abrax ले किबोर्ड सर्टकट दर्ता गर्न सकेन। पुनः सुरु गर्नुहोस्; जारी रहे सेटिङ → सामान्य मा अर्को सर्टकट राख्नुहोस्।",
     "atajoOcupado": "अर्को एपले यो सर्टकट पहिले नै प्रयोग गर्दैछ: {{atajos}}। काम गर्न सेटिङमा परिवर्तन गर्नुहोस्।",
-    "atajoOcupadoCambiar": "सर्टकट बदल्नुहोस्"
+    "atajoOcupadoCambiar": "सर्टकट बदल्नुहोस्",
+    "sistemaModeloCambiadoTitle": "प्रणाली अडियोका लागि मोडेल फेरियो",
+    "sistemaModeloCambiado": "Abrax {{modelo}} मा गयो, जसले प्रणालीको अडियो बुझ्छ। त्यो मोडेलले बोल्दै गर्दा पाठ वा प्रति मिनेट शब्द देखाउँदैन: छोड्दा सबै देखिन्छ। प्रत्यक्ष पाठ चाहिए Models मा Nemotron Streaming 3.5 (716 MB) डाउनलोड गर्नुहोस्।"
   },
   "appLanguage": {
     "title": "एपको भाषा",

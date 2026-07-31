@@ -753,7 +753,9 @@
     "shortcutRegistrationTitle": "Kortkommandot kunde inte aktiveras",
     "shortcutRegistration": "Abrax kunde inte registrera sitt kortkommando. Starta om; kvarstår det, välj ett annat i Inställningar → Allmänt.",
     "atajoOcupado": "En annan app använder redan detta kortkommando: {{atajos}}. Ändra det i Inställningar så att det fungerar.",
-    "atajoOcupadoCambiar": "Ändra kortkommando"
+    "atajoOcupadoCambiar": "Ändra kortkommando",
+    "sistemaModeloCambiadoTitle": "Modellen byttes för systemljud",
+    "sistemaModeloCambiado": "Abrax bytte till {{modelo}}, som förstår systemljud. Den modellen visar varken text medan du talar eller ord per minut – allt dyker upp när du släpper. Vill du ha live-text, hämta Nemotron Streaming 3.5 (716 MB) under Modeller."
   },
   "appLanguage": {
     "title": "Applikationsspråk",

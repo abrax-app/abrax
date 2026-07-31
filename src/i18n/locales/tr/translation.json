@@ -753,7 +753,9 @@
     "shortcutRegistrationTitle": "Kısayol etkinleştirilemedi",
     "shortcutRegistration": "Abrax klavye kısayolunu kaydedemedi. Yeniden başlat; sürerse Ayarlar → Genel’den başka bir kısayol belirle.",
     "atajoOcupado": "Başka bir uygulama bu kısayolu kullanıyor: {{atajos}}. Çalışması için Ayarlar'dan değiştirin.",
-    "atajoOcupadoCambiar": "Kısayolu değiştir"
+    "atajoOcupadoCambiar": "Kısayolu değiştir",
+    "sistemaModeloCambiadoTitle": "Sistem sesi için model değiştirildi",
+    "sistemaModeloCambiado": "Abrax, sistem sesini anlayan {{modelo}} modeline geçti. Bu model konuşurken metni ve dakikadaki kelimeyi göstermez; her şey bıraktığında görünür. Canlı metin istiyorsan Modeller’den Nemotron Streaming 3.5 (716 MB) indir."
   },
   "appLanguage": {
     "title": "Uygulama Dili",

@@ -46,6 +46,19 @@ pub enum AlertKind {
     /// lo que pasó el 29/07: audio capturado a −14 dBFS, transcripción vacía, y
     /// el usuario convencido de que la captura no funcionaba.
     SistemaSinModeloApto,
+    /// «Audio del sistema» se activó, el modelo puesto se quedaba corto, y Abrax
+    /// cambió SOLO a otro que sí sirve — pero ese otro NO transmite en vivo.
+    ///
+    /// El cambio en sí es correcto y deliberado. Lo que no puede quedar en
+    /// silencio es lo que se pierde con el cambio: sin transmisión en vivo no
+    /// hay texto mientras hablas ni palabras por minuto, y de los cinco modelos
+    /// del catálogo **solo Nemotron transmite**. Encontrado el 30/07 en pruebas
+    /// reales: la app cambió a Cohere sin decir nada y el tacómetro se quedó en
+    /// cero, sin que nada en pantalla explicara por qué.
+    ///
+    /// No es un error: es informativo. Por eso NO manda notificación del
+    /// sistema (ver [`alert`]), que solo sabe hablar en tono de fallo.
+    SistemaModeloCambiadoSinVivo,
     /// No se pudo registrar ningún atajo global. Sin esto la app queda abierta y
     /// aparentemente sana, pero el atajo no existe y nada lo dice.
     ShortcutRegistration,
@@ -110,6 +123,13 @@ pub fn alert(app: &AppHandle, kind: AlertKind, detail: Option<String>) {
     // Con la ventana oculta (tray, --start-hidden) el toast del frontend es
     // invisible: la notificación del sistema es la única superficie que el
     // usuario puede ver en ese momento.
+    // Los avisos INFORMATIVOS no salen por la notificación del sistema: esa
+    // superficie se titula «Error» para todos por igual, y anunciar como fallo
+    // algo que la app hizo bien sería mentir sobre su propio comportamiento.
+    if matches!(kind, AlertKind::SistemaModeloCambiadoSinVivo) {
+        return;
+    }
+
     if !main_window_visible(app) {
         let lang = crate::settings::get_settings(app).app_language;
         let strings = crate::tray_i18n::get_tray_translations(Some(lang));
@@ -132,6 +152,12 @@ pub fn alert(app: &AppHandle, kind: AlertKind, detail: Option<String>) {
             // una superficie de una línea; el mensaje fino, con el peso de la
             // descarga, vive en el toast del frontend.
             AlertKind::SistemaSinModeloApto => strings.error_model_load,
+            // No llega nunca: los informativos ya salieron arriba. Se lista
+            // igual —y divergiendo, no mapeando a una cadena de error— para que
+            // el `match` siga siendo exhaustivo: asi un AlertKind nuevo obliga a
+            // decidir que dice por la notificacion del sistema, en vez de caer
+            // en un comodin y anunciarse como un fallo cualquiera.
+            AlertKind::SistemaModeloCambiadoSinVivo => return,
             // Sin atajo no se puede dictar: cae del lado de «no se pudo grabar».
             AlertKind::ShortcutRegistration => strings.error_recording,
             // Mismo cajón: el usuario esperaba que una tecla hiciera algo y no lo

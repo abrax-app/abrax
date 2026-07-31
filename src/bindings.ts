@@ -1281,6 +1281,21 @@ export type AlertKind = "recording_permission_denied" | "recording_no_device" |
  */
 "sistema_sin_modelo_apto" | 
 /**
+ * «Audio del sistema» se activó, el modelo puesto se quedaba corto, y Abrax
+ * cambió SOLO a otro que sí sirve — pero ese otro NO transmite en vivo.
+ * 
+ * El cambio en sí es correcto y deliberado. Lo que no puede quedar en
+ * silencio es lo que se pierde con el cambio: sin transmisión en vivo no
+ * hay texto mientras hablas ni palabras por minuto, y de los cinco modelos
+ * del catálogo **solo Nemotron transmite**. Encontrado el 30/07 en pruebas
+ * reales: la app cambió a Cohere sin decir nada y el tacómetro se quedó en
+ * cero, sin que nada en pantalla explicara por qué.
+ * 
+ * No es un error: es informativo. Por eso NO manda notificación del
+ * sistema (ver [`alert`]), que solo sabe hablar en tono de fallo.
+ */
+"sistema_modelo_cambiado_sin_vivo" | 
+/**
  * No se pudo registrar ningún atajo global. Sin esto la app queda abierta y
  * aparentemente sana, pero el atajo no existe y nada lo dice.
  */

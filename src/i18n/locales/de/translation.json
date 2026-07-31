@@ -753,7 +753,9 @@
     "shortcutRegistrationTitle": "Das Tastenkürzel konnte nicht aktiviert werden",
     "shortcutRegistration": "Abrax konnte sein Tastenkürzel nicht registrieren. Starte es neu; wenn es bleibt, lege in Einstellungen → Allgemein ein anderes fest.",
     "atajoOcupado": "Eine andere App verwendet dieses Tastenkürzel bereits: {{atajos}}. Ändere es in den Einstellungen, damit es funktioniert.",
-    "atajoOcupadoCambiar": "Kürzel ändern"
+    "atajoOcupadoCambiar": "Kürzel ändern",
+    "sistemaModeloCambiadoTitle": "Modell für Systemaudio gewechselt",
+    "sistemaModeloCambiado": "Abrax hat zu {{modelo}} gewechselt, das Systemaudio versteht. Dieses Modell zeigt weder Text beim Sprechen noch Wörter pro Minute – alles erscheint beim Loslassen. Für Live-Text lade Nemotron Streaming 3.5 (716 MB) unter Modelle."
   },
   "appLanguage": {
     "title": "Anwendungssprache",

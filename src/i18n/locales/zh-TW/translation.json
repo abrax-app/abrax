@@ -753,7 +753,9 @@
     "shortcutRegistrationTitle": "無法啟用快速鍵",
     "shortcutRegistration": "Abrax 無法註冊鍵盤快速鍵。請重新啟動；若仍如此，請在設定 → 一般中改用其他快速鍵。",
     "atajoOcupado": "另一個應用程式已在使用該快速鍵：{{atajos}}。請在設定中變更以使其生效。",
-    "atajoOcupadoCambiar": "變更快速鍵"
+    "atajoOcupadoCambiar": "變更快速鍵",
+    "sistemaModeloCambiadoTitle": "已為系統音訊切換模型",
+    "sistemaModeloCambiado": "Abrax 已切換到能辨識系統音訊的 {{modelo}}。該模型不會在說話時顯示文字，也不顯示每分鐘字數，全部內容會在放開後出現。想要即時顯示，請在「模型」中下載 Nemotron Streaming 3.5（716 MB）。"
   },
   "appLanguage": {
     "title": "應用程式語言",

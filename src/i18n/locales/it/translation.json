@@ -753,7 +753,9 @@
     "shortcutRegistrationTitle": "Non è stato possibile attivare la scorciatoia",
     "shortcutRegistration": "Abrax non è riuscito a registrare la sua scorciatoia. Riavvialo; se persiste, impostane un’altra in Impostazioni → Generali.",
     "atajoOcupado": "Un'altra app sta già usando questa scorciatoia: {{atajos}}. Cambiala nelle Impostazioni perché funzioni.",
-    "atajoOcupadoCambiar": "Cambia scorciatoia"
+    "atajoOcupadoCambiar": "Cambia scorciatoia",
+    "sistemaModeloCambiadoTitle": "Modello cambiato per l’audio di sistema",
+    "sistemaModeloCambiado": "Abrax è passato a {{modelo}}, che capisce l’audio di sistema. Quel modello non mostra il testo mentre parli né le parole al minuto: compare tutto al rilascio. Per il testo dal vivo scarica Nemotron Streaming 3.5 (716 MB) in Modelli."
   },
   "appLanguage": {
     "title": "Lingua Applicazione",

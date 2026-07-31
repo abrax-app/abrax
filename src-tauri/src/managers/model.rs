@@ -1171,6 +1171,35 @@ impl ModelManager {
         CORTOS.iter().any(|c| model_id.contains(c))
     }
 
+    /// ¿Este modelo transmite el texto MIENTRAS se habla?
+    ///
+    /// De los cinco del catálogo **solo Nemotron lo hace**. Sin transmisión no
+    /// hay texto en vivo ni palabras por minuto: el dictado sigue funcionando,
+    /// pero el resultado aparece de golpe al soltar.
+    ///
+    /// Se pregunta al registro y no a una lista escrita a mano aquí: la
+    /// capacidad ya viaja en el catálogo (`supports_streaming`), y duplicarla
+    /// sería garantizar que un día digan cosas distintas.
+    pub fn modelo_transmite_en_vivo(&self, model_id: &str) -> bool {
+        self.available_models
+            .lock()
+            .unwrap()
+            .get(model_id)
+            .map(|m| m.supports_streaming)
+            .unwrap_or(false)
+    }
+
+    /// Nombre legible de un modelo, para poder NOMBRARLO en un aviso. Si no
+    /// estuviera en el registro cae al id, que es feo pero cierto.
+    pub fn nombre_visible(&self, model_id: &str) -> String {
+        self.available_models
+            .lock()
+            .unwrap()
+            .get(model_id)
+            .map(|m| m.name.clone())
+            .unwrap_or_else(|| model_id.to_string())
+    }
+
     /// Modelo apto para audio del sistema que YA esté descargado, si hay alguno.
     ///
     /// Orden deliberado, no alfabético:
