@@ -1090,7 +1090,8 @@
       },
       "sinModeloSistema": "نزّل أحد هذه النماذج لتتمكن من التقاط صوت النظام.",
       "elegirModelo": "اختر نموذجًا",
-      "usaraSistema": "ليس نشطًا بعد: سيضبطه Abrax عند تشغيل صوت النظام."
+      "usaraSistema": "ليس نشطًا بعد: سيضبطه Abrax عند تشغيل صوت النظام.",
+      "descargado": "مُنزَّل"
     }
   },
   "soundPicker": {

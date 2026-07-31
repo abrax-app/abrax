@@ -1090,7 +1090,8 @@
       },
       "sinModeloSistema": "Ladda ner en av dessa modeller för att spela in systemljud.",
       "elegirModelo": "Välj modell",
-      "usaraSistema": "Inte aktiv än: Abrax byter till den när du slår på systemljud."
+      "usaraSistema": "Inte aktiv än: Abrax byter till den när du slår på systemljud.",
+      "descargado": "nedladdad"
     }
   },
   "soundPicker": {

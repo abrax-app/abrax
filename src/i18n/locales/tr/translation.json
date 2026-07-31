@@ -1090,7 +1090,8 @@
       },
       "sinModeloSistema": "Sistem sesini yakalayabilmek için bu modellerden birini indirin.",
       "elegirModelo": "Model seç",
-      "usaraSistema": "Henüz etkin değil: sistem sesini açtığınızda Abrax buna geçecek."
+      "usaraSistema": "Henüz etkin değil: sistem sesini açtığınızda Abrax buna geçecek.",
+      "descargado": "indirildi"
     }
   },
   "soundPicker": {

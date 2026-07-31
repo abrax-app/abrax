@@ -1090,7 +1090,8 @@
       },
       "sinModeloSistema": "Stáhněte si jeden z těchto modelů, abyste mohli zachytávat zvuk systému.",
       "elegirModelo": "Vybrat model",
-      "usaraSistema": "Zatím není aktivní: Abrax jej nastaví, až zapnete zvuk systému."
+      "usaraSistema": "Zatím není aktivní: Abrax jej nastaví, až zapnete zvuk systému.",
+      "descargado": "stažený"
     }
   },
   "soundPicker": {

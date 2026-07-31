@@ -1,6 +1,8 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
+  Check,
+  Download,
   Eraser,
   Headphones,
   LayoutGrid,
@@ -240,7 +242,9 @@ const SelectorModelo: React.FC<{
   capacidad: "dictado" | "sistema";
   /** Fragmentos de id que sirven para audio del sistema, según el backend. */
   preferidosSistema?: string[];
-}> = ({ capacidad, preferidosSistema }) => {
+  /** La barra de interruptores del modo, que comparte fila con el modelo. */
+  barra?: React.ReactNode;
+}> = ({ capacidad, preferidosSistema, barra }) => {
   const { t } = useTranslation();
   const {
     models,
@@ -270,11 +274,23 @@ const SelectorModelo: React.FC<{
     [models, currentModel, capacidad, sirveParaSistema],
   );
 
+  // El estado va en un icono para que el nombre quepa en UNA línea: «Whisper
+  // Large v3 Turbo · descargar» se partía en dos renglones y una lista de
+  // cuatro ocupaba ocho. El icono es decorativo — lo que dice viaja en
+  // `estado`, que el desplegable pone en el nombre accesible y en el hint,
+  // porque un tilde verde no lo lee un lector de pantalla ni lo distingue
+  // quien no separe el verde del gris.
   const opciones = candidatos.map((m: ModelInfo) => ({
     value: m.id,
-    label: m.is_downloaded
-      ? m.name
-      : `${m.name} · ${t("quiet.panel.descargar")}`,
+    label: m.name,
+    icon: m.is_downloaded ? (
+      <Check className="w-3.5 h-3.5 shrink-0 text-green-500" />
+    ) : (
+      <Download className="w-3.5 h-3.5 shrink-0 text-text/50" />
+    ),
+    estado: t(
+      m.is_downloaded ? "quiet.panel.descargado" : "quiet.panel.descargar",
+    ),
   }));
 
   const descargando = candidatos.find((m) => m.id in downloadingModels);
@@ -328,25 +344,39 @@ const SelectorModelo: React.FC<{
 
   return (
     <div className="px-4 p-2 space-y-1">
-      <div className="flex items-center justify-between gap-3 min-h-12">
-        <h3 className="text-sm font-medium">{t("quiet.panel.modelo")}</h3>
-        <Dropdown
-          options={opciones}
-          // En «Sistema» la fila enseña EL MODELO DE ESTE MODO, que no siempre
-          // es el activo: si el activo no sirve, es el que Abrax pondrá al
-          // encender. Dejarla en blanco era lo que hacía que la pantalla
-          // dijera «no hay modelo» mientras el interruptor sí se dejaba pulsar.
-          selectedValue={usara?.id ?? currentModel ?? null}
-          onSelect={(v) => void elegir(v)}
-          // «Sin modelo» sería falso en la tarjeta de sistema: hay uno activo,
-          // lo que pasa es que no sirve AQUÍ. Se pide elegir, que es la acción.
-          placeholder={t(
-            capacidad === "sistema"
-              ? "quiet.panel.elegirModelo"
-              : "quiet.panel.sinModelo",
-          )}
-          disabled={ocupado || opciones.length === 0}
-        />
+      {/* La barra de interruptores del modo comparte fila con su modelo: son
+          dos filas de alto para dos controles que caben en una. Con
+          `flex-wrap`, en el ancho mínimo de la ventana bajan en vez de
+          apretarse. */}
+      <div className="flex items-center gap-3 flex-wrap min-h-12">
+        {barra}
+        {/* Sin el rótulo «Modelo» a la vista: con él, los tres interruptores de
+            «Escucha» más la etiqueta más el desplegable pasaban por ~15 px del
+            ancho de la tarjeta y la fila se partía en dos. El valor ya dice que
+            es un modelo, y el nombre —para un lector de pantalla y para el
+            hint— viaja en `ariaLabel`. */}
+        <div className="flex items-center gap-3 ms-auto min-w-0">
+          <Dropdown
+            ariaLabel={t("quiet.panel.modelo")}
+            options={opciones}
+            // En «Sistema» la fila enseña EL MODELO DE ESTE MODO, que no
+            // siempre es el activo: si el activo no sirve, es el que Abrax
+            // pondrá al encender. Dejarla en blanco era lo que hacía que la
+            // pantalla dijera «no hay modelo» mientras el interruptor sí se
+            // dejaba pulsar.
+            selectedValue={usara?.id ?? currentModel ?? null}
+            onSelect={(v) => void elegir(v)}
+            // «Sin modelo» sería falso en la tarjeta de sistema: hay uno
+            // activo, lo que pasa es que no sirve AQUÍ. Se pide elegir, que es
+            // la acción.
+            placeholder={t(
+              capacidad === "sistema"
+                ? "quiet.panel.elegirModelo"
+                : "quiet.panel.sinModelo",
+            )}
+            disabled={ocupado || opciones.length === 0}
+          />
+        </div>
       </div>
       {activoFuera && !descargando && (
         <p className="text-xs text-amber-500/90">
@@ -458,75 +488,49 @@ export const PanelAtajos: React.FC = () => {
           descriptionMode="tooltip"
           grouped
         />
-        <SelectorModelo capacidad="dictado" />
-        <div className="px-4 p-2">
-          <div className="q-pa-tools">
-            <BotonIcono
-              icon={Eraser}
-              etiqueta={t("bancada.btn.fillers")}
-              ayuda={t("quiet.panel.hint.fillers")}
-              activo={muletillasOn}
-              onClick={() =>
-                updateSetting("custom_filler_words", muletillasOn ? [] : null)
-              }
-            />
-            <BotonIcono
-              icon={SpellCheck}
-              etiqueta={t("settings.advanced.autocorreccion.title")}
-              ayuda={t("quiet.panel.hint.autocorreccion")}
-              activo={settings?.autocorreccion_activa ?? true}
-              onClick={() =>
-                updateSetting(
-                  "autocorreccion_activa",
-                  !(settings?.autocorreccion_activa ?? true),
-                )
-              }
-            />
-            <BotonIcono
-              icon={Smile}
-              etiqueta={t("settings.advanced.emojiDictado.title")}
-              ayuda={t("quiet.panel.hint.emoji")}
-              activo={settings?.emoji_dictado ?? true}
-              onClick={() =>
-                updateSetting(
-                  "emoji_dictado",
-                  !(settings?.emoji_dictado ?? true),
-                )
-              }
-            />
-          </div>
-        </div>
+        <SelectorModelo
+          capacidad="dictado"
+          barra={
+            <div className="q-pa-tools">
+              <BotonIcono
+                icon={Eraser}
+                etiqueta={t("bancada.btn.fillers")}
+                ayuda={t("quiet.panel.hint.fillers")}
+                activo={muletillasOn}
+                onClick={() =>
+                  updateSetting("custom_filler_words", muletillasOn ? [] : null)
+                }
+              />
+              <BotonIcono
+                icon={SpellCheck}
+                etiqueta={t("settings.advanced.autocorreccion.title")}
+                ayuda={t("quiet.panel.hint.autocorreccion")}
+                activo={settings?.autocorreccion_activa ?? true}
+                onClick={() =>
+                  updateSetting(
+                    "autocorreccion_activa",
+                    !(settings?.autocorreccion_activa ?? true),
+                  )
+                }
+              />
+              <BotonIcono
+                icon={Smile}
+                etiqueta={t("settings.advanced.emojiDictado.title")}
+                ayuda={t("quiet.panel.hint.emoji")}
+                activo={settings?.emoji_dictado ?? true}
+                onClick={() =>
+                  updateSetting(
+                    "emoji_dictado",
+                    !(settings?.emoji_dictado ?? true),
+                  )
+                }
+              />
+            </div>
+          }
+        />
       </Tarjeta>
 
       <Tarjeta icon={Radio} titulo={t("quiet.nav.streaming")}>
-        {/* Mismo interruptor que la pantalla «Streaming» de la barra lateral
-            (`capture_system_audio`), en formato botón: su descripción son tres
-            renglones y aquí vive en el hint. */}
-        <div className="px-4 p-2">
-          <div className="q-pa-tools">
-            <BotonIcono
-              icon={MonitorSpeaker}
-              etiqueta={t("settings.streaming.systemAudio.label")}
-              ayuda={t("quiet.panel.hint.systemAudio")}
-              activo={!!settings?.capture_system_audio}
-              // Sin modelo apto NO se deja pulsar. El backend ya lo rechazaba
-              // —y devolvía error para que el interruptor volviera solo—, pero
-              // dejar pulsar algo que va a rebotar es prometer y desdecirse:
-              // más vale que no se pueda y se diga por qué.
-              bloqueado={
-                aptitud && !aptitud.disponible
-                  ? t("quiet.panel.sinModeloSistema")
-                  : undefined
-              }
-              onClick={() =>
-                updateSetting(
-                  "capture_system_audio",
-                  !settings?.capture_system_audio,
-                )
-              }
-            />
-          </div>
-        </div>
         {/* «Palabras por minuto» y la barra de entrada vivieron aquí el 31/07 y
             se quitaron a pedido: dos filas de alto para dos lecturas que solo
             dicen algo mientras se dicta, en una pantalla cuyo encargo era
@@ -534,6 +538,33 @@ export const PanelAtajos: React.FC = () => {
         <SelectorModelo
           capacidad="sistema"
           preferidosSistema={aptitud?.preferidos}
+          barra={
+            // Mismo interruptor que la pantalla «Streaming» de la barra
+            // lateral (`capture_system_audio`), en formato botón.
+            <div className="q-pa-tools">
+              <BotonIcono
+                icon={MonitorSpeaker}
+                etiqueta={t("settings.streaming.systemAudio.label")}
+                ayuda={t("quiet.panel.hint.systemAudio")}
+                activo={!!settings?.capture_system_audio}
+                // Sin modelo apto NO se deja pulsar. El backend ya lo
+                // rechazaba —y devolvía error para que el interruptor volviera
+                // solo—, pero dejar pulsar algo que va a rebotar es prometer y
+                // desdecirse: más vale que no se pueda y se diga por qué.
+                bloqueado={
+                  aptitud && !aptitud.disponible
+                    ? t("quiet.panel.sinModeloSistema")
+                    : undefined
+                }
+                onClick={() =>
+                  updateSetting(
+                    "capture_system_audio",
+                    !settings?.capture_system_audio,
+                  )
+                }
+              />
+            </div>
+          }
         />
       </Tarjeta>
 

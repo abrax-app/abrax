@@ -1090,7 +1090,8 @@
       },
       "sinModeloSistema": "Descarga uno de estos modelos para poder capturar el audio del sistema.",
       "elegirModelo": "Elegir modelo",
-      "usaraSistema": "Todavía no está activo: Abrax lo pondrá al encender «Audio del sistema»."
+      "usaraSistema": "Todavía no está activo: Abrax lo pondrá al encender «Audio del sistema».",
+      "descargado": "descargado"
     }
   },
   "soundPicker": {

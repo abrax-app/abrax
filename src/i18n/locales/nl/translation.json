@@ -1090,7 +1090,8 @@
       },
       "sinModeloSistema": "Download een van deze modellen om systeemaudio op te nemen.",
       "elegirModelo": "Model kiezen",
-      "usaraSistema": "Nog niet actief: Abrax stelt het in zodra je systeemaudio aanzet."
+      "usaraSistema": "Nog niet actief: Abrax stelt het in zodra je systeemaudio aanzet.",
+      "descargado": "gedownload"
     }
   },
   "soundPicker": {

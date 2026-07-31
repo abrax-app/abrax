@@ -1090,7 +1090,8 @@
       },
       "sinModeloSistema": "Download one of these models to capture system audio.",
       "elegirModelo": "Choose a model",
-      "usaraSistema": "Not active yet: Abrax will switch to it when you turn on system audio."
+      "usaraSistema": "Not active yet: Abrax will switch to it when you turn on system audio.",
+      "descargado": "downloaded"
     }
   },
   "soundPicker": {

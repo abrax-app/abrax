@@ -1090,7 +1090,8 @@
       },
       "sinModeloSistema": "下载其中一个模型才能采集系统音频。",
       "elegirModelo": "选择模型",
-      "usaraSistema": "尚未启用：打开系统音频时 Abrax 会切换到它。"
+      "usaraSistema": "尚未启用：打开系统音频时 Abrax 会切换到它。",
+      "descargado": "已下载"
     }
   },
   "soundPicker": {

@@ -1090,7 +1090,8 @@
       },
       "sinModeloSistema": "Lade eines dieser Modelle herunter, um Systemaudio aufzunehmen.",
       "elegirModelo": "Modell wählen",
-      "usaraSistema": "Noch nicht aktiv: Abrax stellt es ein, sobald du Systemaudio einschaltest."
+      "usaraSistema": "Noch nicht aktiv: Abrax stellt es ein, sobald du Systemaudio einschaltest.",
+      "descargado": "heruntergeladen"
     }
   },
   "soundPicker": {
