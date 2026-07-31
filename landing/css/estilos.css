@@ -467,16 +467,6 @@ h2::before {
 .res {
   color: var(--cian);
 }
-.ejemplo--prompt {
-  font-size: 11px;
-  line-height: 1.8;
-}
-.ejemplo--prompt .clave {
-  color: var(--violeta);
-}
-.ejemplo--prompt .nota {
-  color: var(--suave-lectura);
-}
 .paletas {
   display: flex;
   align-items: center;
