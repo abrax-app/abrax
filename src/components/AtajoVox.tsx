@@ -1,6 +1,5 @@
 import React from "react";
 import { Trans, useTranslation } from "react-i18next";
-import { Volume2 } from "lucide-react";
 import { useSettings } from "@/hooks/useSettings";
 import { useOsType } from "@/hooks/useOsType";
 import { formatKeyCombination } from "@/lib/utils/keyboard";
@@ -32,7 +31,6 @@ export const AtajoVox: React.FC<{ className?: string }> = ({
 
   return (
     <p className={`vox-hint ${className}`}>
-      <Volume2 size={13} aria-hidden="true" />
       {atajo ? (
         <Trans
           i18nKey="vox.atajoHint"
