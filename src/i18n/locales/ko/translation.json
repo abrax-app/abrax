@@ -1090,7 +1090,7 @@
       },
       "sinModeloSistema": "시스템 오디오를 캡처하려면 이 모델 중 하나를 다운로드하세요.",
       "elegirModelo": "모델 선택",
-      "usaraSistema": "아직 활성 상태가 아닙니다. 시스템 오디오를 켜면 Abrax가 이 모델로 바꿉니다.",
+      "usaraSistema": "선택 안 함. 시스템 오디오를 켜면 Abrax가 「{{modelo}}」을(를) 사용합니다.",
       "descargado": "다운로드됨"
     }
   },

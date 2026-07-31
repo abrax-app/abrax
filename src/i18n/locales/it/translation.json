@@ -1090,7 +1090,7 @@
       },
       "sinModeloSistema": "Scarica uno di questi modelli per poter catturare l'audio di sistema.",
       "elegirModelo": "Scegli un modello",
-      "usaraSistema": "Non è ancora attivo: Abrax lo imposterà quando accendi l'audio di sistema.",
+      "usaraSistema": "Non scelto. Se accendi l'audio di sistema, Abrax userà «{{modelo}}».",
       "descargado": "scaricato"
     }
   },

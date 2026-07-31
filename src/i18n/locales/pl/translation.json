@@ -1090,7 +1090,7 @@
       },
       "sinModeloSistema": "Pobierz jeden z tych modeli, aby przechwytywać dźwięk systemowy.",
       "elegirModelo": "Wybierz model",
-      "usaraSistema": "Jeszcze nie jest aktywny: Abrax ustawi go po włączeniu dźwięku systemowego.",
+      "usaraSistema": "Nie wybrano. Jeśli włączysz dźwięk systemowy, Abrax użyje „{{modelo}}”.",
       "descargado": "pobrany"
     }
   },

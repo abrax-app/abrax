@@ -1090,7 +1090,7 @@
       },
       "sinModeloSistema": "Hãy tải một trong các mô hình này để thu được âm thanh hệ thống.",
       "elegirModelo": "Chọn mô hình",
-      "usaraSistema": "Chưa hoạt động: Abrax sẽ chuyển sang mô hình này khi bạn bật âm thanh hệ thống.",
+      "usaraSistema": "Chưa chọn. Nếu bạn bật âm thanh hệ thống, Abrax sẽ dùng «{{modelo}}».",
       "descargado": "đã tải"
     }
   },

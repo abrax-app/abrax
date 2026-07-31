@@ -92,9 +92,13 @@ export const Dropdown: React.FC<DropdownProps> = ({
         }
         title={ariaLabel}
       >
+        {/* El hueco se ve VACÍO cuando lo está: con el mismo peso y color que
+            un valor elegido, un desplegable sin elegir se leía como elegido. */}
         <span className="flex items-center gap-1.5 min-w-0">
           {selectedOption?.icon}
-          <span className="truncate">
+          <span
+            className={`truncate ${selectedOption ? "" : "font-normal text-text/45"}`}
+          >
             {selectedOption?.label || placeholder || t("common.selectOption")}
           </span>
         </span>

@@ -1090,7 +1090,7 @@
       },
       "sinModeloSistema": "下載其中一個模型才能擷取系統音訊。",
       "elegirModelo": "選擇模型",
-      "usaraSistema": "尚未啟用：開啟系統音訊時 Abrax 會切換到它。",
+      "usaraSistema": "未選擇。若開啟系統音訊，Abrax 會使用「{{modelo}}」。",
       "descargado": "已下載"
     }
   },

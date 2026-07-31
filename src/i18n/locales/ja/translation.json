@@ -1090,7 +1090,7 @@
       },
       "sinModeloSistema": "システム音声を取り込むには、これらのモデルのどれかをダウンロードしてください。",
       "elegirModelo": "モデルを選ぶ",
-      "usaraSistema": "まだ有効ではありません。システム音声をオンにすると Abrax が切り替えます。",
+      "usaraSistema": "未選択です。システム音声をオンにすると Abrax は「{{modelo}}」を使います。",
       "descargado": "ダウンロード済み"
     }
   },

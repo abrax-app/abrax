@@ -359,12 +359,14 @@ const SelectorModelo: React.FC<{
           <Dropdown
             ariaLabel={t("quiet.panel.modelo")}
             options={opciones}
-            // En «Sistema» la fila enseña EL MODELO DE ESTE MODO, que no
-            // siempre es el activo: si el activo no sirve, es el que Abrax
-            // pondrá al encender. Dejarla en blanco era lo que hacía que la
-            // pantalla dijera «no hay modelo» mientras el interruptor sí se
-            // dejaba pulsar.
-            selectedValue={usara?.id ?? currentModel ?? null}
+            // Se enseña EL ACTIVO y nada más. Llegó a enseñarse aquí el que
+            // Abrax pondría al encender, y con el mismo aspecto de elegido:
+            // con Canary puesto arriba, abajo aparecía Nemotron con su tilde
+            // verde como si estuviera seleccionado. El mismo dibujo decía dos
+            // cosas distintas. Ahora, si el activo no sirve aquí, esta fila
+            // queda SIN elegir —que es la verdad— y el aviso de abajo dice qué
+            // va a pasar si enciendes igual.
+            selectedValue={currentModel || null}
             onSelect={(v) => void elegir(v)}
             // «Sin modelo» sería falso en la tarjeta de sistema: hay uno
             // activo, lo que pasa es que no sirve AQUÍ. Se pide elegir, que es
