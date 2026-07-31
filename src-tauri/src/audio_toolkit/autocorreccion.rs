@@ -77,6 +77,18 @@ const VENTANA_ATRAS: usize = 25;
 /// solo comparten una palabra lejana.
 const CABEZA_SEGMENTO: usize = 4;
 
+/// Cuantas palabras puede variar el largo entre los dos tramos cuando el ancla
+/// es la preposicion.
+///
+/// Exigir el mismo largo EXACTO dejaba fuera lo normal: quien se corrige suele
+/// precisar, y precisar alarga. «vaya al dentista, perdon, al otorrino» pide dos
+/// palabras donde habia una.
+///
+/// Uno es el numero justo, medido contra el corpus: deja pasar la precision y
+/// sigue bloqueando la frase que continua —«por ti» frente a «por favor no te
+/// enojes» son tres de diferencia—.
+const TOLERANCIA_LARGO: usize = 1;
+
 /// Señales de correccion (sustitución con paralelo) por defecto, en es-419.
 ///
 /// **«perdón» sola SÍ entra**, desde el 31/07. Estuvo fuera por miedo a «perdón
@@ -141,6 +153,10 @@ static PREPOSICIONES: Lazy<HashSet<&'static str>> = Lazy::new(|| {
     [
         "a", "ante", "bajo", "con", "contra", "de", "desde", "durante", "en", "entre", "hacia",
         "hasta", "mediante", "para", "por", "segun", "sin", "sobre", "tras",
+        // Contracciones: «al» = a+el, «del» = de+el. Estaban solo en la lista de
+        // palabras vacias, asi que «vaya AL dentista, perdon, AL otorrino» no
+        // tenia ancla ninguna — ni preposicion ni cabeza. Dictado real del 31/07.
+        "al", "del",
     ]
     .into_iter()
     .collect()
@@ -161,7 +177,7 @@ static PALABRAS_VACIAS: Lazy<HashSet<&'static str>> = Lazy::new(|| {
         // preposiciones y determinantes van aparte, en sus propias listas
         "no", "si", "que", "y", "o", "pero", "ni", "mas", "menos", "muy", "ya", "tambien",
         "tampoco", "como", "cuando", "donde", "porque", "pues", "asi", "se", "le", "lo", "les",
-        "me", "te", "nos", "al", "del",
+        "me", "te", "nos",
         // COPULAS Y AUXILIARES. No son verbos con contenido: unen, no dicen. Que
         // dos tramos empiecen los dos por «es» pasa en media conversacion.
         //
@@ -600,7 +616,7 @@ fn aplicar_sustitucion(tokens: &[Token], i: usize, n: usize) -> Option<String> {
         } else if ancla_preposicion {
             forma_c.categoria.is_none()
                 && forma_c.preposicion == forma_r.preposicion
-                && (fin_c - p) == (fin_r - ini_r)
+                && (fin_c - p).abs_diff(fin_r - ini_r) <= TOLERANCIA_LARGO
         } else {
             son_paralelas(&forma_c, &forma_r)
         };
@@ -1257,6 +1273,37 @@ mod tests {
             "te pido perdón por lo de ayer",
             "Vine por ti, perdón, por favor no te enojes",
             "digo que sí a la propuesta",
+        ] {
+            assert_eq!(corrige(texto), texto, "tocó: «{texto}»");
+        }
+    }
+
+    #[test]
+    fn el_dictado_del_dentista_31_07() {
+        // «al» era invisible como ancla —solo estaba en palabras vacias— y ademas
+        // el recambio tiene una palabra mas que lo corregido. Dos motivos para
+        // no hacer nada ante un paralelo evidente.
+        assert_eq!(
+            corrige("voy a llamar a Antonio para que vaya al dentista, perdón, al otorrino"),
+            "voy a llamar a Antonio para que vaya al otorrino"
+        );
+        // Quien se corrige suele PRECISAR, y precisar alarga: una palabra de
+        // diferencia tiene que caber.
+        assert_eq!(
+            corrige("voy a llamar a Antonio para que vaya al dentista, perdón, al otorrino ladrincólogo"),
+            "voy a llamar a Antonio para que vaya al otorrino ladrincólogo"
+        );
+    }
+
+    #[test]
+    fn la_tolerancia_de_largo_no_deja_pasar_una_frase_que_sigue() {
+        // Control de la tolerancia: una palabra si, tres no. Sin este limite,
+        // la primera se comeria «Vine por ti».
+        for texto in [
+            "Vine por ti, perdón, por favor no te enojes",
+            "gracias por todo, perdón, por cierto te queria contar algo",
+            "hablamos de esto, perdón, de verdad no era mi intencion",
+            "Te llamo mañana, perdón, no te escuché bien",
         ] {
             assert_eq!(corrige(texto), texto, "tocó: «{texto}»");
         }
