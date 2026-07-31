@@ -297,13 +297,28 @@ const SelectorModelo: React.FC<{
     ? Math.round(downloadProgress[descargando.id]?.percentage ?? 0)
     : null;
 
-  // Con el activo fuera de la lista de «Sistema», el desplegable enseñaría el
-  // hueco del placeholder sin decir por qué. Se dice: el que está puesto no
-  // sirve aquí, y elegir uno de la lista lo arregla.
-  const hayDescargadoApto =
-    capacidad === "sistema" && candidatos.some((m) => m.is_downloaded);
   const activoFuera =
     capacidad === "sistema" && !candidatos.some((m) => m.id === currentModel);
+
+  // El que se USARÁ si se enciende: el primero de la lista del backend que esté
+  // en disco. La lista viene ORDENADA por preferencia justo para esto, y ese
+  // orden es la regla entera de `modelo_para_sistema_descargado`.
+  //
+  // Hay que nombrarlo. Con el activo fuera de la lista, el desplegable enseñaba
+  // el hueco del placeholder y el interruptor se dejaba pulsar igual: la
+  // pantalla decía «no hay modelo» y encendía. No mentía ninguna de las dos
+  // —Abrax cambia solo al que sirve— pero juntas se leían como un fallo, y con
+  // razón: lo que faltaba era decir a QUÉ va a cambiar.
+  const usara = useMemo(() => {
+    if (!activoFuera) return null;
+    for (const p of preferidosSistema ?? []) {
+      const m = models.find(
+        (x: ModelInfo) => x.id.includes(p) && x.is_downloaded,
+      );
+      if (m) return m;
+    }
+    return null;
+  }, [activoFuera, preferidosSistema, models]);
 
   const elegir = useCallback(
     async (id: string) => {
@@ -332,7 +347,11 @@ const SelectorModelo: React.FC<{
         <h3 className="text-sm font-medium">{t("quiet.panel.modelo")}</h3>
         <Dropdown
           options={opciones}
-          selectedValue={currentModel || null}
+          // En «Sistema» la fila enseña EL MODELO DE ESTE MODO, que no siempre
+          // es el activo: si el activo no sirve, es el que Abrax pondrá al
+          // encender. Dejarla en blanco era lo que hacía que la pantalla
+          // dijera «no hay modelo» mientras el interruptor sí se dejaba pulsar.
+          selectedValue={usara?.id ?? currentModel ?? null}
           onSelect={(v) => void elegir(v)}
           // «Sin modelo» sería falso en la tarjeta de sistema: hay uno activo,
           // lo que pasa es que no sirve AQUÍ. Se pide elegir, que es la acción.
@@ -346,11 +365,9 @@ const SelectorModelo: React.FC<{
       </div>
       {activoFuera && !descargando && (
         <p className="text-xs text-amber-500/90">
-          {t(
-            hayDescargadoApto
-              ? "quiet.panel.noSirveSistema"
-              : "quiet.panel.sinModeloSistema",
-          )}
+          {usara
+            ? t("quiet.panel.usaraSistema", { modelo: usara.name })
+            : t("quiet.panel.sinModeloSistema")}
         </p>
       )}
       {descargando && (

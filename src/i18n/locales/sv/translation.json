@@ -1094,9 +1094,9 @@
         "emoji": "Säg «emoji» och namnet, så infogas den. Via tabell, utan AI.",
         "systemAudio": "Transkriberar det som spelas på datorn i stället för din mikrofon. Duger inte den aktiva modellen byter Abrax till en som gör det."
       },
-      "noSirveSistema": "Den aktiva modellen duger inte för systemljud. Välj en från listan.",
       "sinModeloSistema": "Ladda ner en av dessa modeller för att spela in systemljud.",
-      "elegirModelo": "Välj modell"
+      "elegirModelo": "Välj modell",
+      "usaraSistema": "Inte aktiv än: Abrax byter till den när du slår på systemljud."
     }
   },
   "soundPicker": {

@@ -1094,9 +1094,9 @@
         "emoji": "Di «emoji» y su nombre, y lo inserta. Por tabla, sin IA.",
         "systemAudio": "Transcribe lo que suena en el equipo en vez de tu micrófono. Si el modelo activo no sirve, Abrax cambia a uno apto."
       },
-      "noSirveSistema": "El modelo activo no sirve para el audio del sistema. Elige uno de la lista.",
       "sinModeloSistema": "Descarga uno de estos modelos para poder capturar el audio del sistema.",
-      "elegirModelo": "Elegir modelo"
+      "elegirModelo": "Elegir modelo",
+      "usaraSistema": "Todavía no está activo: Abrax lo pondrá al encender «Audio del sistema»."
     }
   },
   "soundPicker": {

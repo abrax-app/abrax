@@ -1094,9 +1094,9 @@
         "emoji": "«Emoji» de ve adını söyle, eklenir. Tabloyla, yapay zekâsız.",
         "systemAudio": "Mikrofon yerine bilgisayarda çalanı yazıya döker. Etkin model uygun değilse Abrax uygun olana geçer."
       },
-      "noSirveSistema": "Etkin model sistem sesi için uygun değil. Listeden birini seçin.",
       "sinModeloSistema": "Sistem sesini yakalayabilmek için bu modellerden birini indirin.",
-      "elegirModelo": "Model seç"
+      "elegirModelo": "Model seç",
+      "usaraSistema": "Henüz etkin değil: sistem sesini açtığınızda Abrax buna geçecek."
     }
   },
   "soundPicker": {

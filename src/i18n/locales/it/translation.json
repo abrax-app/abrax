@@ -1094,9 +1094,9 @@
         "emoji": "Di' «emoji» e il suo nome, e viene inserito. Per tabella, senza IA.",
         "systemAudio": "Trascrive ciò che suona sul computer invece del microfono. Se il modello attivo non va bene, Abrax passa a uno adatto."
       },
-      "noSirveSistema": "Il modello attivo non va bene per l'audio di sistema. Scegline uno dall'elenco.",
       "sinModeloSistema": "Scarica uno di questi modelli per poter catturare l'audio di sistema.",
-      "elegirModelo": "Scegli un modello"
+      "elegirModelo": "Scegli un modello",
+      "usaraSistema": "Non è ancora attivo: Abrax lo imposterà quando accendi l'audio di sistema."
     }
   },
   "soundPicker": {

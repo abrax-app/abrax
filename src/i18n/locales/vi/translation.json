@@ -1094,9 +1094,9 @@
         "emoji": "Nói «emoji» rồi tên của nó, và nó được chèn vào. Theo bảng, không dùng AI.",
         "systemAudio": "Ghi lại những gì đang phát trên máy thay vì micrô. Nếu mô hình đang dùng không hợp, Abrax sẽ đổi sang mô hình phù hợp."
       },
-      "noSirveSistema": "Mô hình đang dùng không hợp với âm thanh hệ thống. Hãy chọn một mô hình trong danh sách.",
       "sinModeloSistema": "Hãy tải một trong các mô hình này để thu được âm thanh hệ thống.",
-      "elegirModelo": "Chọn mô hình"
+      "elegirModelo": "Chọn mô hình",
+      "usaraSistema": "Chưa hoạt động: Abrax sẽ chuyển sang mô hình này khi bạn bật âm thanh hệ thống."
     }
   },
   "soundPicker": {

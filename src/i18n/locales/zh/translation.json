@@ -1094,9 +1094,9 @@
         "emoji": "说“表情”再说名称就会插入。查表实现，不用 AI。",
         "systemAudio": "转写电脑里正在播放的声音，而不是麦克风。若当前模型不合适，Abrax 会换成合适的。"
       },
-      "noSirveSistema": "当前模型不适合系统音频。请从列表中选择一个。",
       "sinModeloSistema": "下载其中一个模型才能采集系统音频。",
-      "elegirModelo": "选择模型"
+      "elegirModelo": "选择模型",
+      "usaraSistema": "尚未启用：打开系统音频时 Abrax 会切换到它。"
     }
   },
   "soundPicker": {

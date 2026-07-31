@@ -53,6 +53,8 @@ interface ModelsStore {
   // Internal setters
   setModels: (models: ModelInfo[]) => void;
   setCurrentModel: (modelId: string) => void;
+  /** Re-lee del backend cuál es el modelo activo. Ver su implementación. */
+  refreshCurrentModel: () => Promise<void>;
   setError: (error: string | null) => void;
   setLoading: (loading: boolean) => void;
 }
@@ -75,6 +77,25 @@ export const useModelStore = create<ModelsStore>()(
     // Internal setters
     setModels: (models) => set({ models }),
     setCurrentModel: (currentModel) => set({ currentModel }),
+
+    /**
+     * Vuelve a preguntar cuál es el modelo activo.
+     *
+     * `currentModel` solo se movía cuando el usuario elegía un modelo desde
+     * esta tienda, y el backend lo cambia por su cuenta en al menos un caso:
+     * «Audio del sistema» pone uno apto al encender y restaura el anterior al
+     * apagar. Sin volver a leer, la app se queda enseñando el modelo viejo —
+     * medido el 31/07: el backend restauró Canary y las dos pantallas seguían
+     * diciendo Nemotron cinco segundos después.
+     */
+    refreshCurrentModel: async () => {
+      try {
+        const result = await commands.getCurrentModel();
+        if (result.status === "ok") set({ currentModel: result.data });
+      } catch (err) {
+        console.error("Failed to refresh current model:", err);
+      }
+    },
     setError: (error) => set({ error }),
     setLoading: (loading) => set({ loading }),
 

@@ -1094,9 +1094,9 @@
         "emoji": "說「表情符號」再說名稱就會插入。查表實作，不用 AI。",
         "systemAudio": "轉寫電腦裡正在播放的聲音，而不是麥克風。若目前的模型不合適，Abrax 會換成合適的。"
       },
-      "noSirveSistema": "目前的模型不適合系統音訊。請從清單中選擇一個。",
       "sinModeloSistema": "下載其中一個模型才能擷取系統音訊。",
-      "elegirModelo": "選擇模型"
+      "elegirModelo": "選擇模型",
+      "usaraSistema": "尚未啟用：開啟系統音訊時 Abrax 會切換到它。"
     }
   },
   "soundPicker": {

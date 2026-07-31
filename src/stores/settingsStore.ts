@@ -10,6 +10,9 @@ import type {
   OrtAcceleratorSetting,
 } from "@/bindings";
 import { commands } from "@/bindings";
+// Una sola dirección: la tienda de modelos NO importa esta, así que no hay
+// ciclo. Se necesita porque «Audio del sistema» mueve el modelo activo.
+import { useModelStore } from "./modelStore";
 
 interface SettingsStore {
   settings: Settings | null;
@@ -337,6 +340,21 @@ export const useSettingsStore = create<SettingsStore>()(
           key !== "model_unload_timeout"
         ) {
           console.warn(`No handler for setting: ${String(key)}`);
+        }
+
+        // «Audio del sistema» no cambia solo su propia clave: el backend pone
+        // un modelo apto al encender y restaura el anterior al apagar
+        // (`change_capture_system_audio_setting`). La actualización optimista de
+        // arriba no puede saberlo, así que hay que volver a leer las dos cosas.
+        //
+        // Sin esto, la app se queda enseñando el modelo viejo en las CUATRO
+        // pieles —todas pintan el mismo estado— y encima el ajuste puede haber
+        // quedado en `false` si el backend lo rechazó por falta de modelo apto.
+        // Medido el 31/07: el backend restauró Canary y las dos filas «Modelo»
+        // seguían diciendo Nemotron cinco segundos después.
+        if (key === "capture_system_audio") {
+          await get().refreshSettings();
+          await useModelStore.getState().refreshCurrentModel();
         }
       } catch (error) {
         console.error(`Failed to update setting ${String(key)}:`, error);
