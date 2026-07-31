@@ -16,6 +16,7 @@ import {
   commands,
   type ModoLectura,
   type OracionHablable,
+  type PiperVoiceInfo,
   type VerbosidadSimbolos,
   type VozEscucha,
 } from "@/bindings";
@@ -40,6 +41,15 @@ export const EscuchaSettings: React.FC = () => {
   const { settings, refreshSettings } = useSettings();
 
   const [voces, setVoces] = useState<VozEscucha[]>([]);
+  // Voces de Piper que están EN EL CATÁLOGO pero no en el disco. Sin esto, la
+  // única que se podía tener era la primera: al habilitar el motor, la pantalla
+  // instalaba `cat.data[0]` y no había forma de pedir ninguna otra. El catálogo
+  // traía cuatro —dos de hombre y dos de mujer— y tres eran inalcanzables.
+  //
+  // Mismo trato que los modelos de transcripción: se ofrecen marcadas, y
+  // elegirlas las descarga y las deja puestas.
+  const [porDescargar, setPorDescargar] = useState<PiperVoiceInfo[]>([]);
+  const [bajandoVoz, setBajandoVoz] = useState<string | null>(null);
   const [motorDisponible, setMotorDisponible] = useState(true);
   const [vozProsa, setVozProsa] = useState<string | null>(null);
   const [vozCodigo, setVozCodigo] = useState<string | null>(null);
@@ -110,6 +120,23 @@ export const EscuchaSettings: React.FC = () => {
   // Cargar las voces del motor activo — y RECARGARLAS al cambiar de motor, para
   // que el reparto (es/en, M/F) del nuevo motor aparezca de una. Si la voz
   // elegida ya no existe en el nuevo motor, se cae a una válida (español primero).
+  // El catálogo de Piper: solo interesa cuando ESE es el motor activo (una voz
+  // de Piper no sirve si está hablando el del sistema).
+  const recargarCatalogoPiper = useCallback(async () => {
+    const act = await commands.getActiveEngine();
+    if (act.status !== "ok" || act.data !== "piper") {
+      setPorDescargar([]);
+      return;
+    }
+    const cat = await commands.listPiperVoices();
+    if (cat.status === "ok")
+      setPorDescargar(cat.data.filter((v) => !v.installed));
+  }, []);
+
+  useEffect(() => {
+    void recargarCatalogoPiper();
+  }, [recargarCatalogoPiper, settings?.tts_selected_engine]);
+
   useEffect(() => {
     let cancelado = false;
     commands.escuchaListVoices().then((r) => {
@@ -336,7 +363,48 @@ export const EscuchaSettings: React.FC = () => {
 
   // Agrupadas por idioma/país cuando el motor es online (lista larga navegable);
   // planas para los motores locales.
-  const opcionesVoz = opcionesDeVoces(voces, t);
+  const base = opcionesDeVoces(voces, t);
+  // Las que faltan se añaden PLANAS al final. `opcionesDeVoces` devuelve grupos
+  // solo cuando todas las voces traen locale BCP-47 (el motor online); las de
+  // Piper no, así que aquí siempre es una lista plana y se puede concatenar.
+  const opcionesVoz = Array.isArray(base)
+    ? [
+        ...base,
+        ...porDescargar.map((v) => ({
+          value: v.id,
+          label: `${v.display} · ${t("quiet.panel.descargar")} (${v.size_mb} MB)`,
+        })),
+      ]
+    : base;
+
+  /** Elegir voz. Si aún no está en el disco, se descarga y se pone. */
+  const elegirVoz = useCallback(
+    async (id: string, poner: (v: string) => void) => {
+      const falta = porDescargar.find((v) => v.id === id);
+      if (!falta) {
+        poner(id);
+        return;
+      }
+      setBajandoVoz(id);
+      try {
+        const r = await commands.installPiperVoice(id);
+        if (r.status === "error") {
+          toast.error(t("tts.errorDownload"), { description: r.error });
+          return;
+        }
+        // Recargar ANTES de ponerla: si el motor no la ve todavía, elegirla
+        // dejaría el selector apuntando a una voz que no existe.
+        const lista = await commands.escuchaListVoices();
+        if (lista.status === "ok") setVoces(lista.data);
+        await recargarCatalogoPiper();
+        poner(id);
+        toast.success(t("tts.installed"));
+      } finally {
+        setBajandoVoz(null);
+      }
+    },
+    [porDescargar, recargarCatalogoPiper, t],
+  );
 
   const lineaResaltada = (numero: number) =>
     oracionActual != null &&
@@ -388,7 +456,8 @@ export const EscuchaSettings: React.FC = () => {
             <Select
               value={vozProsa}
               options={opcionesVoz}
-              onChange={(v) => setVozProsa(v)}
+              onChange={(v) => v && void elegirVoz(v, setVozProsa)}
+              disabled={bajandoVoz !== null}
               isClearable={false}
               placeholder={t("escucha.noVoices")}
               ariaLabel={t("escucha.voiceProse")}
@@ -399,7 +468,8 @@ export const EscuchaSettings: React.FC = () => {
             <Select
               value={vozCodigo}
               options={opcionesVoz}
-              onChange={(v) => setVozCodigo(v)}
+              onChange={(v) => v && void elegirVoz(v, setVozCodigo)}
+              disabled={bajandoVoz !== null}
               isClearable={false}
               placeholder={t("escucha.noVoices")}
               ariaLabel={t("escucha.voiceCode")}
