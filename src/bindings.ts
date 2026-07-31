@@ -479,15 +479,6 @@ async changeVadEnabledSetting(enabled: boolean) : Promise<Result<null, string>> 
     else return { status: "error", error: e  as any };
 }
 },
-/**
- * Los cuatro ajustes de abajo NO TENIAN COMANDO, y por eso sus interruptores
- * eran un placebo: el valor cambiaba en pantalla, `settingsStore` no encontraba
- * manejador, escribia un `console.warn` en una consola que nadie mira, y a Rust
- * no llegaba nunca. Al reabrir Ajustes el interruptor volvia a su sitio.
- * 
- * Nada mas engañoso que un control que se deja pulsar y no hace nada. Cazado
- * el 30/07 auditando el trabajo heredado.
- */
 async changeCorreccionNumerosSetting(activo: boolean) : Promise<Result<null, string>> {
     try {
     return { status: "ok", data: await TAURI_INVOKE("change_correccion_numeros_setting", { activo }) };
@@ -495,6 +486,9 @@ async changeCorreccionNumerosSetting(activo: boolean) : Promise<Result<null, str
     if(e instanceof Error) throw e;
     else return { status: "error", error: e  as any };
 }
+},
+async listarSenalesDeFabrica() : Promise<SenalesDeFabrica> {
+    return await TAURI_INVOKE("listar_senales_de_fabrica");
 },
 async changeAutocorreccionActivaSetting(activa: boolean) : Promise<Result<null, string>> {
     try {
@@ -1807,6 +1801,22 @@ es_default: boolean; duracion_s: number; rms_db: number; pico_db: number; clip_p
  */
 wav: string }
 export type RecordingRetentionPeriod = "never" | "preserve_limit" | "days_3" | "weeks_2" | "months_3"
+/**
+ * Los cuatro ajustes de abajo NO TENIAN COMANDO, y por eso sus interruptores
+ * eran un placebo: el valor cambiaba en pantalla, `settingsStore` no encontraba
+ * manejador, escribia un `console.warn` en una consola que nadie mira, y a Rust
+ * no llegaba nunca. Al reabrir Ajustes el interruptor volvia a su sitio.
+ * 
+ * Nada mas engañoso que un control que se deja pulsar y no hace nada. Cazado
+ * el 30/07 auditando el trabajo heredado.
+ * Las senales de fabrica de la autocorreccion hablada.
+ * 
+ * Existe para que la pantalla no tenga que llevar su propia copia. La llevaba,
+ * y eso es una divergencia esperando: el dia que alguien anada una senal en
+ * Rust, la pantalla seguiria ensenando la lista vieja y el usuario leeria algo
+ * que no es. Aqui hay una sola fuente y la otra la consulta.
+ */
+export type SenalesDeFabrica = { borrado: string[]; sustitucion: string[] }
 export type ShortcutBinding = { id: string; name: string; description: string; default_binding: string; current_binding: string }
 export type SoundTheme = "abrax" | "marimba" | "pop" | "custom"
 /**

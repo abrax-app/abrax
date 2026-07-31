@@ -719,6 +719,31 @@ pub fn change_lazy_stream_close_setting(app: AppHandle, enabled: bool) -> Result
 /// Nada mas engañoso que un control que se deja pulsar y no hace nada. Cazado
 /// el 30/07 auditando el trabajo heredado.
 
+/// Las senales de fabrica de la autocorreccion hablada.
+///
+/// Existe para que la pantalla no tenga que llevar su propia copia. La llevaba,
+/// y eso es una divergencia esperando: el dia que alguien anada una senal en
+/// Rust, la pantalla seguiria ensenando la lista vieja y el usuario leeria algo
+/// que no es. Aqui hay una sola fuente y la otra la consulta.
+#[derive(serde::Serialize, serde::Deserialize, specta::Type)]
+pub struct SenalesDeFabrica {
+    pub borrado: Vec<String>,
+    pub sustitucion: Vec<String>,
+}
+
+#[tauri::command]
+#[specta::specta]
+pub fn listar_senales_de_fabrica() -> SenalesDeFabrica {
+    use crate::audio_toolkit::autocorreccion::{BORRADO_POR_DEFECTO, SUSTITUCION_POR_DEFECTO};
+    SenalesDeFabrica {
+        borrado: BORRADO_POR_DEFECTO.iter().map(|s| s.to_string()).collect(),
+        sustitucion: SUSTITUCION_POR_DEFECTO
+            .iter()
+            .map(|s| s.to_string())
+            .collect(),
+    }
+}
+
 #[tauri::command]
 #[specta::specta]
 pub fn change_correccion_numeros_setting(app: AppHandle, activo: bool) -> Result<(), String> {

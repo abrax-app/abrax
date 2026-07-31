@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { X } from "lucide-react";
+import { commands } from "@/bindings";
 import { useSettings } from "../../hooks/useSettings";
 import { Input } from "../ui/Input";
 import { Button } from "../ui/Button";
@@ -12,16 +13,11 @@ import { SettingContainer } from "../ui/SettingContainer";
 // duplican aquí (como el preset es-419 de las muletillas) solo para poder
 // MOSTRARLAS: el botón «usar las de fábrica» las materializa en la lista para
 // que se vean y se puedan editar una por una. Quien manda al corregir es Rust.
-const BORRADO_DE_FABRICA = ["borra eso", "olvida eso", "no, nada", "déjalo"];
-const SUSTITUCION_DE_FABRICA = [
-  "no, perdón",
-  "perdón, quise decir",
-  "mejor dicho",
-  "o sea, no",
-  "corrijo",
-  "no, mejor",
-  "digo",
-];
+// Las senales de fabrica NO se escriben aqui: se piden al backend
+// (`listar_senales_de_fabrica`), que es donde viven de verdad. Estaban copiadas
+// a mano en este archivo y coincidian por suerte: el dia que alguien anadiera
+// una en Rust, esta pantalla habria seguido ensenando la lista vieja.
+const SIN_SENALES: string[] = [];
 
 type ClaveSenales =
   | "autocorreccion_senales_borrado"
@@ -59,7 +55,11 @@ const EditorSenales: React.FC<EditorSenalesProps> = ({
       : senales.length === 0
         ? "disabled"
         : "custom";
-  const actuales = senales ?? [];
+  // En modo «de fabrica» se muestran LAS DE FABRICA, no una lista vacia. Antes
+  // se pintaba vacia y la pantalla parecia decir «no hay ninguna senal», cuando
+  // en realidad estaban todas activas. Winston lo leyo asi, con razon: «¿de que
+  // sirve que la dejes habilitada si no tienes nada de fabrica?».
+  const actuales = senales ?? deFabrica;
   const ocupado = isUpdating(clave) || disabled;
 
   const agregar = () => {
@@ -190,15 +190,34 @@ interface AutocorreccionSettingsProps {
  * («…el martes, no, perdón, el miércoles»), el texto sale ya corregido.
  *
  * Por reglas y 100% local — no usa Post Proceso ni ningún modelo de IA.
- * Apagada de fábrica a propósito: la función BORRA texto, y eso se enciende a
- * conciencia, no por sorpresa. Las dos listas de señales solo se muestran con
- * la función encendida, para no ofrecer controles que no hacen nada.
+ * ENCENDIDA de fábrica desde el 30/07. Estuvo apagada porque su nivel 1 BORRA
+ * texto y disparaba en mitad de una frase corriente; ahora ese nivel exige que
+ * la señal CIERRE el dictado, y con eso deja de destrozar prosa. Las dos listas
+ * solo se muestran con la función encendida, para no ofrecer controles muertos.
  */
 export const AutocorreccionSettings: React.FC<AutocorreccionSettingsProps> =
   React.memo(({ descriptionMode = "tooltip", grouped = false }) => {
     const { t } = useTranslation();
     const { getSetting, updateSetting, isUpdating } = useSettings();
-    const activa = getSetting("autocorreccion_activa") ?? false;
+    const activa = getSetting("autocorreccion_activa") ?? true;
+    // Las de fábrica se piden al backend: es donde viven, y así esta pantalla no
+    // puede quedarse enseñando una lista vieja.
+    const [deFabrica, setDeFabrica] = useState<{
+      borrado: string[];
+      sustitucion: string[];
+    }>({ borrado: [], sustitucion: [] });
+    useEffect(() => {
+      let vivo = true;
+      commands
+        .listarSenalesDeFabrica()
+        .then((r) => {
+          if (vivo) setDeFabrica(r);
+        })
+        .catch(() => {});
+      return () => {
+        vivo = false;
+      };
+    }, []);
 
     return (
       <>
@@ -226,7 +245,7 @@ export const AutocorreccionSettings: React.FC<AutocorreccionSettingsProps> =
               descripcion={t(
                 "settings.advanced.autocorreccion.sustitucionDescription",
               )}
-              deFabrica={SUSTITUCION_DE_FABRICA}
+              deFabrica={deFabrica.sustitucion}
               descriptionMode={descriptionMode}
               grouped={grouped}
               disabled={!activa}
@@ -237,7 +256,7 @@ export const AutocorreccionSettings: React.FC<AutocorreccionSettingsProps> =
               descripcion={t(
                 "settings.advanced.autocorreccion.borradoDescription",
               )}
-              deFabrica={BORRADO_DE_FABRICA}
+              deFabrica={deFabrica.borrado}
               descriptionMode={descriptionMode}
               grouped={grouped}
               disabled={!activa}
