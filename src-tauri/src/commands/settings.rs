@@ -10,8 +10,19 @@ use log::warn;
 use tauri::{AppHandle, Manager};
 use tauri_plugin_autostart::ManagerExt;
 
-#[cfg(all(target_os = "macos", target_arch = "aarch64"))]
-use crate::settings::APPLE_INTELLIGENCE_DEFAULT_MODEL_ID;
+// Aquí hubo un `use crate::settings::APPLE_INTELLIGENCE_DEFAULT_MODEL_ID`
+// detrás de `#[cfg(all(target_os = "macos", target_arch = "aarch64"))]`. Se
+// borra: la constante NO EXISTE en el árbol —aparecía una sola vez, en su
+// propio `use`— y este archivo no la usaba en ninguna línea. Se quedó
+// colgando al retirar el post-proceso con IA.
+//
+// Por qué nadie lo vio: en Windows y en Linux el `cfg` es falso, el `use`
+// desaparece antes de resolverse y compila. Solo en Apple Silicon el `cfg` es
+// cierto y ahí revienta con E0432. Un `cfg` no protege de un import muerto:
+// lo esconde de las plataformas que no lo compilan.
+//
+// No tiene nada que ver con los stubs de Apple Intelligence: esos avisos del
+// build salen igual y son de otra cosa.
 use crate::settings::{
     self, AppSettings, AutoSubmitKey, ClipboardHandling, CorreccionModo, CorreccionMotor,
     EsferaModo, OverlayPosition, OverlayStyle, PasteMethod, SoundTheme, Theme, TypingTool, UiShell,
