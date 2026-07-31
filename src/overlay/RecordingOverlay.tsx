@@ -43,21 +43,41 @@ type OverlayState =
 // promedia 3 bandas consecutivas del rango de voz, y un suavizado exponencial
 // mantiene el movimiento calmado en vez de nervioso.
 
-/** Barras reactivas de la píldora. La forma la comparten todas sus variantes. */
-const WAVE_BARS = 9;
+/**
+ * Barras reactivas de la píldora. La forma la comparten todas sus variantes.
+ *
+ * 13 barras de 2 bandas (antes 9 de 3): más barras y más juntas leen como una
+ * ONDA, mientras que nueve separadas leían como una fila de puntos —que es
+ * justo lo que se veía en reposo—. El presupuesto no da para más: el espectro
+ * son 32 bandas y se arranca en la 2, así que 2 + 13×2 = 28 es el techo antes
+ * de pedir bandas que no existen y dibujar barras muertas al final.
+ */
+const WAVE_BARS = 13;
+/**
+ * Barras a cada lado del centro. El dibujo es SIMÉTRICO: el grave va al medio y
+ * el agudo se abre hacia los bordes, que es como se lee una onda.
+ *
+ * No es maquillaje, es la misma medida colocada de otra forma. Dibujando el
+ * espectro tal cual —grave a la izquierda, agudo a la derecha— la píldora
+ * mostraba SIEMPRE la misma rampa descendente, porque en cualquier sala el
+ * grave manda: parecía un fallo de dibujo antes que un medidor.
+ */
+const WAVE_HALF = (WAVE_BARS - 1) / 2;
+const WAVE_LEVELS = WAVE_HALF + 1;
 /**
  * Primera banda que se muestrea (~130 Hz hacia arriba). Las más bajas llevan
  * retumbe de la sala, no voz.
  */
 const WAVE_FIRST_BAND = 2;
-const WAVE_BANDS_PER_BAR = 3;
+const WAVE_BANDS_PER_BAR = 4;
 
 const RecordingOverlay: React.FC = () => {
   const { t } = useTranslation();
   const [isVisible, setIsVisible] = useState(false);
   const [state, setState] = useState<OverlayState>("recording");
   const [style, setStyle] = useState<OverlayStyle>("minimal");
-  const [levels, setLevels] = useState<number[]>(Array(WAVE_BARS).fill(0));
+  // Un valor por ANILLO de simetría (centro + 6), no por barra.
+  const [levels, setLevels] = useState<number[]>(Array(WAVE_LEVELS).fill(0));
   const [streamText, setStreamText] = useState<StreamTextEvent>({
     committed: "",
     tentative: "",
@@ -75,7 +95,7 @@ const RecordingOverlay: React.FC = () => {
   // while overflowing, so the resting first line stays crisp flush under the pill.
   const [overflowing, setOverflowing] = useState(false);
 
-  const smoothedLevelsRef = useRef<number[]>(Array(WAVE_BARS).fill(0));
+  const smoothedLevelsRef = useRef<number[]>(Array(WAVE_LEVELS).fill(0));
   // Live-text scroll-back: the text region "sticks" to the newest line while the
   // user is at the bottom; if they scroll up to read history, auto-follow pauses
   // until they scroll back down.
@@ -230,13 +250,23 @@ const RecordingOverlay: React.FC = () => {
   // con cada trama: no hay clase CSS que pueda expresarlas.
   const waveform = (
     <div className="swave">
-      {levels.map((v, i) => (
+      {Array.from({ length: WAVE_BARS }, (_, bar) => {
+        // Distancia al centro: la barra del medio lee el nivel 0 (el grave) y
+        // cada par simetrico lee el siguiente.
+        const v = levels[Math.abs(bar - WAVE_HALF)] ?? 0;
+        return { bar, v };
+      }).map(({ bar, v }) => (
         <i
-          key={i}
+          key={bar}
           style={{
             // `pow(v, 0.7)` comprime el rango para que los niveles bajos del
             // habla normal se vean, en vez de quedar pegados al minimo.
-            height: `${Math.max(3, Math.min(18, 3 + Math.pow(v, 0.7) * 15))}px`,
+            //
+            // El suelo es 5 y no 3: en silencio TODAS las barras estan ahi, y a
+            // 3px con 13 barras la pildora se leia como una fila de puntos en
+            // vez de como una onda en reposo. No se toca el techo ni la curva,
+            // asi que lo que se mide sigue siendo lo mismo.
+            height: `${Math.max(5, Math.min(18, 5 + Math.pow(v, 0.7) * 15))}px`,
           }}
         />
       ))}
@@ -272,6 +302,23 @@ const RecordingOverlay: React.FC = () => {
         {showTimer && <span className="stimer">{fmtTime(elapsed)}</span>}
         {showCancel && cancelBtn}
       </div>
+    </div>
+  );
+
+  // Fila del overlay MINIMAL mientras graba: la onda y nada más.
+  //
+  // Antes llevaba también un punto que latía a la izquierda y la X a la derecha.
+  // En reposo —que es como se ve el 90% del tiempo, antes de que entre voz— eso
+  // era un punto, nueve cuadraditos y un botón: parecía un widget de depuración,
+  // no la marca en movimiento.
+  //
+  // La X no se pierde, se esconde hasta que el ratón entra en la píldora (CSS).
+  // Y cancelar tiene atajo propio desde siempre —`escape`, `settings.rs:968`—,
+  // así que la función sigue estando aunque nunca se pase el ratón por encima.
+  const waveOnlyRow = (
+    <div className="sbase sbase-solo-onda">
+      {waveform}
+      {cancelBtn}
     </div>
   );
 
@@ -477,9 +524,9 @@ const RecordingOverlay: React.FC = () => {
       className={`ov-stage ${position} ov-fade ${isVisible ? "show" : ""}`}
     >
       <div
-        className={`scard compact ${working && isVisible ? "cworking" : ""}`}
+        className={`scard compact ${working ? "" : "solo-onda"} ${working && isVisible ? "cworking" : ""}`}
       >
-        {working ? workingRow(workLabel, true) : listeningRow(false, true)}
+        {working ? workingRow(workLabel, true) : waveOnlyRow}
       </div>
     </div>
   );

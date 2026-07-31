@@ -25,8 +25,11 @@
      the card's max footprint (--ov-work-w for compact, --ov-open-w for Live),
      since the card is anchored flush to the screen edge in CSS. Keep overlay.rs
      in sync when these change. */
-  --ov-rest-w: 172px; /* resting compact pill (minimal, recording) -- roomy enough
-                         for the English working label before the grow starts */
+  --ov-rest-w: 104px; /* pildora en reposo (minimal, grabando): ahora hospeda SOLO
+                         la onda, asi que se cine a ella. Antes eran 172px porque
+                         llevaba tambien el punto y la X. */
+  --ov-rest-hover-w: 140px; /* la misma, con el raton encima: crece lo justo para
+                               descubrir la X sin taparle la onda */
   --ov-pill-w: 184px; /* base width / Live pill before it opens or collapses */
   --ov-work-w: 216px; /* working pill (transcribing / polishing) -- wide enough to
                          center longer labels; shared by Live (collapsed) + minimal */
@@ -323,12 +326,60 @@
 /* Las alturas las pone JS en linea, desde los niveles del microfono. La
    transicion solo lima el escalon entre trama y trama. */
 .swave i {
-  width: 4px;
-  min-height: 3px;
+  width: 3px;
+  min-height: 4px;
   max-height: 18px;
   border-radius: 2px;
   background: var(--s-accent);
   transition: height 80ms linear;
+}
+
+/* ── Fila de SOLO ONDA (overlay Minimal, grabando) ─────────────────────────
+   Una sola columna centrada en vez de las tres zonas (punto | onda | botones):
+   aqui no hay nada a los lados que centrar. La X se superpone a la derecha y
+   solo aparece al pasar el raton; en reposo la pildora es exactamente la onda,
+   que es la marca en movimiento. Cancelar sigue teniendo su atajo (Esc). */
+.sbase-solo-onda {
+  position: relative;
+  grid-template-columns: 1fr;
+  justify-items: center;
+}
+/* El hueco de 8px a la derecha existe para equilibrar la rejilla de 3 zonas;
+   con una sola columna descentraria la onda. */
+.sbase-solo-onda .swave {
+  padding-right: 0;
+}
+.sbase-solo-onda .sx {
+  position: absolute;
+  right: 8px;
+  opacity: 0;
+  pointer-events: none;
+  transition:
+    opacity 160ms ease,
+    background-color 150ms ease,
+    transform 150ms ease;
+}
+/* Al pasar el raton la pildora crece lo justo para que la X no tape la onda.
+   El estado va en una clase del propio .scard y no en `:has()`: es un selector
+   reciente y esto corre dentro de un WebView cuya version no elegimos. */
+.scard.solo-onda:hover .sx,
+.scard.solo-onda:focus-within .sx {
+  opacity: 1;
+  pointer-events: auto;
+}
+.scard.solo-onda:hover,
+.scard.solo-onda:focus-within {
+  width: var(--ov-rest-hover-w);
+}
+/* Con movimiento reducido el ensanchado sigue —si no, la X taparia la onda—,
+   pero llega de golpe en vez de deslizarse. */
+@media (prefers-reduced-motion: reduce) {
+  .scard.solo-onda {
+    transition: none;
+  }
+  .sbase-solo-onda .sx {
+    transition: none;
+  }
 }
 .sx {
   width: 22px;
