@@ -53,7 +53,7 @@ pub struct ResultadoCorreccion {
 /// ortotipografía (espacios y mayúsculas); `Limpio` añade las autocorrecciones
 /// habladas, las tildes seguras y la verbalización. Funciones totales que no
 /// pueden fallar.
-pub fn corregir(texto: &str, modo: CorreccionModo) -> ResultadoCorreccion {
+pub fn corregir(texto: &str, modo: CorreccionModo, numeros: bool) -> ResultadoCorreccion {
     let mut t = texto.to_string();
     if matches!(modo, CorreccionModo::Limpio) {
         t = reglas::autocorreccion_hablada(&t);
@@ -73,7 +73,12 @@ pub fn corregir(texto: &str, modo: CorreccionModo) -> ResultadoCorreccion {
         // un correo que abre el dictado debe unirse primero y quedar
         // «whisper@main.io», no capitalizarse como palabra y dar
         // «Whisper@main.io». Ver [`numeros`], [`identificadores`], [`simbolos`].
-        t = numeros::normalizar_numeros(&t);
+        // El conversor de numerales tiene su propia llave: es el unico de todo
+        // el paquete que cambia el ESTILO del texto («los dos minutos» → «los 2
+        // minutos»), y hay quien quiere las tildes y los simbolos sin eso.
+        if numeros {
+            t = numeros::normalizar_numeros(&t);
+        }
         t = identificadores::normalizar_identificadores(&t);
         t = simbolos::normalizar_simbolos(&t);
     }
@@ -98,7 +103,9 @@ pub fn corregir(texto: &str, modo: CorreccionModo) -> ResultadoCorreccion {
 pub fn procesar(texto: &str, settings: &AppSettings) -> String {
     let resultado = match settings.correccion_motor {
         CorreccionMotor::Desactivado => return texto.to_string(),
-        CorreccionMotor::SoloReglas => corregir(texto, settings.correccion_modo),
+        CorreccionMotor::SoloReglas => {
+            corregir(texto, settings.correccion_modo, settings.correccion_numeros)
+        }
     };
     // Solo el método y longitudes — el contenido del dictado jamás va al log
     // (misma regla que el resto del pipeline, fix S3).
@@ -123,14 +130,27 @@ mod tests {
         s
     }
 
-    /// La garantía central: con el default de fábrica, el pipeline no cambia
-    /// ni un byte — incluso ante texto "sucio" que las reglas sí tocarían.
+    /// La garantía central, que NO cambia con el default: apagar el motor es
+    /// passthrough byte a byte, incluso ante texto «sucio» que las reglas sí
+    /// tocarían. Antes se probaba a través del default de fábrica; desde que el
+    /// default es `SoloReglas` (30/07) se prueba pidiéndolo explícitamente, que
+    /// es lo que de verdad se promete: si lo apagas, no se toca nada.
     #[test]
     fn motor_desactivado_es_passthrough_exacto() {
-        let s = crate::settings::get_default_settings();
-        assert!(matches!(s.correccion_motor, CorreccionMotor::Desactivado));
+        let s = settings_con(CorreccionMotor::Desactivado, CorreccionModo::Limpio);
         let sucio = "  hola , mundo. el martes, perdón, el miércoles  ";
         assert_eq!(procesar(sucio, &s), sucio);
+    }
+
+    /// Y el reverso: con los valores DE FÁBRICA el paquete sí actúa. Este test
+    /// es el que se rompería si alguien volviera a apagarlo por descuido —que es
+    /// justo como estuvo cinco días sin que nadie se enterara.
+    #[test]
+    fn de_fabrica_la_correccion_actua() {
+        let s = crate::settings::get_default_settings();
+        assert!(matches!(s.correccion_motor, CorreccionMotor::SoloReglas));
+        assert_eq!(s.correccion_modo, CorreccionModo::Limpio);
+        assert_eq!(procesar("dame el cinco por ciento", &s), "Dame el 5%");
     }
 
     #[test]
@@ -175,9 +195,9 @@ mod tests {
 
     #[test]
     fn corregir_reporta_el_metodo() {
-        let limpio = corregir("Ya está bien.", CorreccionModo::Literal);
+        let limpio = corregir("Ya está bien.", CorreccionModo::Literal, true);
         assert_eq!(limpio.metodo, MetodoCorreccion::Literal);
-        let tocado = corregir("hola , mundo", CorreccionModo::Literal);
+        let tocado = corregir("hola , mundo", CorreccionModo::Literal, true);
         assert_eq!(tocado.metodo, MetodoCorreccion::Reglas);
     }
 
@@ -192,5 +212,27 @@ mod tests {
         for _ in 0..5 {
             assert_eq!(procesar(entrada, &s), primera);
         }
+    }
+
+    #[test]
+    fn la_llave_de_numeros_apaga_solo_los_numeros() {
+        // Con la llave puesta: convierte el numeral.
+        let con = corregir("son las diecisiete treinta", CorreccionModo::Limpio, true);
+        // Sin ella: el numeral se queda como se dijo…
+        let sin = corregir("son las diecisiete treinta", CorreccionModo::Limpio, false);
+        assert_ne!(con.texto, sin.texto, "la llave no cambio nada");
+        assert!(
+            sin.texto.contains("diecisiete"),
+            "apagada, el numeral debe quedarse en palabras: {}",
+            sin.texto
+        );
+        // …pero el RESTO del modo Limpio sigue funcionando sin el. Control
+        // positivo de que la llave apaga una capa y no el paquete entero.
+        let otra = corregir("dame el cinco por ciento", CorreccionModo::Limpio, false);
+        assert!(
+            otra.texto.contains('%'),
+            "apagar numeros no debe apagar los simbolos: {}",
+            otra.texto
+        );
     }
 }

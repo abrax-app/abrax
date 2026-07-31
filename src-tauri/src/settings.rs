@@ -507,6 +507,18 @@ pub struct AppSettings {
     pub correccion_modo: CorreccionModo,
     #[serde(default = "default_correccion_motor")]
     pub correccion_motor: CorreccionMotor,
+    /// ¿Convertir los numerales hablados a cifras? Vive APARTE del modo
+    /// «Limpio» aunque corra dentro de el.
+    ///
+    /// Es la unica capa de todo el paquete que cambia el ESTILO del texto y no
+    /// solo su forma: convierte TODO numeral, no solo los tecnicos, asi que
+    /// «el video no puede superar los dos minutos» sale «los 2 minutos». Eso no
+    /// es un fallo —hace exactamente lo que promete— pero es una decision de
+    /// redaccion que no todo el mundo quiere, y meterla en el mismo interruptor
+    /// que las tildes y los simbolos obligaba a tragarsela entera o renunciar a
+    /// todo. Con su propia llave, se puede tener lo demas sin esto.
+    #[serde(default = "default_correccion_numeros")]
+    pub correccion_numeros: bool,
     #[serde(default)]
     pub experimental_enabled: bool,
     #[serde(default)]
@@ -628,7 +640,7 @@ fn default_model() -> String {
     "".to_string()
 }
 
-const CURRENT_SETTINGS_SCHEMA_VERSION: u32 = 1;
+const CURRENT_SETTINGS_SCHEMA_VERSION: u32 = 2;
 
 fn default_settings_schema_version() -> u32 {
     CURRENT_SETTINGS_SCHEMA_VERSION
@@ -833,14 +845,32 @@ fn default_custom_words() -> Vec<String> {
     vec!["Abrax".to_string()]
 }
 
+/// `Limpio` de fabrica: es el modo donde viven los simbolos dictados, las
+/// tildes, los correos y el tartamudeo. `Literal` solo hace espacios y
+/// mayusculas, asi que dejarlo por defecto habria sido destapar la pantalla y
+/// que el paquete siguiera sin llegar — el interruptor visible pero la funcion
+/// no. Se puede volver a `Literal` desde la misma pantalla.
 fn default_correccion_modo() -> CorreccionModo {
-    CorreccionModo::Literal
+    CorreccionModo::Limpio
 }
 
-/// Desactivado hasta que el usuario opte: el módulo de corrección jamás debe
-/// cambiar el comportamiento de una instalación existente por sí solo.
+/// Encendido de fabrica desde el 30/07, por decision de producto de Winston.
+///
+/// Estuvo en `Desactivado` con su pantalla oculta desde el 25/07 («se rediseña
+/// por separado»), y ese rediseño no volvio: el resultado fue un paquete entero
+/// —simbolos, tildes, correos, tartamudeo, ortotipografia— que nadie podia
+/// encender ni sabia que existia.
+///
+/// `SoloReglas` es determinista: tablas y reglas, sin ningun modelo, sin red y
+/// sin latencia. La pantalla sigue estando para volver a `Desactivado`.
 fn default_correccion_motor() -> CorreccionMotor {
-    CorreccionMotor::Desactivado
+    CorreccionMotor::SoloReglas
+}
+
+/// El conversor de numerales viene encendido con el resto, pero se puede apagar
+/// solo. Ver [`AppSettings::correccion_numeros`].
+fn default_correccion_numeros() -> bool {
+    true
 }
 
 fn default_app_language() -> String {
@@ -1024,6 +1054,7 @@ pub fn get_default_settings() -> AppSettings {
         ui_shell: default_ui_shell(),
         correccion_modo: default_correccion_modo(),
         correccion_motor: default_correccion_motor(),
+        correccion_numeros: default_correccion_numeros(),
         experimental_enabled: false,
         lazy_stream_close: false,
         keyboard_implementation: KeyboardImplementation::default(),
@@ -1197,6 +1228,28 @@ fn apply_settings_migrations(
             settings.transcribe_accelerator = TranscribeAcceleratorSetting::Auto;
             settings.transcribe_gpu_device = default_transcribe_gpu_device();
         }
+        updated = true;
+    }
+
+    if stored_schema_version < 2 {
+        // «Correccion local» pasa a venir encendida (30/07). Cambiar el default
+        // NO alcanza a quien ya tiene la clave guardada —serde solo lo aplica
+        // cuando FALTA—, y esa es la mayoria: la clave existe desde el 25/07 con
+        // valor `Desactivado`. Sin esta migracion, la funcion llegaria solo a
+        // instalaciones nuevas y todo el mundo que viniera actualizando seguiria
+        // sin verla, que es exactamente el problema que se esta arreglando.
+        //
+        // Se toca SOLO si sigue en el valor que nadie eligio (`Desactivado` era
+        // el default de fabrica, no una preferencia): si alguien lo puso a mano
+        // en algo distinto, su eleccion manda y no se pisa.
+        if matches!(settings.correccion_motor, CorreccionMotor::Desactivado) {
+            settings.correccion_motor = default_correccion_motor();
+            settings.correccion_modo = default_correccion_modo();
+            log::info!("migracion: correccion local encendida (venia en el default viejo)");
+        }
+    }
+
+    if stored_schema_version < CURRENT_SETTINGS_SCHEMA_VERSION as u64 {
         settings.settings_schema_version = CURRENT_SETTINGS_SCHEMA_VERSION;
         updated = true;
     }
@@ -1600,13 +1653,13 @@ mod tests {
     }
 
     /// Un store anterior al módulo de corrección no tiene `correccion_modo` y
-    /// debe cargar como Literal; un valor desconocido salva al default en vez
-    /// de resetear el store completo.
+    /// debe cargar como Limpio (el default desde el 30/07); un valor desconocido
+    /// salva al default en vez de resetear el store completo.
     #[test]
     fn correccion_modo_defaults_and_salvages() {
         let settings: AppSettings = serde_json::from_value(serde_json::json!({}))
             .expect("correccion_modo needs a serde default");
-        assert_eq!(settings.correccion_modo, CorreccionModo::Literal);
+        assert_eq!(settings.correccion_modo, CorreccionModo::Limpio);
 
         let mut stored = default_settings_json();
         stored
@@ -1620,14 +1673,14 @@ mod tests {
         );
     }
 
-    /// El motor de corrección nace desactivado (passthrough): un store viejo
-    /// jamás debe despertar con la corrección activa, y un valor desconocido
-    /// salva a Desactivado.
+    /// El motor de corrección nace en `SoloReglas` (decisión de producto del
+    /// 30/07: estuvo apagado y oculto cinco días y nadie podía encenderlo). Un
+    /// valor desconocido salva al default en vez de resetear el store.
     #[test]
     fn correccion_motor_defaults_and_salvages() {
         let settings: AppSettings = serde_json::from_value(serde_json::json!({}))
             .expect("correccion_motor needs a serde default");
-        assert_eq!(settings.correccion_motor, CorreccionMotor::Desactivado);
+        assert_eq!(settings.correccion_motor, CorreccionMotor::SoloReglas);
 
         let mut stored = default_settings_json();
         stored
@@ -1955,5 +2008,51 @@ mod tests {
             TranscribeAcceleratorSetting::Gpu
         );
         assert_eq!(settings.transcribe_gpu_device, 2);
+    }
+
+    /// La migración es la pieza de la que depende que la función llegue a quien
+    /// YA tenía Abrax instalado: cambiar el default no alcanza, porque serde
+    /// solo lo aplica cuando la clave FALTA, y esa clave existe desde el 25/07.
+    #[test]
+    fn migracion_enciende_la_correccion_en_un_store_viejo() {
+        let mut stored = default_settings_json();
+        let obj = stored.as_object_mut().unwrap();
+        obj.insert("settings_schema_version".into(), serde_json::json!(1));
+        obj.insert("correccion_motor".into(), serde_json::json!("desactivado"));
+        obj.insert("correccion_modo".into(), serde_json::json!("literal"));
+
+        let mut settings: AppSettings = serde_json::from_value(stored.clone()).unwrap();
+        assert!(matches!(
+            settings.correccion_motor,
+            CorreccionMotor::Desactivado
+        ));
+
+        let cambio = apply_settings_migrations(&mut settings, &stored);
+        assert!(cambio, "la migración debe marcar el store como actualizado");
+        assert!(matches!(
+            settings.correccion_motor,
+            CorreccionMotor::SoloReglas
+        ));
+        assert_eq!(settings.correccion_modo, CorreccionModo::Limpio);
+        assert_eq!(
+            settings.settings_schema_version,
+            CURRENT_SETTINGS_SCHEMA_VERSION
+        );
+    }
+
+    /// Control NEGATIVO: si el usuario eligió algo a mano, su elección manda.
+    /// Sin este test la migración podría pisar preferencias y nadie lo notaría.
+    #[test]
+    fn migracion_no_pisa_una_eleccion_del_usuario() {
+        let mut stored = default_settings_json();
+        let obj = stored.as_object_mut().unwrap();
+        obj.insert("settings_schema_version".into(), serde_json::json!(1));
+        obj.insert("correccion_motor".into(), serde_json::json!("solo_reglas"));
+        obj.insert("correccion_modo".into(), serde_json::json!("literal"));
+
+        let mut settings: AppSettings = serde_json::from_value(stored.clone()).unwrap();
+        apply_settings_migrations(&mut settings, &stored);
+        // Eligió Literal a mano: se respeta, no se sube a Limpio.
+        assert_eq!(settings.correccion_modo, CorreccionModo::Literal);
     }
 }

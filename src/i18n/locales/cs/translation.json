@@ -799,11 +799,15 @@
     },
     "modo": {
       "title": "Úroveň korekce",
-      "description": "Doslovný opravuje jen mezery a velká písmena. Čistý navíc řeší mluvené autoopravy (v úterý — pardon, ve středu).",
+      "description": "Doslovný opraví jen mezery a velká písmena. Čistý navíc dělá: symboly („pět procent“ → 5 %), chybějící diakritiku, e-maily a cesty, opakování („potom potom“), mluvené sebeopravy a — pokud to necháš zapnuté níže — čísla číslicemi.",
       "options": {
         "literal": "Doslovný",
         "limpio": "Čistý"
       }
+    },
+    "numeros": {
+      "title": "Čísla číslicemi",
+      "description": "Převádí nadiktovaná čísla na číslice: „dvanáct tisíc osm set“ → 12800, „v sedmnáct třicet“ → 17:30. Převádí VŠECHNA, nejen technická: „ty dvě minuty“ bude „ty 2 minuty“. Chceš raději slovy? Vypni to — zbytek Čistého funguje dál."
     }
   },
   "pruebaMic": {

@@ -799,11 +799,15 @@
     },
     "modo": {
       "title": "Correctieniveau",
-      "description": "Letterlijk corrigeert alleen spaties en hoofdletters. Schoon lost ook gesproken zelfcorrecties op (dinsdag — sorry, woensdag).",
+      "description": "Letterlijk corrigeert alleen spaties en hoofdletters. Schoon doet ook: symbolen (“vijf procent” → 5%), ontbrekende accenten, e-mails en paden, herhalingen (“dan dan”), gesproken zelfcorrecties en — als je het hieronder aan laat — getallen als cijfers.",
       "options": {
         "literal": "Letterlijk",
         "limpio": "Schoon"
       }
+    },
+    "numeros": {
+      "title": "Getallen als cijfers",
+      "description": "Zet gesproken getallen om in cijfers: “twaalfduizend achthonderd” → 12800, “om half zes” → 17:30. Het zet ALLE om, niet alleen technische: “de twee minuten” wordt “de 2 minuten”. Liever voluit? Zet het uit — de rest van Schoon blijft werken."
     }
   },
   "pruebaMic": {

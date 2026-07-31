@@ -158,6 +158,8 @@ const settingUpdaters: {
   correccion_motor: (value) =>
     commands.changeCorreccionMotorSetting(value as string),
   vad_enabled: (value) => commands.changeVadEnabledSetting(value as boolean),
+  correccion_numeros: (value) =>
+    commands.changeCorreccionNumerosSetting(value as boolean),
   autocorreccion_activa: (value) =>
     commands.changeAutocorreccionActivaSetting(value as boolean),
   emoji_dictado: (value) =>

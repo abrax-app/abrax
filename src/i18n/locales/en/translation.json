@@ -799,11 +799,15 @@
     },
     "modo": {
       "title": "Correction level",
-      "description": "Literal fixes only spacing and capitalization. Clean also resolves spoken self-corrections (on Tuesday — sorry, Wednesday).",
+      "description": "Literal only fixes spacing and sentence capitals. Clean also does: symbols (“five percent” → 5%), accents the dictation drops, emails and paths, repeats (“then then”), spoken self-corrections and — if you leave it on below — numerals as digits.",
       "options": {
         "literal": "Literal",
         "limpio": "Clean"
       }
+    },
+    "numeros": {
+      "title": "Numbers as digits",
+      "description": "Turns spoken numbers into digits: “twelve thousand eight hundred” → 12800, “at five thirty” → 17:30. It converts ALL of them, not just technical ones, so “the two minutes” becomes “the 2 minutes”. Prefer words? Turn it off — the rest of Clean keeps working."
     }
   },
   "pruebaMic": {

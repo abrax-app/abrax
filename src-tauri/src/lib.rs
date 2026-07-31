@@ -627,6 +627,7 @@ pub fn run(cli_args: CliArgs) {
             commands::settings::change_append_trailing_space_setting,
             commands::settings::change_lazy_stream_close_setting,
             commands::settings::change_vad_enabled_setting,
+            commands::settings::change_correccion_numeros_setting,
             commands::settings::change_autocorreccion_activa_setting,
             commands::settings::change_emoji_dictado_setting,
             commands::settings::change_autocorreccion_senales_borrado_setting,

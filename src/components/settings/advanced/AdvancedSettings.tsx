@@ -23,16 +23,19 @@ import { RecordingRetentionPeriodSelector } from "../RecordingRetentionPeriod";
 import { VoiceActivityDetection } from "../VoiceActivityDetection";
 
 /**
- * El grupo de corrección local queda oculto: el módulo sigue vivo y corriendo en
- * `CorreccionSettings` y en `src-tauri/src/correccion/`, solo no se expone su
- * selector. Pon esto en `true` para volver a mostrarlo.
+ * El grupo «Corrección local» estuvo oculto tras esta bandera desde el 25/07
+ * («se rediseña por separado»), y ese rediseño nunca volvió: cinco días con un
+ * paquete entero —símbolos dictados, tildes, correos, tartamudeo, ortotipografía—
+ * que nadie podía encender ni sabía que existía.
  *
- * Se ocultó cuando el motor iba a rediseñarse. Tras retirar el «Pulido con IA»
- * (29/07) lo que queda son dos ejes deterministas —motor apagado/solo-reglas y
- * modo literal/limpio—, sin Ollama ni LLM de por medio. Nada impide exponerlo,
- * pero eso es una decisión de producto, no un efecto colateral de esta retirada.
+ * Se destapa el 30/07 por decisión de producto. Lo que queda son dos ejes
+ * deterministas (motor apagado/solo-reglas y modo literal/limpio), sin Ollama ni
+ * LLM de por medio desde que se retiró el «Pulido con IA».
+ *
+ * La constante se deja en vez de borrarla: si algún día hay que volver a
+ * esconderlo para una entrega, es una línea y no una cirugía.
  */
-const MOSTRAR_CORRECCION: boolean = false;
+const MOSTRAR_CORRECCION: boolean = true;
 
 export const AdvancedSettings: React.FC = () => {
   const { t } = useTranslation();

@@ -799,11 +799,15 @@
     },
     "modo": {
       "title": "Korrekturstufe",
-      "description": "Wörtlich korrigiert nur Leerzeichen und Großschreibung. Sauber löst zusätzlich gesprochene Selbstkorrekturen auf (am Dienstag — Entschuldigung, Mittwoch).",
+      "description": "Wörtlich korrigiert nur Abstände und Satzanfänge. Sauber macht zusätzlich: Symbole („fünf Prozent“ → 5 %), fehlende Akzente, E-Mails und Pfade, Wiederholungen („dann dann“), gesprochene Selbstkorrekturen und – wenn du es unten anlässt – Zahlen als Ziffern.",
       "options": {
         "literal": "Wörtlich",
         "limpio": "Sauber"
       }
+    },
+    "numeros": {
+      "title": "Zahlen als Ziffern",
+      "description": "Wandelt gesprochene Zahlen in Ziffern: „zwölftausendachthundert“ → 12800, „um siebzehn Uhr dreißig“ → 17:30. Es wandelt ALLE um, nicht nur technische: aus „die zwei Minuten“ wird „die 2 Minuten“. Lieber ausgeschrieben? Schalte es aus – der Rest von Sauber bleibt aktiv."
     }
   },
   "pruebaMic": {

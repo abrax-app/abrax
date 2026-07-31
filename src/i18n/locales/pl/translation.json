@@ -799,11 +799,15 @@
     },
     "modo": {
       "title": "Poziom korekty",
-      "description": "Dosłowny poprawia tylko odstępy i wielkie litery. Czysty rozwiązuje też mówione autopoprawki (we wtorek — przepraszam, w środę).",
+      "description": "Dosłowny poprawia tylko odstępy i wielkie litery. Czysty robi dodatkowo: symbole („pięć procent” → 5%), brakujące akcenty, adresy e-mail i ścieżki, powtórzenia („potem potem”), poprawki wypowiedziane na głos oraz — jeśli zostawisz to włączone poniżej — liczby cyframi.",
       "options": {
         "literal": "Dosłowny",
         "limpio": "Czysty"
       }
+    },
+    "numeros": {
+      "title": "Liczby cyframi",
+      "description": "Zamienia dyktowane liczby na cyfry: „dwanaście tysięcy osiemset” → 12800, „o siedemnastej trzydzieści” → 17:30. Zamienia WSZYSTKIE, nie tylko techniczne: „te dwie minuty” stanie się „te 2 minuty”. Wolisz słowa? Wyłącz — reszta Czystego działa dalej."
     }
   },
   "pruebaMic": {

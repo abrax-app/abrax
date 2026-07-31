@@ -799,11 +799,15 @@
     },
     "modo": {
       "title": "Düzeltme düzeyi",
-      "description": "Birebir yalnızca boşlukları ve büyük harfleri düzeltir. Temiz ayrıca sözlü öz-düzeltmeleri çözer (salı günü — pardon, çarşamba).",
+      "description": "Birebir yalnızca boşlukları ve cümle başı büyük harfleri düzeltir. Temiz ayrıca şunları yapar: simgeler (“yüzde beş” → %5), dikte edilirken düşen işaretler, e-postalar ve yollar, tekrarlar (“sonra sonra”), sesli öz düzeltmeler ve — aşağıda açık bırakırsan — sayıları rakamla.",
       "options": {
         "literal": "Birebir",
         "limpio": "Temiz"
       }
+    },
+    "numeros": {
+      "title": "Sayılar rakamla",
+      "description": "Söylediğin sayıları rakama çevirir: “on iki bin sekiz yüz” → 12800, “on yedi otuzda” → 17:30. HEPSİNİ çevirir, sadece teknik olanları değil: “iki dakika” → “2 dakika”. Yazıyla mı istersin? Kapat — Temiz’in geri kalanı çalışmaya devam eder."
     }
   },
   "pruebaMic": {

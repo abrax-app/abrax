@@ -721,6 +721,15 @@ pub fn change_lazy_stream_close_setting(app: AppHandle, enabled: bool) -> Result
 
 #[tauri::command]
 #[specta::specta]
+pub fn change_correccion_numeros_setting(app: AppHandle, activo: bool) -> Result<(), String> {
+    let mut settings = settings::get_settings(&app);
+    settings.correccion_numeros = activo;
+    settings::write_settings(&app, settings);
+    Ok(())
+}
+
+#[tauri::command]
+#[specta::specta]
 pub fn change_autocorreccion_activa_setting(app: AppHandle, activa: bool) -> Result<(), String> {
     let mut settings = settings::get_settings(&app);
     settings.autocorreccion_activa = activa;

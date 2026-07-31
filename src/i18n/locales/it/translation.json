@@ -799,11 +799,15 @@
     },
     "modo": {
       "title": "Livello di correzione",
-      "description": "Letterale corregge solo spazi e maiuscole. Pulito risolve anche le autocorrezioni parlate (martedì — scusa, mercoledì).",
+      "description": "Letterale corregge solo spazi e maiuscole di frase. Pulito fa anche: simboli («cinque per cento» → 5%), accenti che la dettatura mangia, e-mail e percorsi, ripetizioni («poi poi»), autocorrezioni parlate e — se lo lasci acceso sotto — i numeri in cifre.",
       "options": {
         "literal": "Letterale",
         "limpio": "Pulito"
       }
+    },
+    "numeros": {
+      "title": "Numeri in cifre",
+      "description": "Converte i numeri dettati: «dodicimila ottocento» → 12800, «alle diciassette e trenta» → 17:30. Li converte TUTTI, non solo quelli tecnici: «i due minuti» diventa «i 2 minuti». Preferisci le lettere? Spegnilo: il resto di Pulito continua a funzionare."
     }
   },
   "pruebaMic": {

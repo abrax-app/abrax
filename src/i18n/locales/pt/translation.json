@@ -799,11 +799,15 @@
     },
     "modo": {
       "title": "Nível de correção",
-      "description": "Literal corrige apenas espaços e maiúsculas. Limpo resolve também autocorreções faladas (na terça — desculpa, na quarta).",
+      "description": "Literal corrige apenas espaços e maiúsculas de frase. Limpo faz também: símbolos («cinco por cento» → 5%), acentos que o ditado come, e-mails e caminhos, repetições («depois depois»), autocorreções faladas e — se deixares ligado abaixo — números em algarismos.",
       "options": {
         "literal": "Literal",
         "limpio": "Limpo"
       }
+    },
+    "numeros": {
+      "title": "Números em algarismos",
+      "description": "Converte os números ditados: «doze mil e oitocentos» → 12800, «às dezassete e trinta» → 17:30. Converte TODOS, não só os técnicos, por isso «os dois minutos» fica «os 2 minutos». Se preferires por extenso, desliga: o resto do Limpo continua a funcionar."
     }
   },
   "pruebaMic": {

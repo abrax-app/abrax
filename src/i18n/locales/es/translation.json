@@ -799,11 +799,15 @@
     },
     "modo": {
       "title": "Nivel de corrección",
-      "description": "Literal corrige solo espacios y mayúsculas. Limpio resuelve además autocorrecciones habladas («el martes, perdón, el miércoles»).",
+      "description": "Literal solo corrige espacios y mayúsculas de oración. Limpio hace además: símbolos («cinco por ciento» → 5%), tildes que el dictado se come, correos y rutas, repeticiones («después después»), autocorrecciones habladas y —si lo dejas encendido abajo— números en cifras.",
       "options": {
         "literal": "Literal",
         "limpio": "Limpio"
       }
+    },
+    "numeros": {
+      "title": "Números en cifras",
+      "description": "Convierte los números que dictas: «doce mil ochocientos» → 12800, «a las diecisiete treinta» → 17:30. Convierte TODOS, no solo los técnicos, así que «los dos minutos» sale «los 2 minutos». Si prefieres escribirlos con letras, apágalo: el resto de Limpio sigue funcionando."
     }
   },
   "pruebaMic": {

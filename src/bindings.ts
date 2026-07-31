@@ -488,6 +488,14 @@ async changeVadEnabledSetting(enabled: boolean) : Promise<Result<null, string>> 
  * Nada mas engañoso que un control que se deja pulsar y no hace nada. Cazado
  * el 30/07 auditando el trabajo heredado.
  */
+async changeCorreccionNumerosSetting(activo: boolean) : Promise<Result<null, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("change_correccion_numeros_setting", { activo }) };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
 async changeAutocorreccionActivaSetting(activa: boolean) : Promise<Result<null, string>> {
     try {
     return { status: "ok", data: await TAURI_INVOKE("change_autocorreccion_activa_setting", { activa }) };
@@ -1372,7 +1380,20 @@ memoria_en_sitio?: boolean; memoria_correcciones?: ParMemoria[];
  * del código indexándolo localmente. El índice vive en el datadir;
  * nada sale del equipo.
  */
-dictionary_project?: DictionaryProject | null; model_unload_timeout?: ModelUnloadTimeout; word_correction_threshold?: number; history_limit?: number; recording_retention_period?: RecordingRetentionPeriod; paste_method?: PasteMethod; clipboard_handling?: ClipboardHandling; auto_submit?: boolean; auto_submit_key?: AutoSubmitKey; mute_while_recording?: boolean; append_trailing_space?: boolean; app_language?: string; theme?: Theme; ui_theme?: UiTheme; ui_shell?: UiShell; correccion_modo?: CorreccionModo; correccion_motor?: CorreccionMotor; experimental_enabled?: boolean; lazy_stream_close?: boolean; keyboard_implementation?: KeyboardImplementation; show_tray_icon?: boolean; paste_delay_ms?: number; paste_delay_after_ms?: number; typing_tool?: TypingTool; external_script_path?: string | null; custom_filler_words?: string[] | null; 
+dictionary_project?: DictionaryProject | null; model_unload_timeout?: ModelUnloadTimeout; word_correction_threshold?: number; history_limit?: number; recording_retention_period?: RecordingRetentionPeriod; paste_method?: PasteMethod; clipboard_handling?: ClipboardHandling; auto_submit?: boolean; auto_submit_key?: AutoSubmitKey; mute_while_recording?: boolean; append_trailing_space?: boolean; app_language?: string; theme?: Theme; ui_theme?: UiTheme; ui_shell?: UiShell; correccion_modo?: CorreccionModo; correccion_motor?: CorreccionMotor; 
+/**
+ * ¿Convertir los numerales hablados a cifras? Vive APARTE del modo
+ * «Limpio» aunque corra dentro de el.
+ * 
+ * Es la unica capa de todo el paquete que cambia el ESTILO del texto y no
+ * solo su forma: convierte TODO numeral, no solo los tecnicos, asi que
+ * «el video no puede superar los dos minutos» sale «los 2 minutos». Eso no
+ * es un fallo —hace exactamente lo que promete— pero es una decision de
+ * redaccion que no todo el mundo quiere, y meterla en el mismo interruptor
+ * que las tildes y los simbolos obligaba a tragarsela entera o renunciar a
+ * todo. Con su propia llave, se puede tener lo demas sin esto.
+ */
+correccion_numeros?: boolean; experimental_enabled?: boolean; lazy_stream_close?: boolean; keyboard_implementation?: KeyboardImplementation; show_tray_icon?: boolean; paste_delay_ms?: number; paste_delay_after_ms?: number; typing_tool?: TypingTool; external_script_path?: string | null; custom_filler_words?: string[] | null; 
 /**
  * Autocorrección hablada: si quien dicta se corrige a sí mismo en voz alta
  * («…el martes, no, perdón, el miércoles»), el texto sale ya corregido.

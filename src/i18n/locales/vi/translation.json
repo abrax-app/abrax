@@ -799,11 +799,15 @@
     },
     "modo": {
       "title": "Mức sửa lỗi",
-      "description": "Nguyên văn chỉ sửa khoảng trắng và chữ hoa. Gọn gàng còn xử lý các tự sửa khi nói (thứ ba — xin lỗi, thứ tư).",
+      "description": "«Nguyên văn» chỉ sửa khoảng trắng và viết hoa đầu câu. «Sạch» còn làm: ký hiệu («năm phần trăm» → 5%), dấu bị rơi khi đọc, email và đường dẫn, từ lặp, tự sửa khi nói, và — nếu bạn để bật bên dưới — số viết bằng chữ số.",
       "options": {
         "literal": "Nguyên văn",
         "limpio": "Gọn gàng"
       }
+    },
+    "numeros": {
+      "title": "Số viết bằng chữ số",
+      "description": "Đổi số bạn đọc thành chữ số: «mười hai nghìn tám trăm» → 12800, «lúc mười bảy giờ ba mươi» → 17:30. Đổi TẤT CẢ, không chỉ số kỹ thuật, nên «hai phút» thành «2 phút». Thích viết chữ? Hãy tắt — phần còn lại của «Sạch» vẫn chạy."
     }
   },
   "pruebaMic": {

@@ -799,11 +799,15 @@
     },
     "modo": {
       "title": "Korrigeringsnivå",
-      "description": "Ordagrann korrigerar bara mellanslag och versaler. Ren löser även talade självrättelser (på tisdag — förlåt, onsdag).",
+      "description": "Ordagrant rättar bara mellanslag och versaler. Rent gör dessutom: symboler (”fem procent” → 5 %), accenter som dikteringen tappar, e-post och sökvägar, upprepningar (”sedan sedan”), talade självrättelser och – om du låter det vara på nedan – tal som siffror.",
       "options": {
         "literal": "Ordagrann",
         "limpio": "Ren"
       }
+    },
+    "numeros": {
+      "title": "Tal som siffror",
+      "description": "Gör talade tal till siffror: ”tolvtusen åttahundra” → 12800, ”klockan sjutton trettio” → 17:30. Den gör om ALLA, inte bara tekniska: ”de två minuterna” blir ”de 2 minuterna”. Föredrar du bokstäver? Stäng av — resten av Rent fortsätter."
     }
   },
   "pruebaMic": {

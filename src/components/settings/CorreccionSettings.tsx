@@ -2,6 +2,7 @@ import React from "react";
 import { useTranslation } from "react-i18next";
 import { Dropdown } from "../ui/Dropdown";
 import { SettingContainer } from "../ui/SettingContainer";
+import { ToggleSwitch } from "../ui/ToggleSwitch";
 import { useSettings } from "@/hooks/useSettings";
 import type { CorreccionModo, CorreccionMotor } from "@/bindings";
 
@@ -29,8 +30,9 @@ export const CorreccionSettings: React.FC<CorreccionSettingsProps> = React.memo(
     const { t } = useTranslation();
     const { settings, updateSetting } = useSettings();
 
-    const motor: CorreccionMotor = settings?.correccion_motor ?? "desactivado";
-    const modo: CorreccionModo = settings?.correccion_modo ?? "literal";
+    const motor: CorreccionMotor = settings?.correccion_motor ?? "solo_reglas";
+    const modo: CorreccionModo = settings?.correccion_modo ?? "limpio";
+    const numeros: boolean = settings?.correccion_numeros ?? true;
 
     return (
       <>
@@ -71,6 +73,21 @@ export const CorreccionSettings: React.FC<CorreccionSettingsProps> = React.memo(
             disabled={motor === "desactivado"}
           />
         </SettingContainer>
+
+        {/* El conversor de numerales, con llave propia. Es la unica capa del
+            paquete que cambia el ESTILO del texto y no solo su forma —convierte
+            TODO numeral, no solo los tecnicos—, asi que quien quiera tildes y
+            simbolos sin que «los dos minutos» se vuelva «los 2 minutos» puede
+            apagar esto sin renunciar al resto. */}
+        <ToggleSwitch
+          checked={numeros}
+          onChange={(value) => updateSetting("correccion_numeros", value)}
+          label={t("correccion.numeros.title")}
+          description={t("correccion.numeros.description")}
+          descriptionMode={descriptionMode}
+          grouped={grouped}
+          disabled={motor === "desactivado" || modo === "literal"}
+        />
       </>
     );
   },

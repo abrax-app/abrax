@@ -799,11 +799,15 @@
     },
     "modo": {
       "title": "Niveau de correction",
-      "description": "Littéral ne corrige que les espaces et les majuscules. Épuré résout en plus les autocorrections parlées (mardi — pardon, mercredi).",
+      "description": "Littéral ne corrige que les espaces et les majuscules de phrase. Propre fait en plus : symboles (« cinq pour cent » → 5 %), accents oubliés par la dictée, e-mails et chemins, répétitions (« ensuite ensuite »), autocorrections orales et — si vous le laissez activé ci-dessous — les nombres en chiffres.",
       "options": {
         "literal": "Littéral",
         "limpio": "Épuré"
       }
+    },
+    "numeros": {
+      "title": "Nombres en chiffres",
+      "description": "Convertit les nombres dictés : « douze mille huit cents » → 12800, « à dix-sept heures trente » → 17:30. Il les convertit TOUS, pas seulement les techniques : « les deux minutes » devient « les 2 minutes ». Vous préférez les lettres ? Désactivez-le, le reste de Propre continue."
     }
   },
   "pruebaMic": {
