@@ -44,10 +44,7 @@ import {
   PantallaVox,
 } from "./PantallasModo";
 import { SettingsGroup } from "../ui/SettingsGroup";
-import { AtajoVox } from "../AtajoVox";
 import { PanelAtajos } from "./PanelAtajos";
-import { Chip } from "../bancada/Chip";
-import { AudioLines, Eraser, Languages, MonitorSpeaker } from "lucide-react";
 import "./quiet.css";
 
 // Skin "Quiet" — minimalista y discreta (mockup PROPUESTA 1): panel oscuro
@@ -80,15 +77,6 @@ export const QuietShell: React.FC = () => {
   const { t } = useTranslation();
   const { settings, updateSetting, audioFeedbackEnabled } = useSettings();
   const osType = useOsType();
-
-  // Mismo criterio que Bancada y Retro, palabra por palabra: `null` NO es
-  // «apagado», es «lista por defecto del idioma» —o sea, el filtro ACTIVO—
-  // y solo una lista vacía lo apaga (`audio_toolkit/text.rs`, doc de
-  // `filter_transcription_output`). El chip de aquí tenía las dos ramas
-  // cambiadas: pintaba apagado lo que está encendido y, saliendo de `null`,
-  // volvía a escribir `null` — no se podía mover.
-  const cfw = settings?.custom_filler_words;
-  const fillerOn = cfw == null || cfw.length > 0;
 
   // Para la pantalla «Atajos» y el grupo de sonido que se mudo a «Avanzado»:
   // las mismas condiciones que usa el shell Clasico, para que las dos pantallas
@@ -271,92 +259,14 @@ export const QuietShell: React.FC = () => {
 
           <main className="q-main">
             {view === "escucha" ? (
-              <>
-                <div className="q-hero">
-                  <h1 className="q-h1">{t("quiet.ready")}</h1>
-                  <p className={`q-hint${grabando ? " on" : ""}`}>
-                    {/* Al dispararse el atajo, el texto confirma que FUNCIONÓ. Es
-                      la única forma de que un fallo del hook de teclado se vea
-                      en el momento en que el usuario está mirando, y de paso
-                      enseña el gesto de mantener sin que nadie lea nada. */}
-                    {grabando ? (
-                      t("quiet.dictando")
-                    ) : atajo ? (
-                      <Trans
-                        i18nKey="quiet.holdHint"
-                        values={{ atajo }}
-                        components={{ k: <span className="q-kbd" /> }}
-                      />
-                    ) : (
-                      t("quiet.holdHintNoBinding")
-                    )}
-                  </p>
-                  {/* Los mismos controles que el tablero de Karting, aqui.
-                    Antes este sitio lo ocupaba una esfera decorativa: bonita,
-                    pero en la pantalla de INICIO —lo primero que ve un juez— el
-                    espacio central tiene que servir para algo. Son los cuatro
-                    ajustes que de verdad se tocan al dictar, y son los MISMOS
-                    componentes que usa Karting, no una copia. */}
-                  <AtajoVox className="q-hint" kbdClassName="q-kbd" />
-                  <div className="q-chips bnc-chips">
-                    <Chip
-                      icon={MonitorSpeaker}
-                      label={t("bancada.systemAudio")}
-                      active={!!settings?.capture_system_audio}
-                      onClick={() =>
-                        updateSetting(
-                          "capture_system_audio",
-                          !settings?.capture_system_audio,
-                        )
-                      }
-                    />
-                    {/* «VAD» es jerga inglesa y esta es la PRIMERA pantalla. Se
-                      reusa el rotulo que ya existe en Ajustes y esta traducido
-                      en los 22 locales, en vez de crear una clave nueva.
-                      Bancada y Retro conservan «VAD» en sus diales porque ahi
-                      el hueco es de tres letras. */}
-                    <Chip
-                      icon={AudioLines}
-                      label={t(
-                        "settings.advanced.voiceActivityDetection.title",
-                      )}
-                      active={!!settings?.vad_enabled}
-                      onClick={() =>
-                        updateSetting("vad_enabled", !settings?.vad_enabled)
-                      }
-                    />
-                    <Chip
-                      icon={Languages}
-                      label={t("bancada.btn.translate")}
-                      active={!!settings?.translate_to_english}
-                      onClick={() =>
-                        updateSetting(
-                          "translate_to_english",
-                          !settings?.translate_to_english,
-                        )
-                      }
-                    />
-                    <Chip
-                      icon={Eraser}
-                      label={t("bancada.btn.fillers")}
-                      active={fillerOn}
-                      onClick={() =>
-                        updateSetting(
-                          "custom_filler_words",
-                          fillerOn ? [] : null,
-                        )
-                      }
-                    />
-                  </div>
-                </div>
-                {/* Debajo del hero, TODO lo del modo Escucha en orden: la
-                    tecla, el microfono, el modelo, lo que le pasa al texto y
-                    donde acaba. Los modelos ya no van pegados al hero: tienen
-                    su sitio en esa secuencia, despues del microfono. */}
-                <div className="q-sec">
-                  <PantallaEscucha />
-                </div>
-              </>
+              // Sin hero propio: la cabecera de la pantalla ya dice el modo,
+              // que hace y como se dispara. Hubo aqui una esfera, luego cuatro
+              // chips de ajustes y luego tres tarjetas con los modos — y esas
+              // ultimas eran un SEGUNDO menu al lado del de la izquierda, que
+              // ya lleva a las mismas tres pantallas.
+              <div className="q-sec">
+                <PantallaEscucha grabando={grabando} />
+              </div>
             ) : view === "transcripciones" ? (
               <div className="q-sec">
                 <HistorySettings />

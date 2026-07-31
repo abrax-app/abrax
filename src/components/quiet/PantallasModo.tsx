@@ -1,7 +1,8 @@
 import React from "react";
-import { useTranslation } from "react-i18next";
+import { Trans, useTranslation } from "react-i18next";
 import { useSettings } from "@/hooks/useSettings";
 import { useOsType } from "@/hooks/useOsType";
+import { formatKeyCombination } from "@/lib/utils/keyboard";
 import { SettingsGroup } from "../ui/SettingsGroup";
 import { ShortcutInput } from "../settings/ShortcutInput";
 import { PushToTalk } from "../settings/PushToTalk";
@@ -41,22 +42,56 @@ import { MemoriaSettings } from "../settings/MemoriaSettings";
  * grupos los dejaría sin ellos. Quiet compone aquí los suyos.
  */
 
-/** Encabezado de pantalla: el nombre del modo y, en una línea, qué hace. */
-const Intro: React.FC<{ titulo: string; que: string }> = ({ titulo, que }) => (
+/**
+ * Encabezado de pantalla: el nombre del modo, en una línea qué hace, y —si el
+ * modo se dispara con una tecla— cómo se dispara.
+ *
+ * Ese tercer renglón vivía en un hero aparte, centrado, encima de todo. El hero
+ * se retiró: decía «ABRAX está listo» y debajo repetía en tarjetas los tres
+ * modos que ya están en la barra lateral. Lo único que no sobraba de él era la
+ * instrucción, y su sitio es este.
+ */
+const Intro: React.FC<{
+  titulo: string;
+  que: string;
+  comoSeUsa?: React.ReactNode;
+}> = ({ titulo, que, comoSeUsa }) => (
   <header className="px-4 pb-2">
     <h1 className="text-xl font-semibold">{titulo}</h1>
     <p className="text-sm text-text/60 mt-1 max-w-prose">{que}</p>
+    {comoSeUsa && <p className="text-sm mt-2 max-w-prose">{comoSeUsa}</p>}
   </header>
 );
 
 /* ───────────────────────────────── ESCUCHA ────────────────────────────────── */
 
-export const PantallaEscucha: React.FC = () => {
+export const PantallaEscucha: React.FC<{ grabando?: boolean }> = ({
+  grabando = false,
+}) => {
   const { t } = useTranslation();
   const { settings } = useSettings();
   const osType = useOsType();
   const pushToTalk = settings?.push_to_talk ?? false;
   const esLinux = osType === "linux";
+  const atajo = formatKeyCombination(
+    settings?.bindings?.transcribe?.current_binding ?? "",
+    osType,
+  );
+
+  // Al dispararse el atajo, esta línea cambia. Es la única forma de que un
+  // fallo del hook de teclado se vea en el momento en que se está probando —y
+  // de paso enseña el gesto de mantener sin que nadie lea nada.
+  const comoSeUsa = grabando ? (
+    <span className="q-hint on">{t("quiet.dictando")}</span>
+  ) : atajo ? (
+    <Trans
+      i18nKey="quiet.holdHint"
+      values={{ atajo }}
+      components={{ k: <span className="q-kbd" /> }}
+    />
+  ) : (
+    t("quiet.holdHintNoBinding")
+  );
 
   return (
     <div className="max-w-3xl w-full space-y-6">
@@ -66,7 +101,11 @@ export const PantallaEscucha: React.FC = () => {
           pantallas si abrian con su nombre y una linea de que hacen. Tres
           pantallas de modo tienen que empezar igual o no se leen como tres
           pantallas del mismo tipo. */}
-      <Intro titulo={t("quiet.nav.listen")} que={t("quiet.modo.escucha.que")} />
+      <Intro
+        titulo={t("quiet.nav.listen")}
+        que={t("quiet.modo.escucha.que")}
+        comoSeUsa={comoSeUsa}
+      />
 
       {/* 1. Cómo se dispara. Lo primero que necesita saber quien abre la app:
              qué tecla, y si hay que mantenerla o pulsarla. */}
