@@ -1,4 +1,10 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { useTranslation } from "react-i18next";
 import { ChevronDown, Globe, RefreshCw, Search } from "lucide-react";
 import type { ModelCardStatus } from "@/components/onboarding";
@@ -11,7 +17,7 @@ import {
   MODEL_CAPABILITY_LANGUAGES,
   supportsLanguageCode,
 } from "@/lib/constants/languages.ts";
-import type { ModelInfo } from "@/bindings";
+import { commands, type ModelInfo } from "@/bindings";
 
 // check if model supports a language based on its supported_languages list
 const modelSupportsLanguage = (model: ModelInfo, langCode: string): boolean => {
@@ -35,7 +41,7 @@ export const isLegacyModel = (model: ModelInfo): boolean =>
  * hablas. `undefined` = el catálogo entero, que es lo que sigue viendo el shell
  * Clásico y el onboarding.
  */
-export type CapacidadModelo = "dictado" | "streaming";
+export type CapacidadModelo = "dictado" | "sistema";
 
 interface ModelsSettingsProps {
   capacidad?: CapacidadModelo;
@@ -55,6 +61,26 @@ export const ModelsSettings: React.FC<ModelsSettingsProps> = ({
   const [languageSearch, setLanguageSearch] = useState("");
   const languageDropdownRef = useRef<HTMLDivElement>(null);
   const languageSearchInputRef = useRef<HTMLInputElement>(null);
+  // Qué modelos sirven para audio del sistema. La lista la manda el backend
+  // (`aptitud_audio_sistema`), que es donde vive la regla. Se pedía antes por
+  // `supports_streaming` y esa NO es la condición: de los cinco solo Nemotron
+  // declara streaming, pero el audio del sistema lo sirven cuatro — la lista
+  // escondía tres modelos válidos.
+  const [preferidosSistema, setPreferidosSistema] = useState<string[]>([]);
+  useEffect(() => {
+    if (capacidad !== "sistema") return;
+    let vivo = true;
+    void commands.aptitudAudioSistema().then((r) => {
+      if (vivo && r.status === "ok") setPreferidosSistema(r.data.preferidos);
+    });
+    return () => {
+      vivo = false;
+    };
+  }, [capacidad]);
+  const sirveParaSistema = useCallback(
+    (m: ModelInfo) => preferidosSistema.some((p) => m.id.includes(p)),
+    [preferidosSistema],
+  );
   const {
     models,
     currentModel,
@@ -184,12 +210,11 @@ export const ModelsSettings: React.FC<ModelsSettingsProps> = ({
     return models.filter((model: ModelInfo) => {
       // Hide deprecated legacy (.bin/ONNX) downloads unless already on disk.
       if (isLegacyModel(model) && !model.is_downloaded) return false;
-      // Filtro por capacidad: «Streaming» solo ofrece los que de verdad
-      // escriben mientras hablas; «Escucha», el resto. Se parte el catálogo
-      // en dos listas que no se solapan, para que ningún modelo aparezca dos
-      // veces y cada modo enseñe exactamente lo que sabe hacer.
-      if (capacidad === "streaming" && !model.supports_streaming) return false;
-      if (capacidad === "dictado" && model.supports_streaming) return false;
+      // «Sistema» ofrece SOLO los que sirven para audio del sistema, y esa
+      // lista la manda el backend. «Dictado» no filtra nada: los cinco del
+      // catálogo transcriben un micrófono, y esconderle tres a alguien porque
+      // además saben otra cosa fue el error que ya se corrigió al revés.
+      if (capacidad === "sistema" && !sirveParaSistema(model)) return false;
       if (languageFilter !== "all") {
         if (!modelSupportsLanguage(model, languageFilter)) return false;
       }
@@ -199,7 +224,7 @@ export const ModelsSettings: React.FC<ModelsSettingsProps> = ({
       }
       return true;
     });
-  }, [models, languageFilter, searchQuery, capacidad]);
+  }, [models, languageFilter, searchQuery, capacidad, sirveParaSistema]);
 
   // Con una lista corta el buscador y el filtro de idioma sobran: no se filtran
   // cinco elementos, y son dos controles más en una pantalla que la medición del
@@ -218,12 +243,10 @@ export const ModelsSettings: React.FC<ModelsSettingsProps> = ({
     () =>
       models.filter((model: ModelInfo) => {
         if (isLegacyModel(model) && !model.is_downloaded) return false;
-        if (capacidad === "streaming" && !model.supports_streaming)
-          return false;
-        if (capacidad === "dictado" && model.supports_streaming) return false;
+        if (capacidad === "sistema" && !sirveParaSistema(model)) return false;
         return true;
       }).length <= 8,
-    [models, capacidad],
+    [models, capacidad, sirveParaSistema],
   );
 
   // Split filtered models into downloaded (including custom) and available sections

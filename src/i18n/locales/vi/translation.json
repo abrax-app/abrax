@@ -1092,6 +1092,24 @@
       "elegirModelo": "Chọn mô hình",
       "usaraSistema": "Chưa chọn. Nếu bạn bật âm thanh hệ thống, Abrax sẽ dùng «{{modelo}}».",
       "descargado": "đã tải"
+    },
+    "modo": {
+      "grupo": {
+        "gesto": "Bắt đầu thế nào",
+        "microfono": "Micrô của bạn",
+        "texto": "Điều gì xảy ra với văn bản",
+        "pegado": "Viết vào đâu",
+        "salida": "Phát ra ở đâu",
+        "fuente": "Âm thanh đến từ đâu",
+        "apariencia": "Giao diện"
+      },
+      "streaming": {
+        "que": "Ghi lại những gì đang phát trên máy —một buổi học, một video, một cuộc họp— thay vì micrô.",
+        "resto": "Phần còn lại —tự sửa, từ đệm, từ điển, nơi dán— giống hệt trong Nghe: đặt một lần là dùng cho cả hai."
+      },
+      "vox": {
+        "que": "Chọn văn bản trong bất kỳ ứng dụng nào, nhấn phím tắt và Abrax sẽ đọc to cho bạn."
+      }
     }
   },
   "soundPicker": {

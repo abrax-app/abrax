@@ -1092,6 +1092,24 @@
       "elegirModelo": "Modell wählen",
       "usaraSistema": "Nicht gewählt. Wenn du Systemaudio einschaltest, nutzt Abrax „{{modelo}}“.",
       "descargado": "heruntergeladen"
+    },
+    "modo": {
+      "grupo": {
+        "gesto": "Wie es startet",
+        "microfono": "Dein Mikrofon",
+        "texto": "Was mit dem Text passiert",
+        "pegado": "Wo er geschrieben wird",
+        "salida": "Wo es klingt",
+        "fuente": "Woher der Ton kommt",
+        "apariencia": "Aussehen"
+      },
+      "streaming": {
+        "que": "Transkribiert, was auf dem Rechner läuft —ein Kurs, ein Video, ein Meeting— statt deines Mikrofons.",
+        "resto": "Alles Weitere —Autokorrektur, Füllwörter, Wörterbuch, Einfügen— ist dasselbe wie bei Hören: einmal einstellen, gilt für beides."
+      },
+      "vox": {
+        "que": "Markiere Text in einer beliebigen App, drücke das Kürzel, und Abrax liest ihn vor."
+      }
     }
   },
   "soundPicker": {

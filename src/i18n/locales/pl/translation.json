@@ -1092,6 +1092,24 @@
       "elegirModelo": "Wybierz model",
       "usaraSistema": "Nie wybrano. Jeśli włączysz dźwięk systemowy, Abrax użyje „{{modelo}}”.",
       "descargado": "pobrany"
+    },
+    "modo": {
+      "grupo": {
+        "gesto": "Jak się uruchamia",
+        "microfono": "Twój mikrofon",
+        "texto": "Co dzieje się z tekstem",
+        "pegado": "Gdzie jest wpisywany",
+        "salida": "Gdzie słychać",
+        "fuente": "Skąd pochodzi dźwięk",
+        "apariencia": "Wygląd"
+      },
+      "streaming": {
+        "que": "Transkrybuje to, co gra na komputerze —zajęcia, film, spotkanie— zamiast mikrofonu.",
+        "resto": "Reszta —autokorekta, przerywniki, słownik, wklejanie— jest ta sama co w Słuchaniu: ustawiasz raz i działa dla obu."
+      },
+      "vox": {
+        "que": "Zaznacz tekst w dowolnej aplikacji, naciśnij skrót, a Abrax przeczyta go na głos."
+      }
     }
   },
   "soundPicker": {

@@ -1092,6 +1092,24 @@
       "elegirModelo": "Vybrat model",
       "usaraSistema": "Nevybráno. Když zapnete zvuk systému, Abrax použije „{{modelo}}“.",
       "descargado": "stažený"
+    },
+    "modo": {
+      "grupo": {
+        "gesto": "Jak se spouští",
+        "microfono": "Váš mikrofon",
+        "texto": "Co se stane s textem",
+        "pegado": "Kam se píše",
+        "salida": "Kde je slyšet",
+        "fuente": "Odkud jde zvuk",
+        "apariencia": "Vzhled"
+      },
+      "streaming": {
+        "que": "Přepisuje to, co hraje v počítači —výuku, video, schůzku— místo mikrofonu.",
+        "resto": "Zbytek —oprava, vycpávková slova, slovník, vkládání— je stejný jako u Poslechu: nastavíte jednou a platí pro obojí."
+      },
+      "vox": {
+        "que": "Označte text v jakékoli aplikaci, stiskněte zkratku a Abrax vám ho přečte nahlas."
+      }
     }
   },
   "soundPicker": {

@@ -1092,6 +1092,24 @@
       "elegirModelo": "Scegli un modello",
       "usaraSistema": "Non scelto. Se accendi l'audio di sistema, Abrax userà «{{modelo}}».",
       "descargado": "scaricato"
+    },
+    "modo": {
+      "grupo": {
+        "gesto": "Come si attiva",
+        "microfono": "Il tuo microfono",
+        "texto": "Cosa succede al testo",
+        "pegado": "Dove viene scritto",
+        "salida": "Da dove esce",
+        "fuente": "Da dove arriva l’audio",
+        "apariencia": "Aspetto"
+      },
+      "streaming": {
+        "que": "Trascrive ciò che suona sul computer —una lezione, un video, una riunione— invece del microfono.",
+        "resto": "Il resto —correzione, intercalari, dizionario, incollaggio— è lo stesso di Ascolto: si imposta una volta e vale per entrambi."
+      },
+      "vox": {
+        "que": "Seleziona del testo in qualsiasi app, premi la scorciatoia e Abrax te lo legge ad alta voce."
+      }
     }
   },
   "soundPicker": {

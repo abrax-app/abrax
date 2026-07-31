@@ -25,25 +25,24 @@ import { useOsType } from "@/hooks/useOsType";
 import { cerrarDesdeShell } from "@/lib/utils/ventana";
 import { formatKeyCombination } from "@/lib/utils/keyboard";
 import { commands } from "@/bindings";
-import {
-  HistorySettings,
-  ModelsSettings,
-  AdvancedSettings,
-  AboutSettings,
-  EscuchaSettings,
-} from "../settings";
+import { HistorySettings, AboutSettings } from "../settings";
 import { ShellSelector } from "../settings/ShellSelector";
 import { PaletteSelector } from "../settings/PaletteSelector";
-import { ShortcutInput } from "../settings/ShortcutInput";
-import { PushToTalk } from "../settings/PushToTalk";
-import { MicrophoneSelector } from "../settings/MicrophoneSelector";
-import { PruebaMicrofono } from "../settings/PruebaMicrofono";
-import { MuteWhileRecording } from "../settings/MuteWhileRecording";
+import { ShowOverlay } from "../settings/ShowOverlay";
 import { AudioFeedback } from "../settings/AudioFeedback";
 import { OutputDeviceSelector } from "../settings/OutputDeviceSelector";
 import { VolumeSlider } from "../settings/VolumeSlider";
-import { CaptureSystemAudio } from "../settings/CaptureSystemAudio";
-import { ModelSettingsCard } from "../settings/general/ModelSettingsCard";
+import { StartHidden } from "../settings/StartHidden";
+import { AutostartToggle } from "../settings/AutostartToggle";
+import { ShowTrayIcon } from "../settings/ShowTrayIcon";
+import { ModelUnloadTimeoutSetting } from "../settings/ModelUnloadTimeout";
+import { HistoryLimit } from "../settings/HistoryLimit";
+import { RecordingRetentionPeriodSelector } from "../settings/RecordingRetentionPeriod";
+import {
+  PantallaEscucha,
+  PantallaStreaming,
+  PantallaVox,
+} from "./PantallasModo";
 import { SettingsGroup } from "../ui/SettingsGroup";
 import { AtajoVox } from "../AtajoVox";
 import { PanelAtajos } from "./PanelAtajos";
@@ -272,139 +271,126 @@ export const QuietShell: React.FC = () => {
 
           <main className="q-main">
             {view === "escucha" ? (
-              <div className="q-hero">
-                <h1 className="q-h1">{t("quiet.ready")}</h1>
-                <p className={`q-hint${grabando ? " on" : ""}`}>
-                  {/* Al dispararse el atajo, el texto confirma que FUNCIONÓ. Es
+              <>
+                <div className="q-hero">
+                  <h1 className="q-h1">{t("quiet.ready")}</h1>
+                  <p className={`q-hint${grabando ? " on" : ""}`}>
+                    {/* Al dispararse el atajo, el texto confirma que FUNCIONÓ. Es
                       la única forma de que un fallo del hook de teclado se vea
                       en el momento en que el usuario está mirando, y de paso
                       enseña el gesto de mantener sin que nadie lea nada. */}
-                  {grabando ? (
-                    t("quiet.dictando")
-                  ) : atajo ? (
-                    <Trans
-                      i18nKey="quiet.holdHint"
-                      values={{ atajo }}
-                      components={{ k: <span className="q-kbd" /> }}
-                    />
-                  ) : (
-                    t("quiet.holdHintNoBinding")
-                  )}
-                </p>
-                {/* Los mismos controles que el tablero de Karting, aqui.
+                    {grabando ? (
+                      t("quiet.dictando")
+                    ) : atajo ? (
+                      <Trans
+                        i18nKey="quiet.holdHint"
+                        values={{ atajo }}
+                        components={{ k: <span className="q-kbd" /> }}
+                      />
+                    ) : (
+                      t("quiet.holdHintNoBinding")
+                    )}
+                  </p>
+                  {/* Los mismos controles que el tablero de Karting, aqui.
                     Antes este sitio lo ocupaba una esfera decorativa: bonita,
                     pero en la pantalla de INICIO —lo primero que ve un juez— el
                     espacio central tiene que servir para algo. Son los cuatro
                     ajustes que de verdad se tocan al dictar, y son los MISMOS
                     componentes que usa Karting, no una copia. */}
-                <AtajoVox className="q-hint" kbdClassName="q-kbd" />
-                <div className="q-chips bnc-chips">
-                  <Chip
-                    icon={MonitorSpeaker}
-                    label={t("bancada.systemAudio")}
-                    active={!!settings?.capture_system_audio}
-                    onClick={() =>
-                      updateSetting(
-                        "capture_system_audio",
-                        !settings?.capture_system_audio,
-                      )
-                    }
-                  />
-                  {/* «VAD» es jerga inglesa y esta es la PRIMERA pantalla. Se
+                  <AtajoVox className="q-hint" kbdClassName="q-kbd" />
+                  <div className="q-chips bnc-chips">
+                    <Chip
+                      icon={MonitorSpeaker}
+                      label={t("bancada.systemAudio")}
+                      active={!!settings?.capture_system_audio}
+                      onClick={() =>
+                        updateSetting(
+                          "capture_system_audio",
+                          !settings?.capture_system_audio,
+                        )
+                      }
+                    />
+                    {/* «VAD» es jerga inglesa y esta es la PRIMERA pantalla. Se
                       reusa el rotulo que ya existe en Ajustes y esta traducido
                       en los 22 locales, en vez de crear una clave nueva.
                       Bancada y Retro conservan «VAD» en sus diales porque ahi
                       el hueco es de tres letras. */}
-                  <Chip
-                    icon={AudioLines}
-                    label={t("settings.advanced.voiceActivityDetection.title")}
-                    active={!!settings?.vad_enabled}
-                    onClick={() =>
-                      updateSetting("vad_enabled", !settings?.vad_enabled)
-                    }
-                  />
-                  <Chip
-                    icon={Languages}
-                    label={t("bancada.btn.translate")}
-                    active={!!settings?.translate_to_english}
-                    onClick={() =>
-                      updateSetting(
-                        "translate_to_english",
-                        !settings?.translate_to_english,
-                      )
-                    }
-                  />
-                  <Chip
-                    icon={Eraser}
-                    label={t("bancada.btn.fillers")}
-                    active={fillerOn}
-                    onClick={() =>
-                      updateSetting("custom_filler_words", fillerOn ? [] : null)
-                    }
-                  />
+                    <Chip
+                      icon={AudioLines}
+                      label={t(
+                        "settings.advanced.voiceActivityDetection.title",
+                      )}
+                      active={!!settings?.vad_enabled}
+                      onClick={() =>
+                        updateSetting("vad_enabled", !settings?.vad_enabled)
+                      }
+                    />
+                    <Chip
+                      icon={Languages}
+                      label={t("bancada.btn.translate")}
+                      active={!!settings?.translate_to_english}
+                      onClick={() =>
+                        updateSetting(
+                          "translate_to_english",
+                          !settings?.translate_to_english,
+                        )
+                      }
+                    />
+                    <Chip
+                      icon={Eraser}
+                      label={t("bancada.btn.fillers")}
+                      active={fillerOn}
+                      onClick={() =>
+                        updateSetting(
+                          "custom_filler_words",
+                          fillerOn ? [] : null,
+                        )
+                      }
+                    />
+                  </div>
                 </div>
-
-                {/* Los modelos de dictado viven AQUI, dentro del modo que los
-                    usa: buscar un modelo ya no es ir a otra pantalla. La
-                    cabecera la pone el hero de arriba, asi que la lista entra
-                    sin la suya. */}
-                <div className="q-hero-modelos">
-                  <ModelSettingsCard />
-                  <ModelsSettings capacidad="dictado" sinCabecera />
+                {/* Debajo del hero, TODO lo del modo Escucha en orden: la
+                    tecla, el microfono, el modelo, lo que le pasa al texto y
+                    donde acaba. Los modelos ya no van pegados al hero: tienen
+                    su sitio en esa secuencia, despues del microfono. */}
+                <div className="q-sec">
+                  <PantallaEscucha />
                 </div>
-              </div>
+              </>
             ) : view === "transcripciones" ? (
               <div className="q-sec">
                 <HistorySettings />
               </div>
             ) : view === "atajos" ? (
               // Cuatro tarjetas —Escucha, Streaming, VOX y General— a lo ancho
-              // de la ventana. Los atajos de cancelar y pulsar-para-hablar
-              // siguen en «Avanzado»: aqui va lo que se toca a diario.
+              // de la ventana: el acceso rapido a lo de cada dia. El detalle
+              // completo de cada modo vive en su pantalla de la barra lateral.
               <div className="q-sec q-sec-ancha">
                 <PanelAtajos />
               </div>
             ) : view === "streaming" ? (
-              <div className="q-sec q-ajustes">
-                <SettingsGroup title={t("quiet.nav.streaming")}>
-                  <CaptureSystemAudio descriptionMode="tooltip" grouped />
-                </SettingsGroup>
-                {/* Los modelos que de verdad escriben mientras hablas. Es una
-                    lista corta a proposito: hoy solo Nemotron declara
-                    `supports_streaming`. */}
-                <ModelsSettings capacidad="streaming" sinCabecera />
+              <div className="q-sec">
+                <PantallaStreaming />
               </div>
             ) : view === "vox" ? (
               <div className="q-sec">
-                <EscuchaSettings />
+                <PantallaVox />
               </div>
             ) : view === "avanzado" ? (
+              // Lo que NO es de ningun modo. Los grupos se componen aqui en vez
+              // de usar `AdvancedSettings`: ese lo comparten los otros tres
+              // shells, y quitarle los grupos que se mudaron a las pantallas de
+              // modo los habria dejado sin ellos.
               <div className="q-sec q-ajustes">
-                <ShellSelector descriptionMode="inline" />
-                {/* Los dos ajustes de teclado que NO son «la tecla de un modo»:
-                    el gesto de mantener y el atajo de cancelar. Vivian en la
-                    pantalla «Atajos» y bajan aqui al convertirse esa en el panel
-                    de los cuatro modos — este es su unico sitio en Quiet, asi
-                    que sacarlos sin recolocarlos los habria dejado sin ninguno. */}
-                <SettingsGroup title={t("quiet.nav.shortcuts")}>
-                  <PushToTalk descriptionMode="tooltip" grouped={true} />
-                  {/* El de cancelar se oculta con pulsar-para-hablar (soltar ya
-                      cancela) y en Linux (los atajos dinamicos son inestables),
-                      igual que en el shell Clasico. */}
-                  {!esLinux && !pushToTalk && (
-                    <ShortcutInput shortcutId="cancel" grouped={true} />
-                  )}
+                <SettingsGroup title={t("quiet.modo.grupo.apariencia")}>
+                  <ShellSelector descriptionMode="tooltip" grouped={true} />
+                  <PaletteSelector descriptionMode="tooltip" grouped={true} />
+                  <ShowOverlay descriptionMode="tooltip" grouped={true} />
                 </SettingsGroup>
+                {/* Los pitidos de inicio y fin, y por donde suenan. El
+                    dispositivo de salida aparece TAMBIEN en VOX porque manda en
+                    los dos sitios; es el mismo componente, no una copia. */}
                 <SettingsGroup title={t("settings.sound.title")}>
-                  <MicrophoneSelector
-                    descriptionMode="tooltip"
-                    grouped={true}
-                  />
-                  <PruebaMicrofono descriptionMode="tooltip" grouped={true} />
-                  <MuteWhileRecording
-                    descriptionMode="tooltip"
-                    grouped={true}
-                  />
                   <AudioFeedback descriptionMode="tooltip" grouped={true} />
                   <OutputDeviceSelector
                     descriptionMode="tooltip"
@@ -413,11 +399,29 @@ export const QuietShell: React.FC = () => {
                   />
                   <VolumeSlider disabled={!audioFeedbackEnabled} />
                 </SettingsGroup>
-                <AdvancedSettings />
+                <SettingsGroup title={t("settings.advanced.groups.app")}>
+                  <StartHidden descriptionMode="tooltip" grouped={true} />
+                  <AutostartToggle descriptionMode="tooltip" grouped={true} />
+                  <ShowTrayIcon descriptionMode="tooltip" grouped={true} />
+                  <ModelUnloadTimeoutSetting
+                    descriptionMode="tooltip"
+                    grouped={true}
+                  />
+                </SettingsGroup>
+                <SettingsGroup title={t("settings.advanced.groups.history")}>
+                  <HistoryLimit descriptionMode="tooltip" grouped={true} />
+                  <RecordingRetentionPeriodSelector
+                    descriptionMode="tooltip"
+                    grouped={true}
+                  />
+                </SettingsGroup>
               </div>
             ) : (
               <div className="q-sec q-ajustes">
-                <PaletteSelector descriptionMode="inline" />
+                {/* La paleta ya no se repite aqui: vive en «Avanzado →
+                    Apariencia», y `AboutSettings` —que es comun a los cuatro
+                    shells— trae la suya. Estaban las dos en la MISMA pantalla,
+                    una encima de la otra. */}
                 <AboutSettings />
               </div>
             )}

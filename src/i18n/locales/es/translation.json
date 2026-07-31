@@ -1092,6 +1092,24 @@
       "elegirModelo": "Elegir modelo",
       "usaraSistema": "Sin elegir. Si enciendes «Audio del sistema», Abrax usará «{{modelo}}».",
       "descargado": "descargado"
+    },
+    "modo": {
+      "grupo": {
+        "gesto": "Cómo se dispara",
+        "microfono": "Tu micrófono",
+        "texto": "Qué le pasa al texto",
+        "pegado": "Dónde se escribe",
+        "salida": "Por dónde suena",
+        "fuente": "De dónde sale el audio",
+        "apariencia": "Apariencia"
+      },
+      "streaming": {
+        "que": "Transcribe lo que suena en el equipo —una clase, un video, una reunión— en vez de tu micrófono.",
+        "resto": "El resto —autocorrección, muletillas, diccionario, dónde se pega— es el mismo que en Escucha: se configura una vez y vale para los dos."
+      },
+      "vox": {
+        "que": "Selecciona texto en cualquier aplicación, pulsa el atajo y Abrax te lo lee en voz alta."
+      }
     }
   },
   "soundPicker": {

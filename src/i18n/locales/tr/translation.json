@@ -1092,6 +1092,24 @@
       "elegirModelo": "Model seç",
       "usaraSistema": "Seçilmedi. Sistem sesini açarsanız Abrax «{{modelo}}» kullanacak.",
       "descargado": "indirildi"
+    },
+    "modo": {
+      "grupo": {
+        "gesto": "Nasıl başlar",
+        "microfono": "Mikrofonunuz",
+        "texto": "Metne ne olur",
+        "pegado": "Nereye yazılır",
+        "salida": "Nereden duyulur",
+        "fuente": "Ses nereden gelir",
+        "apariencia": "Görünüm"
+      },
+      "streaming": {
+        "que": "Mikrofon yerine bilgisayarda çalanı —bir ders, bir video, bir toplantı— yazıya döker.",
+        "resto": "Gerisi —otomatik düzeltme, dolgu sözcükleri, sözlük, yapıştırma— Dinle’dekiyle aynı: bir kez ayarlanır, ikisi için de geçerli."
+      },
+      "vox": {
+        "que": "Herhangi bir uygulamada metni seçin, kısayola basın; Abrax size yüksek sesle okusun."
+      }
     }
   },
   "soundPicker": {

@@ -265,11 +265,10 @@ const SelectorModelo: React.FC<{
     () =>
       models.filter((m: ModelInfo) => {
         if (isLegacyModel(m) && !m.is_downloaded) return false;
-        // El de dictado sigue siendo «el catálogo menos los de streaming en
-        // vivo»; el de sistema, la lista que manda el backend.
-        return capacidad === "sistema"
-          ? sirveParaSistema(m)
-          : !m.supports_streaming || m.id === currentModel;
+        // «Sistema», solo los que sirven (lista del backend). «Dictado», el
+        // catálogo entero: los cinco transcriben un micrófono, y esconder
+        // alguno porque además sabe otra cosa es el error que ya se corrigió.
+        return capacidad === "sistema" ? sirveParaSistema(m) : true;
       }),
     [models, currentModel, capacidad, sirveParaSistema],
   );

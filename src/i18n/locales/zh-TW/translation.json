@@ -1092,6 +1092,24 @@
       "elegirModelo": "選擇模型",
       "usaraSistema": "未選擇。若開啟系統音訊，Abrax 會使用「{{modelo}}」。",
       "descargado": "已下載"
+    },
+    "modo": {
+      "grupo": {
+        "gesto": "怎麼開始",
+        "microfono": "你的麥克風",
+        "texto": "文字會經過什麼處理",
+        "pegado": "寫到哪裡",
+        "salida": "從哪裡播放",
+        "fuente": "聲音來自哪裡",
+        "apariencia": "外觀"
+      },
+      "streaming": {
+        "que": "轉寫電腦裡正在播放的聲音——一堂課、一段影片、一場會議——而不是麥克風。",
+        "resto": "其餘的（自動更正、口頭禪、詞典、貼上方式）與「聽寫」相同：設定一次，兩邊都生效。"
+      },
+      "vox": {
+        "que": "在任何應用程式中選取文字，按下快速鍵，Abrax 就會朗讀出來。"
+      }
     }
   },
   "soundPicker": {

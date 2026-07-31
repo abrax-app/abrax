@@ -1092,6 +1092,24 @@
       "elegirModelo": "Välj modell",
       "usaraSistema": "Inte vald. Om du slår på systemljud använder Abrax ”{{modelo}}”.",
       "descargado": "nedladdad"
+    },
+    "modo": {
+      "grupo": {
+        "gesto": "Hur den startas",
+        "microfono": "Din mikrofon",
+        "texto": "Vad som händer med texten",
+        "pegado": "Var den skrivs",
+        "salida": "Var det hörs",
+        "fuente": "Var ljudet kommer från",
+        "apariencia": "Utseende"
+      },
+      "streaming": {
+        "que": "Transkriberar det som spelas på datorn —en lektion, en video, ett möte— i stället för din mikrofon.",
+        "resto": "Resten —autokorrigering, utfyllnadsord, ordlista, inklistring— är samma som i Lyssna: ställ in en gång, gäller båda."
+      },
+      "vox": {
+        "que": "Markera text i valfri app, tryck på kortkommandot och Abrax läser upp den."
+      }
     }
   },
   "soundPicker": {
