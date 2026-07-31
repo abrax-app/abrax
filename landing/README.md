@@ -113,3 +113,6 @@ tarjeta de compatibilidad lo dice así, en vez de callarlo.
 - [ ] URLs de release reales (ver «interruptor» arriba).
 - [ ] QA en iPad/Safari (AudioContext con gesto, touch, reduced-motion).
 - [ ] QA de la intro cinemática en navegador real.
+- [ ] Captura real de Streaming (su fila usa una ilustración de texto mientras).
+- [ ] Re-grabar el clip de VOX: el actual muestra la UI vieja («Escucha» en el
+      sidebar y la cabecera del panel).
