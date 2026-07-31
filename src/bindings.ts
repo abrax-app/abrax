@@ -498,6 +498,7 @@ async listarSenalesDeFabrica() : Promise<SenalesDeFabrica> {
  * 
  * Nada mas engañoso que un control que se deja pulsar y no hace nada. Cazado
  * el 30/07 auditando el trabajo heredado.
+ * 
  * Recuerda la lista PROPIA aunque el usuario este usando las de fabrica, para
  * que ir y volver entre las dos no le borre su trabajo.
  */
@@ -778,6 +779,14 @@ async deleteModel(modelId: string) : Promise<Result<null, string>> {
 async cancelDownload(modelId: string) : Promise<Result<null, string>> {
     try {
     return { status: "ok", data: await TAURI_INVOKE("cancel_download", { modelId }) };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+async aptitudAudioSistema() : Promise<Result<AptitudAudioSistema, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("aptitud_audio_sistema") };
 } catch (e) {
     if(e instanceof Error) throw e;
     else return { status: "error", error: e  as any };
@@ -1500,6 +1509,30 @@ tts_velocidad?: number;
  * UI (Grave −40 / Normal 0 / Agudo +40).
  */
 tts_tono?: number }
+/**
+ * Qué modelos sirven para «Audio del sistema», y si ahora mismo se puede
+ * encender.
+ * 
+ * Existe para que la pantalla no tenga que ADIVINARLO. Antes ofrecía los que
+ * declaran `supports_streaming` —que de los cinco es solo Nemotron— y esa no es
+ * la condición: el audio del sistema lo sirven cuatro, y el que se queda corto
+ * es Canary. Con la lista mal, la pantalla escondía tres modelos válidos y
+ * enseñaba un aviso que no aplicaba.
+ * 
+ * `disponible` responde EXACTAMENTE lo mismo que decide
+ * `change_capture_system_audio_setting`: o el modelo activo ya sirve, o hay
+ * alguno apto en el disco. Así el interruptor solo se deja pulsar cuando la
+ * respuesta va a ser que sí, en vez de encenderse y rebotar.
+ */
+export type AptitudAudioSistema = { 
+/**
+ * Fragmentos de id de los modelos que sirven, en orden de preferencia.
+ */
+preferidos: string[]; 
+/**
+ * ¿Se puede encender «Audio del sistema» en este momento?
+ */
+disponible: boolean }
 export type AudioDevice = { index: string; name: string; is_default: boolean }
 export type AutoSubmitKey = "enter" | "ctrl_enter" | "cmd_enter"
 export type AvailableAccelerators = { transcribe: string[]; ort: string[]; gpu_devices: GpuDeviceOption[] }

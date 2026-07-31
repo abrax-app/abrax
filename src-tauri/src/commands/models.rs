@@ -195,3 +195,41 @@ pub async fn cancel_download(
         .cancel_download(&model_id)
         .map_err(|e| e.to_string())
 }
+
+/// Qué modelos sirven para «Audio del sistema», y si ahora mismo se puede
+/// encender.
+///
+/// Existe para que la pantalla no tenga que ADIVINARLO. Antes ofrecía los que
+/// declaran `supports_streaming` —que de los cinco es solo Nemotron— y esa no es
+/// la condición: el audio del sistema lo sirven cuatro, y el que se queda corto
+/// es Canary. Con la lista mal, la pantalla escondía tres modelos válidos y
+/// enseñaba un aviso que no aplicaba.
+///
+/// `disponible` responde EXACTAMENTE lo mismo que decide
+/// `change_capture_system_audio_setting`: o el modelo activo ya sirve, o hay
+/// alguno apto en el disco. Así el interruptor solo se deja pulsar cuando la
+/// respuesta va a ser que sí, en vez de encenderse y rebotar.
+#[derive(serde::Serialize, specta::Type)]
+pub struct AptitudAudioSistema {
+    /// Fragmentos de id de los modelos que sirven, en orden de preferencia.
+    pub preferidos: Vec<String>,
+    /// ¿Se puede encender «Audio del sistema» en este momento?
+    pub disponible: bool,
+}
+
+#[tauri::command]
+#[specta::specta]
+pub async fn aptitud_audio_sistema(
+    app_handle: AppHandle,
+    model_manager: State<'_, Arc<ModelManager>>,
+) -> Result<AptitudAudioSistema, String> {
+    let settings = get_settings(&app_handle);
+    let activo_sirve = !ModelManager::se_queda_corto_para_sistema(&settings.selected_model);
+    Ok(AptitudAudioSistema {
+        preferidos: ModelManager::PREFERIDOS_SISTEMA
+            .iter()
+            .map(|s| s.to_string())
+            .collect(),
+        disponible: activo_sirve || model_manager.modelo_para_sistema_descargado().is_some(),
+    })
+}

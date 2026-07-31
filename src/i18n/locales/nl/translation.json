@@ -684,7 +684,7 @@
     "streaming": {
       "systemAudio": {
         "label": "Systeemgeluid opnemen",
-        "description": "Transcribeert wat er op je computer speelt — een les, een video, een vergadering — in plaats van je microfoon. Vereist een streamingmodel."
+        "description": "Transcribeert wat er op de computer speelt —een les, een video, een vergadering— in plaats van je microfoon. Vereist een model dat geschikt is voor systeemaudio; is het actieve dat niet, dan schakelt Abrax over."
       }
     }
   },
@@ -1088,13 +1088,15 @@
       "entradaSi": "Audio komt binnen",
       "entradaSilencio": "Stilte",
       "voz": "Stem",
-      "noTransmite": "Het actieve model schrijft niet mee terwijl je praat. Kies er een uit de lijst.",
       "hint": {
         "fillers": "Haalt stopwoorden («eh», «uhm») uit wat je dicteert.",
         "autocorreccion": "Als je jezelf hardop verbetert («nee, sorry»), komt de tekst al gecorrigeerd eruit.",
         "emoji": "Zeg «emoji» en de naam, en hij wordt ingevoegd. Via tabel, zonder AI.",
-        "systemAudio": "Transcribeert wat er op de computer speelt in plaats van je microfoon. Vereist een streamingmodel."
-      }
+        "systemAudio": "Transcribeert wat er op de computer speelt in plaats van je microfoon. Deugt het actieve model niet, dan schakelt Abrax over."
+      },
+      "noSirveSistema": "Het actieve model deugt niet voor systeemaudio. Kies er een uit de lijst.",
+      "sinModeloSistema": "Download een van deze modellen om systeemaudio op te nemen.",
+      "elegirModelo": "Model kiezen"
     }
   },
   "soundPicker": {

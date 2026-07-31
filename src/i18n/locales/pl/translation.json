@@ -684,7 +684,7 @@
     "streaming": {
       "systemAudio": {
         "label": "Przechwytuj dźwięk systemu",
-        "description": "Zapisuje to, co gra na komputerze — wykład, film, spotkanie — zamiast mikrofonu. Wymaga modelu ze streamingiem."
+        "description": "Transkrybuje to, co gra na komputerze —zajęcia, film, spotkanie— zamiast mikrofonu. Wymaga modelu odpowiedniego do dźwięku systemowego; jeśli aktywny nie jest, Abrax przełącza na taki, który jest."
       }
     }
   },
@@ -1088,13 +1088,15 @@
       "entradaSi": "Dźwięk dociera",
       "entradaSilencio": "Cisza",
       "voz": "Głos",
-      "noTransmite": "Aktywny model nie pisze, gdy mówisz. Wybierz jeden z listy.",
       "hint": {
         "fillers": "Usuwa przerywniki («yyy», «no») z tego, co dyktujesz.",
         "autocorreccion": "Jeśli poprawisz się na głos («nie, przepraszam»), tekst wychodzi już poprawiony.",
         "emoji": "Powiedz «emoji» i nazwę, a zostanie wstawione. Z tabeli, bez AI.",
-        "systemAudio": "Transkrybuje to, co gra na komputerze, zamiast mikrofonu. Wymaga modelu ze streamingiem."
-      }
+        "systemAudio": "Transkrybuje to, co gra na komputerze, zamiast mikrofonu. Jeśli aktywny model się nie nadaje, Abrax przełącza na odpowiedni."
+      },
+      "noSirveSistema": "Aktywny model nie nadaje się do dźwięku systemowego. Wybierz jeden z listy.",
+      "sinModeloSistema": "Pobierz jeden z tych modeli, aby przechwytywać dźwięk systemowy.",
+      "elegirModelo": "Wybierz model"
     }
   },
   "soundPicker": {

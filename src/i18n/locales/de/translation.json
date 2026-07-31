@@ -684,7 +684,7 @@
     "streaming": {
       "systemAudio": {
         "label": "Systemton aufnehmen",
-        "description": "Transkribiert, was auf dem Rechner läuft — eine Vorlesung, ein Video, ein Meeting — statt deines Mikrofons. Erfordert ein Streaming-Modell."
+        "description": "Transkribiert, was auf dem Rechner läuft —ein Kurs, ein Video, ein Meeting— statt deines Mikrofons. Braucht ein für Systemaudio geeignetes Modell; ist das aktive es nicht, wechselt Abrax zu einem passenden."
       }
     }
   },
@@ -1088,13 +1088,15 @@
       "entradaSi": "Audio kommt an",
       "entradaSilencio": "Stille",
       "voz": "Stimme",
-      "noTransmite": "Das aktive Modell schreibt nicht mit, während du sprichst. Wähle eines aus der Liste.",
       "hint": {
         "fillers": "Entfernt Füllwörter («äh», «ähm») aus dem Diktierten.",
         "autocorreccion": "Wenn du dich laut korrigierst («nein, sorry»), kommt der Text schon berichtigt heraus.",
         "emoji": "Sag «Emoji» und den Namen, und es wird eingefügt. Per Tabelle, ohne KI.",
-        "systemAudio": "Transkribiert, was auf dem Rechner läuft, statt dein Mikrofon. Braucht ein Modell mit Streaming."
-      }
+        "systemAudio": "Transkribiert, was auf dem Rechner läuft, statt deines Mikrofons. Taugt das aktive Modell nicht, wechselt Abrax zu einem passenden."
+      },
+      "noSirveSistema": "Das aktive Modell taugt nicht für Systemaudio. Wähle eines aus der Liste.",
+      "sinModeloSistema": "Lade eines dieser Modelle herunter, um Systemaudio aufzunehmen.",
+      "elegirModelo": "Modell wählen"
     }
   },
   "soundPicker": {

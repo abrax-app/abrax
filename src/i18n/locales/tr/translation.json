@@ -684,7 +684,7 @@
     "streaming": {
       "systemAudio": {
         "label": "Sistem sesini yakala",
-        "description": "Mikrofon yerine bilgisayarda çalanı — bir ders, bir video, bir toplantı — yazıya döker. Akış destekleyen bir model gerekir."
+        "description": "Mikrofon yerine bilgisayarda çalanı —bir ders, bir video, bir toplantı— yazıya döker. Sistem sesine uygun bir model gerekir; etkin model uygun değilse Abrax uygun olana geçer."
       }
     }
   },
@@ -1088,13 +1088,15 @@
       "entradaSi": "Ses geliyor",
       "entradaSilencio": "Sessizlik",
       "voz": "Ses",
-      "noTransmite": "Etkin model siz konuşurken yazmaz. Listeden birini seçin.",
       "hint": {
         "fillers": "Dikte ettiklerinden dolgu sözcüklerini («ıı», «şey») çıkarır.",
         "autocorreccion": "Sesli olarak kendini düzeltirsen («hayır, pardon»), metin düzeltilmiş çıkar.",
         "emoji": "«Emoji» de ve adını söyle, eklenir. Tabloyla, yapay zekâsız.",
-        "systemAudio": "Mikrofon yerine bilgisayarda çalanı yazıya döker. Streaming destekleyen bir model gerekir."
-      }
+        "systemAudio": "Mikrofon yerine bilgisayarda çalanı yazıya döker. Etkin model uygun değilse Abrax uygun olana geçer."
+      },
+      "noSirveSistema": "Etkin model sistem sesi için uygun değil. Listeden birini seçin.",
+      "sinModeloSistema": "Sistem sesini yakalayabilmek için bu modellerden birini indirin.",
+      "elegirModelo": "Model seç"
     }
   },
   "soundPicker": {

@@ -684,7 +684,7 @@
     "streaming": {
       "systemAudio": {
         "label": "Capturar el audio del sistema",
-        "description": "Transcribe lo que suena en el equipo —una clase, un video, una reunión— en vez de tu micrófono. Necesita un modelo con streaming."
+        "description": "Transcribe lo que suena en el equipo —una clase, un video, una reunión— en vez de tu micrófono. Necesita un modelo apto para audio del sistema; si el activo no lo es, Abrax cambia a uno que sí."
       }
     }
   },
@@ -1088,13 +1088,15 @@
       "entradaSi": "Entrando audio",
       "entradaSilencio": "Silencio",
       "voz": "Voz",
-      "noTransmite": "El modelo activo no escribe mientras hablas. Elige uno de la lista.",
       "hint": {
         "fillers": "Quita las muletillas («eh», «este») de lo que dictas.",
         "autocorreccion": "Si te corriges al hablar («no, perdón»), el texto sale ya corregido.",
         "emoji": "Di «emoji» y su nombre, y lo inserta. Por tabla, sin IA.",
-        "systemAudio": "Transcribe lo que suena en el equipo en vez de tu micrófono. Necesita un modelo con streaming."
-      }
+        "systemAudio": "Transcribe lo que suena en el equipo en vez de tu micrófono. Si el modelo activo no sirve, Abrax cambia a uno apto."
+      },
+      "noSirveSistema": "El modelo activo no sirve para el audio del sistema. Elige uno de la lista.",
+      "sinModeloSistema": "Descarga uno de estos modelos para poder capturar el audio del sistema.",
+      "elegirModelo": "Elegir modelo"
     }
   },
   "soundPicker": {

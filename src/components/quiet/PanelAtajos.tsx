@@ -22,7 +22,12 @@ import {
   Volume2,
   type LucideIcon,
 } from "lucide-react";
-import { commands, type ModelInfo, type VozEscucha } from "@/bindings";
+import {
+  commands,
+  type AptitudAudioSistema,
+  type ModelInfo,
+  type VozEscucha,
+} from "@/bindings";
 import { events } from "@/bindings";
 import type { SpectrumPayload } from "@/lib/types/events";
 import { useSettings } from "@/hooks/useSettings";
@@ -92,16 +97,23 @@ const BotonIcono: React.FC<{
   ayuda: string;
   activo: boolean;
   onClick: () => void;
-}> = ({ icon: Icon, etiqueta, ayuda, activo, onClick }) => {
+  /** Motivo por el que no se puede tocar; sustituye al hint y lo deshabilita. */
+  bloqueado?: string;
+}> = ({ icon: Icon, etiqueta, ayuda, activo, onClick, bloqueado }) => {
   const { t } = useTranslation();
   return (
     <button
       type="button"
-      className={activo ? "on" : ""}
+      className={activo && !bloqueado ? "on" : ""}
       onClick={onClick}
+      disabled={!!bloqueado}
       aria-pressed={activo}
       aria-label={etiqueta}
-      title={`${etiqueta} · ${activo ? t("bancada.on") : t("bancada.off")}\n${ayuda}`}
+      title={
+        bloqueado
+          ? `${etiqueta}\n${bloqueado}`
+          : `${etiqueta} · ${activo ? t("bancada.on") : t("bancada.off")}\n${ayuda}`
+      }
     >
       <Icon size={16} aria-hidden="true" />
     </button>
@@ -223,20 +235,27 @@ const TarjetaGeneral: React.FC = () => {
 /**
  * El modelo activo, con un desplegable para cambiarlo.
  *
- * ABRAX tiene UN modelo activo, no uno por modo, así que las dos tarjetas
- * (Escucha y Streaming) muestran el mismo valor: el que está en uso. Lo que
- * cambia entre ellas es lo que OFRECEN — cada una, los modelos que su modo sabe
- * usar— más el activo, que se añade siempre aunque venga del otro grupo: si no,
- * al encender «audio del sistema» (que cambia el modelo solo) esta fila se
- * quedaría vacía y parecería que no hay ninguno.
+ * ABRAX tiene UN modelo activo, no uno por modo, así que el valor mostrado es
+ * el mismo en las dos tarjetas: el que está en uso. Lo que cambia es lo que
+ * cada una OFRECE.
+ *
+ * «Sistema» ofrece SOLO los que sirven para audio del sistema, y la lista se le
+ * pide al backend (`aptitud_audio_sistema`), que es quien decide. Antes se
+ * filtraba por `supports_streaming` —de los cinco, solo Nemotron—: escondía
+ * tres modelos perfectamente válidos, y encima colaba el activo aunque no
+ * sirviera, así que la fila decía «Canary» en la tarjeta de un modo al que
+ * Canary no llega.
  *
  * Los que aún no están en el disco se ofrecen igual, marcados: elegirlos pide
  * confirmación, los descarga y, al terminar, los deja activos — que es lo que
- * alguien espera al elegir un modelo de una lista.
+ * alguien espera al elegir un modelo de una lista, y es justo lo que necesita
+ * quien todavía no puede encender «Audio del sistema».
  */
-const SelectorModelo: React.FC<{ capacidad: "dictado" | "streaming" }> = ({
-  capacidad,
-}) => {
+const SelectorModelo: React.FC<{
+  capacidad: "dictado" | "sistema";
+  /** Fragmentos de id que sirven para audio del sistema, según el backend. */
+  preferidosSistema?: string[];
+}> = ({ capacidad, preferidosSistema }) => {
   const { t } = useTranslation();
   const {
     models,
@@ -248,16 +267,22 @@ const SelectorModelo: React.FC<{ capacidad: "dictado" | "streaming" }> = ({
   } = useModelStore();
   const [ocupado, setOcupado] = useState(false);
 
+  const sirveParaSistema = useCallback(
+    (m: ModelInfo) => (preferidosSistema ?? []).some((p) => m.id.includes(p)),
+    [preferidosSistema],
+  );
+
   const candidatos = useMemo(
     () =>
       models.filter((m: ModelInfo) => {
-        if (m.id === currentModel) return true;
         if (isLegacyModel(m) && !m.is_downloaded) return false;
-        return capacidad === "streaming"
-          ? m.supports_streaming
-          : !m.supports_streaming;
+        // El de dictado sigue siendo «el catálogo menos los de streaming en
+        // vivo»; el de sistema, la lista que manda el backend.
+        return capacidad === "sistema"
+          ? sirveParaSistema(m)
+          : !m.supports_streaming || m.id === currentModel;
       }),
-    [models, currentModel, capacidad],
+    [models, currentModel, capacidad, sirveParaSistema],
   );
 
   const opciones = candidatos.map((m: ModelInfo) => ({
@@ -272,12 +297,13 @@ const SelectorModelo: React.FC<{ capacidad: "dictado" | "streaming" }> = ({
     ? Math.round(downloadProgress[descargando.id]?.percentage ?? 0)
     : null;
 
-  // El modelo activo se muestra siempre, venga del grupo que venga — pero en la
-  // tarjeta de Streaming un modelo que NO transmite no puede quedarse ahí a
-  // secas: se leería como «Streaming usa Canary», que es falso. Se dice.
-  const activo = models.find((m: ModelInfo) => m.id === currentModel);
-  const noTransmite =
-    capacidad === "streaming" && !!activo && !activo.supports_streaming;
+  // Con el activo fuera de la lista de «Sistema», el desplegable enseñaría el
+  // hueco del placeholder sin decir por qué. Se dice: el que está puesto no
+  // sirve aquí, y elegir uno de la lista lo arregla.
+  const hayDescargadoApto =
+    capacidad === "sistema" && candidatos.some((m) => m.is_downloaded);
+  const activoFuera =
+    capacidad === "sistema" && !candidatos.some((m) => m.id === currentModel);
 
   const elegir = useCallback(
     async (id: string) => {
@@ -308,13 +334,23 @@ const SelectorModelo: React.FC<{ capacidad: "dictado" | "streaming" }> = ({
           options={opciones}
           selectedValue={currentModel || null}
           onSelect={(v) => void elegir(v)}
-          placeholder={t("quiet.panel.sinModelo")}
+          // «Sin modelo» sería falso en la tarjeta de sistema: hay uno activo,
+          // lo que pasa es que no sirve AQUÍ. Se pide elegir, que es la acción.
+          placeholder={t(
+            capacidad === "sistema"
+              ? "quiet.panel.elegirModelo"
+              : "quiet.panel.sinModelo",
+          )}
           disabled={ocupado || opciones.length === 0}
         />
       </div>
-      {noTransmite && !descargando && (
+      {activoFuera && !descargando && (
         <p className="text-xs text-amber-500/90">
-          {t("quiet.panel.noTransmite")}
+          {t(
+            hayDescargadoApto
+              ? "quiet.panel.noSirveSistema"
+              : "quiet.panel.sinModeloSistema",
+          )}
         </p>
       )}
       {descargando && (
@@ -536,6 +572,22 @@ const SelectorVoz: React.FC = () => {
 export const PanelAtajos: React.FC<{ grabando: boolean }> = ({ grabando }) => {
   const { t } = useTranslation();
   const { settings, updateSetting } = useSettings();
+  const { models, currentModel } = useModelStore();
+
+  // Quién sirve para «Audio del sistema» y si HOY se puede encender, según el
+  // backend — que es quien de verdad lo decide y quien rechaza el encendido si
+  // no hay modelo. Se vuelve a preguntar cuando cambia el catálogo (una
+  // descarga) o el modelo activo, que son las dos cosas que mueven la respuesta.
+  const [aptitud, setAptitud] = useState<AptitudAudioSistema | null>(null);
+  useEffect(() => {
+    let vivo = true;
+    void commands.aptitudAudioSistema().then((r) => {
+      if (vivo && r.status === "ok") setAptitud(r.data);
+    });
+    return () => {
+      vivo = false;
+    };
+  }, [models, currentModel]);
 
   // `null` NO es «apagado»: es la lista por defecto del idioma, o sea el filtro
   // ACTIVO. Solo una lista vacía lo apaga (`audio_toolkit/text.rs`). Mismo
@@ -605,6 +657,15 @@ export const PanelAtajos: React.FC<{ grabando: boolean }> = ({ grabando }) => {
               etiqueta={t("settings.streaming.systemAudio.label")}
               ayuda={t("quiet.panel.hint.systemAudio")}
               activo={!!settings?.capture_system_audio}
+              // Sin modelo apto NO se deja pulsar. El backend ya lo rechazaba
+              // —y devolvía error para que el interruptor volviera solo—, pero
+              // dejar pulsar algo que va a rebotar es prometer y desdecirse:
+              // más vale que no se pueda y se diga por qué.
+              bloqueado={
+                aptitud && !aptitud.disponible
+                  ? t("quiet.panel.sinModeloSistema")
+                  : undefined
+              }
               onClick={() =>
                 updateSetting(
                   "capture_system_audio",
@@ -614,7 +675,10 @@ export const PanelAtajos: React.FC<{ grabando: boolean }> = ({ grabando }) => {
             />
           </div>
         </div>
-        <SelectorModelo capacidad="streaming" />
+        <SelectorModelo
+          capacidad="sistema"
+          preferidosSistema={aptitud?.preferidos}
+        />
         <MedidoresStreaming grabando={grabando} />
       </Tarjeta>
 

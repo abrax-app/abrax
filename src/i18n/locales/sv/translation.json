@@ -684,7 +684,7 @@
     "streaming": {
       "systemAudio": {
         "label": "Spela in systemljud",
-        "description": "Transkriberar det som spelas på datorn — en lektion, en video, ett möte — i stället för din mikrofon. Kräver en streamingmodell."
+        "description": "Transkriberar det som spelas på datorn —en lektion, en video, ett möte— i stället för din mikrofon. Kräver en modell som passar systemljud; om den aktiva inte gör det byter Abrax till en som gör det."
       }
     }
   },
@@ -1088,13 +1088,15 @@
       "entradaSi": "Ljud kommer in",
       "entradaSilencio": "Tystnad",
       "voz": "Röst",
-      "noTransmite": "Den aktiva modellen skriver inte medan du talar. Välj en från listan.",
       "hint": {
         "fillers": "Tar bort utfyllnadsord («eh», «öh») från det du dikterar.",
         "autocorreccion": "Om du rättar dig högt («nej, förlåt») kommer texten redan rättad.",
         "emoji": "Säg «emoji» och namnet, så infogas den. Via tabell, utan AI.",
-        "systemAudio": "Transkriberar det som spelas på datorn i stället för din mikrofon. Kräver en modell med streaming."
-      }
+        "systemAudio": "Transkriberar det som spelas på datorn i stället för din mikrofon. Duger inte den aktiva modellen byter Abrax till en som gör det."
+      },
+      "noSirveSistema": "Den aktiva modellen duger inte för systemljud. Välj en från listan.",
+      "sinModeloSistema": "Ladda ner en av dessa modeller för att spela in systemljud.",
+      "elegirModelo": "Välj modell"
     }
   },
   "soundPicker": {

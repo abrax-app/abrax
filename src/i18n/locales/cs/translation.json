@@ -684,7 +684,7 @@
     "streaming": {
       "systemAudio": {
         "label": "Zachytit zvuk systému",
-        "description": "Přepisuje to, co hraje v počítači — přednášku, video, schůzku — místo mikrofonu. Vyžaduje model se streamingem."
+        "description": "Přepisuje to, co hraje v počítači —výuku, video, schůzku— místo mikrofonu. Vyžaduje model vhodný pro zvuk systému; pokud aktivní není, Abrax přepne na vhodný."
       }
     }
   },
@@ -1088,13 +1088,15 @@
       "entradaSi": "Přichází zvuk",
       "entradaSilencio": "Ticho",
       "voz": "Hlas",
-      "noTransmite": "Aktivní model nepíše, když mluvíte. Vyberte některý ze seznamu.",
       "hint": {
         "fillers": "Odstraní vycpávková slova («ehm», «no») z toho, co diktujete.",
         "autocorreccion": "Když se opravíte nahlas («ne, pardon»), text vyjde už opravený.",
         "emoji": "Řekněte «emoji» a jeho název a vloží se. Podle tabulky, bez AI.",
-        "systemAudio": "Přepisuje to, co hraje v počítači, místo mikrofonu. Vyžaduje model se streamingem."
-      }
+        "systemAudio": "Přepisuje to, co hraje v počítači, místo mikrofonu. Pokud se aktivní model nehodí, Abrax přepne na vhodný."
+      },
+      "noSirveSistema": "Aktivní model se pro zvuk systému nehodí. Vyberte některý ze seznamu.",
+      "sinModeloSistema": "Stáhněte si jeden z těchto modelů, abyste mohli zachytávat zvuk systému.",
+      "elegirModelo": "Vybrat model"
     }
   },
   "soundPicker": {

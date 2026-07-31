@@ -1211,13 +1211,20 @@ impl ModelManager {
     ///    los tiene en disco sirven igual y no vamos a pedirle otra descarga.
     ///
     /// `None` = no hay ninguno bajado; el llamador debe AVISAR, no adivinar.
+    ///
+    /// La lista es `pub` porque la pantalla «Streaming» ofrece EXACTAMENTE estos
+    /// y no otros: si la copiara al frontend, el día que aquí se añada uno la
+    /// pantalla seguiría enseñando la lista vieja — el mismo error que ya se
+    /// corrigió con las señales de fábrica de la autocorrección.
+    pub const PREFERIDOS_SISTEMA: &'static [&'static str] = &[
+        "nemotron-3.5-asr-streaming-0.6b",
+        "whisper-large-v3-turbo",
+        "whisper-large-v3",
+        "cohere-transcribe-03-2026",
+    ];
+
     pub fn modelo_para_sistema_descargado(&self) -> Option<String> {
-        const PREFERIDOS: &[&str] = &[
-            "nemotron-3.5-asr-streaming-0.6b",
-            "whisper-large-v3-turbo",
-            "whisper-large-v3",
-            "cohere-transcribe-03-2026",
-        ];
+        const PREFERIDOS: &[&str] = ModelManager::PREFERIDOS_SISTEMA;
         let modelos = self.available_models.lock().unwrap();
         for pref in PREFERIDOS {
             if let Some(m) = modelos
