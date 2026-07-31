@@ -1245,10 +1245,10 @@ h2::before {
    (aspect-ratio + cover para que Retro, vertical, no rompa las filas) */
 .mini-grid {
   display: grid;
-  /* minmax(0,…): sin él, el mínimo de cada columna es el ancho intrínseco
-     de la captura (1006px) y la rejilla revienta el card */
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  gap: 10px;
+  /* dos fotos apiladas a lo ancho, como las tiras de paleta de al lado;
+     minmax(0,…) evita que el mínimo intrínseco de la captura reviente el card */
+  grid-template-columns: minmax(0, 1fr);
+  gap: 14px;
 }
 .mini-grid figure {
   margin: 0;
@@ -1258,7 +1258,7 @@ h2::before {
   display: block;
   width: 100%;
   height: auto; /* anula el atributo height: sin esto el aspect-ratio no aplica */
-  aspect-ratio: 8 / 7;
+  aspect-ratio: 16 / 10;
   object-fit: cover;
   object-position: top;
   border: 1px solid var(--borde);
