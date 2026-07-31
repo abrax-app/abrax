@@ -17,9 +17,12 @@ import { formatKeyCombination } from "@/lib/utils/keyboard";
  * cambia, esta línea cambia con él. Y si se queda sin atajo, lo dice en vez de
  * enseñar un hueco.
  */
-export const AtajoVox: React.FC<{ className?: string }> = ({
-  className = "",
-}) => {
+export const AtajoVox: React.FC<{
+  className?: string;
+  /** Clase de la tecla. Se pasa para poder usar LA MISMA que el aviso vecino:
+   *  dos avisos iguales tienen que verse iguales, no parecidos. */
+  kbdClassName?: string;
+}> = ({ className = "vox-hint", kbdClassName = "vox-kbd" }) => {
   const { t } = useTranslation();
   const { settings } = useSettings();
   const osType = useOsType();
@@ -30,12 +33,12 @@ export const AtajoVox: React.FC<{ className?: string }> = ({
   );
 
   return (
-    <p className={`vox-hint ${className}`}>
+    <p className={className}>
       {atajo ? (
         <Trans
           i18nKey="vox.atajoHint"
           values={{ atajo }}
-          components={{ k: <span className="vox-kbd" /> }}
+          components={{ k: <span className={kbdClassName} /> }}
         />
       ) : (
         t("vox.atajoSinBinding")

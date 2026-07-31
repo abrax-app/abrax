@@ -297,7 +297,7 @@ export const QuietShell: React.FC = () => {
                     espacio central tiene que servir para algo. Son los cuatro
                     ajustes que de verdad se tocan al dictar, y son los MISMOS
                     componentes que usa Karting, no una copia. */}
-                <AtajoVox />
+                <AtajoVox className="q-hint" kbdClassName="q-kbd" />
                 <div className="q-chips">
                   <Chip
                     icon={MonitorSpeaker}

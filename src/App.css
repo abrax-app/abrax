@@ -142,9 +142,9 @@
    Un parrafo se maqueta como parrafo y la tecla va en linea, igual que el aviso
    del atajo de dictado que tiene encima. */
 .vox-hint {
-  font-size: 12.5px;
+  font-size: 13.5px;
   line-height: 1.5;
-  opacity: 0.62;
+  opacity: 0.8;
   margin: 6px 0 0;
 }
 .vox-kbd {
@@ -155,6 +155,6 @@
   border-radius: 6px;
   border: 1px solid currentColor;
   font-family: ui-monospace, "Cascadia Code", monospace;
-  font-size: 11.5px;
-  opacity: 0.85;
+  font-size: 13px;
+  opacity: 0.9;
 }
