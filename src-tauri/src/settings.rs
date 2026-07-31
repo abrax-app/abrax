@@ -640,7 +640,7 @@ fn default_model() -> String {
     "".to_string()
 }
 
-const CURRENT_SETTINGS_SCHEMA_VERSION: u32 = 2;
+const CURRENT_SETTINGS_SCHEMA_VERSION: u32 = 3;
 
 fn default_settings_schema_version() -> u32 {
     CURRENT_SETTINGS_SCHEMA_VERSION
@@ -1246,6 +1246,25 @@ fn apply_settings_migrations(
             settings.correccion_motor = default_correccion_motor();
             settings.correccion_modo = default_correccion_modo();
             log::info!("migracion: correccion local encendida (venia en el default viejo)");
+        }
+    }
+
+    if stored_schema_version < 3 {
+        // La autocorreccion hablada tambien viene encendida (decision del
+        // 30/07). Va en su propio paso y no en el anterior porque los stores ya
+        // migrados quedaron en 2: meterla alli no habria alcanzado a nadie que
+        // ya hubiera abierto la app hoy.
+        //
+        // Aqui SI se pisa un `false` guardado, y hay razon para hacerlo sin
+        // remordimiento: hasta hoy ese interruptor era un PLACEBO —no existia
+        // comando Tauri para el, ver `dbd9aa1`—, asi que su valor nunca pudo
+        // salir de una eleccion del usuario. Todo `false` almacenado es el
+        // default viejo, no una preferencia. Cuando alguien lo apague a partir
+        // de ahora quedara guardado de verdad, y ninguna migracion futura debe
+        // volver a tocarlo.
+        if !settings.autocorreccion_activa {
+            settings.autocorreccion_activa = default_autocorreccion_activa();
+            log::info!("migracion: autocorreccion hablada encendida (venia del default viejo)");
         }
     }
 
@@ -2054,5 +2073,42 @@ mod tests {
         apply_settings_migrations(&mut settings, &stored);
         // Eligió Literal a mano: se respeta, no se sube a Limpio.
         assert_eq!(settings.correccion_modo, CorreccionModo::Literal);
+    }
+
+    /// La autocorreccion hablada debe llegar encendida tambien a quien ya tenia
+    /// Abrax. Su `false` guardado NO es una preferencia: el interruptor era un
+    /// placebo (sin comando Tauri) hasta el 30/07, asi que nadie pudo elegirlo.
+    #[test]
+    fn migracion_enciende_la_autocorreccion_hablada() {
+        let mut stored = default_settings_json();
+        let obj = stored.as_object_mut().unwrap();
+        obj.insert("settings_schema_version".into(), serde_json::json!(2));
+        obj.insert("autocorreccion_activa".into(), serde_json::json!(false));
+
+        let mut settings: AppSettings = serde_json::from_value(stored.clone()).unwrap();
+        assert!(!settings.autocorreccion_activa);
+        apply_settings_migrations(&mut settings, &stored);
+        assert!(settings.autocorreccion_activa);
+        assert_eq!(
+            settings.settings_schema_version,
+            CURRENT_SETTINGS_SCHEMA_VERSION
+        );
+    }
+
+    /// Y no se vuelve a tocar: un store ya en el esquema actual se queda como
+    /// esta, para que apagarla a mano sea una decision que dure.
+    #[test]
+    fn migracion_ya_al_dia_respeta_el_apagado() {
+        let mut stored = default_settings_json();
+        let obj = stored.as_object_mut().unwrap();
+        obj.insert(
+            "settings_schema_version".into(),
+            serde_json::json!(CURRENT_SETTINGS_SCHEMA_VERSION),
+        );
+        obj.insert("autocorreccion_activa".into(), serde_json::json!(false));
+
+        let mut settings: AppSettings = serde_json::from_value(stored.clone()).unwrap();
+        apply_settings_migrations(&mut settings, &stored);
+        assert!(!settings.autocorreccion_activa, "se pisó un apagado real");
     }
 }
