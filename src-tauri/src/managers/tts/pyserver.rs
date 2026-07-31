@@ -473,6 +473,11 @@ fn matar_procesos_del_runtime(runtime_dir: &std::path::Path) {
 /// Se comprueba en caliente y no se cachea: instalar `uv` a mitad de sesión es
 /// raro, pero si pasa la app se entera al siguiente repintado en vez de mentir
 /// hasta el reinicio.
+/// Sin usar desde que el filtro de motores es incondicional (VOX ofrece solo
+/// Sistema y Piper). Se conserva —no se borra— porque es la comprobación que
+/// hará falta el día que `uv` se aprovisione con la app y Kokoro/Online puedan
+/// volver a ofrecerse sin que fallen.
+#[allow(dead_code)]
 pub fn uv_disponible() -> bool {
     crate::utils::comando_silencioso("uv")
         .arg("--version")

@@ -147,7 +147,7 @@ impl TtsManager {
             // «Recomendamos Kokoro» y el botón «Usar recomendado» llevaba a un
             // motor invisible. Un consejo que no se puede seguir es peor que no
             // dar consejo.
-            if super::registry::necesita_uv(rec) && !super::pyserver::uv_disponible() {
+            if super::registry::necesita_uv(rec) {
                 // Piper es nativo en las cuatro plataformas; si tampoco valiera,
                 // el sistema siempre está.
                 if super::registry::necesita_uv(EngineId::Piper) {
@@ -291,10 +291,23 @@ impl TtsManager {
             // x64, macOS x64 y macOS aarch64. Ese sigue ofreciendose siempre.
             //
             // Un boton que falla es peor que un boton que no esta.
-            let hay_uv = super::pyserver::uv_disponible();
+            // Fuera SIEMPRE los que dependen de `uv`, tenga la maquina `uv` o no.
+            //
+            // Primero se filtro solo cuando faltaba, para no quitarle nada a
+            // quien lo tuviera. Eso hacia que el build de ENTREGA se viera
+            // distinto en cada equipo: en el de desarrollo salian los cuatro y
+            // en el de un juez dos. Un producto que no se puede demostrar tal
+            // como lo recibe el usuario no se puede ni grabar ni comprobar.
+            //
+            // Y Online no es solo fragil: manda el texto a servidores de
+            // Microsoft, que es justo lo contrario de lo que promete la app.
+            //
+            // Quedan los dos que funcionan en cualquier equipo recien
+            // instalado: el del sistema y Piper (nativo, con runtime firmado
+            // para Windows, Linux y las dos arquitecturas de macOS).
             EngineId::ALL
                 .iter()
-                .filter(|&&id| hay_uv || !super::registry::necesita_uv(id))
+                .filter(|&&id| !super::registry::necesita_uv(id))
                 .map(|&id| {
                     let requirements = super::registry::requirements_for(id);
                     EngineStatus {
