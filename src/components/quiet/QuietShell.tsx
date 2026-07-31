@@ -84,7 +84,11 @@ export const QuietShell: React.FC = () => {
   const pushToTalk = settings?.push_to_talk ?? false;
   const esLinux = osType === "linux";
 
-  const [view, setView] = useState<QView>("escucha");
+  // Abre en «Atajos», no en «Escucha»: el panel de los cuatro modos es lo que
+  // alguien necesita ver al abrir —qué tecla, qué modelo, qué está encendido—
+  // y desde ahí se va a cualquier modo. «Escucha» es UN modo, y arrancar dentro
+  // de uno de los tres da a entender que la app es solo ese.
+  const [view, setView] = useState<QView>("atajos");
   const [grabando, setGrabando] = useState(false);
   // Tras cambiar a Quiet en caliente la ventana conserva el marco nativo hasta
   // reiniciar; mientras tanto los botones −/□/× propios duplicarían los del
