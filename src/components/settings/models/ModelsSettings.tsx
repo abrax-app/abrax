@@ -24,7 +24,25 @@ const modelSupportsLanguage = (model: ModelInfo, langCode: string): boolean => {
 const isLegacyModel = (model: ModelInfo): boolean =>
   typeof model.source === "object" && "Url" in model.source;
 
-export const ModelsSettings: React.FC = () => {
+/**
+ * Con qué capacidad se filtra el catálogo. El shell Quiet ya no tiene una
+ * pantalla «Modelos» suelta: cada modo lleva DENTRO los modelos que sabe usar,
+ * así que «Escucha» pide los de dictado y «Streaming» los que escriben mientras
+ * hablas. `undefined` = el catálogo entero, que es lo que sigue viendo el shell
+ * Clásico y el onboarding.
+ */
+export type CapacidadModelo = "dictado" | "streaming";
+
+interface ModelsSettingsProps {
+  capacidad?: CapacidadModelo;
+  /** Oculta el título y la descripción cuando la pantalla ya los pone. */
+  sinCabecera?: boolean;
+}
+
+export const ModelsSettings: React.FC<ModelsSettingsProps> = ({
+  capacidad,
+  sinCabecera = false,
+}) => {
   const { t } = useTranslation();
   const [switchingModelId, setSwitchingModelId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
@@ -156,18 +174,18 @@ export const ModelsSettings: React.FC = () => {
     }
   };
 
-  // Con el catálogo curado (5 modelos) el buscador y el filtro de idioma sobran:
-  // no se filtran cinco elementos y son dos controles más en una pantalla que la
-  // medición del 26/07 describió como abrumadora. Reaparecen solos si el
-  // catálogo vuelve a crecer o si el usuario acumula modelos en disco.
-  const catalogoCorto = models.length <= 8;
-
   // Filter models by search query (name + description) and language filter
   const filteredModels = useMemo(() => {
     const q = searchQuery.trim().toLowerCase();
     return models.filter((model: ModelInfo) => {
       // Hide deprecated legacy (.bin/ONNX) downloads unless already on disk.
       if (isLegacyModel(model) && !model.is_downloaded) return false;
+      // Filtro por capacidad: «Streaming» solo ofrece los que de verdad
+      // escriben mientras hablas; «Escucha», el resto. Se parte el catálogo
+      // en dos listas que no se solapan, para que ningún modelo aparezca dos
+      // veces y cada modo enseñe exactamente lo que sabe hacer.
+      if (capacidad === "streaming" && !model.supports_streaming) return false;
+      if (capacidad === "dictado" && model.supports_streaming) return false;
       if (languageFilter !== "all") {
         if (!modelSupportsLanguage(model, languageFilter)) return false;
       }
@@ -177,7 +195,32 @@ export const ModelsSettings: React.FC = () => {
       }
       return true;
     });
-  }, [models, languageFilter, searchQuery]);
+  }, [models, languageFilter, searchQuery, capacidad]);
+
+  // Con una lista corta el buscador y el filtro de idioma sobran: no se filtran
+  // cinco elementos, y son dos controles más en una pantalla que la medición del
+  // 26/07 describió como abrumadora. Reaparecen solos si la lista crece.
+  //
+  // Se cuenta lo que SE VE, no `models`. Antes miraba el registro entero —que en
+  // esta máquina son 22 entradas: 5 del catálogo más 17 heredadas que la lista
+  // de abajo esconde—, así que la condición nunca se cumplía y los dos controles
+  // salían siempre, sobre cinco tarjetas. La regla estaba escrita y no llegaba a
+  // aplicarse jamás.
+  //
+  // Y se cuenta ANTES de aplicar el texto buscado: si contara después, teclear
+  // reduciría la lista, la condición se volvería cierta y el buscador
+  // desaparecería con las letras dentro.
+  const catalogoCorto = useMemo(
+    () =>
+      models.filter((model: ModelInfo) => {
+        if (isLegacyModel(model) && !model.is_downloaded) return false;
+        if (capacidad === "streaming" && !model.supports_streaming)
+          return false;
+        if (capacidad === "dictado" && model.supports_streaming) return false;
+        return true;
+      }).length <= 8,
+    [models, capacidad],
+  );
 
   // Split filtered models into downloaded (including custom) and available sections
   const { downloadedModels, availableModels } = useMemo(() => {
@@ -223,14 +266,16 @@ export const ModelsSettings: React.FC = () => {
 
   return (
     <div className="max-w-3xl w-full mx-auto space-y-4">
-      <div className="mb-4">
-        <h1 className="text-xl font-semibold mb-2">
-          {t("settings.models.title")}
-        </h1>
-        <p className="text-sm text-text/60">
-          {t("settings.models.description")}
-        </p>
-      </div>
+      {!sinCabecera && (
+        <div className="mb-4">
+          <h1 className="text-xl font-semibold mb-2">
+            {t("settings.models.title")}
+          </h1>
+          <p className="text-sm text-text/60">
+            {t("settings.models.description")}
+          </p>
+        </div>
+      )}
 
       {/* OCULTO (28/07) — «Carpeta de modelos» promete algo que no cumple.
           Los cinco modelos del catálogo se descargan a la caché de Hugging

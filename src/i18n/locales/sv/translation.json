@@ -680,6 +680,12 @@
         "label": "Visa nyheter",
         "description": "Visa versionsinformation efter Abrax-uppdateringar"
       }
+    },
+    "streaming": {
+      "systemAudio": {
+        "label": "Spela in systemljud",
+        "description": "Transkriberar det som spelas på datorn — en lektion, en video, ett möte — i stället för din mikrofon. Kräver en streamingmodell."
+      }
     }
   },
   "footer": {
@@ -1048,7 +1054,9 @@
   },
   "quiet": {
     "nav": {
-      "listen": "Listen",
+      "listen": "Lyssna",
+      "shortcuts": "Kortkommandon",
+      "streaming": "Streaming",
       "transcriptions": "Transcriptions",
       "models": "Models",
       "settings": "Settings",

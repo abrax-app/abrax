@@ -680,6 +680,12 @@
         "label": "הצג מה חדש",
         "description": "הצג הערות גרסה לאחר עדכוני Abrax"
       }
+    },
+    "streaming": {
+      "systemAudio": {
+        "label": "הקלטת שמע המערכת",
+        "description": "מתמלל את מה שמתנגן במחשב — שיעור, סרטון, פגישה — במקום המיקרופון. נדרש מודל עם סטרימינג."
+      }
     }
   },
   "footer": {
@@ -1048,7 +1054,9 @@
   },
   "quiet": {
     "nav": {
-      "listen": "Listen",
+      "listen": "האזנה",
+      "shortcuts": "קיצורי מקלדת",
+      "streaming": "סטרימינג",
       "transcriptions": "Transcriptions",
       "models": "Models",
       "settings": "Settings",

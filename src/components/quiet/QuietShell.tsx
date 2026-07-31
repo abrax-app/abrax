@@ -5,9 +5,11 @@ import { getCurrentWindow } from "@tauri-apps/api/window";
 import {
   Mic,
   FileText,
-  Boxes,
-  Settings,
-  LayoutGrid,
+  Keyboard,
+  Radio,
+  Volume2,
+  Cog,
+  Info,
   ShieldCheck,
   CloudOff,
   ArrowDownToLine,
@@ -23,10 +25,26 @@ import { useOsType } from "@/hooks/useOsType";
 import { cerrarDesdeShell } from "@/lib/utils/ventana";
 import { formatKeyCombination } from "@/lib/utils/keyboard";
 import { commands } from "@/bindings";
-import { GeneralSettings, HistorySettings, ModelsSettings } from "../settings";
-import { SECTIONS_CONFIG, type SidebarSection } from "../Sidebar";
+import {
+  HistorySettings,
+  ModelsSettings,
+  AdvancedSettings,
+  AboutSettings,
+  EscuchaSettings,
+} from "../settings";
 import { ShellSelector } from "../settings/ShellSelector";
 import { PaletteSelector } from "../settings/PaletteSelector";
+import { ShortcutInput } from "../settings/ShortcutInput";
+import { PushToTalk } from "../settings/PushToTalk";
+import { MicrophoneSelector } from "../settings/MicrophoneSelector";
+import { PruebaMicrofono } from "../settings/PruebaMicrofono";
+import { MuteWhileRecording } from "../settings/MuteWhileRecording";
+import { AudioFeedback } from "../settings/AudioFeedback";
+import { OutputDeviceSelector } from "../settings/OutputDeviceSelector";
+import { VolumeSlider } from "../settings/VolumeSlider";
+import { CaptureSystemAudio } from "../settings/CaptureSystemAudio";
+import { ModelSettingsCard } from "../settings/general/ModelSettingsCard";
+import { SettingsGroup } from "../ui/SettingsGroup";
 import { AtajoVox } from "../AtajoVox";
 import { Chip } from "../bancada/Chip";
 import { AudioLines, Eraser, Languages, MonitorSpeaker } from "lucide-react";
@@ -36,24 +54,31 @@ import "./quiet.css";
 // redondeado, sidebar limpia y un hero con la esfera + atajo + botón gradiente.
 // Inspiración: Wispr Flow / ChatGPT / Spotify. La app "casi desaparece".
 
-type QView = "escuchar" | "transcripciones" | "modelos" | "ajustes" | "mas";
-
-// Sub-pestañas del ítem «Más». El orden importa: **Avanzado va primero y es la
-// activa por defecto** porque ahí viven el Diccionario vivo y la Memoria de
-// correcciones, que son los diferenciadores de ABRAX. Enterrarlos tras dos clics
-// y un scroll haría que el shell bonito nos costara justo lo que nos hace únicos.
-// Se hospedan las secciones REALES del registro compartido (`SECTIONS_CONFIG`),
-// igual que hace el shell Bancada: cero UI duplicada.
-const MAS_SECCIONES = [
-  "advanced",
-  "escucha",
-  "about",
-] as const satisfies readonly SidebarSection[];
-type MasSeccion = (typeof MAS_SECCIONES)[number];
+// El menú se organiza POR MODO, y cada modo lleva sus modelos dentro (decisión
+// de Winston, 31/07). Se acabaron la pantalla «Modelos» suelta y el cajón «Más»
+// con pestañas: buscar un modelo era ir a un sitio distinto del que usaba ese
+// modelo, y las tres pestañas de «Más» escondían a dos clics justo lo que nos
+// diferencia.
+//
+//   Atajos          las teclas, y solo las teclas
+//   Transcripciones el historial
+//   Escucha         dictar: los atajos en pantalla + los modelos de dictado
+//   Streaming       audio del sistema + los modelos que escriben en vivo
+//   VOX             leer en voz alta + sus voces
+//   Avanzado        todo lo demás, incluido el sonido que salió de Atajos
+//   Acerca de       idioma, tema, paleta y créditos
+type QView =
+  | "atajos"
+  | "transcripciones"
+  | "escucha"
+  | "streaming"
+  | "vox"
+  | "avanzado"
+  | "acercade";
 
 export const QuietShell: React.FC = () => {
   const { t } = useTranslation();
-  const { settings, updateSetting } = useSettings();
+  const { settings, updateSetting, audioFeedbackEnabled } = useSettings();
   const osType = useOsType();
 
   // Mismo criterio que Bancada y Retro, palabra por palabra: `null` NO es
@@ -65,8 +90,13 @@ export const QuietShell: React.FC = () => {
   const cfw = settings?.custom_filler_words;
   const fillerOn = cfw == null || cfw.length > 0;
 
-  const [view, setView] = useState<QView>("escuchar");
-  const [seccionMas, setSeccionMas] = useState<SidebarSection>("advanced");
+  // Para la pantalla «Atajos» y el grupo de sonido que se mudo a «Avanzado»:
+  // las mismas condiciones que usa el shell Clasico, para que las dos pantallas
+  // oculten y deshabiliten exactamente lo mismo.
+  const pushToTalk = settings?.push_to_talk ?? false;
+  const esLinux = osType === "linux";
+
+  const [view, setView] = useState<QView>("escucha");
   const [grabando, setGrabando] = useState(false);
   // Tras cambiar a Quiet en caliente la ventana conserva el marco nativo hasta
   // reiniciar; mientras tanto los botones −/□/× propios duplicarían los del
@@ -114,23 +144,6 @@ export const QuietShell: React.FC = () => {
     settings?.bindings?.transcribe?.current_binding ?? "",
     osType,
   );
-  // Secciones del ítem «Más». Se derivan del registro compartido con
-  // `Object.entries` —igual que el shell Bancada— porque indexar
-  // `SECTIONS_CONFIG` por una clave literal conserva el tipo estrecho de
-  // `as const` y `enabled` queda declarado sin argumentos.
-  const seccionesMas = Object.entries(SECTIONS_CONFIG)
-    .filter(
-      ([id, c]) =>
-        MAS_SECCIONES.includes(id as MasSeccion) && c.enabled(settings),
-    )
-    .map(([id, c]) => ({ id: id as SidebarSection, ...c }));
-  // Si la activa se deshabilita en caliente (p. ej. se apaga el modo
-  // depuración), se cae a la primera disponible en vez de renderizar una
-  // sección que ya no existe.
-  const SeccionMasActiva = (
-    seccionesMas.find((s) => s.id === seccionMas) ?? seccionesMas[0]
-  )?.component;
-
   const win = getCurrentWindow();
 
   useEffect(() => {
@@ -151,15 +164,17 @@ export const QuietShell: React.FC = () => {
     icon: LucideIcon;
     label: string;
   }[] = [
-    { id: "escuchar", icon: Mic, label: t("quiet.nav.listen") },
+    { id: "atajos", icon: Keyboard, label: t("quiet.nav.shortcuts") },
     {
       id: "transcripciones",
       icon: FileText,
       label: t("quiet.nav.transcriptions"),
     },
-    { id: "modelos", icon: Boxes, label: t("quiet.nav.models") },
-    { id: "ajustes", icon: Settings, label: t("quiet.nav.settings") },
-    { id: "mas", icon: LayoutGrid, label: t("quiet.nav.more") },
+    { id: "escucha", icon: Mic, label: t("quiet.nav.listen") },
+    { id: "streaming", icon: Radio, label: t("quiet.nav.streaming") },
+    { id: "vox", icon: Volume2, label: t("sidebar.escucha") },
+    { id: "avanzado", icon: Cog, label: t("sidebar.advanced") },
+    { id: "acercade", icon: Info, label: t("sidebar.about") },
   ];
 
   return (
@@ -249,7 +264,7 @@ export const QuietShell: React.FC = () => {
                 oculta se habrían quedado sin superficie donde verse: el toast se
                 pierde y el registro no se mostraba en ningún sitio. */}
             <AlertsBanner />
-            {view === "escuchar" ? (
+            {view === "escucha" ? (
               <div className="q-hero">
                 <h1 className="q-h1">{t("quiet.ready")}</h1>
                 <p className={`q-hint${grabando ? " on" : ""}`}>
@@ -321,38 +336,80 @@ export const QuietShell: React.FC = () => {
                     }
                   />
                 </div>
+
+                {/* Los modelos de dictado viven AQUI, dentro del modo que los
+                    usa: buscar un modelo ya no es ir a otra pantalla. La
+                    cabecera la pone el hero de arriba, asi que la lista entra
+                    sin la suya. */}
+                <div className="q-hero-modelos">
+                  <ModelSettingsCard />
+                  <ModelsSettings capacidad="dictado" sinCabecera />
+                </div>
               </div>
             ) : view === "transcripciones" ? (
               <div className="q-sec">
                 <HistorySettings />
               </div>
-            ) : view === "modelos" ? (
-              <div className="q-sec">
-                <ModelsSettings />
+            ) : view === "atajos" ? (
+              <div className="q-sec q-ajustes">
+                {/* Solo las teclas. Lo que antes compartia pantalla con esto
+                    —microfono, volumen, idioma del modelo— se fue a Avanzado:
+                    un rotulo que dice «Atajos» y esconde un selector de
+                    micrófono es justo lo que llevamos el dia entero quitando. */}
+                <SettingsGroup title={t("quiet.nav.shortcuts")}>
+                  <ShortcutInput shortcutId="transcribe" grouped={true} />
+                  <PushToTalk descriptionMode="tooltip" grouped={true} />
+                  {/* El de cancelar se oculta con pulsar-para-hablar (soltar ya
+                      cancela) y en Linux (los atajos dinamicos son inestables),
+                      igual que en el shell Clasico. */}
+                  {!esLinux && !pushToTalk && (
+                    <ShortcutInput shortcutId="cancel" grouped={true} />
+                  )}
+                  <ShortcutInput shortcutId="leer_seleccion" grouped={true} />
+                  <AtajoVox className="px-4 pb-2" />
+                </SettingsGroup>
               </div>
-            ) : view === "mas" ? (
+            ) : view === "streaming" ? (
+              <div className="q-sec q-ajustes">
+                <SettingsGroup title={t("quiet.nav.streaming")}>
+                  <CaptureSystemAudio descriptionMode="tooltip" grouped />
+                </SettingsGroup>
+                {/* Los modelos que de verdad escriben mientras hablas. Es una
+                    lista corta a proposito: hoy solo Nemotron declara
+                    `supports_streaming`. */}
+                <ModelsSettings capacidad="streaming" sinCabecera />
+              </div>
+            ) : view === "vox" ? (
               <div className="q-sec">
-                <div className="q-subtabs" role="tablist">
-                  {seccionesMas.map((s) => (
-                    <button
-                      type="button"
-                      key={s.id}
-                      role="tab"
-                      aria-selected={seccionMas === s.id}
-                      className={`q-subtab${seccionMas === s.id ? " on" : ""}`}
-                      onClick={() => setSeccionMas(s.id)}
-                    >
-                      {t(s.labelKey)}
-                    </button>
-                  ))}
-                </div>
-                <SeccionMasActiva />
+                <EscuchaSettings />
+              </div>
+            ) : view === "avanzado" ? (
+              <div className="q-sec q-ajustes">
+                <ShellSelector descriptionMode="inline" />
+                <SettingsGroup title={t("settings.sound.title")}>
+                  <MicrophoneSelector
+                    descriptionMode="tooltip"
+                    grouped={true}
+                  />
+                  <PruebaMicrofono descriptionMode="tooltip" grouped={true} />
+                  <MuteWhileRecording
+                    descriptionMode="tooltip"
+                    grouped={true}
+                  />
+                  <AudioFeedback descriptionMode="tooltip" grouped={true} />
+                  <OutputDeviceSelector
+                    descriptionMode="tooltip"
+                    grouped={true}
+                    disabled={!audioFeedbackEnabled}
+                  />
+                  <VolumeSlider disabled={!audioFeedbackEnabled} />
+                </SettingsGroup>
+                <AdvancedSettings />
               </div>
             ) : (
               <div className="q-sec q-ajustes">
-                <ShellSelector descriptionMode="inline" />
                 <PaletteSelector descriptionMode="inline" />
-                <GeneralSettings />
+                <AboutSettings />
               </div>
             )}
           </main>

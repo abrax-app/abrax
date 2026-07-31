@@ -680,6 +680,12 @@
           "description": "De modellen worden op verzoek gedownload en maken geen deel uit van het installatieprogramma. Elk model behoudt zijn eigen licentie; de CC-BY-modellen vereisen naamsvermelding, die hier wordt gegeven. Volledige tekst in LICENSES-THIRD-PARTY.md."
         }
       }
+    },
+    "streaming": {
+      "systemAudio": {
+        "label": "Systeemgeluid opnemen",
+        "description": "Transcribeert wat er op je computer speelt — een les, een video, een vergadering — in plaats van je microfoon. Vereist een streamingmodel."
+      }
     }
   },
   "footer": {
@@ -1048,7 +1054,9 @@
   },
   "quiet": {
     "nav": {
-      "listen": "Listen",
+      "listen": "Luisteren",
+      "shortcuts": "Sneltoetsen",
+      "streaming": "Streaming",
       "transcriptions": "Transcriptions",
       "models": "Models",
       "settings": "Settings",

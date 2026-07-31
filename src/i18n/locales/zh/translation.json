@@ -680,6 +680,12 @@
         "label": "显示新功能",
         "description": "Abrax 更新后显示发行说明"
       }
+    },
+    "streaming": {
+      "systemAudio": {
+        "label": "采集系统声音",
+        "description": "转写电脑里正在播放的声音——课程、视频、会议——而不是麦克风。需要支持流式的模型。"
+      }
     }
   },
   "footer": {
@@ -1048,7 +1054,9 @@
   },
   "quiet": {
     "nav": {
-      "listen": "Listen",
+      "listen": "聆听",
+      "shortcuts": "快捷键",
+      "streaming": "流式",
       "transcriptions": "Transcriptions",
       "models": "Models",
       "settings": "Settings",

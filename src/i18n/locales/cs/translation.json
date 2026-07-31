@@ -680,6 +680,12 @@
         "label": "Zobrazovat novinky",
         "description": "Zobrazovat poznámky k vydání po aktualizacích Abrax"
       }
+    },
+    "streaming": {
+      "systemAudio": {
+        "label": "Zachytit zvuk systému",
+        "description": "Přepisuje to, co hraje v počítači — přednášku, video, schůzku — místo mikrofonu. Vyžaduje model se streamingem."
+      }
     }
   },
   "footer": {
@@ -1048,7 +1054,9 @@
   },
   "quiet": {
     "nav": {
-      "listen": "Listen",
+      "listen": "Poslech",
+      "shortcuts": "Zkratky",
+      "streaming": "Streaming",
       "transcriptions": "Transcriptions",
       "models": "Models",
       "settings": "Settings",

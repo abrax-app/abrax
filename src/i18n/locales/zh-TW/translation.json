@@ -680,6 +680,12 @@
         "label": "顯示新功能",
         "description": "Abrax 更新後顯示版本資訊"
       }
+    },
+    "streaming": {
+      "systemAudio": {
+        "label": "擷取系統聲音",
+        "description": "轉寫電腦裡正在播放的聲音——課程、影片、會議——而不是麥克風。需要支援串流的模型。"
+      }
     }
   },
   "footer": {
@@ -1048,7 +1054,9 @@
   },
   "quiet": {
     "nav": {
-      "listen": "Listen",
+      "listen": "聆聽",
+      "shortcuts": "快捷鍵",
+      "streaming": "串流",
       "transcriptions": "Transcriptions",
       "models": "Models",
       "settings": "Settings",

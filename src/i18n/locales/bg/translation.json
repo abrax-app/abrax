@@ -680,6 +680,12 @@
         "label": "Показвай новостите",
         "description": "Показвай бележки към изданието след актуализации на Abrax"
       }
+    },
+    "streaming": {
+      "systemAudio": {
+        "label": "Записване на звука от системата",
+        "description": "Преобразува това, което звучи на компютъра — лекция, видео, среща — вместо микрофона. Изисква модел със стрийминг."
+      }
     }
   },
   "footer": {
@@ -1048,7 +1054,9 @@
   },
   "quiet": {
     "nav": {
-      "listen": "Listen",
+      "listen": "Слушане",
+      "shortcuts": "Клавишни комбинации",
+      "streaming": "Стрийминг",
       "transcriptions": "Transcriptions",
       "models": "Models",
       "settings": "Settings",

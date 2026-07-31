@@ -680,6 +680,12 @@
         "label": "Yenilikleri Göster",
         "description": "Abrax güncellemelerinden sonra sürüm notlarını göster"
       }
+    },
+    "streaming": {
+      "systemAudio": {
+        "label": "Sistem sesini yakala",
+        "description": "Mikrofon yerine bilgisayarda çalanı — bir ders, bir video, bir toplantı — yazıya döker. Akış destekleyen bir model gerekir."
+      }
     }
   },
   "footer": {
@@ -1048,7 +1054,9 @@
   },
   "quiet": {
     "nav": {
-      "listen": "Listen",
+      "listen": "Dinleme",
+      "shortcuts": "Kısayollar",
+      "streaming": "Akış",
       "transcriptions": "Transcriptions",
       "models": "Models",
       "settings": "Settings",

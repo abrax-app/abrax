@@ -306,6 +306,21 @@
   max-width: 780px;
   padding: 6px 26px 44px;
 }
+
+/* Los modelos de dictado, dentro de la pantalla «Escucha». El hero de arriba
+   esta centrado; la lista no puede heredarlo o las tarjetas saldrian con el
+   texto al medio. Se separa con una linea para que se lea como «lo de abajo es
+   otra cosa» sin necesidad de un titulo mas. */
+.q-hero-modelos {
+  width: 100%;
+  margin-top: 34px;
+  padding-top: 26px;
+  border-top: 1px solid var(--color-mid-gray, #6e6e6e33);
+  text-align: start;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
 .q-ajustes {
   display: flex;
   flex-direction: column;

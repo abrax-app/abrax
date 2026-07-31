@@ -680,6 +680,12 @@
         "label": "Hiển thị điểm mới",
         "description": "Hiển thị ghi chú phát hành sau khi Abrax cập nhật"
       }
+    },
+    "streaming": {
+      "systemAudio": {
+        "label": "Thu âm thanh hệ thống",
+        "description": "Ghi lại những gì đang phát trên máy — một buổi học, video, cuộc họp — thay vì micrô. Cần một mô hình có streaming."
+      }
     }
   },
   "footer": {
@@ -1048,7 +1054,9 @@
   },
   "quiet": {
     "nav": {
-      "listen": "Listen",
+      "listen": "Nghe",
+      "shortcuts": "Phím tắt",
+      "streaming": "Streaming",
       "transcriptions": "Transcriptions",
       "models": "Models",
       "settings": "Settings",

@@ -680,6 +680,12 @@
         "label": "إعادة الفحص",
         "tooltip": "إعادة الفحص بحثًا عن النماذج المضافة إلى مجلد النماذج أو ذاكرة Hugging Face التخزينية المؤقتة خارج Abrax"
       }
+    },
+    "streaming": {
+      "systemAudio": {
+        "label": "التقاط صوت النظام",
+        "description": "يفرّغ ما يُشغَّل على جهازك — محاضرة أو فيديو أو اجتماع — بدل الميكروفون. يتطلب نموذجًا يدعم البث."
+      }
     }
   },
   "footer": {
@@ -1048,7 +1054,9 @@
   },
   "quiet": {
     "nav": {
-      "listen": "Listen",
+      "listen": "الاستماع",
+      "shortcuts": "الاختصارات",
+      "streaming": "البث",
       "transcriptions": "Transcriptions",
       "models": "Models",
       "settings": "Settings",

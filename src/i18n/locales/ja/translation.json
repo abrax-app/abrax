@@ -680,6 +680,12 @@
         "label": "新機能を表示",
         "description": "Abrax のアップデート後にリリースノートを表示"
       }
+    },
+    "streaming": {
+      "systemAudio": {
+        "label": "システム音声を取り込む",
+        "description": "マイクの代わりに、パソコンで再生中の音声（授業・動画・会議）を文字にします。ストリーミング対応モデルが必要です。"
+      }
     }
   },
   "footer": {
@@ -1048,7 +1054,9 @@
   },
   "quiet": {
     "nav": {
-      "listen": "Listen",
+      "listen": "聞き取り",
+      "shortcuts": "ショートカット",
+      "streaming": "ストリーミング",
       "transcriptions": "Transcriptions",
       "models": "Models",
       "settings": "Settings",

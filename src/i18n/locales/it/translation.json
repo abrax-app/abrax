@@ -680,6 +680,12 @@
         "label": "Mostra novità",
         "description": "Mostra le note di rilascio dopo gli aggiornamenti di Abrax"
       }
+    },
+    "streaming": {
+      "systemAudio": {
+        "label": "Cattura l'audio di sistema",
+        "description": "Trascrive ciò che suona sul computer — una lezione, un video, una riunione — invece del microfono. Richiede un modello con streaming."
+      }
     }
   },
   "footer": {
@@ -1048,7 +1054,9 @@
   },
   "quiet": {
     "nav": {
-      "listen": "Listen",
+      "listen": "Ascolto",
+      "shortcuts": "Scorciatoie",
+      "streaming": "Streaming",
       "transcriptions": "Transcriptions",
       "models": "Models",
       "settings": "Settings",

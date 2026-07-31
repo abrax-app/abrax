@@ -680,6 +680,12 @@
         "label": "새 소식 표시",
         "description": "Abrax 업데이트 후 릴리스 노트를 표시합니다"
       }
+    },
+    "streaming": {
+      "systemAudio": {
+        "label": "시스템 소리 캡처",
+        "description": "마이크 대신 컴퓨터에서 재생 중인 소리(수업, 영상, 회의)를 받아씁니다. 스트리밍을 지원하는 모델이 필요합니다."
+      }
     }
   },
   "footer": {
@@ -1048,7 +1054,9 @@
   },
   "quiet": {
     "nav": {
-      "listen": "Listen",
+      "listen": "듣기",
+      "shortcuts": "단축키",
+      "streaming": "스트리밍",
       "transcriptions": "Transcriptions",
       "models": "Models",
       "settings": "Settings",

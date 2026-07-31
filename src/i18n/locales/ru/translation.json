@@ -680,6 +680,12 @@
         "label": "Показывать новинки",
         "description": "Показывать примечания к выпуску после обновлений Abrax"
       }
+    },
+    "streaming": {
+      "systemAudio": {
+        "label": "Записывать звук системы",
+        "description": "Расшифровывает то, что звучит на компьютере — лекцию, видео, встречу — вместо микрофона. Нужна модель со стримингом."
+      }
     }
   },
   "footer": {
@@ -1048,7 +1054,9 @@
   },
   "quiet": {
     "nav": {
-      "listen": "Listen",
+      "listen": "Прослушивание",
+      "shortcuts": "Сочетания клавиш",
+      "streaming": "Стриминг",
       "transcriptions": "Transcriptions",
       "models": "Models",
       "settings": "Settings",

@@ -680,6 +680,12 @@
           "description": "The models are downloaded on demand and are not part of the installer. Each keeps its own license; the CC-BY ones require attribution, given here. Full text in LICENSES-THIRD-PARTY.md."
         }
       }
+    },
+    "streaming": {
+      "systemAudio": {
+        "label": "Capture system audio",
+        "description": "Transcribes what is playing on your computer — a class, a video, a meeting — instead of your microphone. Requires a streaming model."
+      }
     }
   },
   "footer": {
@@ -1049,6 +1055,8 @@
   "quiet": {
     "nav": {
       "listen": "Listen",
+      "shortcuts": "Shortcuts",
+      "streaming": "Streaming",
       "transcriptions": "Transcriptions",
       "models": "Models",
       "settings": "Settings",

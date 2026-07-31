@@ -680,6 +680,12 @@
         "label": "Neuerungen anzeigen",
         "description": "Versionshinweise nach Abrax-Updates anzeigen"
       }
+    },
+    "streaming": {
+      "systemAudio": {
+        "label": "Systemton aufnehmen",
+        "description": "Transkribiert, was auf dem Rechner läuft — eine Vorlesung, ein Video, ein Meeting — statt deines Mikrofons. Erfordert ein Streaming-Modell."
+      }
     }
   },
   "footer": {
@@ -1048,7 +1054,9 @@
   },
   "quiet": {
     "nav": {
-      "listen": "Listen",
+      "listen": "Hören",
+      "shortcuts": "Tastenkürzel",
+      "streaming": "Streaming",
       "transcriptions": "Transcriptions",
       "models": "Models",
       "settings": "Settings",
