@@ -119,8 +119,8 @@
           <span class="chip">Gratuito · open source · MIT</span>
         </div>
         <p class="hero-priv">
-          Local por defecto: el audio del micrófono nunca sale de tu equipo. Las
-          funciones online son opt-in y vienen desactivadas.
+          Local por defecto: tu audio nunca sale del equipo. Lo online es opt-in
+          y viene apagado.
         </p>
       </div>
     </section>
@@ -153,7 +153,7 @@
       <h2 id="t-demo">Escúchalo y pruébalo</h2>
       <p class="display">La esfera <em>te escucha.</em></p>
       <p class="sub-seccion">
-        La esfera de arriba ya está viva: con tu micrófono respira contigo.
+        La esfera ya está viva: con tu micrófono respira contigo.
       </p>
       <div class="demo-mic">
         <button type="button" class="btn btn--sec" id="btnMicDemo" disabled>
@@ -163,9 +163,8 @@
           >modo demo · respiración sintética</span
         >
         <p class="demo-nota">
-          El permiso de micrófono se pide solo si presionas el botón, nunca al
-          cargar la página. El audio se procesa en tu navegador y no se envía a
-          ningún servidor.
+          El permiso se pide solo al presionar el botón; el audio se queda en tu
+          navegador, sin tocar ningún servidor.
         </p>
         <form class="demo-palabra" id="formPalabra">
           <label class="visually-hidden" for="inputPalabra"
@@ -267,9 +266,9 @@
           <div class="kicker">Streaming</div>
           <h3 class="titulo-fn">Transcribe lo que suena en tu equipo</h3>
           <p class="desc">
-            Una clase, un video, una reunión: cambias el micrófono por el audio
-            del sistema y lo ves en texto. ABRAX salta solo a un modelo apto y,
-            al apagarlo, restaura el que usabas. Local, igual que el dictado.
+            Una clase, un video, una reunión: el audio del sistema pasa a texto,
+            local igual que el dictado. ABRAX elige solo un modelo apto y al
+            apagarlo restaura el tuyo.
           </p>
         </div>
         <div class="visual">
@@ -296,9 +295,8 @@
           <div class="kicker">VOX</div>
           <h3 class="titulo-fn">Te lee de vuelta</h3>
           <p class="desc">
-            Selecciona texto en cualquier app y VOX te lo lee: una voz para
-            prosa, otra para código, y los símbolos en modo natural o literal.
-            Voces del sistema, Piper y Kokoro — locales.
+            VOX lee lo que tengas seleccionado, en cualquier app: voz de prosa,
+            voz de código, símbolos en natural o literal. Voces locales.
           </p>
         </div>
         <div class="visual">
@@ -414,10 +412,7 @@
         </div>
         <div class="card">
           <div class="titulo">Emoji dictado</div>
-          <p>
-            1 531 nombres, por tabla. Solo actúa detrás de la palabra «emoji»:
-            no convierte nada por accidente.
-          </p>
+          <p>1 531 nombres, por tabla. Solo actúa tras la palabra «emoji».</p>
           <div class="ejemplo">
             <div>
               «emoji fuego» <span class="flecha">→</span>
@@ -428,9 +423,8 @@
         <div class="card">
           <div class="titulo">Corrección local</div>
           <p>
-            Números en cifras, símbolos, correos y ortotipografía — por reglas,
-            sin IA y sin conexión. Se enciende en Ajustes; y si corriges un
-            dictado en el historial, aprende.
+            Números en cifras, símbolos y correos — por reglas, sin IA. Se
+            enciende en Ajustes; si corriges un dictado, aprende.
           </p>
           <div class="ejemplo">
             <div>
@@ -441,8 +435,8 @@
         </div>
       </div>
       <p class="tabla-nota">
-        Y además: overlay en 4 estilos, icono en la bandeja, historial con
-        límite y retención configurables, y la interfaz en 22 idiomas.
+        Y además: overlay en 4 estilos, bandeja, historial con retención y 22
+        idiomas.
       </p>
     </section>
 
@@ -450,9 +444,7 @@
     <section class="seccion" id="privacidad" aria-labelledby="t-privacidad">
       <h2 id="t-privacidad">Privacidad</h2>
       <p class="display">Tu audio <em>no sale</em> de aquí.</p>
-      <p class="sub-seccion">
-        Sin letra chica: esto es exactamente lo que pasa con tus datos.
-      </p>
+      <p class="sub-seccion">Sin letra chica: esto pasa con tus datos.</p>
       <div class="callout">
         <b>«Local por defecto» significa:</b> el audio del micrófono nunca sale
         de tu equipo.
@@ -480,8 +472,8 @@
             <li>Descarga de modelos desde Hugging Face</li>
             <li>Descarga de voces (verificadas con checksum)</li>
             <li>
-              Voz online de Microsoft para VOX — apagada de fábrica; envía el
-              texto que pides leer, nunca tu micrófono
+              Voz online de Microsoft para VOX — apagada de fábrica; envía solo
+              el texto a leer
             </li>
           </ul>
         </div>
@@ -508,12 +500,10 @@
             </div>
           </div>
           <p>
-            La borras y no queda nada tuyo. No hay cuenta que cerrar. Los
-            modelos de voz se guardan aparte, en la caché de Hugging Face (<span
-              class="res"
-              >~/.cache/huggingface</span
-            >), porque pesan y se comparten con otras herramientas: si quieres
-            recuperar ese espacio, hay que borrarla también.
+            La borras y no queda nada tuyo; no hay cuenta que cerrar. Los
+            modelos viven aparte, en
+            <span class="res">~/.cache/huggingface</span>: bórrala para
+            recuperar ese espacio.
           </p>
         </div>
       </div>
@@ -629,8 +619,8 @@
     <section class="seccion" id="modelos" aria-labelledby="t-modelos">
       <h2 id="t-modelos">Los modelos</h2>
       <p class="sub-seccion">
-        Cinco en el catálogo, con sus números reales. Eliges uno, se descarga
-        una vez, y transcribe sin conexión.
+        Cinco en el catálogo, con sus números reales. Se descargan una vez y
+        transcriben sin conexión.
       </p>
       <div class="tabla-wrap">
         <table>
@@ -683,9 +673,8 @@
         </table>
       </div>
       <p class="tabla-nota">
-        Precisión y velocidad son los puntajes del catálogo, de 0 a 100. Los
-        cinco entienden español. Solo Nemotron escribe mientras hablas
-        (streaming); Whisper y Canary también traducen al inglés.
+        Puntajes del catálogo, de 0 a 100. Los cinco entienden español; solo
+        Nemotron escribe mientras hablas, y Whisper y Canary traducen al inglés.
       </p>
     </section>
 
@@ -711,10 +700,8 @@
         <details>
           <summary>¿Puede transcribir una reunión o un video?</summary>
           <div class="resp">
-            Sí: Streaming cambia el micrófono por el audio del sistema y
-            transcribe lo que suene en tu equipo — una clase, un video, una
-            llamada. Todo local, igual que el dictado. Al apagarlo, tu modelo de
-            siempre vuelve solo.
+            Sí: Streaming transcribe el audio del sistema — una clase, un video,
+            una llamada — todo local. Al apagarlo vuelve tu modelo de siempre.
           </div>
         </details>
         <details>
@@ -750,15 +737,12 @@
     <section class="seccion" id="avisos" aria-labelledby="t-avisos">
       <h2 id="t-avisos">Antes de instalar</h2>
       <p class="sub-seccion">
-        Tu sistema va a advertirte. Es esperable y te contamos exactamente qué
-        vas a ver.
+        Tu sistema va a advertirte; te contamos exactamente qué vas a ver.
       </p>
       <p>
-        ABRAX no está firmado con un certificado comercial. Firmarlo cuesta
-        cientos de dólares al año y no haría el programa más seguro: solo haría
-        que Microsoft y Apple nos reconocieran. Como no lo está, tu sistema
-        avisa de que no sabe quién lo publica — que es cierto, y por eso el
-        código está entero a la vista.
+        ABRAX no está firmado: cuesta cientos de dólares al año y no haría el
+        programa más seguro. Tu sistema avisará que no conoce al editor — es
+        cierto, y por eso el código está entero a la vista.
       </p>
 
       <div class="cards">
@@ -882,10 +866,10 @@
           https://github.com/abrax-app/abrax
         </div>
         <p>
-          No hace falta que nos creas: el código está entero y puedes compilar
-          tu propia copia. Los binarios no van firmados —
-          <a href="#avisos">por eso tu sistema avisa</a> — así que la garantía
-          que ofrecemos es esa, poder mirar.
+          No hace falta creernos: el código está entero y puedes compilar tu
+          copia. Los binarios no van firmados —
+          <a href="#avisos">por eso tu sistema avisa</a> — y la garantía es esa:
+          poder mirar.
         </p>
       </div>
     </section>
