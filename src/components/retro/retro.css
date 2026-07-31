@@ -951,3 +951,18 @@
   background: rgb(54 203 255 / 22%);
   border-radius: 6px;
 }
+
+/* Marco de la seccion «Avanzado» dentro del panel de AJUSTES.
+   La ventana del Retro es deliberadamente pequena y el panel compartido es
+   alto: se le da su propio scroll en vez de estirar la ventana, que romperia
+   el acoplado tipo Winamp. */
+.rk-avanzado {
+  max-height: 320px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  margin: 4px 0 8px;
+  padding: 6px;
+  border: 1px solid var(--rk-line, rgba(255, 255, 255, 0.14));
+  border-radius: 4px;
+  background: rgba(0, 0, 0, 0.18);
+}

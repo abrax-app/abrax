@@ -38,6 +38,7 @@ import AbraxLogo from "../icons/AbraxLogo";
 import { useSettings } from "@/hooks/useSettings";
 import { commands, events, type HistoryEntry } from "@/bindings";
 import { applyShell, UI_SHELL_OPTIONS } from "@/lib/utils/theme";
+import { SECTIONS_CONFIG } from "../Sidebar";
 import type { UiShell } from "@/bindings";
 import { EsferaEngine, readEsferaPalette } from "../../overlay/esfera/engine";
 import "./retro.css";
@@ -62,6 +63,12 @@ const NAV: [RView, string, LucideIcon][] = [
   ["ajustes", "AJUSTES", Settings],
   ["historial", "HISTORIAL", Clock],
 ];
+
+/** La seccion «Avanzado» compartida, tal cual la ven los demas skins. */
+const AvanzadoRetro: React.FC = () => {
+  const Seccion = SECTIONS_CONFIG.advanced.component;
+  return <Seccion />;
+};
 
 const EQ_LABELS = ["60", "170", "310", "600", "1K", "3K", "6K", "12K"];
 
@@ -609,6 +616,20 @@ export const RetroShell: React.FC = () => {
             <i className="rk-sw-led" /> MULETILLAS
           </button>
         </div>
+        {/* AVANZADO — la MISMA pantalla que ven Clasico, Quiet y Karting.
+            Retro era el unico skin sin ella: tenia estos cuatro interruptores y
+            un enlace para irse a Clasico, o sea que para tocar cualquier otro
+            ajuste habia que abandonar el skin. Se hospeda la seccion compartida
+            (`SECTIONS_CONFIG`), no una copia: si manana se anade un ajuste, los
+            cuatro skins lo reciben a la vez y ninguno se queda atras.
+
+            Va en su propio marco con scroll porque la ventana del Retro es
+            pequena a proposito y el panel de Avanzado es alto. */}
+        <div className="rk-cap">AVANZADO</div>
+        <div className="rk-avanzado">
+          <AvanzadoRetro />
+        </div>
+
         <button
           type="button"
           className="rk-link"
