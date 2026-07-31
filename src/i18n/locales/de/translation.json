@@ -1088,7 +1088,13 @@
       "entradaSi": "Audio kommt an",
       "entradaSilencio": "Stille",
       "voz": "Stimme",
-      "noTransmite": "Das aktive Modell schreibt nicht mit, während du sprichst. Wähle eines aus der Liste."
+      "noTransmite": "Das aktive Modell schreibt nicht mit, während du sprichst. Wähle eines aus der Liste.",
+      "hint": {
+        "fillers": "Entfernt Füllwörter («äh», «ähm») aus dem Diktierten.",
+        "autocorreccion": "Wenn du dich laut korrigierst («nein, sorry»), kommt der Text schon berichtigt heraus.",
+        "emoji": "Sag «Emoji» und den Namen, und es wird eingefügt. Per Tabelle, ohne KI.",
+        "systemAudio": "Transkribiert, was auf dem Rechner läuft, statt dein Mikrofon. Braucht ein Modell mit Streaming."
+      }
     }
   },
   "soundPicker": {

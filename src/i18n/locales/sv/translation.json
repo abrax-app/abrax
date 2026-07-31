@@ -1088,7 +1088,13 @@
       "entradaSi": "Ljud kommer in",
       "entradaSilencio": "Tystnad",
       "voz": "Röst",
-      "noTransmite": "Den aktiva modellen skriver inte medan du talar. Välj en från listan."
+      "noTransmite": "Den aktiva modellen skriver inte medan du talar. Välj en från listan.",
+      "hint": {
+        "fillers": "Tar bort utfyllnadsord («eh», «öh») från det du dikterar.",
+        "autocorreccion": "Om du rättar dig högt («nej, förlåt») kommer texten redan rättad.",
+        "emoji": "Säg «emoji» och namnet, så infogas den. Via tabell, utan AI.",
+        "systemAudio": "Transkriberar det som spelas på datorn i stället för din mikrofon. Kräver en modell med streaming."
+      }
     }
   },
   "soundPicker": {

@@ -1088,7 +1088,13 @@
       "entradaSi": "Dźwięk dociera",
       "entradaSilencio": "Cisza",
       "voz": "Głos",
-      "noTransmite": "Aktywny model nie pisze, gdy mówisz. Wybierz jeden z listy."
+      "noTransmite": "Aktywny model nie pisze, gdy mówisz. Wybierz jeden z listy.",
+      "hint": {
+        "fillers": "Usuwa przerywniki («yyy», «no») z tego, co dyktujesz.",
+        "autocorreccion": "Jeśli poprawisz się na głos («nie, przepraszam»), tekst wychodzi już poprawiony.",
+        "emoji": "Powiedz «emoji» i nazwę, a zostanie wstawione. Z tabeli, bez AI.",
+        "systemAudio": "Transkrybuje to, co gra na komputerze, zamiast mikrofonu. Wymaga modelu ze streamingiem."
+      }
     }
   },
   "soundPicker": {

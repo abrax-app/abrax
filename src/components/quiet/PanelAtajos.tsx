@@ -14,6 +14,7 @@ import {
   LayoutGrid,
   Mic,
   Monitor,
+  MonitorSpeaker,
   Palette,
   Radio,
   Smile,
@@ -29,14 +30,12 @@ import { useModelStore } from "@/stores/modelStore";
 import { confirmarDescarga } from "@/lib/utils/modelDialogs";
 import { isLegacyModel } from "../settings/models/ModelsSettings";
 import { ShortcutInput } from "../settings/ShortcutInput";
-import { CaptureSystemAudio } from "../settings/CaptureSystemAudio";
 import { ShellSelector } from "../settings/ShellSelector";
 import { PaletteSelector } from "../settings/PaletteSelector";
 import { ShowOverlay } from "../settings/ShowOverlay";
 import { MicrophoneSelector } from "../settings/MicrophoneSelector";
 import { OutputDeviceSelector } from "../settings/OutputDeviceSelector";
 import { Dropdown } from "../ui/Dropdown";
-import { Chip } from "../bancada/Chip";
 
 /**
  * La pantalla «Atajos»: un panel de control con CUATRO tarjetas —Escucha,
@@ -75,6 +74,39 @@ const Tarjeta: React.FC<{
     </div>
   </section>
 );
+
+/**
+ * Botón de opción tipo barra de Retro: solo el icono, y al pasar el ratón un
+ * hint que dice qué hace y cómo está.
+ *
+ * Los rótulos completos («Autocorrección hablada») ocupaban tres píldoras
+ * anchas y dos filas para tres interruptores. Con el icono, la barra entera
+ * ocupa una línea y sigue diciéndolo todo — pero solo cuando lo preguntas.
+ *
+ * El estado NO se fía del color: además del relleno, va en `aria-pressed` (lo
+ * que lee un lector de pantalla) y escrito en el hint.
+ */
+const BotonIcono: React.FC<{
+  icon: LucideIcon;
+  etiqueta: string;
+  ayuda: string;
+  activo: boolean;
+  onClick: () => void;
+}> = ({ icon: Icon, etiqueta, ayuda, activo, onClick }) => {
+  const { t } = useTranslation();
+  return (
+    <button
+      type="button"
+      className={activo ? "on" : ""}
+      onClick={onClick}
+      aria-pressed={activo}
+      aria-label={etiqueta}
+      title={`${etiqueta} · ${activo ? t("bancada.on") : t("bancada.off")}\n${ayuda}`}
+    >
+      <Icon size={16} aria-hidden="true" />
+    </button>
+  );
+};
 
 /** Fila con icono a la izquierda, para los ajustes de apariencia y sonido. */
 const FilaIcono: React.FC<{ icon: LucideIcon; children: React.ReactNode }> = ({
@@ -416,27 +448,32 @@ export const PanelAtajos: React.FC<{ grabando: boolean }> = ({ grabando }) => {
 
   return (
     <div className="q-panel-atajos">
+      {/* Los atajos van con la descripción en el icono (i), no debajo: en línea
+          se comían tres renglones por fila y esta pantalla es justamente la que
+          se pidió corta. El texto sigue entero, a un puntero de distancia. */}
       <Tarjeta icon={Mic} titulo={t("quiet.nav.listen")}>
         <ShortcutInput
           shortcutId="transcribe"
-          descriptionMode="inline"
+          descriptionMode="tooltip"
           grouped
         />
         <SelectorModelo capacidad="dictado" />
         <div className="px-4 p-2">
-          <div className="q-pa-chips bnc-chips">
-            <Chip
+          <div className="q-pa-tools">
+            <BotonIcono
               icon={Eraser}
-              label={t("bancada.btn.fillers")}
-              active={muletillasOn}
+              etiqueta={t("bancada.btn.fillers")}
+              ayuda={t("quiet.panel.hint.fillers")}
+              activo={muletillasOn}
               onClick={() =>
                 updateSetting("custom_filler_words", muletillasOn ? [] : null)
               }
             />
-            <Chip
+            <BotonIcono
               icon={SpellCheck}
-              label={t("settings.advanced.autocorreccion.title")}
-              active={settings?.autocorreccion_activa ?? true}
+              etiqueta={t("settings.advanced.autocorreccion.title")}
+              ayuda={t("quiet.panel.hint.autocorreccion")}
+              activo={settings?.autocorreccion_activa ?? true}
               onClick={() =>
                 updateSetting(
                   "autocorreccion_activa",
@@ -444,10 +481,11 @@ export const PanelAtajos: React.FC<{ grabando: boolean }> = ({ grabando }) => {
                 )
               }
             />
-            <Chip
+            <BotonIcono
               icon={Smile}
-              label={t("settings.advanced.emojiDictado.title")}
-              active={settings?.emoji_dictado ?? true}
+              etiqueta={t("settings.advanced.emojiDictado.title")}
+              ayuda={t("quiet.panel.hint.emoji")}
+              activo={settings?.emoji_dictado ?? true}
               onClick={() =>
                 updateSetting(
                   "emoji_dictado",
@@ -460,7 +498,25 @@ export const PanelAtajos: React.FC<{ grabando: boolean }> = ({ grabando }) => {
       </Tarjeta>
 
       <Tarjeta icon={Radio} titulo={t("quiet.nav.streaming")}>
-        <CaptureSystemAudio descriptionMode="inline" grouped />
+        {/* Mismo interruptor que la pantalla «Streaming» de la barra lateral
+            (`capture_system_audio`), en formato botón: su descripción son tres
+            renglones y aquí vive en el hint. */}
+        <div className="px-4 p-2">
+          <div className="q-pa-tools">
+            <BotonIcono
+              icon={MonitorSpeaker}
+              etiqueta={t("settings.streaming.systemAudio.label")}
+              ayuda={t("quiet.panel.hint.systemAudio")}
+              activo={!!settings?.capture_system_audio}
+              onClick={() =>
+                updateSetting(
+                  "capture_system_audio",
+                  !settings?.capture_system_audio,
+                )
+              }
+            />
+          </div>
+        </div>
         <SelectorModelo capacidad="streaming" />
         <MedidoresStreaming grabando={grabando} />
       </Tarjeta>
@@ -468,7 +524,7 @@ export const PanelAtajos: React.FC<{ grabando: boolean }> = ({ grabando }) => {
       <Tarjeta icon={Volume2} titulo={t("sidebar.escucha")}>
         <ShortcutInput
           shortcutId="leer_seleccion"
-          descriptionMode="inline"
+          descriptionMode="tooltip"
           grouped
         />
         <SelectorVoz />

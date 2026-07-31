@@ -391,15 +391,65 @@
   flex-direction: column;
   gap: 18px;
 }
-/* Los chips van pegados a la izquierda, en la columna del resto de rótulos de
-   la tarjeta. Centrados —como en el hero, donde son el protagonista— aquí se
-   leerían como un bloque aparte y no como la tercera fila de «Escucha». */
-.q-panel-atajos .q-pa-chips {
+/* Barra de opciones con la FORMA de la de Retro —solo iconos, el activo
+   encendido— pero con los colores de Quiet: el acento de marca en vez del cian
+   de Winamp. Los rótulos completos («Autocorrección hablada») ocupaban tres
+   píldoras anchas y dos filas para tres interruptores; ahora es una línea, y lo
+   que decían vive en el hint del ratón. */
+.q-panel-atajos .q-pa-tools {
+  /* La cubeta se ajusta a los botones (`fit-content`) en vez de cruzar la
+     tarjeta: con tres botones sobraban dos tercios de canal vacío, y con uno
+     —el de «Streaming»— era una regleta entera para un interruptor. */
   display: flex;
-  flex-wrap: wrap;
-  justify-content: flex-start;
-  gap: 8px;
-  margin: 0;
+  width: fit-content;
+  gap: 5px;
+  padding: 5px;
+  border: 1px solid var(--q-line);
+  border-radius: 9px;
+  background: rgb(0 0 0 / 22%);
+}
+.q-panel-atajos .q-pa-tools button {
+  flex: 1 1 0;
+  min-width: 44px;
+  max-width: 104px;
+  display: grid;
+  place-items: center;
+  padding: 8px 0;
+  border: 1px solid var(--q-line);
+  border-radius: 7px;
+  background: rgb(255 255 255 / 4%);
+  color: var(--q-dim);
+  cursor: pointer;
+  transition:
+    background 0.15s ease,
+    color 0.15s ease,
+    border-color 0.15s ease;
+}
+.q-panel-atajos .q-pa-tools button:hover {
+  background: rgb(255 255 255 / 9%);
+  color: var(--q-text);
+}
+/* Encendido: además del color cambia el RELLENO y el contraste del icono, así
+   que se distingue sin depender del tono. El estado también va en
+   `aria-pressed` y escrito en el hint. */
+.q-panel-atajos .q-pa-tools button.on {
+  background: linear-gradient(
+    180deg,
+    var(--q-a),
+    color-mix(in srgb, var(--q-a) 62%, #0a3247)
+  );
+  border-color: color-mix(in srgb, var(--q-a) 55%, var(--q-line));
+  color: #06202b;
+  box-shadow: 0 0 10px color-mix(in srgb, var(--q-a) 32%, transparent);
+}
+.q-panel-atajos .q-pa-tools button:focus-visible {
+  outline: 2px solid var(--q-a);
+  outline-offset: 2px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .q-panel-atajos .q-pa-tools button {
+    transition: none;
+  }
 }
 
 /* Barra de entrada de audio: nivel real de la captura, no una animación. */

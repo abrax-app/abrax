@@ -1088,7 +1088,13 @@
       "entradaSi": "Přichází zvuk",
       "entradaSilencio": "Ticho",
       "voz": "Hlas",
-      "noTransmite": "Aktivní model nepíše, když mluvíte. Vyberte některý ze seznamu."
+      "noTransmite": "Aktivní model nepíše, když mluvíte. Vyberte některý ze seznamu.",
+      "hint": {
+        "fillers": "Odstraní vycpávková slova («ehm», «no») z toho, co diktujete.",
+        "autocorreccion": "Když se opravíte nahlas («ne, pardon»), text vyjde už opravený.",
+        "emoji": "Řekněte «emoji» a jeho název a vloží se. Podle tabulky, bez AI.",
+        "systemAudio": "Přepisuje to, co hraje v počítači, místo mikrofonu. Vyžaduje model se streamingem."
+      }
     }
   },
   "soundPicker": {

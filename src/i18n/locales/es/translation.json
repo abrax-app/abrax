@@ -1088,7 +1088,13 @@
       "entradaSi": "Entrando audio",
       "entradaSilencio": "Silencio",
       "voz": "Voz",
-      "noTransmite": "El modelo activo no escribe mientras hablas. Elige uno de la lista."
+      "noTransmite": "El modelo activo no escribe mientras hablas. Elige uno de la lista.",
+      "hint": {
+        "fillers": "Quita las muletillas («eh», «este») de lo que dictas.",
+        "autocorreccion": "Si te corriges al hablar («no, perdón»), el texto sale ya corregido.",
+        "emoji": "Di «emoji» y su nombre, y lo inserta. Por tabla, sin IA.",
+        "systemAudio": "Transcribe lo que suena en el equipo en vez de tu micrófono. Necesita un modelo con streaming."
+      }
     }
   },
   "soundPicker": {

@@ -1088,7 +1088,13 @@
       "entradaSi": "Audio entrant",
       "entradaSilencio": "Silence",
       "voz": "Voix",
-      "noTransmite": "Le modèle actif n'écrit pas pendant que vous parlez. Choisissez-en un dans la liste."
+      "noTransmite": "Le modèle actif n'écrit pas pendant que vous parlez. Choisissez-en un dans la liste.",
+      "hint": {
+        "fillers": "Supprime les mots de remplissage («euh», «ben») de ce que vous dictez.",
+        "autocorreccion": "Si vous vous corrigez à voix haute («non, pardon»), le texte sort déjà corrigé.",
+        "emoji": "Dites «emoji» puis son nom, et il s'insère. Par table, sans IA.",
+        "systemAudio": "Transcrit ce qui joue sur l'ordinateur au lieu de votre micro. Nécessite un modèle avec streaming."
+      }
     }
   },
   "soundPicker": {

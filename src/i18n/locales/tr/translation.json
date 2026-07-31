@@ -1088,7 +1088,13 @@
       "entradaSi": "Ses geliyor",
       "entradaSilencio": "Sessizlik",
       "voz": "Ses",
-      "noTransmite": "Etkin model siz konuşurken yazmaz. Listeden birini seçin."
+      "noTransmite": "Etkin model siz konuşurken yazmaz. Listeden birini seçin.",
+      "hint": {
+        "fillers": "Dikte ettiklerinden dolgu sözcüklerini («ıı», «şey») çıkarır.",
+        "autocorreccion": "Sesli olarak kendini düzeltirsen («hayır, pardon»), metin düzeltilmiş çıkar.",
+        "emoji": "«Emoji» de ve adını söyle, eklenir. Tabloyla, yapay zekâsız.",
+        "systemAudio": "Mikrofon yerine bilgisayarda çalanı yazıya döker. Streaming destekleyen bir model gerekir."
+      }
     }
   },
   "soundPicker": {

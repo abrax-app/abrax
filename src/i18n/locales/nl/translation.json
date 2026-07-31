@@ -1088,7 +1088,13 @@
       "entradaSi": "Audio komt binnen",
       "entradaSilencio": "Stilte",
       "voz": "Stem",
-      "noTransmite": "Het actieve model schrijft niet mee terwijl je praat. Kies er een uit de lijst."
+      "noTransmite": "Het actieve model schrijft niet mee terwijl je praat. Kies er een uit de lijst.",
+      "hint": {
+        "fillers": "Haalt stopwoorden («eh», «uhm») uit wat je dicteert.",
+        "autocorreccion": "Als je jezelf hardop verbetert («nee, sorry»), komt de tekst al gecorrigeerd eruit.",
+        "emoji": "Zeg «emoji» en de naam, en hij wordt ingevoegd. Via tabel, zonder AI.",
+        "systemAudio": "Transcribeert wat er op de computer speelt in plaats van je microfoon. Vereist een streamingmodel."
+      }
     }
   },
   "soundPicker": {

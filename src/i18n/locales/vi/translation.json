@@ -1088,7 +1088,13 @@
       "entradaSi": "Đang có âm thanh",
       "entradaSilencio": "Im lặng",
       "voz": "Giọng nói",
-      "noTransmite": "Mô hình đang dùng không ghi khi bạn nói. Hãy chọn một mô hình trong danh sách."
+      "noTransmite": "Mô hình đang dùng không ghi khi bạn nói. Hãy chọn một mô hình trong danh sách.",
+      "hint": {
+        "fillers": "Bỏ các từ đệm («à», «ừm») khỏi những gì bạn đọc.",
+        "autocorreccion": "Nếu bạn tự sửa khi nói («không, xin lỗi»), văn bản ra đã được sửa.",
+        "emoji": "Nói «emoji» rồi tên của nó, và nó được chèn vào. Theo bảng, không dùng AI.",
+        "systemAudio": "Ghi lại những gì đang phát trên máy thay vì micrô. Cần một mô hình có streaming."
+      }
     }
   },
   "soundPicker": {
