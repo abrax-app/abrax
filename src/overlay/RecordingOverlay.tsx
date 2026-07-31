@@ -30,116 +30,34 @@ type OverlayState =
   // señal alguna el atajo parecía no haber hecho nada.
   | "preparando";
 
-// ── ONDA REACTIVA ───────────────────────────────────────────────────────────
-// Una SEÑAL EN EL TIEMPO, no barras y tampoco un espectro. El upstream (Handy)
-// usa barras de ecualizador, que es el cliché de cualquier grabadora.
+// ── BARRAS REACTIVAS ───────────────────────────────────────────
+// Barras de ecualizador, la forma del upstream (Handy).
 //
-// LA PRIMERA VERSIÓN ESTABA MAL Y SE VEÍA: mapeaba el eje horizontal a las
-// FRECUENCIAS (graves a la izquierda, agudos a la derecha, hasta 8 kHz). La voz
-// casi no tiene energía por encima de 4 kHz, así que la mitad derecha quedaba
-// plana SIEMPRE, hablaras o no, y la línea no se movía: cada punto era una
-// frecuencia fija, no un instante.
+// Hubo una versión con una onda continua (una señal en el tiempo, tipo
+// osciloscopio) y se retiró el 30/07 por decisión de producto: pudo más lo
+// legible que lo distinto. Está entera en la historia —`0342608` la introdujo y
+// `c44af22` la arregló— por si alguna vez se quiere recuperar; no hace falta
+// reescribirla.
 //
-// Ahora el eje horizontal es el TIEMPO. Cada trama de espectro aporta UN nivel,
-// que entra por la derecha y empuja la historia hacia la izquierda, como un
-// osciloscopio. La forma viaja y responde en toda su longitud.
-//
-// La forma la comparten todas las variantes de la píldora: un solo lenguaje
-// visual.
+// El espectro llega como 32 bandas logarítmicas entre 70 y 8000 Hz. Cada barra
+// promedia 3 bandas consecutivas del rango de voz, y un suavizado exponencial
+// mantiene el movimiento calmado en vez de nervioso.
 
-/** Muestras de la envolvente a lo ancho: historia reciente del nivel de voz. */
-const WAVE_PUNTOS = 24;
+/** Barras reactivas de la píldora. La forma la comparten todas sus variantes. */
+const WAVE_BARS = 9;
 /**
- * Bandas que se promedian para sacar UN nivel por trama. Solo el rango de voz:
- * las más bajas llevan retumbe de la sala y las más altas están casi siempre
- * vacías —promediarlas hundía el nivel a la mitad, que es parte de por qué la
- * versión anterior se veía apagada.
+ * Primera banda que se muestrea (~130 Hz hacia arriba). Las más bajas llevan
+ * retumbe de la sala, no voz.
  */
-const NIVEL_BANDA_INI = 2;
-const NIVEL_BANDA_FIN = 22;
-
-/** Lienzo de la onda, en unidades de viewBox (y también su tamaño en píxeles). */
-const ONDA_ANCHO = 60;
-const ONDA_ALTO = 18;
-/** Grosor del trazo; se descuenta de la amplitud para que no se recorte. */
-const ONDA_TRAZO = 2;
-/** Oscilaciones visibles a lo ancho. Pocas: muchas se leen como ruido. */
-const ONDA_CICLOS = 2.6;
-/**
- * Velocidad de viaje, en ciclos por segundo. Se calcula con reloj de pared y no
- * por evento recibido: así la onda viaja igual de rápido con cualquier ritmo de
- * emisión del backend, que depende del tamaño de trama del micrófono.
- */
-const ONDA_VEL = 0.9;
-
-type Punto = { x: number; y: number };
-
-/**
- * Ruta SVG suave que pasa POR los puntos (spline de Catmull-Rom convertido a
- * bezieres cúbicas). Sin suavizado la onda sería una línea quebrada, que es el
- * aspecto anguloso que queremos evitar al dejar las barras.
- *
- * Tiene que pasar por los puntos, no cerca. La versión obvia —bezieres
- * cuadráticas ancladas en los puntos medios— aquí se comporta pésimo: como la
- * onda alterna el signo, TODOS los puntos medios caen justo en el centro y la
- * curva resultante solo alcanza la mitad de la amplitud calculada. Se vería
- * apagada y usaría medio lienzo.
- */
-const rutaSuave = (puntos: Punto[]): string => {
-  if (puntos.length < 2) return "";
-  const en = (i: number): Punto =>
-    puntos[Math.max(0, Math.min(puntos.length - 1, i))];
-  const n2 = (v: number) => v.toFixed(2);
-
-  let d = `M ${n2(puntos[0].x)} ${n2(puntos[0].y)}`;
-  for (let i = 0; i < puntos.length - 1; i++) {
-    // Los extremos se repiten a sí mismos: la tangente inicial y final sale de
-    // los puntos que hay, sin inventar muestras.
-    const p0 = en(i - 1);
-    const p1 = en(i);
-    const p2 = en(i + 1);
-    const p3 = en(i + 2);
-    const c1x = p1.x + (p2.x - p0.x) / 6;
-    const c1y = p1.y + (p2.y - p0.y) / 6;
-    const c2x = p2.x - (p3.x - p1.x) / 6;
-    const c2y = p2.y - (p3.y - p1.y) / 6;
-    d += ` C ${n2(c1x)} ${n2(c1y)} ${n2(c2x)} ${n2(c2y)} ${n2(p2.x)} ${n2(p2.y)}`;
-  }
-  return d;
-};
-
-/**
- * Ruta de la onda: portador sinusoidal viajero modulado por la envolvente.
- *
- * @param envolvente historia reciente del nivel de voz, 0..1, la más nueva al
- *   final (entra por la derecha).
- * @param fase desplazamiento del portador en VUELTAS (0..1). Congelarla en un
- *   valor fijo detiene el viaje sin tocar la amplitud.
- */
-const rutaOnda = (envolvente: number[], fase: number): string => {
-  const n = envolvente.length;
-  if (n < 2) return "";
-  const centro = ONDA_ALTO / 2;
-  const ampMax = ONDA_ALTO / 2 - ONDA_TRAZO / 2;
-
-  return rutaSuave(
-    envolvente.map((v, i) => {
-      const t = i / (n - 1);
-      // `pow(v, 0.7)` comprime el rango: los niveles bajos del habla normal se
-      // ven, en vez de quedar pegados a la línea central.
-      const amp = Math.pow(Math.max(0, Math.min(1, v)), 0.7) * ampMax;
-      const portador = Math.sin(2 * Math.PI * (t * ONDA_CICLOS + fase));
-      return { x: t * ONDA_ANCHO, y: centro - amp * portador };
-    }),
-  );
-};
+const WAVE_FIRST_BAND = 2;
+const WAVE_BANDS_PER_BAR = 3;
 
 const RecordingOverlay: React.FC = () => {
   const { t } = useTranslation();
   const [isVisible, setIsVisible] = useState(false);
   const [state, setState] = useState<OverlayState>("recording");
   const [style, setStyle] = useState<OverlayStyle>("minimal");
-  const [levels, setLevels] = useState<number[]>(Array(WAVE_PUNTOS).fill(0));
+  const [levels, setLevels] = useState<number[]>(Array(WAVE_BARS).fill(0));
   const [streamText, setStreamText] = useState<StreamTextEvent>({
     committed: "",
     tentative: "",
@@ -157,17 +75,7 @@ const RecordingOverlay: React.FC = () => {
   // while overflowing, so the resting first line stays crisp flush under the pill.
   const [overflowing, setOverflowing] = useState(false);
 
-  // Fase del portador, en vueltas (0..1). Avanza con reloj de pared para que la
-  // onda viaje a velocidad constante sea cual sea el ritmo de emisión.
-  const [fase, setFase] = useState(0);
-  const smoothedLevelsRef = useRef<number[]>(Array(WAVE_PUNTOS).fill(0));
-  // Se lee una vez al montar: la onda es movimiento continuo y hay que poder
-  // apagarla. No es un `useState` porque no necesita re-render propio — el de
-  // la onda ya llega con cada trama de espectro.
-  const reducirMovimiento = useRef(
-    typeof window !== "undefined" &&
-      window.matchMedia?.("(prefers-reduced-motion: reduce)").matches === true,
-  ).current;
+  const smoothedLevelsRef = useRef<number[]>(Array(WAVE_BARS).fill(0));
   // Live-text scroll-back: the text region "sticks" to the newest line while the
   // user is at the bottom; if they scroll up to read history, auto-follow pauses
   // until they scroll back down.
@@ -236,35 +144,19 @@ const RecordingOverlay: React.FC = () => {
         "spectrum",
         (event) => {
           const { bands } = event.payload;
-
-          // UN nivel por trama, promediando solo el rango de voz.
-          let suma = 0;
-          let n = 0;
-          for (let b = NIVEL_BANDA_INI; b < NIVEL_BANDA_FIN; b++) {
-            suma += bands[b] ?? 0;
-            n++;
-          }
-          const crudo = n > 0 ? suma / n : 0;
-
-          // Ataque rápido, caída lenta: así un golpe de voz se ve en el acto y
-          // la onda no parpadea entre sílabas. Simétrico se veía nervioso.
-          const previo = smoothedLevelsRef.current;
-          const ultimo = previo[previo.length - 1] ?? 0;
-          const nivel =
-            crudo > ultimo
-              ? ultimo * 0.4 + crudo * 0.6
-              : ultimo * 0.82 + crudo * 0.18;
-
-          // La historia se desplaza: lo nuevo entra por la DERECHA y empuja el
-          // resto a la izquierda, como un osciloscopio. Esto es lo que hace que
-          // se mueva toda la línea y no solo un extremo.
-          const historia = [...previo.slice(1), nivel];
-          smoothedLevelsRef.current = historia;
-          setLevels(historia);
-
-          // Fase del portador por reloj de pared, no por evento: la velocidad de
-          // viaje no debe depender del ritmo de emisión del backend.
-          setFase(((performance.now() / 1000) * ONDA_VEL) % 1);
+          // Cada barra promedia un grupo de bandas consecutivas del rango de
+          // voz, y el suavizado exponencial mantiene el movimiento calmado.
+          const smoothed = smoothedLevelsRef.current.map((prev, i) => {
+            const start = WAVE_FIRST_BAND + i * WAVE_BANDS_PER_BAR;
+            let sum = 0;
+            for (let b = start; b < start + WAVE_BANDS_PER_BAR; b++) {
+              sum += bands[b] ?? 0;
+            }
+            const target = sum / WAVE_BANDS_PER_BAR;
+            return prev * 0.7 + target * 0.3;
+          });
+          smoothedLevelsRef.current = smoothed;
+          setLevels(smoothed);
         },
       );
 
@@ -334,32 +226,20 @@ const RecordingOverlay: React.FC = () => {
     `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`;
 
   // ---- Shared building blocks (one visual language for every overlay form) ----
-  // PORTADOR × ENVOLVENTE, que es lo que hace que se mueva TODA la línea:
-  //
-  //   · el portador es una sinusoide de `ONDA_CICLOS` oscilaciones a lo ancho,
-  //     cuya fase avanza con el reloj → la forma VIAJA;
-  //   · la envolvente es `levels`, la historia reciente del nivel de voz, que se
-  //     desplaza sola al entrar cada trama nueva por la derecha.
-  //
-  // Así cada punto de la línea responde al audio, no solo un extremo, y la onda
-  // se lee como señal y no como un lomo. En silencio la envolvente vale 0 en
-  // todas partes y queda una línea recta pase lo que pase con la fase: «no oigo
-  // nada» se ve sin leer nada, y no hay animación gratuita.
-  //
-  // Con `prefers-reduced-motion` se congela el viaje (la fase queda fija) pero la
-  // amplitud sigue respondiendo: el único movimiento que queda es el que provoca
-  // tu propia voz. Anular también la amplitud dejaba una línea muerta que no
-  // comunicaba nada.
+  // Las alturas van EN LINEA porque salen de los niveles del micro, que cambian
+  // con cada trama: no hay clase CSS que pueda expresarlas.
   const waveform = (
     <div className="swave">
-      <svg
-        width={ONDA_ANCHO}
-        height={ONDA_ALTO}
-        viewBox={`0 0 ${ONDA_ANCHO} ${ONDA_ALTO}`}
-        aria-hidden="true"
-      >
-        <path d={rutaOnda(levels, reducirMovimiento ? 0 : fase)} />
-      </svg>
+      {levels.map((v, i) => (
+        <i
+          key={i}
+          style={{
+            // `pow(v, 0.7)` comprime el rango para que los niveles bajos del
+            // habla normal se vean, en vez de quedar pegados al minimo.
+            height: `${Math.max(3, Math.min(18, 3 + Math.pow(v, 0.7) * 15))}px`,
+          }}
+        />
+      ))}
     </div>
   );
 
