@@ -22,7 +22,7 @@
     "history": "历史记录",
     "debug": "调试",
     "about": "关于",
-    "escucha": "朗读"
+    "escucha": "VOX"
   },
   "onboarding": {
     "subtitle": "请选择一个转录模型以开始使用",
@@ -957,7 +957,7 @@
     "tagline": "« Di la <accent>palabra</accent>. »"
   },
   "escucha": {
-    "title": "朗读",
+    "title": "VOX",
     "openFile": "打开文件…",
     "readClipboard": "朗读剪贴板",
     "play": "朗读",

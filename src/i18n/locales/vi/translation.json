@@ -22,7 +22,7 @@
     "history": "Lịch sử",
     "debug": "Gỡ lỗi",
     "about": "Giới thiệu",
-    "escucha": "Đọc to"
+    "escucha": "VOX"
   },
   "onboarding": {
     "subtitle": "Để bắt đầu, hãy chọn một mô hình chuyển đổi giọng nói",
@@ -957,7 +957,7 @@
     "tagline": "« Di la <accent>palabra</accent>. »"
   },
   "escucha": {
-    "title": "Đọc to",
+    "title": "VOX",
     "openFile": "Mở tệp…",
     "readClipboard": "Đọc clipboard",
     "play": "Đọc",

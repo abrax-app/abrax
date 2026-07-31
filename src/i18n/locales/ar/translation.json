@@ -22,7 +22,7 @@
     "debug": "تصحيح الأخطاء",
     "about": "حول",
     "models": "النماذج",
-    "escucha": "الاستماع"
+    "escucha": "VOX"
   },
   "onboarding": {
     "subtitle": "للبدء، اختر نموذج التفريغ الصوتي",
@@ -957,7 +957,7 @@
     "tagline": "« Di la <accent>palabra</accent>. »"
   },
   "escucha": {
-    "title": "الاستماع",
+    "title": "VOX",
     "openFile": "فتح ملف…",
     "readClipboard": "قراءة الحافظة",
     "play": "قراءة",

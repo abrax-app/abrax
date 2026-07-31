@@ -22,7 +22,7 @@
     "history": "היסטוריה",
     "debug": "ניפוי שגיאות",
     "about": "אודות",
-    "escucha": "הקראה"
+    "escucha": "VOX"
   },
   "onboarding": {
     "subtitle": "כדי להתחיל, בחר מודל תמלול",
@@ -957,7 +957,7 @@
     "tagline": "« Di la <accent>palabra</accent>. »"
   },
   "escucha": {
-    "title": "הקראה",
+    "title": "VOX",
     "openFile": "פתיחת קובץ…",
     "readClipboard": "הקראת הלוח",
     "play": "הקראה",

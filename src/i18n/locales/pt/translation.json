@@ -22,7 +22,7 @@
     "history": "Histórico",
     "debug": "Depuração",
     "about": "Sobre",
-    "escucha": "Escuta"
+    "escucha": "VOX"
   },
   "onboarding": {
     "subtitle": "Para começar, escolha um modelo de transcrição",
@@ -957,7 +957,7 @@
     "tagline": "« Di la <accent>palabra</accent>. »"
   },
   "escucha": {
-    "title": "Escuta",
+    "title": "VOX",
     "openFile": "Abrir arquivo…",
     "readClipboard": "Ler área de transferência",
     "play": "Ler",

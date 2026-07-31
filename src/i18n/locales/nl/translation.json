@@ -22,7 +22,7 @@
     "history": "Geschiedenis",
     "debug": "Probleemoplossing",
     "about": "Over Abrax",
-    "escucha": "Voorlezen"
+    "escucha": "VOX"
   },
   "onboarding": {
     "subtitle": "Kies een transcriptiemodel om aan de slag te gaan",
@@ -957,7 +957,7 @@
     "tagline": "« Di la <accent>palabra</accent>. »"
   },
   "escucha": {
-    "title": "Voorlezen",
+    "title": "VOX",
     "openFile": "Bestand openen…",
     "readClipboard": "Klembord voorlezen",
     "play": "Lezen",

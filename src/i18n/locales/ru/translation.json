@@ -22,7 +22,7 @@
     "history": "История",
     "debug": "Отладка",
     "about": "О программе",
-    "escucha": "Озвучка"
+    "escucha": "VOX"
   },
   "onboarding": {
     "subtitle": "Для начала выберите модель транскрипции",
@@ -957,7 +957,7 @@
     "tagline": "« Di la <accent>palabra</accent>. »"
   },
   "escucha": {
-    "title": "Озвучка",
+    "title": "VOX",
     "openFile": "Открыть файл…",
     "readClipboard": "Прочитать буфер обмена",
     "play": "Читать",

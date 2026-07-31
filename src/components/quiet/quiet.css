@@ -366,3 +366,14 @@
   background: rgb(255 255 255 / 18%);
   background-clip: padding-box;
 }
+
+/* Controles del hero, donde antes estaba la esfera. Misma familia visual que
+   los chips de Karting (se reusa su componente), centrados y con holgura para
+   que respiren en la pantalla de inicio. */
+.q-chips {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  margin: 28px 0 32px;
+}

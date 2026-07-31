@@ -22,7 +22,7 @@
     "history": "История",
     "debug": "Отстраняване",
     "about": "За приложението",
-    "escucha": "Прочитане"
+    "escucha": "VOX"
   },
   "onboarding": {
     "subtitle": "За да започнете, изберете модел за транскрипция",
@@ -957,7 +957,7 @@
     "tagline": "« Di la <accent>palabra</accent>. »"
   },
   "escucha": {
-    "title": "Прочитане на глас",
+    "title": "VOX",
     "openFile": "Отвори файл…",
     "readClipboard": "Прочети клипборда",
     "play": "Чети",

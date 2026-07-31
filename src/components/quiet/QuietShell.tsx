@@ -27,7 +27,8 @@ import { GeneralSettings, HistorySettings, ModelsSettings } from "../settings";
 import { SECTIONS_CONFIG, type SidebarSection } from "../Sidebar";
 import { ShellSelector } from "../settings/ShellSelector";
 import { PaletteSelector } from "../settings/PaletteSelector";
-import { montarEsfera, type EsferaHandle } from "./esferaHome";
+import { Chip } from "../bancada/Chip";
+import { AudioLines, Eraser, Languages, MonitorSpeaker } from "lucide-react";
 import "./quiet.css";
 
 // Skin "Quiet" — minimalista y discreta (mockup PROPUESTA 1): panel oscuro
@@ -63,7 +64,7 @@ type MasSeccion = (typeof MAS_SECCIONES)[number];
 
 export const QuietShell: React.FC = () => {
   const { t } = useTranslation();
-  const { settings } = useSettings();
+  const { settings, updateSetting } = useSettings();
   const osType = useOsType();
 
   const [view, setView] = useState<QView>("escuchar");
@@ -79,30 +80,10 @@ export const QuietShell: React.FC = () => {
   // agrandar/maximizar la ventana solo se ve más espacio (contenido centrado
   // por max-width en quiet.css). El zoom proporcional se quitó a pedido.
 
-  // ── esfera del hero (motor canvas 2D que respira; reacciona al dictado) ──
-  const cvRef = useRef<HTMLCanvasElement>(null);
-  const esf = useRef<EsferaHandle | null>(null);
-  useEffect(() => {
-    if (view !== "escuchar" || !cvRef.current) return;
-    esf.current = montarEsfera(cvRef.current);
-    esf.current.setGrabando(grabando);
-    return () => {
-      esf.current?.destroy();
-      esf.current = null;
-    };
-    // Se re-monta al volver a "escuchar"; grabando se sincroniza por su efecto.
-  }, [view]);
-
-  // Re-teñir la esfera al cambiar de paleta/tema.
-  useEffect(() => {
-    const root = document.documentElement;
-    const obs = new MutationObserver(() => esf.current?.setPalette());
-    obs.observe(root, {
-      attributes: true,
-      attributeFilter: ["data-ui-theme", "data-theme"],
-    });
-    return () => obs.disconnect();
-  }, []);
+  // La esfera del hero se retiro el 31/07 por decision de producto: ocupaba el
+  // centro de la pantalla de inicio y no hacia nada que el usuario pudiera usar.
+  // En su lugar van los controles que de verdad se tocan. El motor
+  // (`esferaHome.ts`) queda en el repo: la esfera sigue viva en el overlay.
 
   // Estado de dictado real (sondeo ligero): esfera + etiqueta del botón.
   useEffect(() => {
@@ -114,7 +95,6 @@ export const QuietShell: React.FC = () => {
         if (vivo && rec !== last) {
           last = rec;
           setGrabando(rec);
-          esf.current?.setGrabando(rec);
         }
       } catch {
         // comando aún no listo
@@ -310,8 +290,56 @@ export const QuietShell: React.FC = () => {
                     t("quiet.holdHintNoBinding")
                   )}
                 </p>
-                <div className="q-orb">
-                  <canvas ref={cvRef} className="q-orb-cv" aria-hidden="true" />
+                {/* Los mismos controles que el tablero de Karting, aqui.
+                    Antes este sitio lo ocupaba una esfera decorativa: bonita,
+                    pero en la pantalla de INICIO —lo primero que ve un juez— el
+                    espacio central tiene que servir para algo. Son los cuatro
+                    ajustes que de verdad se tocan al dictar, y son los MISMOS
+                    componentes que usa Karting, no una copia. */}
+                <div className="q-chips">
+                  <Chip
+                    icon={MonitorSpeaker}
+                    label={t("bancada.systemAudio")}
+                    active={!!settings?.capture_system_audio}
+                    onClick={() =>
+                      updateSetting(
+                        "capture_system_audio",
+                        !settings?.capture_system_audio,
+                      )
+                    }
+                  />
+                  <Chip
+                    icon={AudioLines}
+                    label={t("bancada.dial.vad")}
+                    active={!!settings?.vad_enabled}
+                    onClick={() =>
+                      updateSetting("vad_enabled", !settings?.vad_enabled)
+                    }
+                  />
+                  <Chip
+                    icon={Languages}
+                    label={t("bancada.btn.translate")}
+                    active={!!settings?.translate_to_english}
+                    onClick={() =>
+                      updateSetting(
+                        "translate_to_english",
+                        !settings?.translate_to_english,
+                      )
+                    }
+                  />
+                  <Chip
+                    icon={Eraser}
+                    label={t("bancada.btn.fillers")}
+                    active={(settings?.custom_filler_words ?? null) !== null}
+                    onClick={() =>
+                      updateSetting(
+                        "custom_filler_words",
+                        (settings?.custom_filler_words ?? null) !== null
+                          ? []
+                          : null,
+                      )
+                    }
+                  />
                 </div>
                 <div className="q-recent">
                   <div className="q-recent-h">{t("quiet.recent")}</div>

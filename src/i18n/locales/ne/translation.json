@@ -22,7 +22,7 @@
     "history": "हिस्ट्री",
     "debug": "डिबग",
     "about": "बारेमा",
-    "escucha": "सुन्नुहोस्"
+    "escucha": "VOX"
   },
   "onboarding": {
     "subtitle": "सुरु गर्न, एउटा ट्रान्सक्रिप्सन मोडेल छान्नुहोस्",
@@ -957,7 +957,7 @@
     "tagline": "« Di la <accent>palabra</accent>. »"
   },
   "escucha": {
-    "title": "सुन्नुहोस्",
+    "title": "VOX",
     "openFile": "फाइल खोल्नुहोस्…",
     "readClipboard": "क्लिपबोर्ड पढ्नुहोस्",
     "play": "पढ्नुहोस्",

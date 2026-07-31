@@ -22,7 +22,7 @@
     "history": "Verlauf",
     "debug": "Debug",
     "about": "Info",
-    "escucha": "Vorlesen"
+    "escucha": "VOX"
   },
   "onboarding": {
     "subtitle": "Wähle ein Transkriptionsmodell, um loszulegen",
@@ -957,7 +957,7 @@
     "tagline": "« Di la <accent>palabra</accent>. »"
   },
   "escucha": {
-    "title": "Vorlesen",
+    "title": "VOX",
     "openFile": "Datei öffnen…",
     "readClipboard": "Zwischenablage vorlesen",
     "play": "Lesen",

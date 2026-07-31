@@ -22,7 +22,7 @@
     "history": "Cronologia",
     "debug": "Debug",
     "about": "Informazioni",
-    "escucha": "Ascolto"
+    "escucha": "VOX"
   },
   "onboarding": {
     "subtitle": "Per cominciare, scegli un modello di riconoscimento vocale",
@@ -957,7 +957,7 @@
     "tagline": "« Di la <accent>palabra</accent>. »"
   },
   "escucha": {
-    "title": "Ascolto",
+    "title": "VOX",
     "openFile": "Apri file…",
     "readClipboard": "Leggi appunti",
     "play": "Leggi",

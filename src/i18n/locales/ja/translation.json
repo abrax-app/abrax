@@ -22,7 +22,7 @@
     "history": "履歴",
     "debug": "デバッグ",
     "about": "概要",
-    "escucha": "読み上げ"
+    "escucha": "VOX"
   },
   "onboarding": {
     "subtitle": "開始するには、文字起こしのモデルを選択してください",
@@ -957,7 +957,7 @@
     "tagline": "« Di la <accent>palabra</accent>. »"
   },
   "escucha": {
-    "title": "読み上げ",
+    "title": "VOX",
     "openFile": "ファイルを開く…",
     "readClipboard": "クリップボードを読む",
     "play": "読む",

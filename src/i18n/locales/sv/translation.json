@@ -22,7 +22,7 @@
     "history": "Historik",
     "debug": "Felsökning",
     "about": "Om",
-    "escucha": "Uppläsning"
+    "escucha": "VOX"
   },
   "onboarding": {
     "subtitle": "För att komma igång, välj en transkriptionsmodell",
@@ -957,7 +957,7 @@
     "tagline": "« Di la <accent>palabra</accent>. »"
   },
   "escucha": {
-    "title": "Uppläsning",
+    "title": "VOX",
     "openFile": "Öppna fil…",
     "readClipboard": "Läs urklipp",
     "play": "Läs",

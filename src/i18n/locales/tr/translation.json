@@ -22,7 +22,7 @@
     "history": "Geçmiş",
     "debug": "Hata Ayıklama",
     "about": "Hakkında",
-    "escucha": "Sesli Okuma"
+    "escucha": "VOX"
   },
   "onboarding": {
     "subtitle": "Başlamak için bir transkripsiyon modeli seçin",
@@ -957,7 +957,7 @@
     "tagline": "« Di la <accent>palabra</accent>. »"
   },
   "escucha": {
-    "title": "Sesli Okuma",
+    "title": "VOX",
     "openFile": "Dosya aç…",
     "readClipboard": "Panoyu oku",
     "play": "Oku",

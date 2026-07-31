@@ -22,7 +22,7 @@
     "history": "Historia",
     "debug": "Debugowanie",
     "about": "O programie",
-    "escucha": "Czytanie"
+    "escucha": "VOX"
   },
   "onboarding": {
     "subtitle": "Aby rozpocząć, wybierz model transkrypcji",
@@ -957,7 +957,7 @@
     "tagline": "« Di la <accent>palabra</accent>. »"
   },
   "escucha": {
-    "title": "Czytanie na głos",
+    "title": "VOX",
     "openFile": "Otwórz plik…",
     "readClipboard": "Czytaj schowek",
     "play": "Czytaj",

@@ -22,7 +22,7 @@
     "history": "歷史紀錄",
     "debug": "偵錯",
     "about": "關於",
-    "escucha": "朗讀"
+    "escucha": "VOX"
   },
   "onboarding": {
     "subtitle": "首先，請選擇一種模型",
@@ -957,7 +957,7 @@
     "tagline": "« Di la <accent>palabra</accent>. »"
   },
   "escucha": {
-    "title": "朗讀",
+    "title": "VOX",
     "openFile": "開啟檔案…",
     "readClipboard": "朗讀剪貼簿",
     "play": "朗讀",

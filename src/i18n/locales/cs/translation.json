@@ -22,7 +22,7 @@
     "history": "Historie",
     "debug": "Ladění",
     "about": "O aplikaci",
-    "escucha": "Předčítání"
+    "escucha": "VOX"
   },
   "onboarding": {
     "subtitle": "Pro začátek vyberte model pro přepis",
@@ -957,7 +957,7 @@
     "tagline": "« Di la <accent>palabra</accent>. »"
   },
   "escucha": {
-    "title": "Předčítání",
+    "title": "VOX",
     "openFile": "Otevřít soubor…",
     "readClipboard": "Přečíst schránku",
     "play": "Číst",
