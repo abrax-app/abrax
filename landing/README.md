@@ -18,7 +18,8 @@ Parámetro de desarrollo: `?sin-acto` salta la portada (útil para QA y capturas
 ## Piezas
 
 - `index.html` — página completa (Acto I, hero con esfera, flujo, funciones,
-  privacidad, demo, compatibilidad, comparación, FAQ, descarga, footer). El
+  privacidad, demo, compatibilidad, comparación, modelos, FAQ, descarga,
+  footer). El
   guion inline fija la receta visual oficial de la esfera vía `ESFERA.tune()`
   y carga three.js + motor **en diferido** (idle) para no bloquear el pintado.
 - `js/esfera.js` — motor de la esfera «palabras vivas»: audio-reactiva
@@ -36,7 +37,8 @@ Parámetro de desarrollo: `?sin-acto` salta la portada (útil para QA y capturas
 - `vendor/three.min.js` — three.js r128 minificado tal cual (no formatear:
   `landing/vendor/` está en `.prettierignore`).
 - `assets/` — SVG oficiales de marca, capturas reales en WebP, clip MP4 de
-  Escucha y `og.jpg` (tarjeta social 1200×630).
+  VOX y `og.jpg` (tarjeta social 1200×630). Pendiente: captura real de
+  Streaming (su ventana es una ilustración de texto mientras tanto).
 - `css/estilos.css` — tokens y componentes.
 - `.vercelignore` — excluye del deploy los laboratorios, el fork, las recetas
   y este README.

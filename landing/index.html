@@ -224,6 +224,38 @@
         </div>
       </div>
 
+      <!-- Pendiente de asset: captura real de Streaming. Mientras no exista,
+           la ventana es una ilustración de texto y NO dice «captura real». -->
+      <div class="fila-funcion fila-funcion--invertida">
+        <div class="texto">
+          <div class="kicker">Streaming</div>
+          <h3 class="titulo-fn">Transcribe lo que suena en tu equipo</h3>
+          <p class="desc">
+            Una clase, un video, una reunión: cambias el micrófono por el
+            audio del sistema y lo ves en texto. ABRAX salta solo a un modelo
+            apto y, al apagarlo, restaura el que usabas. Local, igual que el
+            dictado.
+          </p>
+        </div>
+        <div class="visual">
+          <div class="ventana">
+            <div class="ventana-barra">
+              <i style="background: var(--cian)"></i
+              ><i style="background: var(--violeta)"></i
+              ><i style="background: var(--magenta)"></i>
+              <span>ABRAX · Streaming</span>
+            </div>
+            <div class="ventana-cuerpo ejemplo--stream">
+              <div>
+                …y esa es la diferencia entre un puntero y una referencia.
+              </div>
+              <div>Para el examen entra hasta el capítulo siete.</div>
+              <div>Cualquier duda la resolvemos en la próxima clase…</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <div class="fila-funcion">
         <div class="texto">
           <div class="kicker">VOX</div>
@@ -305,6 +337,54 @@
           </div>
         </div>
       </div>
+
+      <div class="cards">
+        <div class="card">
+          <div class="titulo">Autocorrección hablada</div>
+          <p>
+            Te corriges al hablar y sale ya corregido. Viene encendida de
+            fábrica.
+          </p>
+          <div class="ejemplo">
+            <div>
+              «el martes, perdón, el miércoles»
+              <span class="flecha">→</span>
+              <span class="res">el miércoles</span>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="titulo">Emoji dictado</div>
+          <p>
+            1 531 nombres, por tabla. Solo actúa detrás de la palabra «emoji»:
+            no convierte nada por accidente.
+          </p>
+          <div class="ejemplo">
+            <div>
+              «emoji fuego» <span class="flecha">→</span>
+              <span class="res">🔥</span>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="titulo">Corrección local</div>
+          <p>
+            Números en cifras, símbolos, correos y ortotipografía — por
+            reglas, sin IA y sin conexión. Se enciende en Ajustes; y si
+            corriges un dictado en el historial, aprende.
+          </p>
+          <div class="ejemplo">
+            <div>
+              «a las diecisiete treinta» <span class="flecha">→</span>
+              <span class="res">a las 17:30</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <p class="tabla-nota">
+        Y además: overlay en 4 estilos, icono en la bandeja, historial con
+        límite y retención configurables, y la interfaz en 22 idiomas.
+      </p>
     </section>
 
     <!-- ═══════════ PRIVACIDAD ═══════════ -->
@@ -327,7 +407,7 @@
             <li>Captura y transcripción de audio</li>
             <li>Diccionario Vivo e índice de tu repo</li>
             <li>Corrección del texto y memoria de correcciones</li>
-            <li>Historial de dictados</li>
+            <li>Historial de dictados — con límite y retención que tú fijas</li>
           </ul>
         </div>
         <div class="card">
@@ -523,6 +603,70 @@
       </p>
     </section>
 
+    <!-- ═══════════ MODELOS ═══════════ -->
+    <section class="seccion" id="modelos" aria-labelledby="t-modelos">
+      <h2 id="t-modelos">Los modelos</h2>
+      <p class="sub-seccion">
+        Cinco en el catálogo, con sus números reales. Eliges uno, se descarga
+        una vez, y transcribe sin conexión.
+      </p>
+      <div class="tabla-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th scope="col">Modelo</th>
+              <th scope="col">Tamaño</th>
+              <th scope="col">Idiomas</th>
+              <th scope="col">Precisión</th>
+              <th scope="col">Velocidad</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th scope="row">Cohere Transcribe</th>
+              <td>2.0B</td>
+              <td>14</td>
+              <td>92</td>
+              <td>63</td>
+            </tr>
+            <tr>
+              <th scope="row">Whisper Large v3 Turbo</th>
+              <td>809M</td>
+              <td>100</td>
+              <td>87</td>
+              <td>35</td>
+            </tr>
+            <tr>
+              <th scope="row">Whisper Large v3</th>
+              <td>1.5B</td>
+              <td>100</td>
+              <td>89</td>
+              <td>23</td>
+            </tr>
+            <tr>
+              <th scope="row">Nemotron Streaming 3.5</th>
+              <td>0.6B</td>
+              <td>28</td>
+              <td>82</td>
+              <td>84</td>
+            </tr>
+            <tr>
+              <th scope="row">Canary 180M Flash — el recomendado</th>
+              <td>180M</td>
+              <td>4</td>
+              <td>88</td>
+              <td>98</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="tabla-nota">
+        Precisión y velocidad son los puntajes del catálogo, de 0 a 100. Los
+        cinco entienden español. Solo Nemotron escribe mientras hablas
+        (streaming); Whisper Large v3 y Canary también traducen al inglés.
+      </p>
+    </section>
+
     <!-- ═══════════ FAQ ═══════════ -->
     <section class="seccion" id="faq" aria-labelledby="t-faq">
       <h2 id="t-faq">Preguntas</h2>
@@ -540,6 +684,15 @@
           <div class="resp">
             En cualquiera donde puedas escribir texto. Los campos protegidos,
             como contraseñas, quedan fuera a propósito.
+          </div>
+        </details>
+        <details>
+          <summary>¿Puede transcribir una reunión o un video?</summary>
+          <div class="resp">
+            Sí: Streaming cambia el micrófono por el audio del sistema y
+            transcribe lo que suene en tu equipo — una clase, un video, una
+            llamada. Todo local, igual que el dictado. Al apagarlo, tu modelo
+            de siempre vuelve solo.
           </div>
         </details>
         <details>
