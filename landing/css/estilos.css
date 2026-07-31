@@ -477,24 +477,18 @@ h2::before {
 .res {
   color: var(--cian);
 }
-.paletas {
-  /* una fila por paleta: puntos y nombre siempre alineados, a cualquier ancho */
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 9px;
-  font-size: 9px;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: var(--suave);
-  margin-top: 12px;
-}
+/* muestras de paleta: fila de puntos + nombre — el pie de cada tira */
 .paleta-fila {
   display: flex;
   align-items: center;
   gap: 8px;
+  margin-top: 8px;
+  font-size: 9px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--suave);
 }
-.paletas i {
+.paleta-fila i {
   width: 14px;
   height: 14px;
   border-radius: 50%;
@@ -1242,35 +1236,64 @@ h2::before {
   }
 }
 
-/* capturas chicas dentro de cards */
-.mini-captura {
-  margin-top: 12px;
-  border: 1px solid var(--borde);
-  border-radius: 8px;
-  overflow: hidden;
+/* rejilla de formas: las 4 pieles de la misma app, tiles uniformes
+   (aspect-ratio + cover para que Retro, vertical, no rompa las filas) */
+.mini-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
 }
-.mini-captura img {
+.mini-grid figure {
+  margin: 0;
+}
+.mini-grid img {
   display: block;
   width: 100%;
-  height: auto;
+  aspect-ratio: 8 / 7;
+  object-fit: cover;
+  object-position: top;
+  border: 1px solid var(--borde);
+  border-radius: 8px;
 }
-/* cards con pieza visual (captura, ejemplo o muestras): la card es columna y
+.mini-grid figcaption {
+  margin-top: 6px;
+  font-size: 9px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--suave);
+}
+/* tiras de paleta: la misma pantalla, tres pieles de color */
+.paleta-ej {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.paleta-ej figure {
+  margin: 0;
+}
+.paleta-ej img {
+  display: block;
+  width: 100%;
+  border: 1px solid var(--borde);
+  border-radius: 8px;
+}
+/* cards con pieza visual (rejilla, tiras o ejemplo): la card es columna y
    la pieza se ancla al borde inferior — así toda la fila queda a ras aunque
    los textos midan distinto. El margen del párrafo es el respiro mínimo
    cuando la card es la más alta y el `auto` colapsa a cero. */
-.card:has(> .mini-captura),
-.card:has(> .paletas),
+.card:has(> .mini-grid),
+.card:has(> .paleta-ej),
 .card:has(> .ejemplo) {
   display: flex;
   flex-direction: column;
 }
-.card:has(> .mini-captura) > p,
-.card:has(> .paletas) > p,
+.card:has(> .mini-grid) > p,
+.card:has(> .paleta-ej) > p,
 .card:has(> .ejemplo) > p {
   margin-bottom: 12px;
 }
-.card > .mini-captura,
-.card > .paletas,
+.card > .mini-grid,
+.card > .paleta-ej,
 .card > p + .ejemplo {
   margin-top: auto;
 }

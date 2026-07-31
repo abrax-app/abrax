@@ -182,6 +182,44 @@
       </div>
     </section>
 
+    <!-- ═══════════ DEMO · va temprano: la esfera del hero sigue a la vista
+         y probarla es el gancho antes de leer funciones ═══════════ -->
+    <section class="seccion" aria-labelledby="t-demo">
+      <h2 id="t-demo">Escúchalo y pruébalo</h2>
+      <p class="display">La esfera <em>te escucha.</em></p>
+      <p class="sub-seccion">
+        La esfera de arriba ya está viva: con tu micrófono respira contigo.
+      </p>
+      <div class="demo-mic">
+        <button type="button" class="btn btn--sec" id="btnMicDemo" disabled>
+          Probar con mi micrófono
+        </button>
+        <span class="demo-estado" id="estadoEsfera" role="status"
+          >modo demo · respiración sintética</span
+        >
+        <p class="demo-nota">
+          El permiso de micrófono se pide solo si presionas el botón, nunca al
+          cargar la página. El audio se procesa en tu navegador y no se envía a
+          ningún servidor.
+        </p>
+        <form class="demo-palabra" id="formPalabra">
+          <label class="visually-hidden" for="inputPalabra"
+            >Tu palabra para la esfera</label
+          >
+          <input
+            id="inputPalabra"
+            type="text"
+            maxlength="24"
+            placeholder="o escribe una palabra…"
+            autocomplete="off"
+          />
+          <button type="submit" class="btn btn--sec">
+            Lánzala a la esfera
+          </button>
+        </form>
+      </div>
+    </section>
+
     <!-- ═══════════ FUNCIONES ═══════════ -->
     <section class="seccion" id="funciones" aria-labelledby="t-funciones">
       <h2 id="t-funciones">Funciones</h2>
@@ -285,53 +323,97 @@
 
       <div class="cards">
         <div class="card">
-          <div class="titulo">Dictado local</div>
-          <p>
-            es-419 de primera clase: entiende el español que hablas, no uno
-            neutro de doblaje.
-          </p>
-          <div class="mini-captura">
-            <img
-              src="assets/capturas/app-principal.webp"
-              alt="Ventana principal de ABRAX: forma Clásico con la paleta ABRAX, atajos y sonido"
-              width="1006"
-              height="881"
-              loading="lazy"
-            />
-          </div>
-        </div>
-        <div class="card">
           <div class="titulo">4 formas de ventana</div>
-          <p>Clásico, Quiet, Karting y Retro.</p>
-          <div class="mini-captura">
-            <img
-              src="assets/capturas/shell-karting.webp"
-              alt="Forma Karting: el HUD de dictado con palabras por minuto y el botón DICTAR"
-              width="1006"
-              height="881"
-              loading="lazy"
-            />
+          <p>La misma app, cuatro pieles. Se cambia en Ajustes, en caliente.</p>
+          <div class="mini-grid">
+            <figure>
+              <img
+                src="assets/capturas/app-principal.webp"
+                alt="Forma Clásico: ajustes con barra lateral"
+                width="1006"
+                height="881"
+                loading="lazy"
+              />
+              <figcaption>Clásico</figcaption>
+            </figure>
+            <figure>
+              <img
+                src="assets/capturas/shell-quiet.webp"
+                alt="Forma Quiet: atajos, Streaming y VOX en una columna silenciosa"
+                width="1006"
+                height="881"
+                loading="lazy"
+              />
+              <figcaption>Quiet</figcaption>
+            </figure>
+            <figure>
+              <img
+                src="assets/capturas/shell-karting.webp"
+                alt="Forma Karting: HUD de dictado con palabras por minuto y el botón DICTAR"
+                width="1006"
+                height="881"
+                loading="lazy"
+              />
+              <figcaption>Karting</figcaption>
+            </figure>
+            <figure>
+              <img
+                src="assets/capturas/shell-retro.webp"
+                alt="Forma Retro: reproductor compacto con la esfera y el reloj de dictado"
+                width="498"
+                height="653"
+                loading="lazy"
+              />
+              <figcaption>Retro</figcaption>
+            </figure>
           </div>
         </div>
         <div class="card">
           <div class="titulo">3 paletas</div>
-          <p>ABRAX, IMPERIAL y ESCUDERÍA.</p>
-          <div class="paletas" aria-hidden="true">
-            <div class="paleta-fila">
-              <i style="background: #2fd9ff"></i
-              ><i style="background: #8b5cf6"></i
-              ><i style="background: #f23dc4"></i><span>ABRAX</span>
-            </div>
-            <div class="paleta-fila">
-              <i style="background: #f2c41d"></i
-              ><i style="background: #e88a1a"></i
-              ><i style="background: #e8442a"></i><span>IMPERIAL</span>
-            </div>
-            <div class="paleta-fila">
-              <i style="background: #ee3f2c"></i
-              ><i style="background: #ff6a4a"></i
-              ><i style="background: #f4f5f7"></i><span>ESCUDERÍA</span>
-            </div>
+          <p>La misma pantalla, tres pieles de color.</p>
+          <div class="paleta-ej">
+            <figure>
+              <img
+                src="assets/capturas/paleta-abrax.webp"
+                alt="Paleta ABRAX: acentos cian, violeta y magenta sobre fondo tinta"
+                width="1006"
+                height="400"
+                loading="lazy"
+              />
+              <figcaption class="paleta-fila">
+                <i style="background: #2fd9ff"></i
+                ><i style="background: #8b5cf6"></i
+                ><i style="background: #f23dc4"></i><span>ABRAX</span>
+              </figcaption>
+            </figure>
+            <figure>
+              <img
+                src="assets/capturas/paleta-imperial.webp"
+                alt="Paleta IMPERIAL: dorados y ámbar, oscura por diseño"
+                width="1006"
+                height="400"
+                loading="lazy"
+              />
+              <figcaption class="paleta-fila">
+                <i style="background: #f2c41d"></i
+                ><i style="background: #e88a1a"></i
+                ><i style="background: #e8442a"></i><span>IMPERIAL</span>
+              </figcaption>
+            </figure>
+            <figure>
+              <img
+                src="assets/capturas/paleta-escuderia.webp"
+                alt="Paleta ESCUDERÍA: rojo de competición sobre negro"
+                width="1006"
+                height="400"
+                loading="lazy"
+              />
+              <figcaption class="paleta-fila">
+                <i style="background: #ee3f2c"></i
+                ><i style="background: #ff6a4a"></i
+                ><i style="background: #f4f5f7"></i><span>ESCUDERÍA</span>
+              </figcaption>
+            </figure>
           </div>
         </div>
       </div>
@@ -455,43 +537,6 @@
             recuperar ese espacio, hay que borrarla también.
           </p>
         </div>
-      </div>
-    </section>
-
-    <!-- ═══════════ DEMO ═══════════ -->
-    <section class="seccion" aria-labelledby="t-demo">
-      <h2 id="t-demo">Escúchalo y pruébalo</h2>
-      <p class="display">La esfera <em>te escucha.</em></p>
-      <p class="sub-seccion">
-        La esfera de arriba ya está viva: con tu micrófono respira contigo.
-      </p>
-      <div class="demo-mic">
-        <button type="button" class="btn btn--sec" id="btnMicDemo" disabled>
-          Probar con mi micrófono
-        </button>
-        <span class="demo-estado" id="estadoEsfera" role="status"
-          >modo demo · respiración sintética</span
-        >
-        <p class="demo-nota">
-          El permiso de micrófono se pide solo si presionas el botón, nunca al
-          cargar la página. El audio se procesa en tu navegador y no se envía a
-          ningún servidor.
-        </p>
-        <form class="demo-palabra" id="formPalabra">
-          <label class="visually-hidden" for="inputPalabra"
-            >Tu palabra para la esfera</label
-          >
-          <input
-            id="inputPalabra"
-            type="text"
-            maxlength="24"
-            placeholder="o escribe una palabra…"
-            autocomplete="off"
-          />
-          <button type="submit" class="btn btn--sec">
-            Lánzala a la esfera
-          </button>
-        </form>
       </div>
     </section>
 
