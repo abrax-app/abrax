@@ -470,6 +470,7 @@ h2::before {
 .paletas {
   display: flex;
   align-items: center;
+  flex-wrap: wrap; /* tres grupos de muestras: que bajen de línea, no que desborden */
   gap: 8px;
   font-size: 9px;
   letter-spacing: 0.18em;
