@@ -440,7 +440,7 @@
       },
       "autocorreccion": {
         "title": "Autocorrección hablada",
-        "description": "Si te corriges en voz alta mientras dictas, el texto sale ya corregido. Por reglas, al instante y sin conexión: no usa ningún modelo de IA. Ante la duda no toca nada. Viene apagada porque puede borrar texto.",
+        "description": "Si te corriges en voz alta mientras dictas —«no, perdón», «quise decir»—, el texto sale ya corregido. Por reglas, al instante y sin conexión: no usa ningún modelo de IA. Solo reemplaza lo que corregiste; nunca borra por su cuenta, y ante la duda no toca nada. Viene activada.",
         "ejemplo": "Ejemplo: «Agenda la reunión para el martes… no, perdón, para el miércoles» → «Agenda la reunión para el miércoles.»",
         "sustitucionTitle": "Señales de corrección",
         "sustitucionDescription": "Lo que dices para reemplazar algo que acabas de decir (p. ej. «no, perdón», «digo»). Solo sustituye si encuentra antes un segmento equivalente —mismo día, mes, hora, número o nombre—; si no lo encuentra, no toca nada.",
@@ -476,7 +476,7 @@
         }
       },
       "voiceActivityDetection": {
-        "title": "Voice Activity Detection",
+        "title": "Detección de voz",
         "description": "Filtra los silencios de la grabación. Los modelos con streaming usan una cola de detección más larga."
       },
       "dictionary": {
@@ -797,7 +797,7 @@
     },
     "modo": {
       "title": "Nivel de corrección",
-      "description": "Literal solo corrige espacios y mayúsculas de oración. Limpio hace además: símbolos («cinco por ciento» → 5%), tildes que el dictado se come, correos y rutas, repeticiones («después después»), autocorrecciones habladas y —si lo dejas encendido abajo— números en cifras.",
+      "description": "Literal solo corrige espacios y mayúsculas de oración. Limpio hace además: símbolos («cinco por ciento» → 5%), tildes que el dictado se come, correos y rutas, repeticiones («después después») y —si lo dejas encendido abajo— números en cifras. La autocorrección hablada no depende de esto: tiene su propio interruptor.",
       "options": {
         "literal": "Literal",
         "limpio": "Limpio"

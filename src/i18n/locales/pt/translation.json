@@ -440,7 +440,7 @@
       },
       "autocorreccion": {
         "title": "Autocorreção falada",
-        "description": "Se você se corrige em voz alta enquanto dita, o texto já sai corrigido. Por regras, na hora e sem internet: não usa nenhum modelo de IA nem o Pós-processamento. Na dúvida, não mexe em nada. Vem desligada porque pode apagar texto.",
+        "description": "Se você se corrige em voz alta enquanto dita — «não, desculpa», «quis dizer» —, o texto já sai corrigido. Por regras, na hora e sem conexão: não usa nenhum modelo de IA. Só substitui o que você corrigiu; nunca apaga por conta própria e, na dúvida, não mexe em nada. Vem ativada.",
         "ejemplo": "Exemplo: “Marque a reunião para terça… não, desculpa, para quarta” → “Marque a reunião para quarta.”",
         "sustitucionTitle": "Sinais de correção",
         "sustitucionDescription": "O que você diz para substituir algo que acabou de falar (p. ex. “não, desculpa”, “quer dizer”). Só substitui se encontrar antes um trecho equivalente — mesmo dia da semana, mês, hora, número ou nome. Se não encontrar, não mexe em nada.",
@@ -476,7 +476,7 @@
         }
       },
       "voiceActivityDetection": {
-        "title": "Voice Activity Detection",
+        "title": "Detecção de voz",
         "description": "Filter silence from recordings. Streaming-capable models use a longer VAD tail; disabling VAD records raw audio."
       },
       "dictionary": {
@@ -797,7 +797,7 @@
     },
     "modo": {
       "title": "Nível de correção",
-      "description": "Literal corrige apenas espaços e maiúsculas de frase. Limpo faz também: símbolos («cinco por cento» → 5%), acentos que o ditado come, e-mails e caminhos, repetições («depois depois»), autocorreções faladas e — se deixares ligado abaixo — números em algarismos.",
+      "description": "Literal corrige apenas espaços e maiúsculas de frase. Limpo faz também: símbolos («cinco por cento» → 5%), acentos que o ditado come, e-mails e caminhos, repetições («depois depois») e — se deixares ligado abaixo — números em algarismos. A autocorreção falada não depende disto: tem o seu próprio interruptor.",
       "options": {
         "literal": "Literal",
         "limpio": "Limpo"

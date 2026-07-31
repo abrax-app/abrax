@@ -440,7 +440,7 @@
       },
       "autocorreccion": {
         "title": "Talad självkorrigering",
-        "description": "Om du rättar dig själv högt medan du dikterar kommer texten ut färdigrättad. Regelbaserad, direkt och offline: den använder ingen AI-modell och ingen Efterbehandling. Vid minsta tvekan ändras ingenting. Avstängd från början eftersom den kan radera text.",
+        "description": "Om du rättar dig själv högt medan du dikterar – ”nej, förlåt”, ”jag menade” – kommer texten ut redan rättad. Regelbaserat, direkt och offline: ingen AI-modell. Den ersätter bara det du rättade, raderar aldrig på eget bevåg och rör inget vid tveksamhet. På som standard.",
         "ejemplo": "Exempel: ”Boka mötet på tisdag… nej, förlåt, på onsdag” → ”Boka mötet på onsdag.”",
         "sustitucionTitle": "Rättelsesignaler",
         "sustitucionDescription": "Det du säger för att byta ut något du precis sagt (t.ex. ”nej, förlåt”, ”jag menar”). Bytet sker bara om det finns ett likvärdigt avsnitt före signalen – samma veckodag, månad, tid, siffra eller namn. Hittas inget ändras ingenting.",
@@ -476,7 +476,7 @@
         }
       },
       "voiceActivityDetection": {
-        "title": "Voice Activity Detection",
+        "title": "Röstaktivitetsdetektering",
         "description": "Filter silence from recordings. Streaming-capable models use a longer VAD tail; disabling VAD records raw audio."
       },
       "dictionary": {
@@ -797,7 +797,7 @@
     },
     "modo": {
       "title": "Korrigeringsnivå",
-      "description": "Ordagrant rättar bara mellanslag och versaler. Rent gör dessutom: symboler (”fem procent” → 5 %), accenter som dikteringen tappar, e-post och sökvägar, upprepningar (”sedan sedan”), talade självrättelser och – om du låter det vara på nedan – tal som siffror.",
+      "description": "Ordagrant rättar bara mellanslag och meningsversaler. Ren gör dessutom: symboler (”fem procent” → 5 %), accenter som dikteringen tappar, e-post och sökvägar, upprepningar (”sedan sedan”) och – om du låter det vara på nedan – tal som siffror. Talad självrättning beror inte på detta: den har en egen brytare.",
       "options": {
         "literal": "Ordagrann",
         "limpio": "Ren"

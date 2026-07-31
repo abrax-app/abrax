@@ -738,10 +738,9 @@ pub fn change_lazy_stream_close_setting(app: AppHandle, enabled: bool) -> Result
 ///
 /// Nada mas engañoso que un control que se deja pulsar y no hace nada. Cazado
 /// el 30/07 auditando el trabajo heredado.
-
+///
 /// Recuerda la lista PROPIA aunque el usuario este usando las de fabrica, para
 /// que ir y volver entre las dos no le borre su trabajo.
-
 #[tauri::command]
 #[specta::specta]
 pub fn change_autocorreccion_propias_sustitucion_setting(

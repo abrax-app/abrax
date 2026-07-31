@@ -11,9 +11,29 @@
 
 use crate::audio_toolkit::build_match_key;
 
+// ---------------------------------------------------------------------------
+// Motor de retractacion HEREDADO — estacionado, no en el camino.
+//
+// Es la version que venia de la rama de Antonio. Se conserva entera como
+// referencia, pero ya no se llama desde `correccion::procesar`: corria DESPUES
+// del motor vivo (`audio_toolkit::autocorreccion`) y le daba vuelta el sentido
+// a frases que estaban bien —«No es caro, mas bien, es carisimo» terminaba como
+// «No es carisimo»— porque trata cualquier marcador como orden de borrar lo
+// anterior, sin mirar si las dos partes son comparables.
+//
+// Lo util de aca ya esta adentro del motor vivo: sus 16 marcadores, las
+// contracciones «al»/«del» y el cierre por puntuacion. Lo que no se trajo es la
+// regla de anclaje, que exige que la correccion empiece por una palabra ya
+// dicha antes del marcador — por eso «comprar pan, perdon, arroz» no le salia.
+//
+// Se deja compilando para poder contrastar comportamientos; si en unas semanas
+// nadie la consulto, se borra.
+// ---------------------------------------------------------------------------
+
 /// Marcadores de autocorrección hablada (es-419), como secuencias de claves
 /// normalizadas por [`build_match_key`]. Solo disparan delimitados por comas
 /// (`, perdón,`): "te pido perdón" jamás activa la regla.
+#[allow(dead_code)]
 const MARCADORES: &[&[&str]] = &[
     &["perdon"],
     &["perdona"],
@@ -34,9 +54,11 @@ const PUNT_FINAL: &[char] = &['.', ',', ';', ':', '!', '?', '…', ')', ']', '»
 
 /// Máximo de tokens que una autocorrección puede reemplazar o aportar. Más allá
 /// de esto ya no es una autocorrección hablada, es otra frase.
+#[allow(dead_code)]
 const MAX_TOKENS_CORRECCION: usize = 8;
 
 /// Rangos de bytes `(inicio, fin)` de cada token (separado por whitespace).
+#[allow(dead_code)]
 fn tokens_con_rango(s: &str) -> Vec<(usize, usize)> {
     let mut out = Vec::new();
     let mut inicio: Option<usize> = None;
@@ -60,6 +82,7 @@ fn tokens_con_rango(s: &str) -> Vec<(usize, usize)> {
 /// reemplaza desde la última aparición (por clave normalizada) de su primera
 /// palabra hacia atrás — el ancla. **Sin ancla no se toca nada**: preferimos
 /// dejar el marcador visible antes que adivinar cuánto texto reemplazar.
+#[allow(dead_code)]
 pub fn autocorreccion_hablada(texto: &str) -> String {
     let mut actual = texto.to_string();
     // Varias autocorrecciones en un mismo dictado son raras; 3 pasadas bastan
@@ -83,6 +106,7 @@ pub fn autocorreccion_hablada(texto: &str) -> String {
 /// El ASR real puntúa la pausa del que se corrige con un punto: «…terminar la
 /// landing. No, mejor terminar el video.» — la forma con comas jamás llega.
 /// Solo entran señales inequívocas de corrección; «no» a secas queda fuera.
+#[allow(dead_code)]
 const MARCADORES_TRAS_CIERRE: &[&[&str]] = &[
     &["no", "mejor"],
     &["bueno", "no"],
@@ -100,10 +124,12 @@ const MARCADORES_TRAS_CIERRE: &[&[&str]] = &[
 /// Marcadores DÉBILES tras cierre: «Perdón, …» abre disculpas normales
 /// («Perdón, no volverá a pasar»), así que solo disparan con un ancla de
 /// contenido — jamás con una palabra función.
+#[allow(dead_code)]
 const MARCADORES_TRAS_CIERRE_DEBILES: &[&[&str]] = &[&["perdon"], &["perdona"], &["disculpa"]];
 
 /// Palabras función: un ancla así tras un marcador débil es casi seguro una
 /// frase nueva («Perdón, no te escuché»), no una corrección.
+#[allow(dead_code)]
 const ANCLAS_FUNCION: &[&str] = &[
     "el", "la", "los", "las", "un", "una", "unos", "unas", "de", "del", "al", "a", "en", "por",
     "para", "con", "sin", "no", "ni", "que", "se", "te", "le", "lo", "me", "mi", "tu", "su", "y",
@@ -112,6 +138,7 @@ const ANCLAS_FUNCION: &[&str] = &[
 
 /// ¿El token termina cerrando oración? El «?» queda fuera a propósito: tras
 /// una pregunta, «No, …» es una RESPUESTA, no un falso comienzo.
+#[allow(dead_code)]
 fn cierra_para_correccion(token: &str) -> bool {
     token.ends_with(['.', '…', '!']) || token.ends_with("...")
 }
@@ -120,6 +147,7 @@ fn cierra_para_correccion(token: &str) -> bool {
 /// la corrección reemplaza desde su ancla hacia atrás, comiéndose el cierre
 /// intermedio y el marcador. Mismo principio conservador que la forma con
 /// comas: sin ancla no se toca nada.
+#[allow(dead_code)]
 fn aplicar_una_correccion_tras_cierre(texto: &str) -> Option<String> {
     let rangos = tokens_con_rango(texto);
     let toks: Vec<&str> = rangos.iter().map(|&(a, b)| &texto[a..b]).collect();
@@ -196,6 +224,7 @@ fn aplicar_una_correccion_tras_cierre(texto: &str) -> Option<String> {
 
 /// Una pasada: encuentra el primer `, marcador,` y lo resuelve. `None` si no
 /// hay marcador o si no se pudo anclar el reemplazo (conservador).
+#[allow(dead_code)]
 fn aplicar_una_autocorreccion(texto: &str) -> Option<String> {
     let comas: Vec<usize> = texto
         .char_indices()

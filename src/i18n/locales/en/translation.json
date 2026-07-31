@@ -440,7 +440,7 @@
       },
       "autocorreccion": {
         "title": "Spoken self-correction",
-        "description": "If you correct yourself out loud while dictating, the text comes out already fixed. Rule-based, instant and offline: it uses no AI model. When in doubt it changes nothing. Off by default because it can delete text.",
+        "description": "If you correct yourself out loud while dictating — “no, sorry”, “I meant” — the text comes out already fixed. Rule-based, instant and offline: no AI model involved. It only replaces what you corrected; it never deletes on its own, and when in doubt it leaves the text alone. On by default.",
         "ejemplo": "Example: “Schedule the meeting for Tuesday… no, sorry, for Wednesday” → “Schedule the meeting for Wednesday.”",
         "sustitucionTitle": "Correction cues",
         "sustitucionDescription": "What you say to replace something you just said (e.g. “no, sorry”, “I mean”). It only substitutes when it finds an equivalent segment before the cue — same weekday, month, time, number or name. If it finds none, it changes nothing.",
@@ -797,7 +797,7 @@
     },
     "modo": {
       "title": "Correction level",
-      "description": "Literal only fixes spacing and sentence capitals. Clean also does: symbols (“five percent” → 5%), accents the dictation drops, emails and paths, repeats (“then then”), spoken self-corrections and — if you leave it on below — numerals as digits.",
+      "description": "Literal only fixes spacing and sentence capitals. Clean also does: symbols (“five percent” → 5%), accents the dictation drops, emails and paths, repeats (“then then”) and — if you leave it on below — numerals as digits. Spoken self-correction does not depend on this: it has its own switch.",
       "options": {
         "literal": "Literal",
         "limpio": "Clean"

@@ -440,7 +440,7 @@
       },
       "autocorreccion": {
         "title": "口說自我修正",
-        "description": "口述時如果你出聲改口，文字直接就是改好的。以規則運作，即時且離線：不使用任何 AI 模型，也不經過後處理。不確定時它什麼都不改。預設關閉，因為它會刪除文字。",
+        "description": "口述時如果你出聲改口——「不對，抱歉」「我是說」——文字會直接以更正後的樣子出現。基於規則，即時且離線：不使用任何 AI 模型。它只取代你更正的部分，絕不會自行刪除，拿不準時什麼都不動。預設開啟。",
         "ejemplo": "例如：「把會議安排在週二……不對，抱歉，是週三」→「把會議安排在週三。」",
         "sustitucionTitle": "修正觸發詞",
         "sustitucionDescription": "你用來取代剛說過內容的話（例如「不對，抱歉」「我是說」）。只有在觸發詞之前找到同類的對應內容時才會取代——同為星期、月份、時間、數字或人名。找不到就不會更動。",
@@ -476,7 +476,7 @@
         }
       },
       "voiceActivityDetection": {
-        "title": "Voice Activity Detection",
+        "title": "語音活動偵測",
         "description": "Filter silence from recordings. Streaming-capable models use a longer VAD tail; disabling VAD records raw audio."
       },
       "dictionary": {
@@ -797,7 +797,7 @@
     },
     "modo": {
       "title": "校正級別",
-      "description": "「原樣」只修正空格與句首大寫。「整理」還會處理：符號（「百分之五」→5%）、聽寫遺漏的符號、電子郵件與路徑、重複詞、說話時的自我更正，以及——若你在下方保持開啟——把數字寫成阿拉伯數字。",
+      "description": "原樣只修正空格和句首大寫。整潔還會處理：符號（「百分之五」→ 5%）、口述漏掉的符號、信箱和路徑、重複（「然後 然後」），以及——如果你在下面保持開啟——把數字寫成阿拉伯數字。口述改口更正不受此影響：它有自己的開關。",
       "options": {
         "literal": "逐字",
         "limpio": "清爽"

@@ -440,7 +440,7 @@
       },
       "autocorreccion": {
         "title": "Autocorrezione a voce",
-        "description": "Se ti correggi ad alta voce mentre detti, il testo esce già corretto. A regole, immediato e offline: non usa alcun modello di IA né la Post-elaborazione. Nel dubbio non tocca nulla. È disattivata per impostazione predefinita perché può cancellare del testo.",
+        "description": "Se ti correggi ad alta voce mentre detti — «no, scusa», «volevo dire» —, il testo esce già corretto. Per regole, all’istante e offline: nessun modello di IA. Sostituisce solo ciò che hai corretto, non cancella mai di sua iniziativa e nel dubbio non tocca nulla. Attiva di serie.",
         "ejemplo": "Esempio: «Fissa la riunione per martedì… no, scusa, per mercoledì» → «Fissa la riunione per mercoledì.»",
         "sustitucionTitle": "Segnali di correzione",
         "sustitucionDescription": "Quello che dici per sostituire qualcosa che hai appena detto (p. es. «no, scusa», «cioè»). Sostituisce solo se prima del segnale trova un segmento equivalente: stesso giorno, mese, ora, numero o nome. Se non lo trova, non cambia nulla.",
@@ -476,7 +476,7 @@
         }
       },
       "voiceActivityDetection": {
-        "title": "Rilevamento dell'attività vocale",
+        "title": "Rilevamento della voce",
         "description": "Filtra il silenzio dalle registrazioni. I modelli che supportano lo streaming utilizzano una coda VAD più lunga; disabilitando la VAD si registra l'audio grezzo."
       },
       "dictionary": {
@@ -797,7 +797,7 @@
     },
     "modo": {
       "title": "Livello di correzione",
-      "description": "Letterale corregge solo spazi e maiuscole di frase. Pulito fa anche: simboli («cinque per cento» → 5%), accenti che la dettatura mangia, e-mail e percorsi, ripetizioni («poi poi»), autocorrezioni parlate e — se lo lasci acceso sotto — i numeri in cifre.",
+      "description": "Letterale corregge solo spazi e maiuscole di frase. Pulito fa anche: simboli («cinque per cento» → 5%), accenti che la dettatura si mangia, email e percorsi, ripetizioni («poi poi») e —se lo lasci attivo sotto— numeri in cifre. L’autocorrezione parlata non dipende da questo: ha il suo interruttore.",
       "options": {
         "literal": "Letterale",
         "limpio": "Pulito"

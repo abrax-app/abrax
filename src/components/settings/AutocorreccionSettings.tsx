@@ -79,7 +79,16 @@ const EditorSenales: React.FC<EditorSenalesProps> = ({
 
   /** Guarda una lista propia y la recuerda, para poder ir y volver. */
   const guardarPropias = (lista: string[]) => {
-    updateSetting(clave, lista);
+    // Quedarse sin ninguna NO puede significar «apagado». Para el motor una
+    // lista vacia guardada es el nivel apagado, pero esta pantalla pinta ese
+    // mismo estado como «Las de fabrica» —lo dice `modo`, arriba—: quien borraba
+    // sus señales una por una terminaba con la autocorreccion muerta y la
+    // interfaz asegurandole que estaba andando con las de siempre.
+    //
+    // Apagarla es trabajo del interruptor de arriba, que se ve y se entiende.
+    // Vaciar la lista propia vuelve a las de fabrica, que es lo que la pantalla
+    // ya estaba prometiendo.
+    updateSetting(clave, lista.length === 0 ? null : lista);
     updateSetting(propiasClave, lista);
   };
 

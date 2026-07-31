@@ -191,6 +191,64 @@ static PALABRAS_VACIAS: Lazy<HashSet<&'static str>> = Lazy::new(|| {
         "es", "era", "fue", "son", "eran", "fueron", "sera", "seria", "sea", "esta", "estaba",
         "estan", "estuvo", "hay", "habia", "ha", "han", "he", "hemos", "habra", "tiene", "tenia",
         "tengo", "puede", "podia",
+        // PRONOMBRES Y NEUTROS. No nombran nada, asi que cambiar «X» por «yo» o
+        // por «eso» no es una retractacion, es como termina media frase hablada:
+        // «Eso es raro, digo yo», «Siempre digo eso». Sin ellos aqui, el ancla
+        // de una-palabra-por-una-palabra los tomaba por recambio legitimo y se
+        // comia la palabra anterior — «Eso es yo.», «Eso.».
+        "yo", "ti", "usted", "ustedes", "nosotros", "nosotras", "ellos", "ellas", "ella", "uno",
+        "eso", "esto", "aquello", "algo", "nada", "alguien", "todo", "todos",
+    ]
+    .into_iter()
+    .collect()
+});
+
+/// Lo que se dice para GANAR TIEMPO, no para reemplazar nada.
+///
+/// «Primero llamamos al banco… no, espera.» El marcador esta bien puesto y
+/// detras viene una sola palabra con contenido, asi que el motor la tomaba por
+/// recambio y devolvia «Primero llamamos al espera.». Pero «espera» no nombra
+/// nada: es la persona pidiendo un segundo para pensar, y lo que venga despues
+/// —si viene— sera la correccion de verdad.
+///
+/// Detras de una señal, cualquiera de estas palabras a solas significa que la
+/// frase todavia no termino. Sin candidato no se toca nada, que es justo lo
+/// correcto: mejor dejar el titubeo escrito que inventar una sustitucion.
+static PAUSAS: Lazy<HashSet<&'static str>> = Lazy::new(|| {
+    [
+        "espera",
+        "esperate",
+        "esperese",
+        "espere",
+        "pera",
+        "perame",
+        "aguanta",
+        "aguantame",
+        "momento",
+        "momentito",
+        "veamos",
+        "cierto",
+        "olvidalo",
+    ]
+    .into_iter()
+    .collect()
+});
+
+/// Muletillas que se PEGAN a la señal y no dicen nada por su cuenta.
+///
+/// Al retractarse casi nadie arranca con el marcador limpio: primero se le
+/// escapa un «ah», un «eh», un «mmm». El transcriptor las escribe porque se
+/// dijeron —«…comprar pan. Ah, perdón, arroz»— y el motor las tomaba como la
+/// palabra a reemplazar: «ah» tiene contenido para el código, asi que sustituia
+/// «Ah» por «arroz» y dejaba el «pan» intacto.
+///
+/// Medido el 31/07 con las grabaciones reales de Winston: dos de sus cuatro
+/// intentos fallaban SOLO por esto. Aqui se declaran parte del tropiezo, no de
+/// la frase, y por eso la señal se las traga hacia atras.
+static MULETILLAS: Lazy<HashSet<&'static str>> = Lazy::new(|| {
+    [
+        "ah", "aah", "ahh", "ay", "oh", "eh", "ehh", "em", "mm", "mmm", "aja", "uy", "uf", "ups",
+        "pucha",
     ]
     .into_iter()
     .collect()
@@ -597,34 +655,122 @@ fn aplicar_sustitucion(tokens: &[Token], i: usize, n: usize) -> Option<String> {
             && !PALABRAS_VACIAS.contains(c.as_str())
             && !PREPOSICIONES.contains(c.as_str())
             && !DETERMINANTES.contains(c.as_str())
+            && !PAUSAS.contains(c.as_str())
     });
-    let ancla_cabeza = forma_r.categoria.is_none() && !ancla_preposicion && cabeza_r.is_some();
-    if forma_r.categoria.is_none() && !ancla_preposicion && !ancla_cabeza {
+    // Las anclas se PRUEBAN TODAS, no se eligen. Estuvieron encadenadas con
+    // `else if` y eso las hacia excluyentes: con «…pan, perdon, arroz», la de
+    // cabeza repetida se activaba —«arroz» tiene contenido— y BLOQUEABA a la de
+    // palabra-por-palabra, la unica que resolvia el caso. La de cabeza no
+    // encontraba «arroz» antes del marcador, devolvia nada, y ahi moria todo.
+    //
+    // Es la razon de fondo por la que cada arreglo parecia no servir: añadir un
+    // ancla nueva no ayudaba si otra se activaba primero y se comia el turno.
+    let puede_cabeza = forma_r.categoria.is_none() && !ancla_preposicion && cabeza_r.is_some();
+
+    // CUARTA ANCLA: UNA PALABRA POR UNA PALABRA. La correccion mas simple que
+    // existe y la que ninguna de las tres anteriores veia:
+    //
+    //   «que vaya a comprar pan... Perdon, arroz.»
+    //                        ^^^            ^^^^^
+    //
+    // «arroz» no es fecha ni hora ni numero ni nombre propio, no lleva
+    // preposicion, y no empieza igual que «pan». Tres anclas y ninguna la
+    // alcanzaba. Winston la dicto tres veces seguidas el 31/07 —con puntos
+    // suspensivos, con «Ah, perdon» y con dos puntos— y las tres salieron sin
+    // tocar.
+    //
+    // El candado es el LARGO EXACTO: detras de la señal va UNA sola palabra con
+    // contenido, y delante se sustituye UNA sola. Eso es lo que la separa de una
+    // frase que continua, y por eso el corpus de control entero sobrevive: en
+    // todas sus frases —«perdon por la demora», «perdona, no te escuche»,
+    // «digo que si a la propuesta»— detras de la señal viene mas de una palabra.
+    // La señal tiene que venir DELIMITADA por la izquierda: pegada a una coma, a
+    // un punto o a unos puntos suspensivos, o abriendo el dictado.
+    //
+    // Es el candado que le faltaba al ancla mas laxa, y sin el se llevaba por
+    // delante frases corrientes: «Te pido perdón, compadre» quedaba en «Te
+    // compadre», «Siempre digo eso» en «Eso». Ahi «perdón» y «digo» son parte de
+    // lo que se dice, no una retractacion — y se nota justamente en que nadie
+    // hizo una pausa antes. Quien se corrige SI la hace, y el transcriptor la
+    // escribe como coma o como punto.
+    let senal_delimitada =
+        i == 0 || tokens[i - 1].cierra || !extract_punctuation(tokens[i - 1].crudo).1.is_empty();
+
+    let puede_palabra = forma_r.categoria.is_none()
+        && !ancla_preposicion
+        && senal_delimitada
+        && fin_r - ini_r == 1
+        && tokens.get(ini_r).is_some_and(|t| {
+            !t.clave.is_empty()
+                && !PALABRAS_VACIAS.contains(t.clave.as_str())
+                && !PREPOSICIONES.contains(t.clave.as_str())
+                && !DETERMINANTES.contains(t.clave.as_str())
+                && !PAUSAS.contains(t.clave.as_str())
+        });
+
+    if forma_r.categoria.is_none() && !ancla_preposicion && !puede_cabeza && !puede_palabra {
         return None;
     }
 
+    let con_contenido = |k: usize| {
+        tokens.get(k).is_some_and(|t| {
+            !t.clave.is_empty()
+                && !PALABRAS_VACIAS.contains(t.clave.as_str())
+                && !PREPOSICIONES.contains(t.clave.as_str())
+                && !DETERMINANTES.contains(t.clave.as_str())
+        })
+    };
+
     let piso = i.saturating_sub(VENTANA_ATRAS);
-    let mut candidato = None;
-    for p in (piso..i).rev() {
-        let fin_c = fin_de_oracion(tokens, p, i);
-        let forma_c = forma_de(tokens, p, fin_c);
-        let casa = if ancla_cabeza {
-            // Misma cabeza con contenido: el tramo candidato empieza por la
-            // misma palabra que el recambio. No se exige el largo — quien se
-            // retracta suele decir MAS la segunda vez.
-            tokens.get(p).map(|t| &t.clave) == cabeza_r.as_ref()
-        } else if ancla_preposicion {
+    let buscar = |acepta: &dyn Fn(usize, usize, &Forma) -> bool| -> Option<(usize, usize)> {
+        for p in (piso..i).rev() {
+            let fin_c = fin_de_oracion(tokens, p, i);
+            if acepta(p, fin_c, &forma_de(tokens, p, fin_c)) {
+                return Some((p, fin_c));
+            }
+        }
+        None
+    };
+
+    // Las anclas se prueban EN ORDEN DE FUERZA, y cada una recorre el rango
+    // ENTERO antes de cederle el turno a la siguiente.
+    //
+    // El orden importa tanto como las reglas. Estuvieron encadenadas con
+    // `else if` —la primera que se activaba se quedaba con el turno aunque no
+    // hallara nada— y despues las dos debiles compartieron un mismo recorrido
+    // con un `||`, que es igual de malo por el otro lado: gana la que aparezca
+    // MAS CERCA de la señal, no la que tenga mejor razon.
+    //
+    //   «Quiero café con leche, perdón, café»
+    //           ^^^^ cabeza       ^^^^^ una palabra pegada a la señal
+    //
+    // Con el `||`, «leche» ganaba por cercania y salia «Quiero café con café».
+    // Recorriendo primero la cabeza entera, gana «café» y sale «Quiero café»,
+    // que es lo que la persona quiso decir.
+    let candidato = if ancla_preposicion {
+        buscar(&|p, fin_c, forma_c| {
             forma_c.categoria.is_none()
                 && forma_c.preposicion == forma_r.preposicion
                 && (fin_c - p).abs_diff(fin_r - ini_r) <= TOLERANCIA_LARGO
-        } else {
-            son_paralelas(&forma_c, &forma_r)
-        };
-        if casa {
-            candidato = Some((p, fin_c));
-            break;
-        }
-    }
+        })
+    } else if forma_r.categoria.is_some() {
+        buscar(&|_, _, forma_c| son_paralelas(forma_c, &forma_r))
+    } else {
+        // Cabeza repetida primero; una-palabra-por-una-palabra solo si aquella
+        // no encontro nada en todo el rango.
+        buscar(&|p, _, _| puede_cabeza && tokens.get(p).map(|t| &t.clave) == cabeza_r.as_ref())
+            .or_else(|| {
+                // El candidato no puede ABRIR la oracion. Quien cambia una
+                // palabra por otra venia diciendo algo; si lo que estaria
+                // corrigiendo es la primera palabra de la frase, no es una
+                // retractacion sino una muletilla de apertura — «Bueno, o sea,
+                // no importa» salia «Importa», y «Bueno, disculpa entonces»
+                // salia «Entonces».
+                buscar(&|p, fin_c, _| {
+                    puede_palabra && fin_c - p == 1 && con_contenido(p) && !tokens[p].inicia
+                })
+            })
+    };
     let (mut ini_c, fin_c) = candidato?;
 
     // En fechas el determinante ya no separa (ver `son_paralelas`), asi que la
@@ -655,15 +801,42 @@ fn aplicar_sustitucion(tokens: &[Token], i: usize, n: usize) -> Option<String> {
         let ultimo = reemplazo.len() - 1;
         reemplazo[ultimo].push_str(&normalizar_cierre(cierre_candidato));
     }
-    // Si el segmento sustituido abría la oración, el reemplazo hereda la
-    // mayúscula: no puede quedar una oración empezando en minúscula.
-    if tokens[ini_c].inicia {
-        let primero = &mut reemplazo[0];
-        let mut chars = primero.chars();
-        if let Some(c) = chars.next() {
-            if c.is_lowercase() {
-                *primero = c.to_uppercase().collect::<String>() + chars.as_str();
-            }
+    // El reemplazo hereda la MAYUSCULA del sitio al que llega, en los dos
+    // sentidos. Antes solo subia, y eso bastaba mientras la correccion viviera
+    // dentro de la misma oracion.
+    //
+    // Deja de bastar cuando el tropiezo parte la frase en dos: «…comprar pan. No,
+    // mejor. Me equivoqué. Arroz.» El recambio se dicto abriendo oracion propia,
+    // asi que viene «Arroz» con mayuscula, pero aterriza a mitad de «…que vaya a
+    // comprar ___». Sin bajarla quedaba «que vaya a comprar Arroz.», que se lee
+    // como error de la app y no como lo que dijo la persona.
+    //
+    // Para BAJARLA, la prueba es como venia escrito LO QUE SE REEMPLAZA, no la
+    // categoria del recambio. Mirar la categoria no sirve: una palabra que abre
+    // oracion va en mayuscula por posicion, asi que ahi «Antonio» y «Arroz» son
+    // indistinguibles y `categoria_de` no marca ninguna como nombre propio.
+    //
+    // El hueco al que llega si lo distingue. Si lo sustituido iba en minuscula a
+    // mitad de frase, el hueco pide minuscula —«…comprar pan.» / «Arroz.» ->
+    // «…comprar arroz.»—; si iba en mayuscula a mitad de frase, la mayuscula era
+    // del nombre y no de la posicion, y se respeta —«…llamar a Pedro.» /
+    // «Antonio.» -> «…llamar a Antonio.»—. Medido con los dos casos el 31/07.
+    let candidato_en_minuscula = tokens[ini_c]
+        .nucleo
+        .chars()
+        .next()
+        .is_some_and(|c| c.is_lowercase());
+    let primero = &mut reemplazo[0];
+    let mut chars = primero.chars();
+    if let Some(c) = chars.next() {
+        if tokens[ini_c].inicia && c.is_lowercase() {
+            *primero = c.to_uppercase().collect::<String>() + chars.as_str();
+        } else if !tokens[ini_c].inicia
+            && c.is_uppercase()
+            && tokens[ini_r].inicia
+            && candidato_en_minuscula
+        {
+            *primero = c.to_lowercase().collect::<String>() + chars.as_str();
         }
     }
 
@@ -673,6 +846,47 @@ fn aplicar_sustitucion(tokens: &[Token], i: usize, n: usize) -> Option<String> {
     salida.extend(tokens[fin_c..i].iter().map(|t| t.crudo.to_string()));
     salida.extend(tokens[fin_r..].iter().map(|t| t.crudo.to_string()));
     Some(salida.join(" "))
+}
+
+/// Ensancha la señal encontrada hasta cubrir el TROPIEZO COMPLETO.
+///
+/// `casa_senal` reconoce un marcador; lo que dice la gente rara vez es uno
+/// solo. Sin esto, el motor recortaba mal el tramo y elegia como candidato algo
+/// que era parte del propio tropiezo. Los dos sentidos fallaban en grabaciones
+/// reales:
+///
+/// * **Hacia adelante, señales encadenadas.** «…comprar pan. No, mejor. Me
+///   equivoqué. Arroz.» — quien se traba se disculpa dos veces. El motor casaba
+///   «me equivoqué», miraba hacia atras y encontraba «mejor.», que es la cola
+///   del marcador anterior: sustituia eso y dejaba «…pan. No, Arroz.».
+/// * **Hacia atras, muletillas.** «…comprar pan. Ah, perdón, arroz.» — casaba
+///   «perdón», miraba hacia atras y encontraba «Ah,»: sustituia la muletilla y
+///   dejaba «…pan. Arroz.».
+///
+/// Con el tramo completo, el candidato vuelve a ser lo que estaba antes del
+/// tropiezo —«pan.»— que es lo que la persona quiso cambiar.
+fn ensanchar_senal(
+    tokens: &[Token],
+    i: usize,
+    n: usize,
+    senales: &[Vec<String>],
+) -> (usize, usize) {
+    let mut ini = i;
+    let mut largo = n;
+
+    while let Some(m) = casa_senal(tokens, ini + largo, senales) {
+        if m == 0 {
+            break; // defensa: una señal de largo cero colgaria el bucle
+        }
+        largo += m;
+    }
+
+    while ini > 0 && MULETILLAS.contains(tokens[ini - 1].clave.as_str()) {
+        ini -= 1;
+        largo += 1;
+    }
+
+    (ini, largo)
 }
 
 /// Una pasada: aplica como mucho UNA corrección. `None` = no se tocó nada.
@@ -685,7 +899,8 @@ fn una_pasada(
     let mut i = 0;
     while i < tokens.len() {
         if let Some(n) = casa_senal(&tokens, i, sustitucion) {
-            if let Some(nuevo) = aplicar_sustitucion(&tokens, i, n) {
+            let (ini, largo) = ensanchar_senal(&tokens, i, n, sustitucion);
+            if let Some(nuevo) = aplicar_sustitucion(&tokens, ini, largo) {
                 return Some(nuevo);
             }
             // Señal sin paralelo: no se toca nada y se sigue buscando más
@@ -697,7 +912,8 @@ fn una_pasada(
         // candado extra del contexto. «no» entre comas jamás llega aquí.
         if i > 0 && termina_en_elipsis(&tokens[i - 1]) {
             if let Some(n) = casa_senal(&tokens, i, sustitucion_elipsis) {
-                if let Some(nuevo) = aplicar_sustitucion(&tokens, i, n) {
+                let (ini, largo) = ensanchar_senal(&tokens, i, n, sustitucion_elipsis);
+                if let Some(nuevo) = aplicar_sustitucion(&tokens, ini, largo) {
                     return Some(nuevo);
                 }
                 i += n;
@@ -763,6 +979,164 @@ mod tests {
     }
 
     // ───────────────────────── Nivel 2 — el caso principal ─────────────────
+
+    /// Corpus de control del ancla mas laxa. Cada frase de aqui la produjo una
+    /// revision adversarial del 31/07 y TODAS fallaban.
+    ///
+    /// El ancla de una-palabra-por-una-palabra nacio rota de una forma sutil: su
+    /// candado era `fin_c - p == 1`, y como `fin_de_oracion` va topado en el
+    /// indice de la señal, para el token pegado a ella esa resta vale 1 SIEMPRE.
+    /// O sea, no era un candado: aceptaba cualquier palabra con contenido que
+    /// estuviera delante del marcador, sin paralelo de ninguna clase. Frases
+    /// corrientes se desintegraban —«Siempre digo eso.» quedaba en «Eso.»— y con
+    /// la autocorreccion encendida de fabrica le habria pasado a cualquiera.
+    ///
+    /// Lo que de verdad separa una retractacion de una frase normal resulto ser
+    /// otra cosa: la PAUSA. Quien se corrige la hace, y el transcriptor la
+    /// escribe —«pan, perdón, arroz», «pan. Ah, perdón, arroz»—. Quien dice «te
+    /// pido perdón, compadre» no la hace. De ahi los tres candados de abajo:
+    /// señal delimitada, candidato que no abre la oracion, y pronombres y
+    /// neutros fuera del juego.
+    #[test]
+    fn el_ancla_de_una_palabra_no_desarma_frases_normales() {
+        // NO SE TOCA: el marcador es parte de lo que se dice, no una correccion.
+        for intacta in [
+            "Siempre digo eso.",
+            "Yo digo eso.",
+            "Nunca digo mentiras.",
+            "Yo nunca digo mentiras.",
+            "La verdad es que siempre digo tonterías.",
+            "Eso es raro, digo yo.",
+            "No sé, digo yo.",
+            "Te pido perdón, compadre.",
+            "Bueno, o sea, no importa.",
+            "Bueno, disculpa entonces.",
+        ] {
+            assert_eq!(
+                corrige(intacta),
+                intacta,
+                "
+  tocó una frase normal"
+            );
+        }
+
+        // SI SE CORRIGE, y ademas con la palabra correcta y la caja correcta.
+        let casos = [
+            // la cabeza repetida gana aunque haya una palabra mas cerca de la
+            // señal: «leche» esta pegada al marcador, pero la persona repitio
+            // «café», y eso es lo que marca donde empieza lo que quiso cambiar
+            ("Quiero café con leche, perdón, café", "Quiero café"),
+            ("Trae vino tinto, perdón, vino", "Trae vino"),
+            // mayuscula: el hueco va a mitad de frase, pero «Antonio» es nombre
+            // propio y la conserva; «arroz» no lo es y la pierde
+            (
+                "Voy a llamar a Pedro. Perdón. Antonio.",
+                "Voy a llamar a Antonio.",
+            ),
+        ];
+        for (dicho, esperado) in casos {
+            assert_eq!(
+                corrige(dicho),
+                esperado,
+                "
+  dicho:    {dicho}"
+            );
+        }
+    }
+
+    /// Las CUATRO transcripciones reales del 31/07, tal como salieron del modelo.
+    ///
+    /// No son frases inventadas para que pasen: son lo que Cohere escribio de
+    /// cuatro grabaciones seguidas de Winston diciendo la misma correccion. Por
+    /// eso valen — el motor tiene que aguantar como puntua el ASR, no como
+    /// puntuaria uno al escribir el test.
+    ///
+    /// Las cuatro fallaban por motivos DISTINTOS, y ese fue el hallazgo: no era
+    /// una regla que faltaba sino tres defectos apilados —anclas excluyentes,
+    /// muletillas tomadas por candidato, y señales encadenadas—.
+    #[test]
+    fn las_cuatro_grabaciones_reales_del_31_07() {
+        let casos = [
+            // ancla nueva: una palabra por una palabra
+            (
+                "Voy a decirle a Antonio que vaya a comprar pan... Perdón, arroz.",
+                "Voy a decirle a Antonio que vaya a comprar arroz.",
+            ),
+            // muletilla «Ah,» pegada a la señal
+            (
+                "Voy a decirle a Antonio que vaya a comprar pan. Ah, perdón, arroz.",
+                "Voy a decirle a Antonio que vaya a comprar arroz.",
+            ),
+            (
+                "Voy a decirle a Antonio que vaya a comprar pan. Ah, me equivoqué: arroz.",
+                "Voy a decirle a Antonio que vaya a comprar arroz.",
+            ),
+            // dos señales encadenadas + mayuscula heredada hacia abajo
+            (
+                "Voy a decir a Antonio que vaya a comprar pan. No, mejor. Me equivoqué. Arroz.",
+                "Voy a decir a Antonio que vaya a comprar arroz.",
+            ),
+        ];
+        for (dicho, esperado) in casos {
+            assert_eq!(
+                corrige(dicho),
+                esperado,
+                "
+  dicho:    {dicho}"
+            );
+        }
+    }
+
+    /// El caso que Winston probo una y otra vez y no se corregia.
+    ///
+    /// «…comprar pan. Perdon, arroz.» es la retractacion mas simple que existe:
+    /// una palabra por una palabra. Fallaba por como estaban ARMADAS las anclas,
+    /// no por lo que decian: encadenadas con `else if`, la de cabeza repetida se
+    /// activaba con «arroz», no hallaba «arroz» antes del marcador, y devolvia
+    /// nada sin dejar que la de palabra-por-palabra lo intentara.
+    ///
+    /// Se prueba con las cinco puntuaciones que devuelven los modelos —Cohere
+    /// corta con punto, Canary con coma— porque el arreglo tiene que sobrevivir
+    /// al ASR, no a una transcripcion elegida a mano.
+    #[test]
+    fn una_palabra_por_una_palabra_el_caso_del_pan() {
+        for frase in [
+            "Voy a decirle a Antonio que vaya a comprar pan... Perdón, arroz.",
+            "Voy a decirle a Antonio que vaya a comprar pan, perdón, arroz",
+            "Voy a decirle a Antonio que vaya a comprar pan, me equivoqué, arroz",
+            "Anota pan, no, perdón, arroz",
+            "Compra pan, mejor dicho, arroz",
+        ] {
+            let salida = corrige(frase);
+            assert!(
+                !salida.to_lowercase().contains("pan"),
+                "quedo el error: {frase} -> {salida}"
+            );
+            assert!(
+                salida.to_lowercase().contains("arroz"),
+                "se perdio la correccion: {frase} -> {salida}"
+            );
+        }
+    }
+
+    /// La palabra-por-palabra no puede volverse una podadora.
+    ///
+    /// Es el ancla mas laxa de las cuatro, asi que necesita su control negativo:
+    /// si el recambio trae mas de una palabra con contenido, o si lo que la
+    /// precede no es una palabra suelta, no le toca a ella resolver.
+    #[test]
+    fn una_palabra_por_una_palabra_no_se_come_frases() {
+        // Dos palabras con contenido detras del marcador: no es 1x1.
+        let salida = corrige("Compra pan, perdón, arroz integral");
+        assert!(
+            salida.contains("arroz integral"),
+            "se perdio el recambio largo: {salida}"
+        );
+
+        // Sin marcador no se toca nada, diga lo que diga.
+        let intacta = "Compra pan y arroz";
+        assert_eq!(corrige(intacta), intacta);
+    }
 
     #[test]
     fn nivel2_el_ejemplo_de_la_orden() {
@@ -1062,10 +1436,44 @@ mod tests {
 
     #[test]
     fn elipsis_sin_paralelo_no_toca_nada() {
-        // La regla de oro sobrevive al contexto de elipsis: «espera» no tiene
-        // categoría, así que no hay paralelo posible y no se toca nada.
-        let t = "Primero tenemos que… no, espera.";
-        assert_eq!(corrige(t), t);
+        // Pedir un segundo NO es corregir. Este control pasaba por casualidad
+        // —«que» es palabra vacía, así que no había candidato— y bastaba poner
+        // un sustantivo delante para que se cayera: «llamamos al banco… no,
+        // espera.» salía «llamamos al espera.». Ahora la razón es la correcta:
+        // «espera» está declarada pausa y no puede hacer de recambio.
+        for t in [
+            "Primero tenemos que… no, espera.",
+            "Primero llamamos al banco… no, espera.",
+            "Mandamos el informe… no, espera.",
+            "Lo dejamos en la mesa… no, espérate.",
+        ] {
+            assert_eq!(
+                corrige(t),
+                t,
+                "
+  tocó un titubeo"
+            );
+        }
+
+        // Y las correcciones de verdad tras elipsis siguen saliendo.
+        for (dicho, esperado) in [
+            (
+                "Ponlo en la carpeta… no, mejor en el escritorio.",
+                "Ponlo en el escritorio.",
+            ),
+            (
+                "Nos juntamos el lunes… no, el martes.",
+                "Nos juntamos el martes.",
+            ),
+            ("Anota tres… no, cuatro.", "Anota cuatro."),
+        ] {
+            assert_eq!(
+                corrige(dicho),
+                esperado,
+                "
+  dicho:    {dicho}"
+            );
+        }
     }
 
     #[test]

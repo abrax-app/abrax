@@ -440,7 +440,7 @@
       },
       "autocorreccion": {
         "title": "Mluvená autokorekce",
-        "description": "Když se při diktování nahlas opravíš, text vyjde rovnou opravený. Funguje podle pravidel, okamžitě a offline: nepoužívá žádný model AI ani Následné zpracování. Když si není jistá, nic nemění. Ve výchozím stavu je vypnutá, protože může mazat text.",
+        "description": "Když se při diktování nahlas opravíte – „ne, promiň“, „chtěl jsem říct“ –, text vyjde už opravený. Podle pravidel, okamžitě a offline: bez modelu AI. Nahradí jen to, co jste opravili, nikdy nic nemaže sám od sebe a při pochybnostech se ničeho nedotkne. Ve výchozím stavu zapnuto.",
         "ejemplo": "Příklad: „Naplánuj schůzku na úterý… ne, promiň, na středu“ se změní na „Naplánuj schůzku na středu.“",
         "sustitucionTitle": "Signály opravy",
         "sustitucionDescription": "Co řekneš, aby se nahradilo něco řečeného před chvílí (např. „ne, promiň“, „vlastně“). Nahradí to jen tehdy, když před signálem najde odpovídající úsek – stejný den v týdnu, měsíc, čas, číslo nebo jméno. Když žádný nenajde, nic nemění.",
@@ -476,7 +476,7 @@
         }
       },
       "voiceActivityDetection": {
-        "title": "Voice Activity Detection",
+        "title": "Detekce řeči",
         "description": "Filter silence from recordings. Streaming-capable models use a longer VAD tail; disabling VAD records raw audio."
       },
       "dictionary": {
@@ -797,7 +797,7 @@
     },
     "modo": {
       "title": "Úroveň korekce",
-      "description": "Doslovný opraví jen mezery a velká písmena. Čistý navíc dělá: symboly („pět procent“ → 5 %), chybějící diakritiku, e-maily a cesty, opakování („potom potom“), mluvené sebeopravy a — pokud to necháš zapnuté níže — čísla číslicemi.",
+      "description": "Doslovný opravuje jen mezery a velká písmena vět. Čistý navíc dělá: symboly („pět procent“ → 5 %), chybějící diakritiku, e-maily a cesty, opakování („potom potom“) a — pokud to necháte zapnuté níže — čísla číslicemi. Mluvená autokorekce na tomto nezávisí: má vlastní přepínač.",
       "options": {
         "literal": "Doslovný",
         "limpio": "Čistý"

@@ -7,15 +7,15 @@ salga de tu equipo.
 - **Local por defecto.** La transcripción (Whisper y otros modelos) corre en tu
   máquina. Las funciones que usan red son opcionales, explícitas y con el
   procesamiento local como respaldo.
-- **Corrección inteligente determinista.** Una capa de corrección para es-419
-  que resuelve autocorrecciones habladas («el martes, perdón, el miércoles»),
+- **Corrección determinista, sin modelos.** Una capa de reglas para es-419 que
   restaura tildes seguras (`codigo` → `código`), normaliza símbolos dictados
-  («dos slash tres» → `2/3`) y protege datos frágiles (fechas, números, URLs,
-  correos, negaciones) para que ninguna transformación los altere.
-- **Pulido con IA opcional.** Reformulación con un modelo local (vía Ollama o
-  un modelo descargable que corre en un proceso aislado). Si falla o no está,
-  el dictado sigue funcionando igual: la cadena siempre degrada a las reglas
-  deterministas.
+  («dos slash tres» → `2/3`), arma correos, rutas y dominios solo cuando hay
+  evidencia de que lo son, y colapsa repeticiones. Es por reglas: al instante,
+  sin conexión y sin ningún modelo de IA de por medio.
+- **Autocorrección hablada.** Si te corriges en voz alta mientras dictas —«…que
+  vaya a comprar pan. Perdón, arroz.»—, el texto sale ya corregido. Viene
+  encendida, tiene su propio interruptor, y solo sustituye: nunca borra por su
+  cuenta, y ante la duda no toca nada.
 - **Multiplataforma.** Windows, macOS y Linux (Tauri 2: backend Rust +
   frontend React/TypeScript).
 

@@ -440,7 +440,7 @@
       },
       "autocorreccion": {
         "title": "Poprawianie się na głos",
-        "description": "Jeśli podczas dyktowania poprawisz się na głos, tekst od razu wychodzi poprawiony. Działa na regułach, natychmiast i bez internetu: nie korzysta z żadnego modelu AI ani z Przetwarzania końcowego. W razie wątpliwości niczego nie zmienia. Domyślnie wyłączone, bo może usuwać tekst.",
+        "description": "Jeśli poprawiasz się na głos podczas dyktowania — „nie, przepraszam”, „chciałem powiedzieć” — tekst wychodzi już poprawiony. Na regułach, natychmiast i offline: bez modelu AI. Zastępuje tylko to, co poprawiłeś, nigdy nie usuwa z własnej inicjatywy, a w razie wątpliwości niczego nie rusza. Domyślnie włączone.",
         "ejemplo": "Przykład: „Zaplanuj spotkanie na wtorek… nie, przepraszam, na środę” zmienia się w „Zaplanuj spotkanie na środę.”",
         "sustitucionTitle": "Sygnały poprawki",
         "sustitucionDescription": "To, co mówisz, żeby zastąpić coś, co przed chwilą zostało powiedziane (np. „nie, przepraszam”, „to znaczy”). Zamienia tylko wtedy, gdy przed sygnałem znajdzie odpowiadający fragment — ten sam dzień tygodnia, miesiąc, godzinę, liczbę lub imię. Jeśli nie znajdzie, niczego nie zmienia.",
@@ -476,7 +476,7 @@
         }
       },
       "voiceActivityDetection": {
-        "title": "Voice Activity Detection",
+        "title": "Wykrywanie mowy",
         "description": "Filter silence from recordings. Streaming-capable models use a longer VAD tail; disabling VAD records raw audio."
       },
       "dictionary": {
@@ -797,7 +797,7 @@
     },
     "modo": {
       "title": "Poziom korekty",
-      "description": "Dosłowny poprawia tylko odstępy i wielkie litery. Czysty robi dodatkowo: symbole („pięć procent” → 5%), brakujące akcenty, adresy e-mail i ścieżki, powtórzenia („potem potem”), poprawki wypowiedziane na głos oraz — jeśli zostawisz to włączone poniżej — liczby cyframi.",
+      "description": "Dosłowny poprawia tylko odstępy i wielkie litery zdań. Czysty robi dodatkowo: symbole („pięć procent” → 5%), brakujące znaki diakrytyczne, adresy e-mail i ścieżki, powtórzenia („potem potem”) oraz — jeśli zostawisz to włączone poniżej — liczby cyframi. Mówiona autokorekta od tego nie zależy: ma własny przełącznik.",
       "options": {
         "literal": "Dosłowny",
         "limpio": "Czysty"

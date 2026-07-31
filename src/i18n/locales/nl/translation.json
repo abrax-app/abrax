@@ -440,7 +440,7 @@
       },
       "autocorreccion": {
         "title": "Gesproken zelfcorrectie",
-        "description": "Als je jezelf hardop verbetert tijdens het dicteren, komt de tekst er al verbeterd uit. Werkt op regels, direct en offline: geen AI-model en geen Nabewerking. Bij twijfel verandert er niets. Staat standaard uit, want er kan tekst door verdwijnen.",
+        "description": "Als je jezelf hardop corrigeert tijdens het dicteren — “nee, sorry”, “ik bedoelde” — komt de tekst al gecorrigeerd eruit. Op regels, direct en offline: geen AI-model. Het vervangt alleen wat je corrigeerde, verwijdert nooit uit zichzelf en laat bij twijfel alles staan. Standaard aan.",
         "ejemplo": "Voorbeeld: “Zet de vergadering op dinsdag… nee, sorry, op woensdag” wordt “Zet de vergadering op woensdag.”",
         "sustitucionTitle": "Correctiesignalen",
         "sustitucionDescription": "Wat je zegt om iets te vervangen wat je net hebt gezegd (bijvoorbeeld “nee, sorry” of “ik bedoel”). Er wordt alleen vervangen als er vóór het signaal een vergelijkbaar stuk staat: dezelfde weekdag, maand, tijd, getal of naam. Wordt dat niet gevonden, dan verandert er niets.",
@@ -476,7 +476,7 @@
         }
       },
       "voiceActivityDetection": {
-        "title": "Spraakactiviteitsdetectie (VAD)",
+        "title": "Spraakdetectie",
         "description": "Filter stilte uit opnames. Streaming-modellen gebruiken een langere VAD-uitloop; het uitschakelen van VAD neemt de ruwe audio op."
       },
       "dictionary": {
@@ -797,7 +797,7 @@
     },
     "modo": {
       "title": "Correctieniveau",
-      "description": "Letterlijk corrigeert alleen spaties en hoofdletters. Schoon doet ook: symbolen (“vijf procent” → 5%), ontbrekende accenten, e-mails en paden, herhalingen (“dan dan”), gesproken zelfcorrecties en — als je het hieronder aan laat — getallen als cijfers.",
+      "description": "Letterlijk corrigeert alleen spaties en hoofdletters. Schoon doet ook: symbolen (“vijf procent” → 5%), accenten die het dicteren mist, e-mails en paden, herhalingen (“dan dan”) en — als je het hieronder aan laat — getallen in cijfers. Gesproken zelfcorrectie hangt hier niet van af: die heeft een eigen schakelaar.",
       "options": {
         "literal": "Letterlijk",
         "limpio": "Schoon"

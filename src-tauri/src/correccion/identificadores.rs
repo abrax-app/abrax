@@ -298,7 +298,7 @@ fn convertir_tokens(texto: &str) -> String {
             let mut j = i;
             let mut fin = i;
             loop {
-                if j + 2 >= toks.len() + 1 || j + 1 >= toks.len() {
+                if j + 2 > toks.len() || j + 1 >= toks.len() {
                     break;
                 }
                 let kc = clave(toks[j + 1]);

@@ -440,7 +440,7 @@
       },
       "autocorreccion": {
         "title": "Sesli kendini düzeltme",
-        "description": "Dikte ederken kendinizi sesli olarak düzeltirseniz metin düzeltilmiş hâlde çıkar. Kural tabanlı, anında ve çevrimdışı: hiçbir yapay zekâ modeli ve Son İşlem kullanmaz. Şüpheye düşerse hiçbir şeye dokunmaz. Metin silebildiği için varsayılan olarak kapalıdır.",
+        "description": "Dikte ederken kendinizi sesli düzeltirseniz — “hayır, pardon”, “demek istedim” — metin düzeltilmiş olarak çıkar. Kurallara dayalı, anında ve çevrimdışı: hiçbir yapay zekâ modeli kullanmaz. Yalnızca düzelttiğinizi değiştirir, kendiliğinden asla silmez ve şüphe durumunda hiçbir şeye dokunmaz. Varsayılan olarak açık.",
         "ejemplo": "Örnek: “Toplantıyı salıya ayarla… yok, pardon, çarşambaya” → “Toplantıyı çarşambaya ayarla.”",
         "sustitucionTitle": "Düzeltme ifadeleri",
         "sustitucionDescription": "Az önce söylediğiniz bir şeyi değiştirmek için söyledikleriniz (ör. “yok, pardon”, “yani”). Yalnızca ifadeden önce eşdeğer bir bölüm bulursa değiştirir — aynı gün, ay, saat, sayı veya isim. Bulamazsa hiçbir şeye dokunmaz.",
@@ -476,7 +476,7 @@
         }
       },
       "voiceActivityDetection": {
-        "title": "Voice Activity Detection",
+        "title": "Ses etkinliği algılama",
         "description": "Filter silence from recordings. Streaming-capable models use a longer VAD tail; disabling VAD records raw audio."
       },
       "dictionary": {
@@ -797,7 +797,7 @@
     },
     "modo": {
       "title": "Düzeltme düzeyi",
-      "description": "Birebir yalnızca boşlukları ve cümle başı büyük harfleri düzeltir. Temiz ayrıca şunları yapar: simgeler (“yüzde beş” → %5), dikte edilirken düşen işaretler, e-postalar ve yollar, tekrarlar (“sonra sonra”), sesli öz düzeltmeler ve — aşağıda açık bırakırsan — sayıları rakamla.",
+      "description": "Birebir yalnızca boşlukları ve cümle başı harflerini düzeltir. Temiz ayrıca şunları yapar: simgeler (“yüzde beş” → %5), dikte edilirken düşen işaretler, e-postalar ve yollar, tekrarlar (“sonra sonra”) ve — aşağıda açık bırakırsan — sayıları rakamla. Sesli otomatik düzeltme buna bağlı değildir: kendi anahtarı vardır.",
       "options": {
         "literal": "Birebir",
         "limpio": "Temiz"

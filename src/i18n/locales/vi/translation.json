@@ -440,7 +440,7 @@
       },
       "autocorreccion": {
         "title": "Tự sửa lời khi nói",
-        "description": "Nếu bạn nói lại để sửa mình trong lúc đọc chính tả, văn bản hiện ra đã được sửa sẵn. Chạy theo quy tắc, tức thì và ngoại tuyến: không dùng mô hình AI nào và không qua Hậu xử lý. Khi không chắc, nó không đổi gì cả. Mặc định tắt vì nó có thể xóa chữ.",
+        "description": "Nếu bạn tự sửa lời khi đang đọc chính tả — “không, xin lỗi”, “ý tôi là” — văn bản sẽ ra đã được sửa. Theo quy tắc, tức thì và ngoại tuyến: không dùng mô hình AI nào. Nó chỉ thay phần bạn đã sửa, không bao giờ tự xóa, và khi không chắc thì không đụng gì cả. Bật sẵn.",
         "ejemplo": "Ví dụ: “Đặt lịch họp vào thứ Ba… à không, xin lỗi, thứ Tư” → “Đặt lịch họp vào thứ Tư.”",
         "sustitucionTitle": "Cụm từ báo hiệu sửa",
         "sustitucionDescription": "Những gì bạn nói để thay thế điều vừa nói (ví dụ “à không”, “ý tôi là”). Chỉ thay khi tìm thấy một đoạn tương đương trước cụm từ đó — cùng thứ trong tuần, tháng, giờ, con số hoặc tên. Nếu không tìm thấy, nó không đổi gì.",
@@ -476,7 +476,7 @@
         }
       },
       "voiceActivityDetection": {
-        "title": "Voice Activity Detection",
+        "title": "Phát hiện giọng nói",
         "description": "Filter silence from recordings. Streaming-capable models use a longer VAD tail; disabling VAD records raw audio."
       },
       "dictionary": {
@@ -797,7 +797,7 @@
     },
     "modo": {
       "title": "Mức sửa lỗi",
-      "description": "«Nguyên văn» chỉ sửa khoảng trắng và viết hoa đầu câu. «Sạch» còn làm: ký hiệu («năm phần trăm» → 5%), dấu bị rơi khi đọc, email và đường dẫn, từ lặp, tự sửa khi nói, và — nếu bạn để bật bên dưới — số viết bằng chữ số.",
+      "description": "Nguyên văn chỉ sửa khoảng trắng và chữ hoa đầu câu. Sạch làm thêm: ký hiệu (“năm phần trăm” → 5%), dấu bị đọc sót, email và đường dẫn, lặp từ (“rồi rồi”) và — nếu bạn để bật bên dưới — số viết bằng chữ số. Tự sửa lời nói không phụ thuộc vào đây: nó có công tắc riêng.",
       "options": {
         "literal": "Nguyên văn",
         "limpio": "Gọn gàng"

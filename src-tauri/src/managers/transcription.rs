@@ -1858,7 +1858,7 @@ fn post_process_transcription_text(
     //    llegar al editor del usuario una ristra de «qqqq…».
     let raw = crate::audio_toolkit::recortar_repeticion_degenerada(&raw);
 
-    // 0.5 Autocorrección hablada (opt-in, apagada de fábrica): si el hablante
+    // 0.5 Autocorrección hablada (encendida de fábrica, con interruptor): si el hablante
     //     se corrigió a sí mismo en voz alta, el texto sale ya corregido.
     //     Va ANTES de las capas difusas a propósito: `apply_custom_words`
     //     corrige por Levenshtein, así que un usuario con la palabra propia

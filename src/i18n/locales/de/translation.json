@@ -440,7 +440,7 @@
       },
       "autocorreccion": {
         "title": "Gesprochene Selbstkorrektur",
-        "description": "Wenn du dich beim Diktieren laut korrigierst, kommt der Text schon korrigiert heraus. Regelbasiert, sofort und offline: ohne KI-Modell und ohne Nachbearbeitung. Im Zweifel ändert sie nichts. Standardmäßig aus, weil sie Text löschen kann.",
+        "description": "Wenn Sie sich beim Diktieren laut korrigieren – „nein, Entschuldigung“, „ich meinte“ –, kommt der Text bereits korrigiert heraus. Regelbasiert, sofort und offline: ohne KI-Modell. Es ersetzt nur, was Sie korrigiert haben, löscht nie von selbst und lässt im Zweifel alles stehen. Standardmäßig aktiviert.",
         "ejemplo": "Beispiel: „Leg den Termin auf Dienstag … nein, Moment, auf Mittwoch“ wird zu „Leg den Termin auf Mittwoch.“",
         "sustitucionTitle": "Korrektursignale",
         "sustitucionDescription": "Was du sagst, um etwas gerade Gesagtes zu ersetzen (z. B. „nein, Moment“, „ich meine“). Ersetzt nur, wenn vor dem Signal ein gleichwertiger Abschnitt steht – gleicher Wochentag, Monat, Uhrzeit, Zahl oder Name. Findet sie keinen, ändert sie nichts.",
@@ -476,7 +476,7 @@
         }
       },
       "voiceActivityDetection": {
-        "title": "Voice Activity Detection",
+        "title": "Spracherkennung der Aktivität",
         "description": "Filter silence from recordings. Streaming-capable models use a longer VAD tail; disabling VAD records raw audio."
       },
       "dictionary": {
@@ -797,7 +797,7 @@
     },
     "modo": {
       "title": "Korrekturstufe",
-      "description": "Wörtlich korrigiert nur Abstände und Satzanfänge. Sauber macht zusätzlich: Symbole („fünf Prozent“ → 5 %), fehlende Akzente, E-Mails und Pfade, Wiederholungen („dann dann“), gesprochene Selbstkorrekturen und – wenn du es unten anlässt – Zahlen als Ziffern.",
+      "description": "Wörtlich korrigiert nur Abstände und Satzanfänge. Sauber macht zusätzlich: Symbole („fünf Prozent“ → 5 %), fehlende Akzente, E-Mails und Pfade, Wiederholungen („dann dann“) und – wenn du es unten anlässt – Zahlen als Ziffern. Die gesprochene Selbstkorrektur hängt nicht davon ab: Sie hat einen eigenen Schalter.",
       "options": {
         "literal": "Wörtlich",
         "limpio": "Sauber"

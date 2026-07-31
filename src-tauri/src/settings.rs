@@ -749,15 +749,17 @@ fn default_memoria_activa() -> bool {
 
 /// Encendida de fábrica desde el 30/07.
 ///
-/// Estuvo apagada por una razón buena: el nivel 1 (borrado explícito) disparaba
-/// con sus señales EN MITAD de una frase, y como borra la oración anterior
-/// completa, destrozaba prosa corriente —medido, seis de ocho frases—. Ahora el
-/// nivel 1 exige que la señal CIERRE el dictado (`borrado_cierra_el_dictado`),
-/// que es como se dicta una orden de verdad, y con eso las mismas frases salen
-/// intactas mientras las correcciones siguen funcionando.
+/// Estuvo apagada por una razón buena: existía un nivel de BORRADO que disparaba
+/// con sus señales en mitad de una frase y se llevaba la oración anterior
+/// completa, destrozando prosa corriente —medido, seis de ocho frases—.
 ///
-/// El nivel 2 nunca fue el problema: su regla de oro es no tocar nada sin un
-/// paralelo claro.
+/// Ese nivel ya no existe: se eliminó el 31/07 en vez de intentar domarlo. Hoy
+/// la autocorrección solo SUSTITUYE, nunca borra por su cuenta, así que lo que
+/// justificaba tenerla apagada desapareció con él. Quien no la quiera la apaga
+/// con el interruptor, que es un solo control y se ve.
+///
+/// La sustitución nunca fue el problema: su regla de oro es no tocar nada sin
+/// un paralelo claro, y el corpus de control existe para que siga siendo cierta.
 fn default_autocorreccion_activa() -> bool {
     true
 }

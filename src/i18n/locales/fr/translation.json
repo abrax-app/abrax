@@ -440,7 +440,7 @@
       },
       "autocorreccion": {
         "title": "Autocorrection à voix haute",
-        "description": "Si vous vous corrigez à voix haute pendant la dictée, le texte sort déjà corrigé. Par règles, instantané et hors ligne : sans aucun modèle d'IA ni Post-traitement. En cas de doute, rien n'est modifié. Désactivée par défaut, car elle peut supprimer du texte.",
+        "description": "Si vous vous corrigez à voix haute en dictant — « non, pardon », « je voulais dire » —, le texte sort déjà corrigé. Par règles, instantané et hors ligne : aucun modèle d’IA. Il remplace seulement ce que vous avez corrigé, n’efface jamais de lui-même et, en cas de doute, ne touche à rien. Activé par défaut.",
         "ejemplo": "Exemple : « Programme la réunion pour mardi… non, pardon, pour mercredi » → « Programme la réunion pour mercredi. »",
         "sustitucionTitle": "Signaux de correction",
         "sustitucionDescription": "Ce que vous dites pour remplacer ce que vous venez de dire (p. ex. « non, pardon », « enfin »). Le remplacement n'a lieu que si un segment équivalent est trouvé avant le signal : même jour, même mois, même heure, même nombre ou même nom. Sinon, rien n'est modifié.",
@@ -476,7 +476,7 @@
         }
       },
       "voiceActivityDetection": {
-        "title": "Voice Activity Detection",
+        "title": "Détection de la voix",
         "description": "Filter silence from recordings. Streaming-capable models use a longer VAD tail; disabling VAD records raw audio."
       },
       "dictionary": {
@@ -797,7 +797,7 @@
     },
     "modo": {
       "title": "Niveau de correction",
-      "description": "Littéral ne corrige que les espaces et les majuscules de phrase. Propre fait en plus : symboles (« cinq pour cent » → 5 %), accents oubliés par la dictée, e-mails et chemins, répétitions (« ensuite ensuite »), autocorrections orales et — si vous le laissez activé ci-dessous — les nombres en chiffres.",
+      "description": "Littéral ne corrige que les espaces et les majuscules de phrase. Propre fait en plus : symboles (« cinq pour cent » → 5 %), accents oubliés par la dictée, e-mails et chemins, répétitions (« ensuite ensuite ») et — si vous le laissez activé ci-dessous — les nombres en chiffres. L’autocorrection orale n’en dépend pas : elle a son propre interrupteur.",
       "options": {
         "literal": "Littéral",
         "limpio": "Épuré"
