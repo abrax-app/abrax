@@ -39,6 +39,11 @@ pub async fn download_model(
         .map_err(|e| e.to_string());
 
     if let Err(ref error) = result {
+        // El fallo solo vivia en la pantalla: si le ocurria a un usuario, no
+        // quedaba ni una linea con que reconstruirlo. La descarga en si SI se
+        // registra al empezar ("Downloading HF model ..."), asi que sin esto el
+        // log dice que empezo y nunca dice como acabo.
+        log::error!("Fallo la descarga del modelo {}: {}", model_id, error);
         let _ = app_handle.emit(
             "model-download-failed",
             serde_json::json!({ "model_id": &model_id, "error": error }),
