@@ -1109,6 +1109,9 @@
       },
       "vox": {
         "que": "Markera text i valfri app, tryck på kortkommandot och Abrax läser upp den."
+      },
+      "escucha": {
+        "que": "Du talar och texten dyker upp där du skrev. Allt sker på din dator — inget skickas ut på nätet."
       }
     }
   },

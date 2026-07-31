@@ -1109,6 +1109,9 @@
       },
       "vox": {
         "que": "Herhangi bir uygulamada metni seçin, kısayola basın; Abrax size yüksek sesle okusun."
+      },
+      "escucha": {
+        "que": "Konuşursunuz ve metin yazdığınız yerde belirir. Her şey bilgisayarınızda olur — hiçbir şey internete çıkmaz."
       }
     }
   },

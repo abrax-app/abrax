@@ -1109,6 +1109,9 @@
       },
       "vox": {
         "que": "Selecione texto em qualquer aplicativo, pressione o atalho e o Abrax lê em voz alta."
+      },
+      "escucha": {
+        "que": "Você fala e o texto aparece onde estiver escrevendo. Tudo acontece no seu computador: nada vai para a internet."
       }
     }
   },

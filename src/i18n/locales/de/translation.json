@@ -1109,6 +1109,9 @@
       },
       "vox": {
         "que": "Markiere Text in einer beliebigen App, drücke das Kürzel, und Abrax liest ihn vor."
+      },
+      "escucha": {
+        "que": "Du sprichst, und der Text erscheint dort, wo du gerade schreibst. Alles passiert auf deinem Rechner — nichts geht ins Netz."
       }
     }
   },

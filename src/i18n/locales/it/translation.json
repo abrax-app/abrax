@@ -1109,6 +1109,9 @@
       },
       "vox": {
         "que": "Seleziona del testo in qualsiasi app, premi la scorciatoia e Abrax te lo legge ad alta voce."
+      },
+      "escucha": {
+        "que": "Parli e il testo compare dove stavi scrivendo. Tutto avviene sul tuo computer: niente va in rete."
       }
     }
   },

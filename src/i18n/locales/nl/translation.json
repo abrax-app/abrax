@@ -1109,6 +1109,9 @@
       },
       "vox": {
         "que": "Selecteer tekst in een willekeurige app, druk op de sneltoets en Abrax leest het voor."
+      },
+      "escucha": {
+        "que": "Je spreekt en de tekst verschijnt waar je aan het typen was. Alles gebeurt op je computer — er gaat niets online."
       }
     }
   },

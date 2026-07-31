@@ -1109,6 +1109,9 @@
       },
       "vox": {
         "que": "Chọn văn bản trong bất kỳ ứng dụng nào, nhấn phím tắt và Abrax sẽ đọc to cho bạn."
+      },
+      "escucha": {
+        "que": "Bạn nói và văn bản hiện ra ngay chỗ bạn đang gõ. Mọi thứ diễn ra trên máy của bạn — không có gì gửi lên mạng."
       }
     }
   },

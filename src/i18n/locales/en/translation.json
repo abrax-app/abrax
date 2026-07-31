@@ -1109,6 +1109,9 @@
       },
       "vox": {
         "que": "Select text in any app, press the shortcut, and Abrax reads it out loud."
+      },
+      "escucha": {
+        "que": "You speak and the text appears wherever you were typing. Everything happens on your machine — nothing goes online."
       }
     }
   },

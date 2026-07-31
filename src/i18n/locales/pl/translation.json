@@ -1109,6 +1109,9 @@
       },
       "vox": {
         "que": "Zaznacz tekst w dowolnej aplikacji, naciśnij skrót, a Abrax przeczyta go na głos."
+      },
+      "escucha": {
+        "que": "Mówisz, a tekst pojawia się tam, gdzie piszesz. Wszystko dzieje się na twoim komputerze — nic nie trafia do internetu."
       }
     }
   },

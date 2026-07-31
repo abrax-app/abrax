@@ -58,11 +58,16 @@ export const PantallaEscucha: React.FC = () => {
   const pushToTalk = settings?.push_to_talk ?? false;
   const esLinux = osType === "linux";
 
-  // Sin `Intro`: esta pantalla va DEBAJO del hero de inicio («ABRAX está
-  // listo» + el atajo), que ya dice qué es y cómo se usa. Repetirlo sería
-  // decir dos veces lo mismo a dos centímetros.
   return (
     <div className="max-w-3xl w-full space-y-6">
+      {/* La MISMA cabecera que Streaming y VOX. Se probó sin ella —el hero de
+          arriba ya da la bienvenida— y el resultado fue que Escucha parecía no
+          haber cambiado: el hero es identico al de siempre, y las otras dos
+          pantallas si abrian con su nombre y una linea de que hacen. Tres
+          pantallas de modo tienen que empezar igual o no se leen como tres
+          pantallas del mismo tipo. */}
+      <Intro titulo={t("quiet.nav.listen")} que={t("quiet.modo.escucha.que")} />
+
       {/* 1. Cómo se dispara. Lo primero que necesita saber quien abre la app:
              qué tecla, y si hay que mantenerla o pulsarla. */}
       <SettingsGroup title={t("quiet.modo.grupo.gesto")}>
