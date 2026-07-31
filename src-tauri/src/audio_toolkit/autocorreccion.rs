@@ -502,15 +502,40 @@ fn aplicar_sustitucion(tokens: &[Token], i: usize, n: usize) -> Option<String> {
     let fin_r = fin_de_oracion(tokens, ini_r, tokens.len());
     let forma_r = forma_de(tokens, ini_r, fin_r);
 
-    // REGLA DE ORO: sin categoría no hay paralelo posible, y sin paralelo no se
-    // toca nada. Aquí mueren «digo que sí» y «mejor dicho de otra manera».
-    forma_r.categoria?;
+    // REGLA DE ORO: sin ancla no hay paralelo posible, y sin paralelo no se toca
+    // nada. Aquí mueren «digo que sí» y «mejor dicho de otra manera».
+    //
+    // El ancla es una CATEGORÍA (fecha, mes, hora, número, nombre propio) o, en
+    // su defecto, una PREPOSICIÓN. Las cinco categorías dejaban fuera la
+    // corrección más natural que existe —«prueba de química, perdón, de
+    // física»— porque «química» no es ninguna de ellas. Y ahí el paralelo está a
+    // la vista: misma preposición y el mismo número de palabras detrás.
+    //
+    // Medido el 31/07 con dictados reales: se intentó cuatro veces seguidas con
+    // «de X, perdón, de Y» y las cuatro salieron sin tocar.
+    //
+    // La preposición SOLA no basta —«Vine por ti, perdón, por favor no te
+    // enojes» no es una corrección—, así que va con el candado del LARGO: los
+    // dos segmentos deben medir lo mismo. Una retractación cambia una cosa por
+    // otra del mismo tamaño; una frase que sigue, no.
+    let ancla_preposicion = forma_r.categoria.is_none() && forma_r.preposicion.is_some();
+    if forma_r.categoria.is_none() && !ancla_preposicion {
+        return None;
+    }
 
     let piso = i.saturating_sub(VENTANA_ATRAS);
     let mut candidato = None;
     for p in (piso..i).rev() {
         let fin_c = fin_de_oracion(tokens, p, i);
-        if son_paralelas(&forma_de(tokens, p, fin_c), &forma_r) {
+        let forma_c = forma_de(tokens, p, fin_c);
+        let casa = if ancla_preposicion {
+            forma_c.categoria.is_none()
+                && forma_c.preposicion == forma_r.preposicion
+                && (fin_c - p) == (fin_r - ini_r)
+        } else {
+            son_paralelas(&forma_c, &forma_r)
+        };
+        if casa {
             candidato = Some((p, fin_c));
             break;
         }
@@ -1041,5 +1066,38 @@ mod tests {
             t,
             "confundio el rato del dia con una fecha: {t}"
         );
+    }
+
+    // ── Ancla por preposicion: la correccion mas natural que existe ─────────
+
+    #[test]
+    fn el_dictado_real_del_31_07_de_la_prueba_de_quimica() {
+        // Winston lo intento cuatro veces seguidas y las cuatro salieron sin
+        // tocar: «quimica» no es ninguna de las cinco categorias. El paralelo
+        // estaba a la vista igual — misma preposicion, mismo largo.
+        assert_eq!(
+            corrige("Oye, Antonio, acuérdate que el martes tenemos prueba de química, perdón, de física."),
+            "Oye, Antonio, acuérdate que el martes tenemos prueba de física."
+        );
+        assert_eq!(
+            corrige("lo dejamos en la mesa, digo, en la silla"),
+            "lo dejamos en la silla"
+        );
+    }
+
+    #[test]
+    fn el_candado_del_largo_es_lo_que_hace_segura_la_preposicion() {
+        // Corpus de control. Sin el candado del largo, la primera se comeria
+        // «Vine por ti» y las demas destrozarian prosa corriente.
+        for texto in [
+            "Vine por ti, perdón, por favor no te enojes",
+            "gracias por todo, perdón, por cierto te queria contar algo",
+            "hablamos de esto, perdón, de verdad no era mi intencion molestarte",
+            "Perdón por la demora, ya voy",
+            "te pido perdón por lo de ayer",
+            "digo que sí a la propuesta",
+        ] {
+            assert_eq!(corrige(texto), texto, "tocó: «{texto}»");
+        }
     }
 }
