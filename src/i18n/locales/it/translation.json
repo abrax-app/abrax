@@ -735,9 +735,9 @@
     "modelLoadFailedTitle": "Impossibile caricare il modello",
     "modelDownloadFailedTitle": "Download del modello non riuscito",
     "center": {
-      "title": "Errori recenti ({{count}})",
+      "title": "Avvisi recenti ({{count}})",
       "dismiss": "Ignora",
-      "toggle": "Mostra tutti gli errori"
+      "toggle": "Mostra tutti gli avvisi"
     },
     "recordingTooShortTitle": "Non è stato registrato quasi nulla",
     "recordingTooShort": "La registrazione è durata meno di un secondo. Se usi la scorciatoia, tieni premuto {{atajo}} mentre parli.",

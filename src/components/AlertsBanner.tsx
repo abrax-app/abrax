@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { AlertTriangle, ChevronDown, ChevronUp, X } from "lucide-react";
+import { AlertTriangle, ChevronDown, ChevronUp, Info, X } from "lucide-react";
 import type { AlertKind } from "@/bindings";
 import { useAlertsStore } from "../stores/alertsStore";
 import { Button } from "./ui/Button";
@@ -12,6 +12,11 @@ import { Button } from "./ui/Button";
  */
 
 // Título localizado por tipo de alerta (las mismas claves que usan los toasts).
+/** Avisos que NO son fallos: la app contando algo que hizo, no algo que fallo. */
+const KINDS_INFORMATIVOS = new Set<AlertKind>([
+  "sistema_modelo_cambiado_sin_vivo",
+]);
+
 export const alertTitleKey = (kind: AlertKind): string => {
   switch (kind) {
     case "recording_permission_denied":
@@ -69,13 +74,31 @@ const AlertsBanner: React.FC = () => {
   const latest = alerts[0];
   const visibleAlerts = expanded ? alerts : [latest];
 
+  // El panel ya no guarda solo fallos: desde el 30/07 recibe tambien avisos
+  // INFORMATIVOS —«se cambio el modelo para el audio del sistema»—, que son la
+  // app contando algo que hizo bien. Pintarlos de rojo con un triangulo de
+  // peligro es acusarla de un error que no cometio.
+  //
+  // Asi que el aspecto sigue al CONTENIDO: rojo y triangulo solo si hay al menos
+  // un fallo de verdad; si son todos informativos, tono neutro e icono de
+  // informacion. Cuando llegue un fallo real, el panel se pone rojo solo.
+  const hayFallo = alerts.some((a) => !KINDS_INFORMATIVOS.has(a.kind));
+
   return (
     <div
-      role="alert"
-      className="w-full max-w-150 rounded-lg border border-red-500/30 bg-red-500/10 px-3 py-2"
+      role={hayFallo ? "alert" : "status"}
+      className={`w-full max-w-150 rounded-lg px-3 py-2 border ${
+        hayFallo
+          ? "border-red-500/30 bg-red-500/10"
+          : "border-mid-gray/25 bg-mid-gray/10"
+      }`}
     >
       <div className="flex items-center gap-2">
-        <AlertTriangle className="w-4 h-4 shrink-0 text-red-500" />
+        {hayFallo ? (
+          <AlertTriangle className="w-4 h-4 shrink-0 text-red-500" />
+        ) : (
+          <Info className="w-4 h-4 shrink-0 text-text/50" />
+        )}
         <span className="text-sm font-medium text-text flex-1">
           {t("errors.center.title", { count: alerts.length })}
         </span>

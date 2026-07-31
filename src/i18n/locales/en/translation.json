@@ -738,9 +738,9 @@
     "modelLoadFailedTitle": "Model failed to load",
     "modelDownloadFailedTitle": "Model download failed",
     "center": {
-      "title": "Recent errors ({{count}})",
+      "title": "Recent notices ({{count}})",
       "dismiss": "Dismiss",
-      "toggle": "Show all errors"
+      "toggle": "Show all notices"
     },
     "recordingTooShortTitle": "Almost nothing was recorded",
     "recordingTooShort": "The recording lasted less than a second. If you use the shortcut, hold {{atajo}} while you speak.",

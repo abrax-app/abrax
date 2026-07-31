@@ -735,9 +735,9 @@
     "modelLoadFailedTitle": "Model se nepodařilo načíst",
     "modelDownloadFailedTitle": "Stažení modelu selhalo",
     "center": {
-      "title": "Nedávné chyby ({{count}})",
+      "title": "Poslední upozornění ({{count}})",
       "dismiss": "Zavřít",
-      "toggle": "Zobrazit všechny chyby"
+      "toggle": "Zobrazit všechna upozornění"
     },
     "recordingTooShortTitle": "Skoro nic se nenahrálo",
     "recordingTooShort": "Nahrávka trvala méně než sekundu. Pokud používáš zkratku, drž {{atajo}}, dokud mluvíš.",

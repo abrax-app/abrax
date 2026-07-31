@@ -735,9 +735,9 @@
     "modelLoadFailedTitle": "No se pudo cargar el modelo",
     "modelDownloadFailedTitle": "Falló la descarga del modelo",
     "center": {
-      "title": "Errores recientes ({{count}})",
+      "title": "Avisos recientes ({{count}})",
       "dismiss": "Descartar",
-      "toggle": "Mostrar todos los errores"
+      "toggle": "Mostrar todos los avisos"
     },
     "recordingTooShortTitle": "Casi no se grabó nada",
     "recordingTooShort": "La grabación duró menos de un segundo. Si usas el atajo, mantén {{atajo}} presionado mientras hablas.",

@@ -735,9 +735,9 @@
     "modelLoadFailedTitle": "فشل تحميل النموذج",
     "modelDownloadFailedTitle": "فشل تنزيل النموذج",
     "center": {
-      "title": "الأخطاء الأخيرة ({{count}})",
+      "title": "الإشعارات الأخيرة ({{count}})",
       "dismiss": "تجاهل",
-      "toggle": "عرض كل الأخطاء"
+      "toggle": "عرض كل الإشعارات"
     },
     "recordingTooShortTitle": "لم يُسجَّل شيء تقريبًا",
     "recordingTooShort": "استمر التسجيل أقل من ثانية. إذا كنت تستخدم الاختصار، استمر بالضغط على {{atajo}} أثناء الكلام.",

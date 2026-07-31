@@ -735,9 +735,9 @@
     "modelLoadFailedTitle": "模型載入失敗",
     "modelDownloadFailedTitle": "模型下載失敗",
     "center": {
-      "title": "最近的錯誤（{{count}}）",
+      "title": "最近的提示（{{count}}）",
       "dismiss": "關閉",
-      "toggle": "顯示所有錯誤"
+      "toggle": "顯示全部提示"
     },
     "recordingTooShortTitle": "幾乎沒有錄到內容",
     "recordingTooShort": "錄音不到一秒。如果你使用快速鍵，說話時請按住 {{atajo}}。",

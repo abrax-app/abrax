@@ -735,9 +735,9 @@
     "modelLoadFailedTitle": "Nie udało się wczytać modelu",
     "modelDownloadFailedTitle": "Pobieranie modelu nie powiodło się",
     "center": {
-      "title": "Ostatnie błędy ({{count}})",
+      "title": "Ostatnie powiadomienia ({{count}})",
       "dismiss": "Odrzuć",
-      "toggle": "Pokaż wszystkie błędy"
+      "toggle": "Pokaż wszystkie powiadomienia"
     },
     "recordingTooShortTitle": "Prawie nic nie nagrano",
     "recordingTooShort": "Nagranie trwało krócej niż sekundę. Jeśli używasz skrótu, przytrzymaj {{atajo}} podczas mówienia.",

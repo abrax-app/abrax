@@ -735,9 +735,9 @@
     "modelLoadFailedTitle": "Modellen kunde inte läsas in",
     "modelDownloadFailedTitle": "Modellnedladdningen misslyckades",
     "center": {
-      "title": "Senaste fel ({{count}})",
+      "title": "Senaste meddelanden ({{count}})",
       "dismiss": "Avfärda",
-      "toggle": "Visa alla fel"
+      "toggle": "Visa alla meddelanden"
     },
     "recordingTooShortTitle": "Nästan inget spelades in",
     "recordingTooShort": "Inspelningen varade mindre än en sekund. Om du använder kortkommandot, håll ner {{atajo}} medan du pratar.",

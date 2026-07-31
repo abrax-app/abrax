@@ -735,9 +735,9 @@
     "modelLoadFailedTitle": "Model yüklenemedi",
     "modelDownloadFailedTitle": "Model indirme başarısız",
     "center": {
-      "title": "Son hatalar ({{count}})",
+      "title": "Son bildirimler ({{count}})",
       "dismiss": "Kapat",
-      "toggle": "Tüm hataları göster"
+      "toggle": "Tüm bildirimleri göster"
     },
     "recordingTooShortTitle": "Neredeyse hiçbir şey kaydedilmedi",
     "recordingTooShort": "Kayıt bir saniyeden kısa sürdü. Kısayolu kullanıyorsan konuşurken {{atajo}} tuşunu basılı tut.",

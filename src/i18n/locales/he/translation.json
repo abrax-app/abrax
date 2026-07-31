@@ -735,9 +735,9 @@
     "modelLoadFailedTitle": "טעינת המודל נכשלה",
     "modelDownloadFailedTitle": "הורדת המודל נכשלה",
     "center": {
-      "title": "שגיאות אחרונות ({{count}})",
+      "title": "הודעות אחרונות ({{count}})",
       "dismiss": "סגור",
-      "toggle": "הצג את כל השגיאות"
+      "toggle": "הצגת כל ההודעות"
     },
     "recordingTooShortTitle": "כמעט שום דבר לא הוקלט",
     "recordingTooShort": "ההקלטה נמשכה פחות משנייה. אם אתה משתמש בקיצור, החזק את {{atajo}} לחוץ בזמן שאתה מדבר.",

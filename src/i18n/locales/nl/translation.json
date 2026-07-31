@@ -738,9 +738,9 @@
     "modelLoadFailedTitle": "Model kon niet worden geladen",
     "modelDownloadFailedTitle": "Modeldownload mislukt",
     "center": {
-      "title": "Recente fouten ({{count}})",
+      "title": "Recente meldingen ({{count}})",
       "dismiss": "Negeren",
-      "toggle": "Alle fouten tonen"
+      "toggle": "Alle meldingen tonen"
     },
     "recordingTooShortTitle": "Er is bijna niets opgenomen",
     "recordingTooShort": "De opname duurde minder dan een seconde. Als je de sneltoets gebruikt, houd {{atajo}} ingedrukt terwijl je praat.",

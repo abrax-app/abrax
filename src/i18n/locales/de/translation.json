@@ -735,9 +735,9 @@
     "modelLoadFailedTitle": "Modell konnte nicht geladen werden",
     "modelDownloadFailedTitle": "Modell-Download fehlgeschlagen",
     "center": {
-      "title": "Letzte Fehler ({{count}})",
+      "title": "Letzte Hinweise ({{count}})",
       "dismiss": "Verwerfen",
-      "toggle": "Alle Fehler anzeigen"
+      "toggle": "Alle Hinweise anzeigen"
     },
     "recordingTooShortTitle": "Es wurde fast nichts aufgenommen",
     "recordingTooShort": "Die Aufnahme dauerte weniger als eine Sekunde. Wenn du das Tastenkürzel nutzt, halte {{atajo}} gedrückt, während du sprichst.",

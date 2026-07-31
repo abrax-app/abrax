@@ -735,9 +735,9 @@
     "modelLoadFailedTitle": "モデルの読み込みに失敗しました",
     "modelDownloadFailedTitle": "モデルのダウンロードに失敗しました",
     "center": {
-      "title": "最近のエラー（{{count}}）",
+      "title": "最近のお知らせ（{{count}}）",
       "dismiss": "閉じる",
-      "toggle": "すべてのエラーを表示"
+      "toggle": "すべてのお知らせを表示"
     },
     "recordingTooShortTitle": "ほとんど録音されませんでした",
     "recordingTooShort": "録音は1秒未満でした。ショートカットを使う場合は、話している間 {{atajo}} を押し続けてください。",

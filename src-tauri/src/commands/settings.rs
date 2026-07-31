@@ -297,7 +297,20 @@ pub fn change_capture_system_audio_setting(app: AppHandle, enabled: bool) -> Res
                     settings.selected_model = apto;
                     recargar_modelo = true;
                 }
-                None => sin_modelo_apto = true,
+                None => {
+                    // NO se enciende. Antes el modo quedaba activo «porque el
+                    // usuario lo pidio» y se le avisaba — pero eso deja el
+                    // interruptor encendido gobernando nada: se captura el audio
+                    // del sistema y el modelo devuelve vacio. Un control que se
+                    // queda en ON sin poder cumplir es la misma clase de mentira
+                    // que un boton que no guarda.
+                    //
+                    // Se rechaza y se explica. Asi el chip vuelve solo a apagado
+                    // en los cuatro shells, sin que ninguno tenga que saber nada:
+                    // todos pintan `capture_system_audio`.
+                    settings.capture_system_audio = false;
+                    sin_modelo_apto = true;
+                }
             }
         }
     } else if let Some(previo) = settings.modelo_antes_de_sistema.take() {
@@ -348,12 +361,19 @@ pub fn change_capture_system_audio_setting(app: AppHandle, enabled: bool) -> Res
     }
 
     if sin_modelo_apto {
-        log::info!("audio del sistema: no hay modelo apto descargado, se avisa");
+        log::info!("audio del sistema: no hay modelo apto descargado, se rechaza");
         crate::user_alerts::alert(
             &app,
             crate::user_alerts::AlertKind::SistemaSinModeloApto,
             None,
         );
+        // Se devuelve Err A PROPOSITO. El frontend pinta el interruptor de forma
+        // optimista y solo lo revierte ante un error: con `Ok` el chip se
+        // quedaria ENCENDIDO mientras el ajuste guardado dice lo contrario, que
+        // es justo la mentira que se esta quitando. El mensaje no lo lee nadie
+        // —va a la consola—; lo que ve el usuario es el aviso de arriba, que
+        // nombra los modelos que le sirven y cuanto pesan.
+        return Err("sin modelo apto para audio del sistema".into());
     }
 
     Ok(())

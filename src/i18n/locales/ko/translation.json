@@ -735,9 +735,9 @@
     "modelLoadFailedTitle": "모델 로드 실패",
     "modelDownloadFailedTitle": "모델 다운로드 실패",
     "center": {
-      "title": "최근 오류 ({{count}})",
+      "title": "최근 알림 ({{count}})",
       "dismiss": "닫기",
-      "toggle": "모든 오류 표시"
+      "toggle": "모든 알림 보기"
     },
     "recordingTooShortTitle": "거의 녹음되지 않았습니다",
     "recordingTooShort": "녹음이 1초도 되지 않았습니다. 단축키를 사용한다면 말하는 동안 {{atajo}} 키를 누르고 있으세요.",

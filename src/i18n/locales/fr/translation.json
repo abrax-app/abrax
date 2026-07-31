@@ -735,9 +735,9 @@
     "modelLoadFailedTitle": "Échec du chargement du modèle",
     "modelDownloadFailedTitle": "Échec du téléchargement du modèle",
     "center": {
-      "title": "Erreurs récentes ({{count}})",
+      "title": "Avis récents ({{count}})",
       "dismiss": "Ignorer",
-      "toggle": "Afficher toutes les erreurs"
+      "toggle": "Afficher tous les avis"
     },
     "recordingTooShortTitle": "Presque rien n’a été enregistré",
     "recordingTooShort": "L’enregistrement a duré moins d’une seconde. Si tu utilises le raccourci, maintiens {{atajo}} pendant que tu parles.",

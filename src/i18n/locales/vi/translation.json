@@ -735,9 +735,9 @@
     "modelLoadFailedTitle": "Không tải được mô hình",
     "modelDownloadFailedTitle": "Tải mô hình thất bại",
     "center": {
-      "title": "Lỗi gần đây ({{count}})",
+      "title": "Thông báo gần đây ({{count}})",
       "dismiss": "Bỏ qua",
-      "toggle": "Hiện tất cả lỗi"
+      "toggle": "Hiện tất cả thông báo"
     },
     "recordingTooShortTitle": "Hầu như không ghi được gì",
     "recordingTooShort": "Bản ghi kéo dài chưa tới một giây. Nếu bạn dùng phím tắt, hãy giữ {{atajo}} trong khi nói.",
