@@ -140,7 +140,24 @@ impl TtsManager {
     pub fn recommended(&self) -> EngineId {
         #[cfg(feature = "advanced-tts")]
         {
-            super::recommend::recommend_engine(&self.hardware_snapshot())
+            let rec = super::recommend::recommend_engine(&self.hardware_snapshot());
+            // La recomendación NO puede caer en un motor que esta máquina no
+            // puede habilitar. Con `uv` ausente, el hardware seguía apuntando a
+            // Kokoro: la lista ya no lo ofrecía, pero la pantalla decía
+            // «Recomendamos Kokoro» y el botón «Usar recomendado» llevaba a un
+            // motor invisible. Un consejo que no se puede seguir es peor que no
+            // dar consejo.
+            if super::registry::necesita_uv(rec) && !super::pyserver::uv_disponible() {
+                // Piper es nativo en las cuatro plataformas; si tampoco valiera,
+                // el sistema siempre está.
+                if super::registry::necesita_uv(EngineId::Piper) {
+                    EngineId::System
+                } else {
+                    EngineId::Piper
+                }
+            } else {
+                rec
+            }
         }
         #[cfg(not(feature = "advanced-tts"))]
         {

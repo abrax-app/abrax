@@ -38,7 +38,7 @@ pub struct PiperVoice {
 pub const VOICES: &[PiperVoice] = &[
     PiperVoice {
         id: "es_MX-ald-medium",
-        display: "Español (México) — Ald",
+        display: "Español (México) — Ald (hombre)",
         lang: "es-MX",
         onnx_url: "https://huggingface.co/rhasspy/piper-voices/resolve/e21c7de8d4eab79b902f0d61e662b3f21664b8d2/es/es_MX/ald/medium/es_MX-ald-medium.onnx",
         onnx_sha256: "019b3803293c93e34a206dd2e53a3889209a514e786fd7144f7b70196c579b63",
@@ -49,7 +49,7 @@ pub const VOICES: &[PiperVoice] = &[
     },
     PiperVoice {
         id: "es_ES-davefx-medium",
-        display: "Español (España) — Davefx",
+        display: "Español (España) — Davefx (hombre)",
         lang: "es-ES",
         onnx_url: "https://huggingface.co/rhasspy/piper-voices/resolve/e21c7de8d4eab79b902f0d61e662b3f21664b8d2/es/es_ES/davefx/medium/es_ES-davefx-medium.onnx",
         onnx_sha256: "6658b03b1a6c316ee4c265a9896abc1393353c2d9e1bca7d66c2c442e222a917",
@@ -57,6 +57,33 @@ pub const VOICES: &[PiperVoice] = &[
         json_sha256: "0e0dda87c732f6f38771ff274a6380d9252f327dca77aa2963d5fbdf9ec54842",
         size_mb: 61,
         for_code: true,
+    },
+    // Voces de MUJER, añadidas el 31/07: el catálogo traía dos y las dos eran
+    // de hombre, así que «elegir voz» no ofrecía ninguna alternativa real.
+    // sha256 calculados sobre la descarga REAL de este commit anclado (no
+    // copiados de ningún índice): ver kit — se bajaron y se hashearon los
+    // cuatro archivos antes de escribirlos aquí.
+    PiperVoice {
+        id: "es_MX-claude-high",
+        display: "Español (México) — Claude (mujer)",
+        lang: "es-MX",
+        onnx_url: "https://huggingface.co/rhasspy/piper-voices/resolve/e21c7de8d4eab79b902f0d61e662b3f21664b8d2/es/es_MX/claude/high/es_MX-claude-high.onnx",
+        onnx_sha256: "3ef40a71ea63852cd8ab7e6fa7d2ecdcfa67a0b47c9c48e3f10e02ee02083ea0",
+        json_url: "https://huggingface.co/rhasspy/piper-voices/resolve/e21c7de8d4eab79b902f0d61e662b3f21664b8d2/es/es_MX/claude/high/es_MX-claude-high.onnx.json",
+        json_sha256: "1afc81f703c0e4cb3b4d7c0dca096b8b54a98806807f0170cf5eb5557723c12d",
+        size_mb: 63,
+        for_code: false,
+    },
+    PiperVoice {
+        id: "es_AR-daniela-high",
+        display: "Español (Argentina) — Daniela (mujer)",
+        lang: "es-AR",
+        onnx_url: "https://huggingface.co/rhasspy/piper-voices/resolve/e21c7de8d4eab79b902f0d61e662b3f21664b8d2/es/es_AR/daniela/high/es_AR-daniela-high.onnx",
+        onnx_sha256: "7ceb1fc0dab349418c5b54a639ae9ee595212d7c9ea422220d8419163d5cc985",
+        json_url: "https://huggingface.co/rhasspy/piper-voices/resolve/e21c7de8d4eab79b902f0d61e662b3f21664b8d2/es/es_AR/daniela/high/es_AR-daniela-high.onnx.json",
+        json_sha256: "aedbf69647e1d754c62ecf8e0366ca5f16af3e768e3c6b5329af6eb6bde3852b",
+        size_mb: 114,
+        for_code: false,
     },
 ];
 
