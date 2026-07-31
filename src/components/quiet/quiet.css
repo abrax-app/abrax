@@ -255,6 +255,37 @@
   font-family: ui-monospace, "Cascadia Code", monospace;
 }
 
+/* Las teclas de los ATAJOS, con los mismos colores que la tecla del hero.
+   Ese aviso —«Mantén Ctrl + Space presionado»— es lo primero que se lee al
+   abrir Abrax, y hasta ahora la MISMA tecla se pintaba gris tres centímetros
+   más abajo, en «Atajos». Dos aspectos para la misma cosa hacen dudar de si
+   son la misma cosa.
+
+   El gancho es `.atajo-tecla`, una clase propia puesta en los dos
+   componentes de atajo (el de Tauri y el de handy-keys). Colgar de sus clases
+   de utilidad habría atado este estilo a que nadie reordene un `hover:` en un
+   archivo que no habla de Quiet. Solo se tiñe DENTRO de `#quiet-stage`: los
+   demás shells conservan el suyo. */
+#quiet-stage .atajo-tecla {
+  border-color: color-mix(in srgb, var(--q-c) 45%, var(--q-line));
+  background: color-mix(in srgb, var(--q-c) 12%, transparent);
+  color: color-mix(in srgb, var(--q-c) 72%, var(--q-text));
+  font-family: ui-monospace, "Cascadia Code", monospace;
+}
+#quiet-stage .atajo-tecla:hover {
+  border-color: color-mix(in srgb, var(--q-c) 70%, var(--q-line));
+  background: color-mix(in srgb, var(--q-c) 20%, transparent);
+  color: color-mix(in srgb, var(--q-c) 90%, var(--q-text));
+}
+/* Grabando una combinación nueva: el mismo tono, encendido del todo, para que
+   se note que ahora sí está escuchando el teclado. */
+#quiet-stage .atajo-tecla.grabando,
+#quiet-stage .atajo-tecla.grabando:hover {
+  border-color: var(--q-c);
+  background: color-mix(in srgb, var(--q-c) 30%, transparent);
+  color: var(--q-text);
+}
+
 .q-orb {
   width: 185px;
   height: 185px;
