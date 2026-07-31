@@ -103,6 +103,19 @@ pub const SUSTITUCION_POR_DEFECTO: &[&str] = &[
     "no, perdón",
     "perdón, quise decir",
     "perdón",
+    // Traidas del motor de `correccion/reglas.rs` el 31/07, que las tenia y
+    // este no. Es lo que hacia que en la maquina de Antonio «funcionara bien» y
+    // aqui no: no era el codigo del emparejador, era que la mitad de las formas
+    // de retractarse no estaban en la lista. «me equivoque» —la que mas se dice—
+    // no figuraba.
+    "me equivoqué",
+    "perdona",
+    "disculpa",
+    "quise decir",
+    "quiero decir",
+    "más bien",
+    "mentira",
+    "miento",
     "mejor dicho",
     "o sea, no",
     "corrijo",
@@ -149,6 +162,19 @@ static PALABRAS_VACIAS: Lazy<HashSet<&'static str>> = Lazy::new(|| {
         "no", "si", "que", "y", "o", "pero", "ni", "mas", "menos", "muy", "ya", "tambien",
         "tampoco", "como", "cuando", "donde", "porque", "pues", "asi", "se", "le", "lo", "les",
         "me", "te", "nos", "al", "del",
+        // COPULAS Y AUXILIARES. No son verbos con contenido: unen, no dicen. Que
+        // dos tramos empiecen los dos por «es» pasa en media conversacion.
+        //
+        // Sin ellas, «No es caro, mas bien, es carisimo» salia «No es carisimo»
+        // —el sentido INVERTIDO— porque «es» hacia de ancla. Es el mismo fallo
+        // que tenia el motor de `reglas.rs` y por el que se desenchufo; al traer
+        // sus marcadores volvio, y lo cazo el corpus de control.
+        //
+        // Los verbos CON contenido siguen anclando: «anda a dormir / anda a
+        // preparar comida» corrige, que es de lo que se trata.
+        "es", "era", "fue", "son", "eran", "fueron", "sera", "seria", "sea", "esta", "estaba",
+        "estan", "estuvo", "hay", "habia", "ha", "han", "he", "hemos", "habra", "tiene", "tenia",
+        "tengo", "puede", "podia",
     ]
     .into_iter()
     .collect()
@@ -1178,6 +1204,59 @@ mod tests {
             "digo que sí a la propuesta",
             "mejor dicho de otra manera, no me convence",
             "perdón, ¿me repites?",
+        ] {
+            assert_eq!(corrige(texto), texto, "tocó: «{texto}»");
+        }
+    }
+
+    // ── Marcadores traidos del motor de reglas (31/07) ─────────────────────
+
+    #[test]
+    fn los_marcadores_que_faltaban_ya_corrigen() {
+        // «me equivoque» es la que mas se dice y NO estaba en la lista: por eso
+        // en la maquina de Antonio «funcionaba bien» y aqui no. No era el
+        // emparejador, era el vocabulario.
+        assert_eq!(
+            corrige("nos vemos el lunes, me equivoqué, el martes"),
+            "nos vemos el martes"
+        );
+        assert_eq!(
+            corrige("la prueba es de química, me equivoqué, de física"),
+            "la prueba es de física"
+        );
+        assert_eq!(
+            corrige("anda a dormir, me equivoqué, anda a preparar comida"),
+            "Anda a preparar comida"
+        );
+        assert_eq!(
+            corrige("a las tres, disculpa, a las cuatro"),
+            "A las cuatro"
+        );
+        assert_eq!(corrige("el lunes, perdona, el martes"), "El martes");
+        assert_eq!(
+            corrige("vamos el jueves, quise decir, el viernes"),
+            "vamos el viernes"
+        );
+        assert_eq!(corrige("son doce, quiero decir, trece"), "son trece");
+        assert_eq!(corrige("el martes, mentira, el miércoles"), "El miércoles");
+    }
+
+    #[test]
+    fn las_copulas_no_anclan_o_se_invierte_el_sentido() {
+        // Al traer los marcadores volvio el fallo que hizo desenchufar el motor
+        // de `reglas.rs`: «es» y «fue» hacian de ancla y la frase salia AL
+        // REVES. Este corpus es el que lo caza.
+        for texto in [
+            "No es caro, más bien, es carísimo.",
+            "No fue rápido, mejor dicho, fue lentísimo.",
+            "Eso no es lo que quiero. Quiero decir que necesito otra cosa.",
+            // Y las formas de disculpa de los marcadores nuevos.
+            "disculpa la demora, ya voy",
+            "perdona, no te escuché",
+            "eso es mentira y lo sabes",
+            "te pido perdón por lo de ayer",
+            "Vine por ti, perdón, por favor no te enojes",
+            "digo que sí a la propuesta",
         ] {
             assert_eq!(corrige(texto), texto, "tocó: «{texto}»");
         }
