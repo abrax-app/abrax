@@ -126,6 +126,11 @@ h2::before {
   /* aire generoso: cada sección respira como una pantalla propia */
   padding: clamp(130px, 16vh, 190px) 28px 0;
 }
+/* la demo es corta: su aire más el de la sección siguiente sumaban un
+   hueco doble — la sección que la sigue respira un poco menos */
+.seccion--demo + .seccion {
+  padding-top: clamp(80px, 10vh, 120px);
+}
 
 /* ── HERO ── */
 .hero {
