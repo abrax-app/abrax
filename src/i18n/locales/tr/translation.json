@@ -1108,7 +1108,8 @@
         "resto": "Gerisi —otomatik düzeltme, dolgu sözcükleri, sözlük, yapıştırma— Dinle’dekiyle aynı: bir kez ayarlanır, ikisi için de geçerli."
       },
       "vox": {
-        "que": "Herhangi bir uygulamada metni seçin, kısayola basın; Abrax size yüksek sesle okusun."
+        "que": "Seçtiğiniz metni yüksek sesle okur, herhangi bir uygulamada.",
+        "como": "<k>{{atajo}}</k> tuşlarına basın, okumaya başlar; susturmak için tekrar basın."
       },
       "escucha": {
         "que": "Konuşursunuz ve metin yazdığınız yerde belirir. Her şey bilgisayarınızda olur — hiçbir şey internete çıkmaz."

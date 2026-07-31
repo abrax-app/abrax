@@ -1108,7 +1108,8 @@
         "resto": "Everything else —autocorrect, filler words, dictionary, where it gets typed— is the same as in Listen: set it once and it covers both."
       },
       "vox": {
-        "que": "Select text in any app, press the shortcut, and Abrax reads it out loud."
+        "que": "Reads out loud whatever text you have selected, in any application.",
+        "como": "Press <k>{{atajo}}</k> and it starts reading; press it again to stop."
       },
       "escucha": {
         "que": "You speak and the text appears wherever you were typing. Everything happens on your machine — nothing goes online."

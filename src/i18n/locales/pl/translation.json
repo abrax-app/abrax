@@ -1108,7 +1108,8 @@
         "resto": "Reszta —autokorekta, przerywniki, słownik, wklejanie— jest ta sama co w Słuchaniu: ustawiasz raz i działa dla obu."
       },
       "vox": {
-        "que": "Zaznacz tekst w dowolnej aplikacji, naciśnij skrót, a Abrax przeczyta go na głos."
+        "que": "Czyta na głos zaznaczony tekst, w dowolnej aplikacji.",
+        "como": "Naciśnij <k>{{atajo}}</k>, a zacznie czytać; naciśnij ponownie, aby ucichł."
       },
       "escucha": {
         "que": "Mówisz, a tekst pojawia się tam, gdzie piszesz. Wszystko dzieje się na twoim komputerze — nic nie trafia do internetu."

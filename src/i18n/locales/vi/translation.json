@@ -1108,7 +1108,8 @@
         "resto": "Phần còn lại —tự sửa, từ đệm, từ điển, nơi dán— giống hệt trong Nghe: đặt một lần là dùng cho cả hai."
       },
       "vox": {
-        "que": "Chọn văn bản trong bất kỳ ứng dụng nào, nhấn phím tắt và Abrax sẽ đọc to cho bạn."
+        "que": "Đọc to phần văn bản bạn đang chọn, trong bất kỳ ứng dụng nào.",
+        "como": "Nhấn <k>{{atajo}}</k> để bắt đầu đọc; nhấn lần nữa để dừng."
       },
       "escucha": {
         "que": "Bạn nói và văn bản hiện ra ngay chỗ bạn đang gõ. Mọi thứ diễn ra trên máy của bạn — không có gì gửi lên mạng."

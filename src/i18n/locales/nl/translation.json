@@ -1108,7 +1108,8 @@
         "resto": "De rest —autocorrectie, stopwoorden, woordenboek, plakken— is hetzelfde als bij Luisteren: één keer instellen, geldt voor beide."
       },
       "vox": {
-        "que": "Selecteer tekst in een willekeurige app, druk op de sneltoets en Abrax leest het voor."
+        "que": "Leest de tekst die je hebt geselecteerd hardop voor, in elke toepassing.",
+        "como": "Druk op <k>{{atajo}}</k> en het begint te lezen; nog een keer drukken stopt het."
       },
       "escucha": {
         "que": "Je spreekt en de tekst verschijnt waar je aan het typen was. Alles gebeurt op je computer — er gaat niets online."

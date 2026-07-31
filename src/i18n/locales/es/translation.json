@@ -1108,7 +1108,8 @@
         "resto": "El resto —autocorrección, muletillas, diccionario, dónde se pega— es el mismo que en Escucha: se configura una vez y vale para los dos."
       },
       "vox": {
-        "que": "Selecciona texto en cualquier aplicación, pulsa el atajo y Abrax te lo lee en voz alta."
+        "que": "Te lee en voz alta el texto que tengas seleccionado, en cualquier aplicación.",
+        "como": "Pulsa <k>{{atajo}}</k> y empieza a leer; púlsalo otra vez para callar."
       },
       "escucha": {
         "que": "Dictas con la voz y el texto aparece donde estés escribiendo. Todo pasa en tu equipo: nada sale a internet."

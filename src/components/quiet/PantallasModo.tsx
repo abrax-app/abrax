@@ -6,7 +6,6 @@ import { formatKeyCombination } from "@/lib/utils/keyboard";
 import { SettingsGroup } from "../ui/SettingsGroup";
 import { ShortcutInput } from "../settings/ShortcutInput";
 import { PushToTalk } from "../settings/PushToTalk";
-import { AtajoVox } from "../AtajoVox";
 import { MicrophoneSelector } from "../settings/MicrophoneSelector";
 import { PruebaMicrofono } from "../settings/PruebaMicrofono";
 import { VoiceActivityDetection } from "../settings/VoiceActivityDetection";
@@ -177,8 +176,10 @@ export const PantallaStreaming: React.FC = () => {
         que={t("quiet.modo.streaming.que")}
       />
 
+      {/* La descripción va al icono (i), no debajo: en línea repetía palabra
+          por palabra lo que ya dice la cabecera dos dedos más arriba. */}
       <SettingsGroup title={t("quiet.modo.grupo.fuente")}>
-        <CaptureSystemAudio descriptionMode="inline" grouped />
+        <CaptureSystemAudio descriptionMode="tooltip" grouped />
       </SettingsGroup>
 
       {/* Solo los que sirven para audio del sistema; la lista la decide el
@@ -199,14 +200,37 @@ export const PantallaStreaming: React.FC = () => {
 
 export const PantallaVox: React.FC = () => {
   const { t } = useTranslation();
+  const { settings } = useSettings();
+  const osType = useOsType();
+  const atajo = formatKeyCombination(
+    settings?.bindings?.leer_seleccion?.current_binding ?? "",
+    osType,
+  );
+
+  // La misma forma que Escucha: el «cómo se usa» en la cabecera, no dentro del
+  // grupo. Estaba en los dos sitios —la intro decía «pulsa el atajo y Abrax te
+  // lo lee» y dentro del grupo `AtajoVox` repetía la frase entera con la tecla
+  // dentro—, o sea la misma información dos veces separada por un rótulo.
+  const comoSeUsa = atajo ? (
+    <Trans
+      i18nKey="quiet.modo.vox.como"
+      values={{ atajo }}
+      components={{ k: <span className="q-kbd" /> }}
+    />
+  ) : (
+    t("vox.atajoSinBinding")
+  );
 
   return (
     <div className="max-w-3xl w-full space-y-6">
-      <Intro titulo={t("sidebar.escucha")} que={t("quiet.modo.vox.que")} />
+      <Intro
+        titulo={t("sidebar.escucha")}
+        que={t("quiet.modo.vox.que")}
+        comoSeUsa={comoSeUsa}
+      />
 
       <SettingsGroup title={t("quiet.modo.grupo.gesto")}>
         <ShortcutInput shortcutId="leer_seleccion" grouped={true} />
-        <AtajoVox className="px-4 pb-2 text-sm text-text/60" />
       </SettingsGroup>
 
       {/* Por dónde suena. Este ajuste manda de verdad en VOX

@@ -1108,7 +1108,8 @@
         "resto": "O resto —autocorreção, vícios de linguagem, dicionário, onde é colado— é o mesmo da Escuta: configura uma vez e vale para os dois."
       },
       "vox": {
-        "que": "Selecione texto em qualquer aplicativo, pressione o atalho e o Abrax lê em voz alta."
+        "que": "Lê em voz alta o texto que você tiver selecionado, em qualquer aplicativo.",
+        "como": "Pressione <k>{{atajo}}</k> e começa a ler; pressione de novo para calar."
       },
       "escucha": {
         "que": "Você fala e o texto aparece onde estiver escrevendo. Tudo acontece no seu computador: nada vai para a internet."

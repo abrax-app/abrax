@@ -1108,7 +1108,8 @@
         "resto": "Alles Weitere —Autokorrektur, Füllwörter, Wörterbuch, Einfügen— ist dasselbe wie bei Hören: einmal einstellen, gilt für beides."
       },
       "vox": {
-        "que": "Markiere Text in einer beliebigen App, drücke das Kürzel, und Abrax liest ihn vor."
+        "que": "Liest den markierten Text laut vor, in jeder Anwendung.",
+        "como": "Drücke <k>{{atajo}}</k>, und es liest los; noch einmal drücken beendet es."
       },
       "escucha": {
         "que": "Du sprichst, und der Text erscheint dort, wo du gerade schreibst. Alles passiert auf deinem Rechner — nichts geht ins Netz."

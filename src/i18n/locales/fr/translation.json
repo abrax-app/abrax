@@ -1108,7 +1108,8 @@
         "resto": "Le reste —correction, tics de langage, dictionnaire, collage— est le même que dans Écoute : réglé une fois, valable pour les deux."
       },
       "vox": {
-        "que": "Sélectionnez du texte dans n’importe quelle application, appuyez sur le raccourci et Abrax le lit à voix haute."
+        "que": "Lit à voix haute le texte que vous avez sélectionné, dans n’importe quelle application.",
+        "como": "Appuyez sur <k>{{atajo}}</k> et la lecture démarre ; appuyez de nouveau pour arrêter."
       },
       "escucha": {
         "que": "Vous parlez et le texte apparaît là où vous écriviez. Tout se passe sur votre machine : rien ne part sur Internet."

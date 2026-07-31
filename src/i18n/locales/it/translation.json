@@ -1108,7 +1108,8 @@
         "resto": "Il resto —correzione, intercalari, dizionario, incollaggio— è lo stesso di Ascolto: si imposta una volta e vale per entrambi."
       },
       "vox": {
-        "que": "Seleziona del testo in qualsiasi app, premi la scorciatoia e Abrax te lo legge ad alta voce."
+        "que": "Legge ad alta voce il testo che hai selezionato, in qualsiasi applicazione.",
+        "como": "Premi <k>{{atajo}}</k> e inizia a leggere; premilo di nuovo per farlo tacere."
       },
       "escucha": {
         "que": "Parli e il testo compare dove stavi scrivendo. Tutto avviene sul tuo computer: niente va in rete."
