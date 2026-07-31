@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Trans, useTranslation } from "react-i18next";
 import { listen } from "@tauri-apps/api/event";
 import { getCurrentWindow } from "@tauri-apps/api/window";
@@ -22,7 +22,7 @@ import { useSettings } from "@/hooks/useSettings";
 import { useOsType } from "@/hooks/useOsType";
 import { cerrarDesdeShell } from "@/lib/utils/ventana";
 import { formatKeyCombination } from "@/lib/utils/keyboard";
-import { commands, type HistoryEntry } from "@/bindings";
+import { commands } from "@/bindings";
 import { GeneralSettings, HistorySettings, ModelsSettings } from "../settings";
 import { SECTIONS_CONFIG, type SidebarSection } from "../Sidebar";
 import { ShellSelector } from "../settings/ShellSelector";
@@ -37,18 +37,6 @@ import "./quiet.css";
 // Inspiración: Wispr Flow / ChatGPT / Spotify. La app "casi desaparece".
 
 type QView = "escuchar" | "transcripciones" | "modelos" | "ajustes" | "mas";
-
-const fmtHora = (secs: number): string => {
-  try {
-    // timestamp del historial está en SEGUNDos → a ms.
-    return new Date(secs * 1000).toLocaleTimeString(undefined, {
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-  } catch {
-    return "";
-  }
-};
 
 // Sub-pestañas del ítem «Más». El orden importa: **Avanzado va primero y es la
 // activa por defecto** porque ahí viven el Diccionario vivo y la Memoria de
@@ -71,7 +59,6 @@ export const QuietShell: React.FC = () => {
   const [view, setView] = useState<QView>("escuchar");
   const [seccionMas, setSeccionMas] = useState<SidebarSection>("advanced");
   const [grabando, setGrabando] = useState(false);
-  const [entries, setEntries] = useState<HistoryEntry[]>([]);
   // Tras cambiar a Quiet en caliente la ventana conserva el marco nativo hasta
   // reiniciar; mientras tanto los botones −/□/× propios duplicarían los del
   // marco, así que se ocultan (queda solo el de bandeja, que el marco no tiene).
@@ -109,28 +96,10 @@ export const QuietShell: React.FC = () => {
     };
   }, []);
 
-  // Transcripciones recientes (para el hero).
-  const loadHistory = useCallback(async () => {
-    try {
-      const r = await commands.getHistoryEntries(null, 3);
-      if (r.status === "ok") setEntries(r.data.entries);
-    } catch {
-      // ignorar
-    }
-  }, []);
-  useEffect(() => {
-    void loadHistory();
-    let unlisten: (() => void) | null = null;
-    let cancelled = false;
-    listen("history-update-payload", () => void loadHistory()).then((fn) => {
-      if (cancelled) fn();
-      else unlisten = fn;
-    });
-    return () => {
-      cancelled = true;
-      unlisten?.();
-    };
-  }, [loadHistory]);
+  // El bloque «Transcripciones recientes» del hero se retiro el 31/07: la
+  // pantalla de inicio muestra el atajo y los controles, y el historial completo
+  // vive en su propia seccion. Con el se van su cargador y su listener, que
+  // seguian pidiendo datos que ya no miraba nadie.
 
   const atajo = formatKeyCombination(
     settings?.bindings?.transcribe?.current_binding ?? "",
@@ -342,31 +311,6 @@ export const QuietShell: React.FC = () => {
                       )
                     }
                   />
-                </div>
-                <div className="q-recent">
-                  <div className="q-recent-h">{t("quiet.recent")}</div>
-                  <div className="q-recent-list">
-                    {entries.length === 0 ? (
-                      <div className="q-empty">{t("quiet.empty")}</div>
-                    ) : (
-                      entries.map((e) => (
-                        <button
-                          type="button"
-                          key={e.id}
-                          className="q-row"
-                          onClick={() => setView("transcripciones")}
-                          title={e.title || e.transcription_text}
-                        >
-                          <span className="q-row-t">
-                            {fmtHora(e.timestamp)}
-                          </span>
-                          <span className="q-row-x">
-                            {e.title || e.transcription_text}
-                          </span>
-                        </button>
-                      ))
-                    )}
-                  </div>
                 </div>
               </div>
             ) : view === "transcripciones" ? (
