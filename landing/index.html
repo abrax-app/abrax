@@ -1033,9 +1033,19 @@
         }
 
         const sinActo = /[?&]sin-acto\b/.test(location.search);
+        /* Recargar (F5) vuelve a dar la entrada: pedir la página de nuevo es
+           querer verla de nuevo. La marca de sesión solo salta la intro en la
+           navegación interna (anclas, atrás/adelante) — y siempre se puede
+           saltar a mano. */
+        var esRecarga = false;
+        try {
+          var nav = performance.getEntriesByType("navigation");
+          esRecarga = !!(nav && nav[0] && nav[0].type === "reload");
+        } catch (e) {}
         var introVista = false;
         try {
-          introVista = sessionStorage.getItem("abrax_intro") === "1";
+          introVista =
+            !esRecarga && sessionStorage.getItem("abrax_intro") === "1";
         } catch (e) {}
         var saltarIntro =
           sinActo ||
