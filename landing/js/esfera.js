@@ -662,7 +662,9 @@ void main(){
       polvo.material.opacity =
         (0.13 + audio.rms * 0.1 + llenado * 0.05) * ajusteInterior;
       polvo.visible = ajusteInterior > 0.01;
-      polvo.rotation.z = -t * (reducirMotion ? 0.004 : 0.03); /* contra-remolino sutil del polvo */
+      polvo.rotation.z =
+        -t *
+        (reducirMotion ? 0.004 : 0.03); /* contra-remolino sutil del polvo */
     }
     if (anillo1) {
       /* sin opacidad = sin draw call: visible solo si la perilla lo pide */
@@ -889,7 +891,9 @@ void main(){
           hz = c.home[k * 3 + 2];
         const push = reducirMotion
           ? Math.exp(-edad * 0.9) * 0.04 /* asentamiento sin vibración */
-          : Math.exp(-edad * 0.6) * 0.14 * Math.sin(edad * 6 + c.rnd[k] * 6.28) +
+          : Math.exp(-edad * 0.6) *
+              0.14 *
+              Math.sin(edad * 6 + c.rnd[k] * 6.28) +
             Math.exp(-edad * 0.9) * 0.12;
         const r = 1.0 + push;
         arr[k * 3] = hx * r;
@@ -1135,7 +1139,8 @@ void main(){
       depthTest: true,
       transparent: true,
     });
-    uniforms.uBands.value = audio.bandas; /* referencia fija, se llena in-place */
+    uniforms.uBands.value =
+      audio.bandas; /* referencia fija, se llena in-place */
     texChispa = texturaRadial(150, 220, 255, 1.0);
 
     /* polvo interior: partículas tenues llenando el volumen (denso hacia el
@@ -1202,9 +1207,33 @@ void main(){
     anillo1 = crearAnillo(1.38, 190, 0x7fd4ff, 0.042);
     anillo2 = crearAnillo(1.62, 150, 0xa98bff, 0.05);
     [
-      { r: 1.5, n: 170, color: 0x8fd8ff, tam: 0.04, rx: -0.95, ry: 0.85, vel: 0.085 },
-      { r: 1.56, n: 160, color: 0xc59bff, tam: 0.045, rx: 0.35, ry: 1.45, vel: -0.06 },
-      { r: 1.68, n: 140, color: 0xf28bd8, tam: 0.05, rx: 1.85, ry: -0.55, vel: 0.048 },
+      {
+        r: 1.5,
+        n: 170,
+        color: 0x8fd8ff,
+        tam: 0.04,
+        rx: -0.95,
+        ry: 0.85,
+        vel: 0.085,
+      },
+      {
+        r: 1.56,
+        n: 160,
+        color: 0xc59bff,
+        tam: 0.045,
+        rx: 0.35,
+        ry: 1.45,
+        vel: -0.06,
+      },
+      {
+        r: 1.68,
+        n: 140,
+        color: 0xf28bd8,
+        tam: 0.05,
+        rx: 1.85,
+        ry: -0.55,
+        vel: 0.048,
+      },
     ].forEach(function (d) {
       const p = crearAnillo(d.r, d.n, d.color, d.tam);
       p.rotation.x = d.rx;
@@ -1237,9 +1266,23 @@ void main(){
     document.addEventListener("visibilitychange", () =>
       document.hidden ? parar() : arrancar(),
     );
+    /* pérdida de contexto WebGL (presión de GPU, muchas ventanas): sin esto
+       el canvas queda negro para siempre. Con preventDefault el navegador
+       permite la restauración y three re-sube buffers y texturas al volver. */
+    canvas.addEventListener(
+      "webglcontextlost",
+      (e) => {
+        e.preventDefault();
+        parar();
+      },
+      false,
+    );
+    canvas.addEventListener("webglcontextrestored", () => arrancar(), false);
 
     ultimoSeg = performance.now();
     arrancar();
+    /* primer frame ya pedido: .viva dispara el fundido de entrada del CSS */
+    canvas.classList.add("viva");
     onEstado("modo demo · respiración sintética");
     return true;
   }

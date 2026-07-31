@@ -144,6 +144,16 @@ h2::before {
   cursor: grab;
   touch-action: pan-y; /* el scroll vertical funciona por encima de la esfera */
   will-change: transform; /* el parallax escribe transform en cada scroll */
+  opacity: 0; /* el motor añade .viva al primer frame: entra en fundido, no de golpe */
+  transition: opacity 1400ms ease;
+}
+#esfera.viva {
+  opacity: 1;
+}
+@media (prefers-reduced-motion: reduce) {
+  #esfera {
+    transition: none;
+  }
 }
 #esfera.arrastrando {
   cursor: grabbing;
