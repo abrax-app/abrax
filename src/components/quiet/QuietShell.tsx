@@ -56,6 +56,15 @@ export const QuietShell: React.FC = () => {
   const { settings, updateSetting } = useSettings();
   const osType = useOsType();
 
+  // Mismo criterio que Bancada y Retro, palabra por palabra: `null` NO es
+  // «apagado», es «lista por defecto del idioma» —o sea, el filtro ACTIVO—
+  // y solo una lista vacía lo apaga (`audio_toolkit/text.rs`, doc de
+  // `filter_transcription_output`). El chip de aquí tenía las dos ramas
+  // cambiadas: pintaba apagado lo que está encendido y, saliendo de `null`,
+  // volvía a escribir `null` — no se podía mover.
+  const cfw = settings?.custom_filler_words;
+  const fillerOn = cfw == null || cfw.length > 0;
+
   const [view, setView] = useState<QView>("escuchar");
   const [seccionMas, setSeccionMas] = useState<SidebarSection>("advanced");
   const [grabando, setGrabando] = useState(false);
@@ -279,9 +288,14 @@ export const QuietShell: React.FC = () => {
                       )
                     }
                   />
+                  {/* «VAD» es jerga inglesa y esta es la PRIMERA pantalla. Se
+                      reusa el rotulo que ya existe en Ajustes y esta traducido
+                      en los 22 locales, en vez de crear una clave nueva.
+                      Bancada y Retro conservan «VAD» en sus diales porque ahi
+                      el hueco es de tres letras. */}
                   <Chip
                     icon={AudioLines}
-                    label={t("bancada.dial.vad")}
+                    label={t("settings.advanced.voiceActivityDetection.title")}
                     active={!!settings?.vad_enabled}
                     onClick={() =>
                       updateSetting("vad_enabled", !settings?.vad_enabled)
@@ -301,14 +315,9 @@ export const QuietShell: React.FC = () => {
                   <Chip
                     icon={Eraser}
                     label={t("bancada.btn.fillers")}
-                    active={(settings?.custom_filler_words ?? null) !== null}
+                    active={fillerOn}
                     onClick={() =>
-                      updateSetting(
-                        "custom_filler_words",
-                        (settings?.custom_filler_words ?? null) !== null
-                          ? []
-                          : null,
-                      )
+                      updateSetting("custom_filler_words", fillerOn ? [] : null)
                     }
                   />
                 </div>
