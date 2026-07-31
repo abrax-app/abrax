@@ -375,55 +375,13 @@ export const EscuchaSettings: React.FC = () => {
         </div>
       </div>
 
-      <div className="px-4">
+      {/* BLOQUE 1 — LA VOZ. Todo lo que decide COMO suena, junto: el motor, las
+          dos voces y como se leen los simbolos. Antes estaba repartido en dos
+          tarjetas separadas por los botones de reproduccion, con un selector de
+          voz arriba que solo servia para probar: tres desplegables de voz en la
+          misma pantalla y el mas visible sin efecto sobre la lectura. */}
+      <div className="px-4 space-y-4">
         <MotorVoz onInterrumpir={detener} />
-      </div>
-
-      {!motorDisponible && (
-        <div className="px-4">
-          <Alert variant="warning">{t("escucha.engineUnavailable")}</Alert>
-        </div>
-      )}
-
-      <div className="bg-background border border-mid-gray/20 rounded-lg p-4 space-y-4">
-        <div className="flex items-center gap-3">
-          <Button
-            onClick={alternarLectura}
-            variant="primary-soft"
-            size="md"
-            disabled={!motorDisponible || oraciones.length === 0}
-            className="flex items-center gap-2"
-            title={leyendo ? t("escucha.pauseHint") : t("escucha.play")}
-          >
-            {leyendo ? (
-              <Pause className="w-4 h-4" />
-            ) : (
-              <Play className="w-4 h-4" />
-            )}
-            <span>
-              {leyendo
-                ? t("escucha.pause")
-                : pausado
-                  ? t("escucha.resume")
-                  : t("escucha.play")}
-            </span>
-          </Button>
-          <Button
-            onClick={detener}
-            variant="ghost"
-            size="md"
-            disabled={!leyendo && !pausado}
-            className="flex items-center gap-2"
-            title={t("escucha.stop")}
-          >
-            <Square className="w-4 h-4" />
-            <span>{t("escucha.stop")}</span>
-          </Button>
-          <p className="text-xs text-text/50 ms-auto">
-            {t("escucha.pauseHint")} · {t("escucha.escHint")}
-          </p>
-        </div>
-
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="space-y-2">
             <p className="text-sm font-medium">{t("escucha.voiceProse")}</p>
@@ -463,6 +421,54 @@ export const EscuchaSettings: React.FC = () => {
             }}
             isClearable={false}
           />
+        </div>
+      </div>
+
+      {!motorDisponible && (
+        <div className="px-4">
+          <Alert variant="warning">{t("escucha.engineUnavailable")}</Alert>
+        </div>
+      )}
+
+      {/* BLOQUE 2 — QUE LEER. Los controles de reproduccion, pegados al texto
+          sobre el que actuan y no en medio de los ajustes de voz. */}
+      <div className="bg-background border border-mid-gray/20 rounded-lg p-4 space-y-4">
+        <div className="flex items-center gap-3">
+          <Button
+            onClick={alternarLectura}
+            variant="primary-soft"
+            size="md"
+            disabled={!motorDisponible || oraciones.length === 0}
+            className="flex items-center gap-2"
+            title={leyendo ? t("escucha.pauseHint") : t("escucha.play")}
+          >
+            {leyendo ? (
+              <Pause className="w-4 h-4" />
+            ) : (
+              <Play className="w-4 h-4" />
+            )}
+            <span>
+              {leyendo
+                ? t("escucha.pause")
+                : pausado
+                  ? t("escucha.resume")
+                  : t("escucha.play")}
+            </span>
+          </Button>
+          <Button
+            onClick={detener}
+            variant="ghost"
+            size="md"
+            disabled={!leyendo && !pausado}
+            className="flex items-center gap-2"
+            title={t("escucha.stop")}
+          >
+            <Square className="w-4 h-4" />
+            <span>{t("escucha.stop")}</span>
+          </Button>
+          <p className="text-xs text-text/50 ms-auto">
+            {t("escucha.pauseHint")} · {t("escucha.escHint")}
+          </p>
         </div>
       </div>
 

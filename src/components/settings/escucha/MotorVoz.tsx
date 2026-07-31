@@ -23,8 +23,6 @@ import {
 } from "@/bindings";
 import { useSettings } from "../../../hooks/useSettings";
 import { Button } from "../../ui/Button";
-import { Select } from "../../ui/Select";
-import { opcionesDeVoces } from "./voces";
 
 const OS_LABEL: Record<string, string> = {
   windows: "Windows",
@@ -86,7 +84,14 @@ export const MotorVoz: React.FC<MotorVozProps> = ({ onInterrumpir }) => {
   const [active, setActive] = useState<EngineId | null>(null);
   const [engines, setEngines] = useState<EngineStatus[]>([]);
   const [voces, setVoces] = useState<VozEscucha[]>([]);
-  const [vozPrueba, setVozPrueba] = useState<string | null>(null);
+  // «Probar voz» prueba LA VOZ QUE SE USA AL LEER, no una elegida aparte.
+  //
+  // Habia un selector propio aqui, y era la peor clase de duplicado: se veia
+  // ARRIBA, rotulado «Voz» a secas, asi que parecia EL selector de voz — pero
+  // solo alimentaba el boton de prueba. Quien lo cambiaba oia otra voz y luego
+  // leia con la de siempre, sin entender por que. La voz de verdad se elige mas
+  // abajo, en «Voz de prosa».
+  const vozPrueba = settings?.escucha_voz_prosa ?? null;
   const [expandido, setExpandido] = useState(false);
   const [cargando, setCargando] = useState(true);
   const [ocupado, setOcupado] = useState<EngineId | null>(null);
@@ -117,12 +122,10 @@ export const MotorVoz: React.FC<MotorVozProps> = ({ onInterrumpir }) => {
     const r = await commands.escuchaListVoices();
     if (r.status === "ok") {
       setVoces(r.data);
-      // Al cambiar de motor las voces cambian: conserva la selección solo si
-      // sigue siendo válida; si no, elige una del nuevo reparto (español primero).
-      setVozPrueba((prev) => {
-        if (prev && r.data.some((v) => v.id === prev)) return prev;
-        return r.data.find((v) => v.es_espanol)?.id ?? r.data[0]?.id ?? null;
-      });
+      // El saneado de la voz al cambiar de motor ya NO vive aqui: la voz que se
+      // usa es `escucha_voz_prosa`, y de mantenerla valida se encarga el panel
+      // que la posee (`EscuchaSettings`). Tenerlo en los dos sitios era como
+      // acabaron existiendo dos voces distintas.
     }
   }, []);
 
@@ -309,7 +312,6 @@ export const MotorVoz: React.FC<MotorVozProps> = ({ onInterrumpir }) => {
 
   // Agrupadas por idioma/país cuando el motor es online (lista larga navegable);
   // planas para los motores locales.
-  const opcionesVoz = opcionesDeVoces(voces, t);
 
   const recName = recommended ? engineDisplay(recommended) : "";
 
@@ -433,23 +435,6 @@ export const MotorVoz: React.FC<MotorVozProps> = ({ onInterrumpir }) => {
           {t("tts.testVoice")}
         </Button>
       </div>
-
-      {voces.length > 0 && (
-        <div className="flex items-center gap-2">
-          <span className="text-xs text-text/60 shrink-0">
-            {t("tts.voice")}
-          </span>
-          <Select
-            className="min-w-56"
-            value={vozPrueba}
-            options={opcionesVoz}
-            onChange={(v) => setVozPrueba(v)}
-            isClearable={false}
-            placeholder={t("escucha.noVoices")}
-            ariaLabel={t("tts.voice")}
-          />
-        </div>
-      )}
 
       {/* Ajustes de voz: velocidad (todos los motores) y tono (solo online). */}
       <div className="border-t border-mid-gray/20 pt-3 space-y-2">
