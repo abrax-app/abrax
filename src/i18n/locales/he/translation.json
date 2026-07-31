@@ -752,7 +752,8 @@
     "atajoOcupado": "יישום אחר כבר משתמש בקיצור הזה: {{atajos}}. שנה אותו בהגדרות כדי שיעבוד.",
     "atajoOcupadoCambiar": "שינוי הקיצור",
     "sistemaModeloCambiadoTitle": "המודל הוחלף עבור שמע המערכת",
-    "sistemaModeloCambiado": "‏Abrax עבר אל {{modelo}}, שמבין את שמע המערכת. המודל הזה לא מציג טקסט תוך כדי דיבור ולא מילים לדקה — הכול מופיע בשחרור. לטקסט חי, הורידו את Nemotron Streaming 3.5 ‏(716 MB) במסך המודלים."
+    "sistemaModeloCambiado": "‏Abrax עבר אל {{modelo}}, שמבין את שמע המערכת. המודל הזה לא מציג טקסט תוך כדי דיבור ולא מילים לדקה — הכול מופיע בשחרור. לטקסט חי, הורידו את Nemotron Streaming 3.5 ‏(716 MB) במסך המודלים.",
+    "descargaIniciada": "המודל בהורדה. אפשר לראות במסך המודלים."
   },
   "appLanguage": {
     "title": "שפת האפליקציה",

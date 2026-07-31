@@ -63,6 +63,26 @@ const modeloRecomendadoParaSistema = () => {
   return undefined;
 };
 
+/**
+ * Baja el modelo y lleva a Modelos, para que el progreso se vea en vez de
+ * ocurrir en silencio.
+ *
+ * La navegacion solo surte efecto en el shell Clasico —`setCurrentSection` es
+ * suyo— pero la DESCARGA arranca en los cuatro, que es lo que el usuario pidio
+ * al pulsar. En los otros shells se confirma con un aviso, porque un boton que
+ * se pulsa y no da senal ninguna se lee como roto.
+ */
+const descargarYMostrar = (
+  id: string,
+  irASeccion: (s: SidebarSection) => void,
+  aviso: string,
+  esClasico: boolean,
+) => {
+  void useModelStore.getState().downloadModel(id);
+  if (esClasico) irASeccion("models");
+  else toast.info(aviso);
+};
+
 const renderSettingsContent = (section: SidebarSection) => {
   const ActiveComponent =
     SECTIONS_CONFIG[section]?.component || SECTIONS_CONFIG.general.component;
@@ -80,6 +100,10 @@ function App() {
   const [currentSection, setCurrentSection] =
     useState<SidebarSection>("general");
   const { settings, updateSetting } = useSettings();
+  // Solo el shell Clasico consume `setCurrentSection`; los demas se renderizan
+  // antes y nunca lo leen. Se calcula aqui para que los avisos sepan si pueden
+  // llevar al usuario a Modelos o si tienen que confirmar la descarga a mano.
+  const esClasico = (settings?.ui_shell ?? "classic") === "classic";
   const osType = useOsType();
   const direction = getLanguageDirection(i18n.language);
   const refreshAudioDevices = useSettingsStore(
@@ -175,11 +199,34 @@ function App() {
         // nombrando el modelo que puso y lo que se pierde con el —de los cinco
         // del catalogo solo Nemotron transmite en vivo—. Sin esto el usuario ve
         // el texto en vivo y las palabras por minuto desaparecer sin motivo.
-        toast.info(title, {
-          description: t("errors.sistemaModeloCambiado", {
-            modelo: detail ?? "",
-          }),
-        });
+        {
+          // El aviso del cambio TAMBIEN ofrece la descarga. Antes solo la
+          // llevaba el caso «no hay ningun modelo apto»; en este —que es el
+          // frecuente, porque basta tener uno cualquiera bajado— se le decia al
+          // usuario que perdia el texto en vivo y se le dejaba sin forma de
+          // recuperarlo. Enterarse de lo que falta y no poder pedirlo es la
+          // mitad de un aviso.
+          const mejor = modeloRecomendadoParaSistema();
+          toast.info(title, {
+            description: t("errors.sistemaModeloCambiado", {
+              modelo: detail ?? "",
+            }),
+            action: mejor
+              ? {
+                  label: t("errors.sistemaSinModeloAptoDescargar", {
+                    mb: mejor.size_mb,
+                  }),
+                  onClick: () =>
+                    descargarYMostrar(
+                      mejor.id,
+                      setCurrentSection,
+                      t("errors.descargaIniciada"),
+                      esClasico,
+                    ),
+                }
+              : undefined,
+          });
+        }
       } else if (kind === "sistema_sin_modelo_apto") {
         // El modo quedó activo (lo pidió el usuario) pero el modelo puesto no
         // alcanza y no hay otro descargado. Se nombra el que hace falta y su
@@ -198,10 +245,13 @@ function App() {
                 label: t("errors.sistemaSinModeloAptoDescargar", {
                   mb: recomendado.size_mb,
                 }),
-                onClick: () => {
-                  void useModelStore.getState().downloadModel(recomendado.id);
-                  setCurrentSection("models");
-                },
+                onClick: () =>
+                  descargarYMostrar(
+                    recomendado.id,
+                    setCurrentSection,
+                    t("errors.descargaIniciada"),
+                    esClasico,
+                  ),
               }
             : undefined,
         });
@@ -230,7 +280,7 @@ function App() {
     return () => {
       unlisten.then((fn) => fn());
     };
-  }, [t, settings?.bindings?.transcribe?.current_binding, osType]);
+  }, [t, settings?.bindings?.transcribe?.current_binding, osType, esClasico]);
 
   // Memoria en el sitio: cuando ABRAX aprende de una corrección hecha donde
   // se dicta, se celebra con el mismo toast del aprendizaje por Historial y

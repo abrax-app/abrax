@@ -752,7 +752,8 @@
     "atajoOcupado": "다른 앱이 이 단축키를 이미 사용하고 있습니다: {{atajos}}. 작동하려면 설정에서 변경하세요.",
     "atajoOcupadoCambiar": "단축키 변경",
     "sistemaModeloCambiadoTitle": "시스템 오디오를 위해 모델을 변경했습니다",
-    "sistemaModeloCambiado": "Abrax가 시스템 오디오를 이해하는 {{modelo}}(으)로 전환했습니다. 이 모델은 말하는 동안 텍스트나 분당 단어 수를 보여주지 않고, 놓을 때 한꺼번에 나옵니다. 실시간으로 보려면 모델에서 Nemotron Streaming 3.5(716 MB)를 내려받으세요."
+    "sistemaModeloCambiado": "Abrax가 시스템 오디오를 이해하는 {{modelo}}(으)로 전환했습니다. 이 모델은 말하는 동안 텍스트나 분당 단어 수를 보여주지 않고, 놓을 때 한꺼번에 나옵니다. 실시간으로 보려면 모델에서 Nemotron Streaming 3.5(716 MB)를 내려받으세요.",
+    "descargaIniciada": "모델을 내려받는 중입니다. 모델 화면에서 확인하세요."
   },
   "appLanguage": {
     "title": "애플리케이션 언어",

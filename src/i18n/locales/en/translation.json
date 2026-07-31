@@ -755,7 +755,8 @@
     "atajoOcupado": "Another app is already using this shortcut: {{atajos}}. Change it in Settings to make it work.",
     "atajoOcupadoCambiar": "Change shortcut",
     "sistemaModeloCambiadoTitle": "Model switched for system audio",
-    "sistemaModeloCambiado": "Abrax switched to {{modelo}}, which does understand system audio. That model doesn’t show text as you speak or words per minute — everything appears when you release. For live text, download Nemotron Streaming 3.5 (716 MB) under Models."
+    "sistemaModeloCambiado": "Abrax switched to {{modelo}}, which does understand system audio. That model doesn’t show text as you speak or words per minute — everything appears when you release. For live text, download Nemotron Streaming 3.5 (716 MB) under Models.",
+    "descargaIniciada": "Downloading the model. See it under Models."
   },
   "appLanguage": {
     "title": "Application Language",

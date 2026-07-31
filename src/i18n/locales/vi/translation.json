@@ -752,7 +752,8 @@
     "atajoOcupado": "Một ứng dụng khác đang dùng phím tắt này: {{atajos}}. Hãy đổi trong Cài đặt để nó hoạt động.",
     "atajoOcupadoCambiar": "Đổi phím tắt",
     "sistemaModeloCambiadoTitle": "Đã đổi mô hình cho âm thanh hệ thống",
-    "sistemaModeloCambiado": "Abrax đã chuyển sang {{modelo}}, mô hình hiểu được âm thanh hệ thống. Mô hình đó không hiện chữ khi bạn đang nói, cũng không hiện số từ mỗi phút: mọi thứ xuất hiện khi bạn thả phím. Muốn chữ trực tiếp, hãy tải Nemotron Streaming 3.5 (716 MB) trong Mô hình."
+    "sistemaModeloCambiado": "Abrax đã chuyển sang {{modelo}}, mô hình hiểu được âm thanh hệ thống. Mô hình đó không hiện chữ khi bạn đang nói, cũng không hiện số từ mỗi phút: mọi thứ xuất hiện khi bạn thả phím. Muốn chữ trực tiếp, hãy tải Nemotron Streaming 3.5 (716 MB) trong Mô hình.",
+    "descargaIniciada": "Đang tải mô hình. Xem trong Mô hình."
   },
   "appLanguage": {
     "title": "Ngôn ngữ ứng dụng",

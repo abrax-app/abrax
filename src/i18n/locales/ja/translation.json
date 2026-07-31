@@ -752,7 +752,8 @@
     "atajoOcupado": "別のアプリがこのショートカットを使用しています: {{atajos}}。動作させるには設定で変更してください。",
     "atajoOcupadoCambiar": "ショートカットを変更",
     "sistemaModeloCambiadoTitle": "システム音声のためにモデルを変更しました",
-    "sistemaModeloCambiado": "Abrax はシステム音声を理解できる {{modelo}} に切り替えました。このモデルは話している最中の文字も 1 分あたりの語数も表示せず、離した時にまとめて出ます。リアルタイム表示が必要なら、モデル画面で Nemotron Streaming 3.5（716 MB）をダウンロードしてください。"
+    "sistemaModeloCambiado": "Abrax はシステム音声を理解できる {{modelo}} に切り替えました。このモデルは話している最中の文字も 1 分あたりの語数も表示せず、離した時にまとめて出ます。リアルタイム表示が必要なら、モデル画面で Nemotron Streaming 3.5（716 MB）をダウンロードしてください。",
+    "descargaIniciada": "モデルをダウンロード中です。モデル画面で確認できます。"
   },
   "appLanguage": {
     "title": "アプリの言語",

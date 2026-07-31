@@ -752,7 +752,8 @@
     "atajoOcupado": "Tuto zkratku už používá jiná aplikace: {{atajos}}. Změňte ji v Nastavení, aby fungovala.",
     "atajoOcupadoCambiar": "Změnit zkratku",
     "sistemaModeloCambiadoTitle": "Model změněn kvůli zvuku systému",
-    "sistemaModeloCambiado": "Abrax přepnul na {{modelo}}, který zvuku systému rozumí. Tento model nezobrazuje text během mluvení ani slova za minutu – vše se objeví po uvolnění. Pro živý text stáhni Nemotron Streaming 3.5 (716 MB) v Modelech."
+    "sistemaModeloCambiado": "Abrax přepnul na {{modelo}}, který zvuku systému rozumí. Tento model nezobrazuje text během mluvení ani slova za minutu – vše se objeví po uvolnění. Pro živý text stáhni Nemotron Streaming 3.5 (716 MB) v Modelech.",
+    "descargaIniciada": "Stahuji model. Uvidíš v Modelech."
   },
   "appLanguage": {
     "title": "Jazyk aplikace",

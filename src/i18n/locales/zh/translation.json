@@ -752,7 +752,8 @@
     "atajoOcupado": "另一个应用已在使用该快捷键：{{atajos}}。请在设置中更改以使其生效。",
     "atajoOcupadoCambiar": "更改快捷键",
     "sistemaModeloCambiadoTitle": "已为系统音频切换模型",
-    "sistemaModeloCambiado": "Abrax 已切换到能识别系统音频的 {{modelo}}。该模型不会在说话时显示文字，也不显示每分钟字数，全部内容在松开后出现。想要实时显示，请在「模型」中下载 Nemotron Streaming 3.5（716 MB）。"
+    "sistemaModeloCambiado": "Abrax 已切换到能识别系统音频的 {{modelo}}。该模型不会在说话时显示文字，也不显示每分钟字数，全部内容在松开后出现。想要实时显示，请在「模型」中下载 Nemotron Streaming 3.5（716 MB）。",
+    "descargaIniciada": "正在下载模型，可在「模型」中查看。"
   },
   "appLanguage": {
     "title": "应用语言",

@@ -752,7 +752,8 @@
     "atajoOcupado": "Une autre application utilise déjà ce raccourci : {{atajos}}. Modifiez-le dans les Réglages pour qu'il fonctionne.",
     "atajoOcupadoCambiar": "Modifier le raccourci",
     "sistemaModeloCambiadoTitle": "Modèle changé pour l’audio du système",
-    "sistemaModeloCambiado": "Abrax est passé à {{modelo}}, qui comprend l’audio du système. Ce modèle n’affiche ni le texte pendant que vous parlez ni les mots par minute : tout apparaît au relâchement. Pour le direct, téléchargez Nemotron Streaming 3.5 (716 Mo) dans Modèles."
+    "sistemaModeloCambiado": "Abrax est passé à {{modelo}}, qui comprend l’audio du système. Ce modèle n’affiche ni le texte pendant que vous parlez ni les mots par minute : tout apparaît au relâchement. Pour le direct, téléchargez Nemotron Streaming 3.5 (716 Mo) dans Modèles.",
+    "descargaIniciada": "Téléchargement du modèle. À voir dans Modèles."
   },
   "appLanguage": {
     "title": "Langue de l'application",

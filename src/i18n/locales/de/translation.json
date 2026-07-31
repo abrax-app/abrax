@@ -752,7 +752,8 @@
     "atajoOcupado": "Eine andere App verwendet dieses Tastenkürzel bereits: {{atajos}}. Ändere es in den Einstellungen, damit es funktioniert.",
     "atajoOcupadoCambiar": "Kürzel ändern",
     "sistemaModeloCambiadoTitle": "Modell für Systemaudio gewechselt",
-    "sistemaModeloCambiado": "Abrax hat zu {{modelo}} gewechselt, das Systemaudio versteht. Dieses Modell zeigt weder Text beim Sprechen noch Wörter pro Minute – alles erscheint beim Loslassen. Für Live-Text lade Nemotron Streaming 3.5 (716 MB) unter Modelle."
+    "sistemaModeloCambiado": "Abrax hat zu {{modelo}} gewechselt, das Systemaudio versteht. Dieses Modell zeigt weder Text beim Sprechen noch Wörter pro Minute – alles erscheint beim Loslassen. Für Live-Text lade Nemotron Streaming 3.5 (716 MB) unter Modelle.",
+    "descargaIniciada": "Modell wird geladen. Zu sehen unter Modelle."
   },
   "appLanguage": {
     "title": "Anwendungssprache",

@@ -755,7 +755,8 @@
     "atajoOcupado": "Een andere app gebruikt deze sneltoets al: {{atajos}}. Wijzig hem in Instellingen zodat hij werkt.",
     "atajoOcupadoCambiar": "Sneltoets wijzigen",
     "sistemaModeloCambiadoTitle": "Model gewisseld voor systeemaudio",
-    "sistemaModeloCambiado": "Abrax schakelde over naar {{modelo}}, dat systeemaudio wél begrijpt. Dat model toont geen tekst tijdens het spreken en geen woorden per minuut: alles verschijnt bij loslaten. Wil je live tekst, download dan Nemotron Streaming 3.5 (716 MB) bij Modellen."
+    "sistemaModeloCambiado": "Abrax schakelde over naar {{modelo}}, dat systeemaudio wél begrijpt. Dat model toont geen tekst tijdens het spreken en geen woorden per minuut: alles verschijnt bij loslaten. Wil je live tekst, download dan Nemotron Streaming 3.5 (716 MB) bij Modellen.",
+    "descargaIniciada": "Model wordt gedownload. Te zien bij Modellen."
   },
   "appLanguage": {
     "title": "Interfacetaal",
