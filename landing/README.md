@@ -36,9 +36,10 @@ Parámetro de desarrollo: `?sin-acto` salta la portada (útil para QA y capturas
 - `recetas-esfera.md` — recetas visuales guardadas de la esfera.
 - `vendor/three.min.js` — three.js r128 minificado tal cual (no formatear:
   `landing/vendor/` está en `.prettierignore`).
-- `assets/` — SVG oficiales de marca, capturas reales en WebP, clip MP4 de
-  VOX y `og.jpg` (tarjeta social 1200×630). Pendiente: captura real de
-  Streaming (su ventana es una ilustración de texto mientras tanto).
+- `assets/` — SVG oficiales de marca, capturas reales en WebP (tomadas de la
+  app v1.0.0 el 31/07: principal, VOX, Streaming, Karting, Diccionario) y
+  `og.jpg` (tarjeta social 1200×630). `escucha-clip.mp4` y su poster quedan
+  en la carpeta pero fuera de la página: muestran la UI vieja.
 - `css/estilos.css` — tokens y componentes.
 - `.vercelignore` — excluye del deploy los laboratorios, el fork, las recetas
   y este README.
@@ -113,6 +114,6 @@ tarjeta de compatibilidad lo dice así, en vez de callarlo.
 - [ ] URLs de release reales (ver «interruptor» arriba).
 - [ ] QA en iPad/Safari (AudioContext con gesto, touch, reduced-motion).
 - [ ] QA de la intro cinemática en navegador real.
-- [ ] Captura real de Streaming (su fila usa una ilustración de texto mientras).
-- [ ] Re-grabar el clip de VOX: el actual muestra la UI vieja («Escucha» en el
-      sidebar y la cabecera del panel).
+- [ ] Opcional: re-grabar el clip de VOX con la UI nueva y devolver el video a
+      la fila (hoy muestra una captura real; el clip viejo quedó fuera de la
+      página porque enseñaba la UI de antes).

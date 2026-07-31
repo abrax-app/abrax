@@ -215,17 +215,15 @@
             </div>
             <img
               src="assets/capturas/diccionario-vivo.webp"
-              alt="Captura real del Diccionario Vivo con el índice del proyecto activo"
-              width="850"
-              height="714"
+              alt="Captura real del Diccionario Vivo: 750 términos indexados del proyecto, reemplazos exactos y corrección local en Solo reglas"
+              width="1006"
+              height="486"
               loading="lazy"
             />
           </figure>
         </div>
       </div>
 
-      <!-- Pendiente de asset: captura real de Streaming. Mientras no exista,
-           la ventana es una ilustración de texto y NO dice «captura real». -->
       <div class="fila-funcion fila-funcion--invertida">
         <div class="texto">
           <div class="kicker">Streaming</div>
@@ -237,21 +235,21 @@
           </p>
         </div>
         <div class="visual">
-          <div class="ventana">
+          <figure class="ventana">
             <div class="ventana-barra">
               <i style="background: var(--cian)"></i
               ><i style="background: var(--violeta)"></i
               ><i style="background: var(--magenta)"></i>
-              <span>ABRAX · Streaming</span>
+              <span>ABRAX · Streaming · captura real</span>
             </div>
-            <div class="ventana-cuerpo ejemplo--stream">
-              <div>
-                …y esa es la diferencia entre un puntero y una referencia.
-              </div>
-              <div>Para el examen entra hasta el capítulo siete.</div>
-              <div>Cualquier duda la resolvemos en la próxima clase…</div>
-            </div>
-          </div>
+            <img
+              src="assets/capturas/streaming.webp"
+              alt="Captura real de Streaming: interruptor de capturar el audio del sistema y el catálogo de modelos con Cohere activo"
+              width="1006"
+              height="881"
+              loading="lazy"
+            />
+          </figure>
         </div>
       </div>
 
@@ -262,7 +260,8 @@
           <p class="desc">
             Selecciona texto en cualquier app y VOX te lo lee: una voz para
             prosa, otra para código, y los símbolos en modo natural o literal.
-            Voces del sistema, Piper y Kokoro — locales. El clip es la app real.
+            Voces del sistema, Piper y Kokoro — locales. La captura es la app
+            real.
           </p>
         </div>
         <div class="visual">
@@ -271,20 +270,15 @@
               <i style="background: var(--cian)"></i
               ><i style="background: var(--violeta)"></i
               ><i style="background: var(--magenta)"></i>
-              <span>ABRAX · VOX · clip real</span>
+              <span>ABRAX · VOX · captura real</span>
             </div>
-            <video
-              id="clipEscucha"
-              muted
-              loop
-              playsinline
-              preload="none"
-              width="850"
-              height="714"
-              poster="assets/capturas/escucha-codigo.webp"
-              src="assets/capturas/escucha-clip.mp4"
-              aria-label="Clip real de VOX leyendo código con la línea en curso resaltada"
-            ></video>
+            <img
+              src="assets/capturas/vox.webp"
+              alt="Captura real de VOX: motor de voz 100% local con Kokoro recomendado, voz de prosa, voz de código y modo de símbolos"
+              width="1006"
+              height="881"
+              loading="lazy"
+            />
           </figure>
         </div>
       </div>
@@ -299,9 +293,9 @@
           <div class="mini-captura">
             <img
               src="assets/capturas/app-principal.webp"
-              alt="Ventana principal de ABRAX"
-              width="850"
-              height="714"
+              alt="Ventana principal de ABRAX: forma Clásico con la paleta ABRAX, atajos y sonido"
+              width="1006"
+              height="881"
               loading="lazy"
             />
           </div>
@@ -311,10 +305,10 @@
           <p>Clásico, Quiet, Karting y Retro.</p>
           <div class="mini-captura">
             <img
-              src="assets/capturas/app-principal.webp"
-              alt="Forma Clásico: la ventana de ajustes de ABRAX, con la paleta IMPERIAL activa"
-              width="850"
-              height="714"
+              src="assets/capturas/shell-karting.webp"
+              alt="Forma Karting: el HUD de dictado con palabras por minuto y el botón DICTAR"
+              width="1006"
+              height="881"
               loading="lazy"
             />
           </div>
@@ -661,7 +655,7 @@
       <p class="tabla-nota">
         Precisión y velocidad son los puntajes del catálogo, de 0 a 100. Los
         cinco entienden español. Solo Nemotron escribe mientras hablas
-        (streaming); Whisper Large v3 y Canary también traducen al inglés.
+        (streaming); Whisper y Canary también traducen al inglés.
       </p>
     </section>
 
@@ -1374,27 +1368,6 @@
             },
             { passive: true },
           );
-        }
-
-        const clip = document.getElementById("clipEscucha");
-        if (clip && !reduced && "IntersectionObserver" in window) {
-          new IntersectionObserver(
-            function (ents) {
-              ents.forEach(function (en) {
-                if (en.isIntersecting) {
-                  clip.play().catch(function () {});
-                } else {
-                  clip.pause();
-                }
-              });
-            },
-            { threshold: 0.25 },
-          ).observe(clip);
-        } else if (clip) {
-          /* reduced-motion o sin IO: el clip no corre solo — que al menos
-             se pueda reproducir a mano */
-          clip.setAttribute("controls", "");
-          clip.preload = "metadata";
         }
 
         /* 6) scroll con inercia — la rueda desliza, no salta. Solo rueda y
