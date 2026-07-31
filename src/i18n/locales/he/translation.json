@@ -102,7 +102,7 @@
         "description": "מודל גדול, איטי יותר, אך מדויק מאוד ורב-לשוני."
       },
       "handy-computer_canary-180m-flash-gguf": {
-        "description": "Fast — dictate on the fly on any machine, even an old laptop. The one we recommend to start with: downloads in under a minute."
+        "description": "הקל והמהיר ביותר — יורד בפחות מדקה ורץ אפילו על מחשב נייד ישן. בתמורה, במשפטים קצרים מאוד הוא לפעמים לא קולט כלום."
       },
       "handy-computer_whisper-large-v3-turbo-gguf": {
         "description": "Balanced — the everyday pick: understands 100 languages and doesn't keep you waiting."
@@ -114,7 +114,7 @@
         "description": "Live — writes as you speak, word by word. This is the one that makes the sphere dance."
       },
       "handy-computer_cohere-transcribe-03-2026-gguf": {
-        "description": "Highest accuracy — the most exact in the catalog. Wants a machine with some muscle."
+        "description": "הדיוק הגבוה ביותר — המדויק ביותר בקטלוג, ב‑14 שפות. זה מה שאנחנו ממליצים להתחיל איתו. שוקל 1.6 ג'יגה ודורש מחשב חזק."
       }
     },
     "errors": {

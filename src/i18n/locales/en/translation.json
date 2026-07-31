@@ -102,7 +102,7 @@
         "description": "A large, slower, but very accurate multilingual model."
       },
       "handy-computer_canary-180m-flash-gguf": {
-        "description": "Fast — dictate on the fly on any machine, even an old laptop. The one we recommend to start with: downloads in under a minute."
+        "description": "The lightest and fastest — downloads in under a minute and runs even on an old laptop. In exchange, with very short phrases it sometimes catches nothing."
       },
       "handy-computer_whisper-large-v3-turbo-gguf": {
         "description": "Balanced — the everyday pick: understands 100 languages. A few seconds slower than Canary."
@@ -114,7 +114,7 @@
         "description": "Continuous transcription, experimental — it writes as you speak. Noticeably less accurate than the others in our tests: pick it only if you want to try dictating that way."
       },
       "handy-computer_cohere-transcribe-03-2026-gguf": {
-        "description": "Highest accuracy — the most exact in the catalog. Wants a machine with some muscle."
+        "description": "Highest accuracy — the most exact in the catalog, in 14 languages. This is the one we recommend to start with. It weighs 1.6 GB and wants a capable machine."
       }
     },
     "errors": {

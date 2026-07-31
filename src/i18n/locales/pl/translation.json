@@ -102,7 +102,7 @@
         "description": "Duży, wolniejszy, ale bardzo dokładny model wielojęzyczny."
       },
       "handy-computer_canary-180m-flash-gguf": {
-        "description": "Fast — dictate on the fly on any machine, even an old laptop. The one we recommend to start with: downloads in under a minute."
+        "description": "Najlżejszy i najszybszy — pobiera się w niecałą minutę i działa nawet na starym laptopie. W zamian przy bardzo krótkich zdaniach czasem nic nie rozumie."
       },
       "handy-computer_whisper-large-v3-turbo-gguf": {
         "description": "Balanced — the everyday pick: understands 100 languages and doesn't keep you waiting."
@@ -114,7 +114,7 @@
         "description": "Live — writes as you speak, word by word. This is the one that makes the sphere dance."
       },
       "handy-computer_cohere-transcribe-03-2026-gguf": {
-        "description": "Highest accuracy — the most exact in the catalog. Wants a machine with some muscle."
+        "description": "Najwyższa dokładność — najdokładniejszy w katalogu, w 14 językach. Ten polecamy na start. Waży 1,6 GB i wymaga mocnego komputera."
       }
     },
     "errors": {

@@ -197,9 +197,16 @@ mod tests {
             .filter(|d| d.recommended)
             .map(|d| repo_de(&d.id))
             .collect();
+        // La insignia pasó a Cohere el 31/07, con el orden editorial: es la que
+        // decide qué ofrece PRIMERO la pantalla de bienvenida
+        // (`Onboarding.tsx` separa `is_recommended` del resto), así que dejarla
+        // en Canary habría enseñado el catálogo en un orden y recomendado el
+        // contrario. Cuesta más descarga —1,6 GB frente a 208 MB— y el texto de
+        // la tarjeta lo dice; lo que no se puede es recomendar el que devuelve
+        // vacío con frases cortas.
         assert_eq!(
             badged,
-            vec!["handy-computer/canary-180m-flash-gguf"],
+            vec!["handy-computer/cohere-transcribe-03-2026-gguf"],
             "solo el modelo de arranque lleva insignia «Recomendado»"
         );
     }

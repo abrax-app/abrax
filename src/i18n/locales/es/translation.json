@@ -102,7 +102,7 @@
         "description": "Un modelo grande, más lento, pero muy preciso y multilingüe."
       },
       "handy-computer_canary-180m-flash-gguf": {
-        "description": "Rápido — para dictar al vuelo en cualquier equipo, hasta en un portátil viejo. Es el que recomendamos para empezar: se descarga en menos de un minuto."
+        "description": "El más liviano y rápido — se descarga en menos de un minuto y va hasta en un portátil viejo. A cambio, con frases muy cortas a veces no entiende nada."
       },
       "handy-computer_whisper-large-v3-turbo-gguf": {
         "description": "Equilibrado — el de todos los días: entiende 100 idiomas. Tarda unos segundos más que Canary."
@@ -114,7 +114,7 @@
         "description": "Transcripción continua, en pruebas — va escribiendo mientras hablas. En español se equivoca bastante más que los demás: elígelo solo si quieres probar esa forma de dictar."
       },
       "handy-computer_cohere-transcribe-03-2026-gguf": {
-        "description": "Máxima precisión — el más exacto del catálogo. Pide un equipo con músculo."
+        "description": "Máxima precisión — el más exacto del catálogo, en 14 idiomas. Es el que recomendamos para empezar. Pesa 1,6 GB y pide un equipo con músculo."
       }
     },
     "errors": {

@@ -70,7 +70,7 @@
         }
       ],
       "default_quant": "Q5_K_M",
-      "recommended": false,
+      "recommended": true,
       "recommended_rank": 1
     },
     {
@@ -520,7 +520,7 @@
         }
       ],
       "default_quant": "Q8_0",
-      "recommended": true,
+      "recommended": false,
       "recommended_rank": 5
     }
   ],

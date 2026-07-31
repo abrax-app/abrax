@@ -102,7 +102,7 @@
         "description": "크고 느리지만 매우 정확한 다국어 모델."
       },
       "handy-computer_canary-180m-flash-gguf": {
-        "description": "Fast — dictate on the fly on any machine, even an old laptop. The one we recommend to start with: downloads in under a minute."
+        "description": "가장 가볍고 빠릅니다 — 1분이 안 되어 내려받고 오래된 노트북에서도 돌아갑니다. 대신 아주 짧은 말은 아예 못 알아들을 때가 있습니다."
       },
       "handy-computer_whisper-large-v3-turbo-gguf": {
         "description": "Balanced — the everyday pick: understands 100 languages and doesn't keep you waiting."
@@ -114,7 +114,7 @@
         "description": "Live — writes as you speak, word by word. This is the one that makes the sphere dance."
       },
       "handy-computer_cohere-transcribe-03-2026-gguf": {
-        "description": "Highest accuracy — the most exact in the catalog. Wants a machine with some muscle."
+        "description": "최고 정확도 — 카탈로그에서 가장 정확하며 14개 언어를 지원합니다. 처음 쓰기에 권합니다. 1.6 GB이고 성능 좋은 컴퓨터가 필요합니다."
       }
     },
     "errors": {
