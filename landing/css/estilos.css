@@ -780,7 +780,10 @@ h2::before {
 /* ── responsive ── */
 @media (max-width: 720px) {
   .seccion {
-    padding-top: 88px;
+    padding-top: 56px; /* en telefono el aire de escritorio se siente infinito */
+  }
+  .seccion--demo + .seccion {
+    padding-top: 44px;
   }
   .hero-cuerpo {
     padding-top: 84px;
@@ -1417,14 +1420,14 @@ h2::before {
    «infinita» — se compacta el ritmo, no el contenido ── */
 @media (max-width: 640px) {
   .display {
-    font-size: clamp(30px, 8.6vw, 40px);
+    font-size: clamp(28px, 8vw, 36px);
   }
   .sub-seccion {
-    margin: 8px 0 24px;
+    margin: 6px 0 18px;
   }
   .fila-funcion,
   .fila-funcion--invertida {
-    margin-bottom: 34px;
+    margin-bottom: 22px;
   }
   .fila-funcion .desc {
     font-size: 15px;
