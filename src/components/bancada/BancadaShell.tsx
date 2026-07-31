@@ -545,16 +545,29 @@ export const BancadaShell: React.FC = () => {
   ) : null;
 
   // Palabras por minuto de la sesión: palabras dictadas ÷ minutos grabando.
-  // Real y honesto (sin números inventados); se congela al parar y el idle
-  // muestra el último promedio.
+  // Real y honesto (sin números inventados); el idle muestra el último promedio.
+  //
+  // SE MIDE CUANDO HAY ALGO QUE MEDIR, no solo mientras se graba. La versión
+  // anterior solo calculaba con `grabando` en verdadero, y eso ataba el medidor
+  // al texto PARCIAL del streaming: con un modelo que no transmite en vivo
+  // —Cohere, Whisper, cualquiera menos Nemotron— no hay parcial, así que las
+  // palabras de la sesión valían 0 todo el rato, el medidor marcaba 0, y al
+  // soltar congelaba ese 0 sin volver a mirarlo jamás. El tacómetro se quedaba
+  // clavado en cero para siempre.
+  //
+  // Encontrado el 30/07: «Audio del sistema» cambia el modelo solo, puso Cohere,
+  // y las palabras por minuto dejaron de aparecer sin que nada lo explicara.
+  //
+  // Ahora la condición es la que importa —hay palabras y hay tiempo— y da igual
+  // de dónde venga el texto: del streaming mientras se dicta, o del final al
+  // soltar. Con Nemotron el número sube en vivo, como antes; con los demás
+  // aparece al terminar. En los dos casos son palabras reales entre minutos
+  // reales, que es lo único que este medidor promete.
   const sesWords = Math.max(0, countWords(textoVivo) - wordsBaseRef.current);
-  let wpm: number;
-  if (grabando) {
-    wpm = seg >= 2 ? Math.round(sesWords / (seg / 60)) : 0;
-    wpmShownRef.current = wpm;
-  } else {
-    wpm = wpmShownRef.current;
+  if (seg >= 2 && sesWords > 0) {
+    wpmShownRef.current = Math.round(sesWords / (seg / 60));
   }
+  const wpm = wpmShownRef.current;
   wpmRef.current = wpm;
 
   // Secciones de SETUP: reusa SECTIONS_CONFIG (misma lógica enabled que el
