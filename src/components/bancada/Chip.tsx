@@ -1,5 +1,6 @@
 import React from "react";
 import type { LucideIcon } from "lucide-react";
+import "./Chip.css";
 
 // Chip moderno y plano: icono + rótulo + estado. Como TOGGLE (punto encendido)
 // o como SELECTOR (muestra el valor actual y cicla al click). Siempre funcional

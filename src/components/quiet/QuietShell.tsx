@@ -267,7 +267,7 @@ export const QuietShell: React.FC = () => {
                     ajustes que de verdad se tocan al dictar, y son los MISMOS
                     componentes que usa Karting, no una copia. */}
                 <AtajoVox className="q-hint" kbdClassName="q-kbd" />
-                <div className="q-chips">
+                <div className="q-chips bnc-chips">
                   <Chip
                     icon={MonitorSpeaker}
                     label={t("bancada.systemAudio")}
