@@ -1075,7 +1075,21 @@
     "max": "Maximizar",
     "close": "Cerrar",
     "tray": "Enviar a la bandeja",
-    "dictando": "Te estoy escuchando… suelta al terminar"
+    "dictando": "Te estoy escuchando… suelta al terminar",
+    "panel": {
+      "modelo": "Modelo",
+      "sinModelo": "Sin modelo",
+      "descargar": "descargar",
+      "descargando": "Descargando {{modelo}} · {{pct}}%",
+      "wpm": "Palabras por minuto",
+      "wpmSinDatos": "Aún sin medida",
+      "entrada": "Entrada de audio",
+      "entradaEspera": "Se mueve mientras dictas",
+      "entradaSi": "Entrando audio",
+      "entradaSilencio": "Silencio",
+      "voz": "Voz",
+      "noTransmite": "El modelo activo no escribe mientras hablas. Elige uno de la lista."
+    }
   },
   "soundPicker": {
     "custom": "Personalizado",

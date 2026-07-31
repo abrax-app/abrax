@@ -1075,7 +1075,21 @@
     "max": "Maximize",
     "close": "Close",
     "tray": "Send to tray",
-    "dictando": "Слухаю… відпустіть наприкінці"
+    "dictando": "Слухаю… відпустіть наприкінці",
+    "panel": {
+      "modelo": "Модель",
+      "sinModelo": "Модель не вибрано",
+      "descargar": "завантажити",
+      "descargando": "Завантаження {{modelo}} · {{pct}} %",
+      "wpm": "Слів за хвилину",
+      "wpmSinDatos": "Поки немає даних",
+      "entrada": "Аудіовхід",
+      "entradaEspera": "Рухається, поки ви диктуєте",
+      "entradaSi": "Звук надходить",
+      "entradaSilencio": "Тиша",
+      "voz": "Голос",
+      "noTransmite": "Активна модель не пише під час мовлення. Виберіть іншу зі списку."
+    }
   },
   "soundPicker": {
     "custom": "Власний",

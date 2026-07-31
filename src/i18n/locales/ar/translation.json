@@ -1075,7 +1075,21 @@
     "max": "Maximize",
     "close": "Close",
     "tray": "Send to tray",
-    "dictando": "أستمع إليك… اترك المفتاح عند الانتهاء"
+    "dictando": "أستمع إليك… اترك المفتاح عند الانتهاء",
+    "panel": {
+      "modelo": "النموذج",
+      "sinModelo": "لا يوجد نموذج",
+      "descargar": "تنزيل",
+      "descargando": "جارٍ تنزيل {{modelo}} · {{pct}}%",
+      "wpm": "كلمات في الدقيقة",
+      "wpmSinDatos": "لا يوجد قياس بعد",
+      "entrada": "مدخل الصوت",
+      "entradaEspera": "يتحرك أثناء الإملاء",
+      "entradaSi": "يصل صوت",
+      "entradaSilencio": "صمت",
+      "voz": "الصوت",
+      "noTransmite": "النموذج النشط لا يكتب أثناء حديثك. اختر واحدًا من القائمة."
+    }
   },
   "soundPicker": {
     "custom": "مخصص",

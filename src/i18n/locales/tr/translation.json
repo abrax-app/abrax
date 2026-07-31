@@ -1075,7 +1075,21 @@
     "max": "Maximize",
     "close": "Close",
     "tray": "Send to tray",
-    "dictando": "Seni dinliyorum… bitince bırak"
+    "dictando": "Seni dinliyorum… bitince bırak",
+    "panel": {
+      "modelo": "Model",
+      "sinModelo": "Model yok",
+      "descargar": "indir",
+      "descargando": "{{modelo}} indiriliyor · %{{pct}}",
+      "wpm": "Dakikadaki kelime",
+      "wpmSinDatos": "Henüz ölçüm yok",
+      "entrada": "Ses girişi",
+      "entradaEspera": "Dikte ederken hareket eder",
+      "entradaSi": "Ses geliyor",
+      "entradaSilencio": "Sessizlik",
+      "voz": "Ses",
+      "noTransmite": "Etkin model siz konuşurken yazmaz. Listeden birini seçin."
+    }
   },
   "soundPicker": {
     "custom": "Özel",

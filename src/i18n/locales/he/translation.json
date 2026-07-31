@@ -1075,7 +1075,21 @@
     "max": "Maximize",
     "close": "Close",
     "tray": "Send to tray",
-    "dictando": "אני מקשיב… שחרר בסיום"
+    "dictando": "אני מקשיב… שחרר בסיום",
+    "panel": {
+      "modelo": "מודל",
+      "sinModelo": "אין מודל",
+      "descargar": "הורדה",
+      "descargando": "מוריד את {{modelo}} · {{pct}}%",
+      "wpm": "מילים לדקה",
+      "wpmSinDatos": "עדיין אין מדידה",
+      "entrada": "קלט אודיו",
+      "entradaEspera": "זז בזמן ההכתבה",
+      "entradaSi": "נכנס אודיו",
+      "entradaSilencio": "שקט",
+      "voz": "קול",
+      "noTransmite": "המודל הפעיל אינו כותב בזמן הדיבור. בחר אחד מהרשימה."
+    }
   },
   "soundPicker": {
     "custom": "מותאם אישית",

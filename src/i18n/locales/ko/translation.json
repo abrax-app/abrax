@@ -1075,7 +1075,21 @@
     "max": "Maximize",
     "close": "Close",
     "tray": "Send to tray",
-    "dictando": "듣고 있어요… 끝나면 놓으세요"
+    "dictando": "듣고 있어요… 끝나면 놓으세요",
+    "panel": {
+      "modelo": "모델",
+      "sinModelo": "모델 없음",
+      "descargar": "다운로드",
+      "descargando": "{{modelo}} 다운로드 중 · {{pct}}%",
+      "wpm": "분당 단어 수",
+      "wpmSinDatos": "아직 측정값 없음",
+      "entrada": "오디오 입력",
+      "entradaEspera": "받아쓰는 동안 움직입니다",
+      "entradaSi": "오디오 들어오는 중",
+      "entradaSilencio": "무음",
+      "voz": "음성",
+      "noTransmite": "활성 모델은 말하는 동안 받아쓰지 않습니다. 목록에서 선택하세요."
+    }
   },
   "soundPicker": {
     "custom": "사용자 지정",

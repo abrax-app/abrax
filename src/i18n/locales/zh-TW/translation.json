@@ -1075,7 +1075,21 @@
     "max": "Maximize",
     "close": "Close",
     "tray": "Send to tray",
-    "dictando": "我在聽… 說完放開"
+    "dictando": "我在聽… 說完放開",
+    "panel": {
+      "modelo": "模型",
+      "sinModelo": "無模型",
+      "descargar": "下載",
+      "descargando": "正在下載 {{modelo}} · {{pct}}%",
+      "wpm": "每分鐘字數",
+      "wpmSinDatos": "尚無讀數",
+      "entrada": "音訊輸入",
+      "entradaEspera": "口述時會跳動",
+      "entradaSi": "有音訊進入",
+      "entradaSilencio": "靜音",
+      "voz": "語音",
+      "noTransmite": "目前的模型不會邊說邊寫。請從清單中選擇一個。"
+    }
   },
   "soundPicker": {
     "custom": "自訂",

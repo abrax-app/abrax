@@ -46,6 +46,7 @@ import { CaptureSystemAudio } from "../settings/CaptureSystemAudio";
 import { ModelSettingsCard } from "../settings/general/ModelSettingsCard";
 import { SettingsGroup } from "../ui/SettingsGroup";
 import { AtajoVox } from "../AtajoVox";
+import { PanelAtajos } from "./PanelAtajos";
 import { Chip } from "../bancada/Chip";
 import { AudioLines, Eraser, Languages, MonitorSpeaker } from "lucide-react";
 import "./quiet.css";
@@ -351,23 +352,11 @@ export const QuietShell: React.FC = () => {
                 <HistorySettings />
               </div>
             ) : view === "atajos" ? (
-              <div className="q-sec q-ajustes">
-                {/* Solo las teclas. Lo que antes compartia pantalla con esto
-                    —microfono, volumen, idioma del modelo— se fue a Avanzado:
-                    un rotulo que dice «Atajos» y esconde un selector de
-                    micrófono es justo lo que llevamos el dia entero quitando. */}
-                <SettingsGroup title={t("quiet.nav.shortcuts")}>
-                  <ShortcutInput shortcutId="transcribe" grouped={true} />
-                  <PushToTalk descriptionMode="tooltip" grouped={true} />
-                  {/* El de cancelar se oculta con pulsar-para-hablar (soltar ya
-                      cancela) y en Linux (los atajos dinamicos son inestables),
-                      igual que en el shell Clasico. */}
-                  {!esLinux && !pushToTalk && (
-                    <ShortcutInput shortcutId="cancel" grouped={true} />
-                  )}
-                  <ShortcutInput shortcutId="leer_seleccion" grouped={true} />
-                  <AtajoVox className="px-4 pb-2" />
-                </SettingsGroup>
+              // Cuatro tarjetas —Escucha, Streaming, VOX y General— a lo ancho
+              // de la ventana. Los atajos de cancelar y pulsar-para-hablar
+              // siguen en «Avanzado»: aqui va lo que se toca a diario.
+              <div className="q-sec q-sec-ancha">
+                <PanelAtajos grabando={grabando} />
               </div>
             ) : view === "streaming" ? (
               <div className="q-sec q-ajustes">
@@ -386,6 +375,20 @@ export const QuietShell: React.FC = () => {
             ) : view === "avanzado" ? (
               <div className="q-sec q-ajustes">
                 <ShellSelector descriptionMode="inline" />
+                {/* Los dos ajustes de teclado que NO son «la tecla de un modo»:
+                    el gesto de mantener y el atajo de cancelar. Vivian en la
+                    pantalla «Atajos» y bajan aqui al convertirse esa en el panel
+                    de los cuatro modos — este es su unico sitio en Quiet, asi
+                    que sacarlos sin recolocarlos los habria dejado sin ninguno. */}
+                <SettingsGroup title={t("quiet.nav.shortcuts")}>
+                  <PushToTalk descriptionMode="tooltip" grouped={true} />
+                  {/* El de cancelar se oculta con pulsar-para-hablar (soltar ya
+                      cancela) y en Linux (los atajos dinamicos son inestables),
+                      igual que en el shell Clasico. */}
+                  {!esLinux && !pushToTalk && (
+                    <ShortcutInput shortcutId="cancel" grouped={true} />
+                  )}
+                </SettingsGroup>
                 <SettingsGroup title={t("settings.sound.title")}>
                   <MicrophoneSelector
                     descriptionMode="tooltip"

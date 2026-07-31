@@ -21,7 +21,11 @@ const modelSupportsLanguage = (model: ModelInfo, langCode: string): boolean => {
 // Legacy models are the blob (Url-sourced) .bin/ONNX downloads, superseded by
 // the catalog GGUFs. They stay runnable when already on disk, but we no longer
 // advertise the download.
-const isLegacyModel = (model: ModelInfo): boolean =>
+//
+// Exportado porque el panel «Atajos» ofrece el mismo catálogo en un desplegable
+// y tiene que esconder exactamente los mismos modelos: dos definiciones de «qué
+// es heredado» acaban enseñando dos listas distintas del mismo catálogo.
+export const isLegacyModel = (model: ModelInfo): boolean =>
   typeof model.source === "object" && "Url" in model.source;
 
 /**

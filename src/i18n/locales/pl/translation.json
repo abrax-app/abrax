@@ -1075,7 +1075,21 @@
     "max": "Maximize",
     "close": "Close",
     "tray": "Send to tray",
-    "dictando": "Słucham… puść po zakończeniu"
+    "dictando": "Słucham… puść po zakończeniu",
+    "panel": {
+      "modelo": "Model",
+      "sinModelo": "Brak modelu",
+      "descargar": "pobierz",
+      "descargando": "Pobieranie {{modelo}} · {{pct}}%",
+      "wpm": "Słowa na minutę",
+      "wpmSinDatos": "Brak pomiaru",
+      "entrada": "Wejście audio",
+      "entradaEspera": "Porusza się podczas dyktowania",
+      "entradaSi": "Dźwięk dociera",
+      "entradaSilencio": "Cisza",
+      "voz": "Głos",
+      "noTransmite": "Aktywny model nie pisze, gdy mówisz. Wybierz jeden z listy."
+    }
   },
   "soundPicker": {
     "custom": "Niestandardowy",

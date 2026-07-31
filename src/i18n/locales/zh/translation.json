@@ -1075,7 +1075,21 @@
     "max": "Maximize",
     "close": "Close",
     "tray": "Send to tray",
-    "dictando": "我在听… 说完松开"
+    "dictando": "我在听… 说完松开",
+    "panel": {
+      "modelo": "模型",
+      "sinModelo": "无模型",
+      "descargar": "下载",
+      "descargando": "正在下载 {{modelo}} · {{pct}}%",
+      "wpm": "每分钟字数",
+      "wpmSinDatos": "暂无读数",
+      "entrada": "音频输入",
+      "entradaEspera": "口述时会跳动",
+      "entradaSi": "有音频进入",
+      "entradaSilencio": "静音",
+      "voz": "语音",
+      "noTransmite": "当前模型不会边说边写。请从列表中选择一个。"
+    }
   },
   "soundPicker": {
     "custom": "自定义",

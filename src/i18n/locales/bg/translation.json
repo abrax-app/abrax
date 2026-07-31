@@ -1075,7 +1075,21 @@
     "max": "Maximize",
     "close": "Close",
     "tray": "Send to tray",
-    "dictando": "Слушам ви… пуснете накрая"
+    "dictando": "Слушам ви… пуснете накрая",
+    "panel": {
+      "modelo": "Модел",
+      "sinModelo": "Няма модел",
+      "descargar": "изтегляне",
+      "descargando": "Изтегляне на {{modelo}} · {{pct}}%",
+      "wpm": "Думи в минута",
+      "wpmSinDatos": "Още няма измерване",
+      "entrada": "Аудиовход",
+      "entradaEspera": "Движи се, докато диктувате",
+      "entradaSi": "Постъпва звук",
+      "entradaSilencio": "Тишина",
+      "voz": "Глас",
+      "noTransmite": "Активният модел не пише, докато говорите. Изберете друг от списъка."
+    }
   },
   "soundPicker": {
     "custom": "Персонализиран",

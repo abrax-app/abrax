@@ -1075,7 +1075,21 @@
     "max": "Maximize",
     "close": "Close",
     "tray": "Send to tray",
-    "dictando": "Ich höre zu … am Ende loslassen"
+    "dictando": "Ich höre zu … am Ende loslassen",
+    "panel": {
+      "modelo": "Modell",
+      "sinModelo": "Kein Modell",
+      "descargar": "herunterladen",
+      "descargando": "{{modelo}} wird heruntergeladen · {{pct}} %",
+      "wpm": "Wörter pro Minute",
+      "wpmSinDatos": "Noch kein Messwert",
+      "entrada": "Audioeingang",
+      "entradaEspera": "Bewegt sich, während du diktierst",
+      "entradaSi": "Audio kommt an",
+      "entradaSilencio": "Stille",
+      "voz": "Stimme",
+      "noTransmite": "Das aktive Modell schreibt nicht mit, während du sprichst. Wähle eines aus der Liste."
+    }
   },
   "soundPicker": {
     "custom": "Benutzerdefiniert",

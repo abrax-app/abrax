@@ -327,6 +327,53 @@
   gap: 8px;
 }
 
+/* ── panel «Atajos»: cuatro tarjetas a lo ancho ──
+   Las tarjetas ocupan el ANCHO de la ventana y nada más: se estiran con ella y
+   se topan a 980 px para que en una pantalla grande el desplegable no acabe a
+   medio metro de su rótulo. El tope de 780 px de `.q-sec` se levanta aquí
+   porque estas tarjetas son el contenido principal, no una columna de lectura. */
+.q-sec-ancha {
+  max-width: 980px;
+  width: 100%;
+}
+.q-panel-atajos {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+/* Los chips van pegados a la izquierda, en la columna del resto de rótulos de
+   la tarjeta. Centrados —como en el hero, donde son el protagonista— aquí se
+   leerían como un bloque aparte y no como la tercera fila de «Escucha». */
+.q-panel-atajos .q-pa-chips {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  gap: 8px;
+  margin: 0;
+}
+
+/* Barra de entrada de audio: nivel real de la captura, no una animación. */
+.q-pa-bar {
+  height: 8px;
+  border-radius: 999px;
+  background: rgb(255 255 255 / 8%);
+  overflow: hidden;
+}
+.q-pa-bar i {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: var(--q-grad);
+  transition: width 0.08s linear;
+}
+/* Con movimiento reducido la barra salta al valor en vez de deslizarse: el dato
+   sigue estando, y es lo único que esta barra promete. */
+@media (prefers-reduced-motion: reduce) {
+  .q-pa-bar i {
+    transition: none;
+  }
+}
+
 /* ── sub-pestañas del ítem «Más» ──
    Hospedan las secciones reales (Avanzado, Escucha, Post Proceso, Acerca de).
    `flex-wrap` es el requisito de cierre: en el ancho mínimo de la ventana Quiet

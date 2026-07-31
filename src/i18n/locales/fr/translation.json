@@ -1075,7 +1075,21 @@
     "max": "Maximize",
     "close": "Close",
     "tray": "Send to tray",
-    "dictando": "Je t’écoute… relâche à la fin"
+    "dictando": "Je t’écoute… relâche à la fin",
+    "panel": {
+      "modelo": "Modèle",
+      "sinModelo": "Aucun modèle",
+      "descargar": "télécharger",
+      "descargando": "Téléchargement de {{modelo}} · {{pct}} %",
+      "wpm": "Mots par minute",
+      "wpmSinDatos": "Pas encore de mesure",
+      "entrada": "Entrée audio",
+      "entradaEspera": "Elle bouge pendant que vous dictez",
+      "entradaSi": "Audio entrant",
+      "entradaSilencio": "Silence",
+      "voz": "Voix",
+      "noTransmite": "Le modèle actif n'écrit pas pendant que vous parlez. Choisissez-en un dans la liste."
+    }
   },
   "soundPicker": {
     "custom": "Personnalisé",

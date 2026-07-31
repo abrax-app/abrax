@@ -1075,7 +1075,21 @@
     "max": "Maximize",
     "close": "Close",
     "tray": "Send to tray",
-    "dictando": "म सुन्दै छु… सकिएपछि छोड्नुहोस्"
+    "dictando": "म सुन्दै छु… सकिएपछि छोड्नुहोस्",
+    "panel": {
+      "modelo": "मोडेल",
+      "sinModelo": "मोडेल छैन",
+      "descargar": "डाउनलोड",
+      "descargando": "{{modelo}} डाउनलोड हुँदै · {{pct}}%",
+      "wpm": "प्रति मिनेट शब्द",
+      "wpmSinDatos": "अहिलेसम्म नाप छैन",
+      "entrada": "अडियो इनपुट",
+      "entradaEspera": "बोल्दा यो चल्छ",
+      "entradaSi": "अडियो आइरहेको छ",
+      "entradaSilencio": "मौन",
+      "voz": "आवाज",
+      "noTransmite": "सक्रिय मोडेलले बोल्दाबोल्दै लेख्दैन। सूचीबाट एउटा छान्नुहोस्।"
+    }
   },
   "soundPicker": {
     "custom": "अनुकूलित",

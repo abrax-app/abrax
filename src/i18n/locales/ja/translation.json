@@ -1075,7 +1075,21 @@
     "max": "Maximize",
     "close": "Close",
     "tray": "Send to tray",
-    "dictando": "聞いています… 終わったら離してください"
+    "dictando": "聞いています… 終わったら離してください",
+    "panel": {
+      "modelo": "モデル",
+      "sinModelo": "モデルなし",
+      "descargar": "ダウンロード",
+      "descargando": "{{modelo}} をダウンロード中 · {{pct}}%",
+      "wpm": "1分あたりの単語数",
+      "wpmSinDatos": "まだ計測なし",
+      "entrada": "音声入力",
+      "entradaEspera": "話しているあいだ動きます",
+      "entradaSi": "音声が入っています",
+      "entradaSilencio": "無音",
+      "voz": "音声",
+      "noTransmite": "有効なモデルは話しながら書き出しません。一覧から選んでください。"
+    }
   },
   "soundPicker": {
     "custom": "カスタム",

@@ -1075,7 +1075,21 @@
     "max": "Maximize",
     "close": "Close",
     "tray": "Send to tray",
-    "dictando": "Poslouchám… po skončení pusť"
+    "dictando": "Poslouchám… po skončení pusť",
+    "panel": {
+      "modelo": "Model",
+      "sinModelo": "Žádný model",
+      "descargar": "stáhnout",
+      "descargando": "Stahuje se {{modelo}} · {{pct}} %",
+      "wpm": "Slov za minutu",
+      "wpmSinDatos": "Zatím bez měření",
+      "entrada": "Zvukový vstup",
+      "entradaEspera": "Pohybuje se, když diktujete",
+      "entradaSi": "Přichází zvuk",
+      "entradaSilencio": "Ticho",
+      "voz": "Hlas",
+      "noTransmite": "Aktivní model nepíše, když mluvíte. Vyberte některý ze seznamu."
+    }
   },
   "soundPicker": {
     "custom": "Vlastní",

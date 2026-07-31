@@ -1075,7 +1075,21 @@
     "max": "Maximize",
     "close": "Close",
     "tray": "Send to tray",
-    "dictando": "Đang nghe bạn… thả ra khi xong"
+    "dictando": "Đang nghe bạn… thả ra khi xong",
+    "panel": {
+      "modelo": "Mô hình",
+      "sinModelo": "Không có mô hình",
+      "descargar": "tải xuống",
+      "descargando": "Đang tải {{modelo}} · {{pct}}%",
+      "wpm": "Số từ mỗi phút",
+      "wpmSinDatos": "Chưa có số đo",
+      "entrada": "Đầu vào âm thanh",
+      "entradaEspera": "Nó chuyển động khi bạn đọc",
+      "entradaSi": "Đang có âm thanh",
+      "entradaSilencio": "Im lặng",
+      "voz": "Giọng nói",
+      "noTransmite": "Mô hình đang dùng không ghi khi bạn nói. Hãy chọn một mô hình trong danh sách."
+    }
   },
   "soundPicker": {
     "custom": "Tùy chỉnh",

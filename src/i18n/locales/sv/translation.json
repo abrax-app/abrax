@@ -1075,7 +1075,21 @@
     "max": "Maximize",
     "close": "Close",
     "tray": "Send to tray",
-    "dictando": "Jag lyssnar… släpp när du är klar"
+    "dictando": "Jag lyssnar… släpp när du är klar",
+    "panel": {
+      "modelo": "Modell",
+      "sinModelo": "Ingen modell",
+      "descargar": "ladda ner",
+      "descargando": "Laddar ner {{modelo}} · {{pct}} %",
+      "wpm": "Ord per minut",
+      "wpmSinDatos": "Ingen mätning ännu",
+      "entrada": "Ljudingång",
+      "entradaEspera": "Den rör sig medan du dikterar",
+      "entradaSi": "Ljud kommer in",
+      "entradaSilencio": "Tystnad",
+      "voz": "Röst",
+      "noTransmite": "Den aktiva modellen skriver inte medan du talar. Välj en från listan."
+    }
   },
   "soundPicker": {
     "custom": "Anpassad",

@@ -1075,7 +1075,21 @@
     "max": "Maximize",
     "close": "Close",
     "tray": "Send to tray",
-    "dictando": "Слушаю… отпустите в конце"
+    "dictando": "Слушаю… отпустите в конце",
+    "panel": {
+      "modelo": "Модель",
+      "sinModelo": "Модель не выбрана",
+      "descargar": "скачать",
+      "descargando": "Загрузка {{modelo}} · {{pct}} %",
+      "wpm": "Слов в минуту",
+      "wpmSinDatos": "Пока нет данных",
+      "entrada": "Аудиовход",
+      "entradaEspera": "Двигается, пока вы диктуете",
+      "entradaSi": "Звук поступает",
+      "entradaSilencio": "Тишина",
+      "voz": "Голос",
+      "noTransmite": "Активная модель не пишет во время речи. Выберите другую из списка."
+    }
   },
   "soundPicker": {
     "custom": "Пользовательский",

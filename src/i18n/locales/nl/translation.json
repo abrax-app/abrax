@@ -1075,7 +1075,21 @@
     "max": "Maximize",
     "close": "Close",
     "tray": "Send to tray",
-    "dictando": "Ik luister… laat los als je klaar bent"
+    "dictando": "Ik luister… laat los als je klaar bent",
+    "panel": {
+      "modelo": "Model",
+      "sinModelo": "Geen model",
+      "descargar": "downloaden",
+      "descargando": "{{modelo}} downloaden · {{pct}}%",
+      "wpm": "Woorden per minuut",
+      "wpmSinDatos": "Nog geen meting",
+      "entrada": "Audio-invoer",
+      "entradaEspera": "Beweegt terwijl je dicteert",
+      "entradaSi": "Audio komt binnen",
+      "entradaSilencio": "Stilte",
+      "voz": "Stem",
+      "noTransmite": "Het actieve model schrijft niet mee terwijl je praat. Kies er een uit de lijst."
+    }
   },
   "soundPicker": {
     "custom": "Aangepast",
