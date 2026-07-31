@@ -133,6 +133,27 @@ static PREPOSICIONES: Lazy<HashSet<&'static str>> = Lazy::new(|| {
     .collect()
 });
 
+/// Palabras VACIAS: no sirven como ancla porque las dice todo el mundo todo el
+/// rato. Que dos tramos empiecen los dos por «por» o por «que» no dice nada; que
+/// empiecen los dos por «anda» o por «prueba», si.
+///
+/// Es la lista que separa una retractacion de una frase que sigue:
+///
+/// ```text
+/// «anda a dormir, perdon, anda a preparar comida»   -> «anda» ancla    SI
+/// «Vine por ti, perdon, por favor no te enojes»     -> «por» no ancla  NO
+/// ```
+static PALABRAS_VACIAS: Lazy<HashSet<&'static str>> = Lazy::new(|| {
+    [
+        // preposiciones y determinantes van aparte, en sus propias listas
+        "no", "si", "que", "y", "o", "pero", "ni", "mas", "menos", "muy", "ya", "tambien",
+        "tampoco", "como", "cuando", "donde", "porque", "pues", "asi", "se", "le", "lo", "les",
+        "me", "te", "nos", "al", "del",
+    ]
+    .into_iter()
+    .collect()
+});
+
 static DETERMINANTES: Lazy<HashSet<&'static str>> = Lazy::new(|| {
     [
         "el", "la", "los", "las", "un", "una", "unos", "unas", "mi", "mis", "tu", "tus", "su",
@@ -519,7 +540,24 @@ fn aplicar_sustitucion(tokens: &[Token], i: usize, n: usize) -> Option<String> {
     // dos segmentos deben medir lo mismo. Una retractación cambia una cosa por
     // otra del mismo tamaño; una frase que sigue, no.
     let ancla_preposicion = forma_r.categoria.is_none() && forma_r.preposicion.is_some();
-    if forma_r.categoria.is_none() && !ancla_preposicion {
+    // TERCERA ANCLA: los dos tramos EMPIEZAN POR LA MISMA PALABRA, y esa palabra
+    // tiene contenido. Es la señal que aparecia en todos los intentos reales y
+    // que ninguna de las dos anclas anteriores veia:
+    //
+    //   «anda a dormir, perdon, anda a preparar comida mejor»
+    //    ^^^^                   ^^^^
+    //
+    // Repetir la cabeza es como se retracta la gente al hablar: vuelve a
+    // empezar la frase. Con una palabra VACIA no valdria —«por», «que», «no» las
+    // dice cualquiera— y por eso la lista de exclusion es el candado.
+    let cabeza_r = tokens.get(ini_r).map(|t| t.clave.clone()).filter(|c| {
+        !c.is_empty()
+            && !PALABRAS_VACIAS.contains(c.as_str())
+            && !PREPOSICIONES.contains(c.as_str())
+            && !DETERMINANTES.contains(c.as_str())
+    });
+    let ancla_cabeza = forma_r.categoria.is_none() && !ancla_preposicion && cabeza_r.is_some();
+    if forma_r.categoria.is_none() && !ancla_preposicion && !ancla_cabeza {
         return None;
     }
 
@@ -528,7 +566,12 @@ fn aplicar_sustitucion(tokens: &[Token], i: usize, n: usize) -> Option<String> {
     for p in (piso..i).rev() {
         let fin_c = fin_de_oracion(tokens, p, i);
         let forma_c = forma_de(tokens, p, fin_c);
-        let casa = if ancla_preposicion {
+        let casa = if ancla_cabeza {
+            // Misma cabeza con contenido: el tramo candidato empieza por la
+            // misma palabra que el recambio. No se exige el largo — quien se
+            // retracta suele decir MAS la segunda vez.
+            tokens.get(p).map(|t| &t.clave) == cabeza_r.as_ref()
+        } else if ancla_preposicion {
             forma_c.categoria.is_none()
                 && forma_c.preposicion == forma_r.preposicion
                 && (fin_c - p) == (fin_r - ini_r)
@@ -1096,6 +1139,45 @@ mod tests {
             "Perdón por la demora, ya voy",
             "te pido perdón por lo de ayer",
             "digo que sí a la propuesta",
+        ] {
+            assert_eq!(corrige(texto), texto, "tocó: «{texto}»");
+        }
+    }
+
+    // ── Tercera ancla: la misma cabeza con contenido ───────────────────────
+
+    #[test]
+    fn los_dictados_reales_del_31_07_de_madrugada() {
+        // Winston los probo uno tras otro y ninguno corregia. Los dos tramos
+        // empiezan por la misma palabra —«anda»— y eso ES un paralelo; el
+        // emparejador solo miraba categorias y preposiciones.
+        assert_eq!(
+            corrige("Oye, Antonio, anda a dormir. Perdón, anda a preparar comida mejor."),
+            "Oye, Antonio, anda a preparar comida mejor."
+        );
+        assert_eq!(
+            corrige(
+                "Oye, Antonio, anda a dormir, no mejor anda a preparar comida que tengo hambre."
+            ),
+            "Oye, Antonio, anda a preparar comida que tengo hambre."
+        );
+    }
+
+    #[test]
+    fn la_lista_de_palabras_vacias_es_lo_que_hace_segura_la_cabeza() {
+        // Corpus de control. Que dos tramos empiecen los dos por «por», «de» o
+        // «no» no dice NADA —las dice cualquiera—, y sin esa lista de exclusion
+        // la primera se comeria «Vine por ti».
+        for texto in [
+            "Vine por ti, perdón, por favor no te enojes",
+            "gracias por todo, perdón, por cierto te queria contar algo",
+            "hablamos de esto, perdón, de verdad no era mi intencion",
+            "Te llamo mañana, perdón, no te escuché bien",
+            "Perdón por la demora, ya voy",
+            "te pido perdón por lo de ayer",
+            "digo que sí a la propuesta",
+            "mejor dicho de otra manera, no me convence",
+            "perdón, ¿me repites?",
         ] {
             assert_eq!(corrige(texto), texto, "tocó: «{texto}»");
         }
