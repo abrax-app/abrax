@@ -247,6 +247,17 @@ export const QuietShell: React.FC = () => {
                 );
               })}
             </nav>
+            {/* Centro de errores. Vivía solo en el shell clásico, así que al
+                pasar Quiet a ser el default los fallos ocurridos con la ventana
+                oculta se habrían quedado sin superficie donde verse: el toast se
+                pierde y el registro no se mostraba en ningún sitio.
+                Va en la sidebar, entre el menú y los sellos: arriba del
+                contenido empujaba la pantalla entera hacia abajo cada vez que
+                llegaba un aviso, y las tarjetas cambiaban de sitio bajo el
+                cursor. Aquí se ve igual desde cualquier sección y no mueve nada. */}
+            <div className="q-side-avisos">
+              <AlertsBanner compacto />
+            </div>
             <div className="q-foot">
               <div className="q-badge">
                 <ShieldCheck size={14} />
@@ -260,11 +271,6 @@ export const QuietShell: React.FC = () => {
           </aside>
 
           <main className="q-main">
-            {/* Centro de errores. Vivía solo en el shell clásico, así que al
-                pasar Quiet a ser el default los fallos ocurridos con la ventana
-                oculta se habrían quedado sin superficie donde verse: el toast se
-                pierde y el registro no se mostraba en ningún sitio. */}
-            <AlertsBanner />
             {view === "escucha" ? (
               <div className="q-hero">
                 <h1 className="q-h1">{t("quiet.ready")}</h1>

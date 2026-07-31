@@ -54,7 +54,19 @@ export const alertTitleKey = (kind: AlertKind): string => {
   }
 };
 
-const AlertsBanner: React.FC = () => {
+interface AlertsBannerProps {
+  /**
+   * Sin el rótulo «Avisos recientes (n)»: solo el aviso y la aspa de cerrar.
+   *
+   * Es lo que pide la sidebar de Quiet, que son 160 px de ancho: ahí el título
+   * ocupaba dos líneas para decir lo que el triángulo rojo ya dice, y empujaba
+   * el mensaje —lo único que el usuario necesita leer— fuera de la vista. Con
+   * varios avisos, la cuenta pasa al botón de desplegar, que es donde importa.
+   */
+  compacto?: boolean;
+}
+
+const AlertsBanner: React.FC<AlertsBannerProps> = ({ compacto = false }) => {
   const { t, i18n } = useTranslation();
   const { alerts, initialize, dismissAll } = useAlertsStore();
   const [expanded, setExpanded] = useState(false);
@@ -84,6 +96,106 @@ const AlertsBanner: React.FC = () => {
   // informacion. Cuando llegue un fallo real, el panel se pone rojo solo.
   const hayFallo = alerts.some((a) => !KINDS_INFORMATIVOS.has(a.kind));
 
+  const icono = hayFallo ? (
+    <AlertTriangle className="w-4 h-4 shrink-0 text-red-500" />
+  ) : (
+    <Info className="w-4 h-4 shrink-0 text-text/50" />
+  );
+
+  const lista = (
+    <ul className={compacto ? "flex-1 min-w-0 space-y-1" : "mt-1 space-y-1"}>
+      {visibleAlerts.map((alert, i) => (
+        <li
+          key={`${alert.ts_ms}-${i}`}
+          className="text-xs text-text/80 flex gap-2 items-baseline"
+          // Compacto: la hora y el detalle no caben, así que van al tooltip. Sin
+          // esto se perderían, y el detalle es a menudo lo único que dice QUÉ
+          // falló.
+          title={
+            compacto
+              ? [fmtTime(alert.ts_ms), alert.detail].filter(Boolean).join(" · ")
+              : undefined
+          }
+        >
+          {/* La hora se va en la sidebar: cuesta un tercio del ancho del texto y
+              hacía que «No se detectó audio» ocupara tres líneas, tantas que el
+              aviso ya no cabía entre el menú y los sellos. */}
+          {!compacto && (
+            <span className="tabular-nums text-text/50 shrink-0">
+              {fmtTime(alert.ts_ms)}
+            </span>
+          )}
+          <span className="font-medium">{t(alertTitleKey(alert.kind))}</span>
+          {/* En la sidebar el detalle NO se pinta: en 160 px se parte en cuatro
+              líneas, repite lo que ya dice el título («No se detectó audio» /
+              «No se detectó audio del micrófono…») y se mete por debajo de los
+              botones. Sigue accesible en el tooltip de la fila. */}
+          {!compacto && alert.detail && (
+            <span className="text-text/60 truncate" title={alert.detail}>
+              {alert.detail}
+            </span>
+          )}
+        </li>
+      ))}
+    </ul>
+  );
+
+  const desplegar = alerts.length > 1 && (
+    <Button
+      variant="ghost"
+      size="sm"
+      onClick={() => setExpanded((e) => !e)}
+      aria-expanded={expanded}
+      aria-label={t("errors.center.toggle")}
+    >
+      <span className="flex items-center gap-0.5">
+        {/* Sin título no hay dónde leer cuántos hay, así que la cuenta de los
+            que faltan viaja con el botón que los enseña. */}
+        {compacto && !expanded && (
+          <span className="text-xs tabular-nums">+{alerts.length - 1}</span>
+        )}
+        {expanded ? (
+          <ChevronUp className="w-4 h-4" />
+        ) : (
+          <ChevronDown className="w-4 h-4" />
+        )}
+      </span>
+    </Button>
+  );
+
+  const cerrar = (
+    <Button
+      variant="ghost"
+      size="sm"
+      onClick={() => dismissAll()}
+      aria-label={t("errors.center.dismiss")}
+    >
+      <X className="w-4 h-4" />
+    </Button>
+  );
+
+  if (compacto) {
+    return (
+      <div
+        role={hayFallo ? "alert" : "status"}
+        className={`w-full rounded-lg px-2 py-2 border ${
+          hayFallo
+            ? "border-red-500/30 bg-red-500/10"
+            : "border-mid-gray/25 bg-mid-gray/10"
+        }`}
+      >
+        <div className="flex items-start gap-1.5">
+          {icono}
+          {lista}
+          <div className="flex items-start shrink-0">
+            {desplegar}
+            {cerrar}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div
       role={hayFallo ? "alert" : "status"}
@@ -94,56 +206,14 @@ const AlertsBanner: React.FC = () => {
       }`}
     >
       <div className="flex items-center gap-2">
-        {hayFallo ? (
-          <AlertTriangle className="w-4 h-4 shrink-0 text-red-500" />
-        ) : (
-          <Info className="w-4 h-4 shrink-0 text-text/50" />
-        )}
+        {icono}
         <span className="text-sm font-medium text-text flex-1">
           {t("errors.center.title", { count: alerts.length })}
         </span>
-        {alerts.length > 1 && (
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => setExpanded((e) => !e)}
-            aria-expanded={expanded}
-            aria-label={t("errors.center.toggle")}
-          >
-            {expanded ? (
-              <ChevronUp className="w-4 h-4" />
-            ) : (
-              <ChevronDown className="w-4 h-4" />
-            )}
-          </Button>
-        )}
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() => dismissAll()}
-          aria-label={t("errors.center.dismiss")}
-        >
-          <X className="w-4 h-4" />
-        </Button>
+        {desplegar}
+        {cerrar}
       </div>
-      <ul className="mt-1 space-y-1">
-        {visibleAlerts.map((alert, i) => (
-          <li
-            key={`${alert.ts_ms}-${i}`}
-            className="text-xs text-text/80 flex gap-2 items-baseline"
-          >
-            <span className="tabular-nums text-text/50 shrink-0">
-              {fmtTime(alert.ts_ms)}
-            </span>
-            <span className="font-medium">{t(alertTitleKey(alert.kind))}</span>
-            {alert.detail && (
-              <span className="text-text/60 truncate" title={alert.detail}>
-                {alert.detail}
-              </span>
-            )}
-          </li>
-        ))}
-      </ul>
+      {lista}
     </div>
   );
 };
