@@ -454,9 +454,9 @@
         "resetDefaults": "Về mặc định",
         "disable": "Tắt cấp độ",
         "mode": {
-          "defaults": "Đang dùng: cụm từ mặc định",
-          "custom": "Đang dùng: cụm từ của bạn",
-          "disabled": "Cấp độ đã tắt"
+          "defaults": "Mặc định",
+          "custom": "Của tôi",
+          "disabled": "Tắt"
         }
       },
       "emojiDictado": {

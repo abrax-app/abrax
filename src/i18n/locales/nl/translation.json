@@ -454,9 +454,9 @@
         "resetDefaults": "Terug naar standaard",
         "disable": "Niveau uitzetten",
         "mode": {
-          "defaults": "Actief: standaardsignalen",
-          "custom": "Actief: eigen signalen",
-          "disabled": "Niveau uit"
+          "defaults": "Standaard",
+          "custom": "De mijne",
+          "disabled": "Uit"
         }
       },
       "emojiDictado": {

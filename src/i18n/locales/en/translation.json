@@ -451,9 +451,9 @@
         "remove": "Remove {{senal}}",
         "duplicate": "“{{senal}}” already exists",
         "mode": {
-          "defaults": "Active: built-in cues",
-          "custom": "Active: your own cues",
-          "disabled": "Level disabled"
+          "defaults": "Factory ones",
+          "custom": "Mine",
+          "disabled": "Off"
         },
         "showDefaults": "Use the built-in ones",
         "resetDefaults": "Back to the built-in ones",

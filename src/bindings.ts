@@ -490,6 +490,33 @@ async changeCorreccionNumerosSetting(activo: boolean) : Promise<Result<null, str
 async listarSenalesDeFabrica() : Promise<SenalesDeFabrica> {
     return await TAURI_INVOKE("listar_senales_de_fabrica");
 },
+/**
+ * Los cuatro ajustes de abajo NO TENIAN COMANDO, y por eso sus interruptores
+ * eran un placebo: el valor cambiaba en pantalla, `settingsStore` no encontraba
+ * manejador, escribia un `console.warn` en una consola que nadie mira, y a Rust
+ * no llegaba nunca. Al reabrir Ajustes el interruptor volvia a su sitio.
+ * 
+ * Nada mas engañoso que un control que se deja pulsar y no hace nada. Cazado
+ * el 30/07 auditando el trabajo heredado.
+ * Recuerda la lista PROPIA aunque el usuario este usando las de fabrica, para
+ * que ir y volver entre las dos no le borre su trabajo.
+ */
+async changeAutocorreccionPropiasBorradoSetting(senales: string[]) : Promise<Result<null, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("change_autocorreccion_propias_borrado_setting", { senales }) };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+async changeAutocorreccionPropiasSustitucionSetting(senales: string[]) : Promise<Result<null, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("change_autocorreccion_propias_sustitucion_setting", { senales }) };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
 async changeAutocorreccionActivaSetting(activa: boolean) : Promise<Result<null, string>> {
     try {
     return { status: "ok", data: await TAURI_INVOKE("change_autocorreccion_activa_setting", { activa }) };
@@ -1415,8 +1442,17 @@ modelo_antes_de_sistema?: string | null; autocorreccion_activa?: boolean;
  * Señales de borrado explícito (nivel 1). Mismo contrato que las
  * muletillas: `null` = las de fábrica, `[]` = nivel apagado, lista propia
  * = reemplaza a las de fábrica.
+ * Las señales PROPIAS del usuario, recordadas aunque esté usando las de
+ * fábrica.
+ * 
+ * Sin esto, «volver a las de fábrica» borraba la lista propia para siempre:
+ * el ajuste activo tiene tres estados (`None` = fábrica, `[]` = nivel
+ * apagado, lista = propias) y al elegir fábrica la lista propia
+ * desaparecía. Quien hubiera armado la suya no podía ir y volver.
+ * 
+ * Aquí se guarda aparte del ajuste activo: cambiar de modo no pierde nada.
  */
-autocorreccion_senales_borrado?: string[] | null; 
+autocorreccion_propias_borrado?: string[]; autocorreccion_propias_sustitucion?: string[]; autocorreccion_senales_borrado?: string[] | null; 
 /**
  * Señales de sustitución con paralelo (nivel 2). Mismo contrato que
  * `autocorreccion_senales_borrado`.
@@ -1802,13 +1838,6 @@ es_default: boolean; duracion_s: number; rms_db: number; pico_db: number; clip_p
 wav: string }
 export type RecordingRetentionPeriod = "never" | "preserve_limit" | "days_3" | "weeks_2" | "months_3"
 /**
- * Los cuatro ajustes de abajo NO TENIAN COMANDO, y por eso sus interruptores
- * eran un placebo: el valor cambiaba en pantalla, `settingsStore` no encontraba
- * manejador, escribia un `console.warn` en una consola que nadie mira, y a Rust
- * no llegaba nunca. Al reabrir Ajustes el interruptor volvia a su sitio.
- * 
- * Nada mas engañoso que un control que se deja pulsar y no hace nada. Cazado
- * el 30/07 auditando el trabajo heredado.
  * Las senales de fabrica de la autocorreccion hablada.
  * 
  * Existe para que la pantalla no tenga que llevar su propia copia. La llevaba,

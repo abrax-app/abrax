@@ -454,9 +454,9 @@
         "resetDefaults": "Revenir à ceux d'origine",
         "disable": "Désactiver le niveau",
         "mode": {
-          "defaults": "Actif : signaux d'origine",
-          "custom": "Actif : vos propres signaux",
-          "disabled": "Niveau désactivé"
+          "defaults": "Celles d’origine",
+          "custom": "Les miennes",
+          "disabled": "Désactivé"
         }
       },
       "emojiDictado": {

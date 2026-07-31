@@ -454,9 +454,9 @@
         "resetDefaults": "恢復內建",
         "disable": "關閉此層級",
         "mode": {
-          "defaults": "目前：內建觸發詞",
-          "custom": "目前：自訂觸發詞",
-          "disabled": "此層級已關閉"
+          "defaults": "原廠內建",
+          "custom": "我的",
+          "disabled": "關閉"
         }
       },
       "emojiDictado": {

@@ -454,9 +454,9 @@
         "resetDefaults": "기본값으로 복원",
         "disable": "단계 끄기",
         "mode": {
-          "defaults": "사용 중: 기본 신호어",
-          "custom": "사용 중: 내 신호어",
-          "disabled": "단계 꺼짐"
+          "defaults": "기본 제공",
+          "custom": "내 것",
+          "disabled": "끔"
         }
       },
       "emojiDictado": {

@@ -454,9 +454,9 @@
         "resetDefaults": "Wróć do wbudowanych",
         "disable": "Wyłącz poziom",
         "mode": {
-          "defaults": "Aktywne: sygnały wbudowane",
-          "custom": "Aktywne: własne sygnały",
-          "disabled": "Poziom wyłączony"
+          "defaults": "Fabryczne",
+          "custom": "Moje",
+          "disabled": "Wyłączone"
         }
       },
       "emojiDictado": {

@@ -451,9 +451,9 @@
         "remove": "{{senal}} ifadesini kaldır",
         "duplicate": "“{{senal}}” zaten var",
         "mode": {
-          "defaults": "Etkin: hazır ifadeler",
-          "custom": "Etkin: kendi ifadeleriniz",
-          "disabled": "Seviye kapalı"
+          "defaults": "Fabrika olanlar",
+          "custom": "Benimkiler",
+          "disabled": "Kapalı"
         },
         "showDefaults": "Hazır olanları kullan",
         "resetDefaults": "Hazır olanlara dön",

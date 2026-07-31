@@ -451,9 +451,9 @@
         "remove": "Ta bort {{senal}}",
         "duplicate": "”{{senal}}” finns redan",
         "mode": {
-          "defaults": "Aktivt: inbyggda signaler",
-          "custom": "Aktivt: egna signaler",
-          "disabled": "Nivån avstängd"
+          "defaults": "Fabriksinställda",
+          "custom": "Mina",
+          "disabled": "Av"
         },
         "showDefaults": "Använd de inbyggda",
         "resetDefaults": "Tillbaka till inbyggda",

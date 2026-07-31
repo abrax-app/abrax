@@ -454,9 +454,9 @@
         "resetDefaults": "חזרה למובנים",
         "disable": "השבתת הרמה",
         "mode": {
-          "defaults": "פעיל: ביטויים מובנים",
-          "custom": "פעיל: ביטויים משלכם",
-          "disabled": "הרמה מושבתת"
+          "defaults": "של היצרן",
+          "custom": "שלי",
+          "disabled": "כבוי"
         }
       },
       "emojiDictado": {

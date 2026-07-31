@@ -454,9 +454,9 @@
         "resetDefaults": "Torna ai predefiniti",
         "disable": "Disattiva livello",
         "mode": {
-          "defaults": "Attivo: segnali predefiniti",
-          "custom": "Attivo: segnali personali",
-          "disabled": "Livello disattivato"
+          "defaults": "Quelle di fabbrica",
+          "custom": "Le mie",
+          "disabled": "Spento"
         }
       },
       "emojiDictado": {

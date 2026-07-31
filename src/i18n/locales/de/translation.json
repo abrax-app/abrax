@@ -454,9 +454,9 @@
         "resetDefaults": "Zurück zum Standard",
         "disable": "Stufe deaktivieren",
         "mode": {
-          "defaults": "Aktiv: Standardsignale",
-          "custom": "Aktiv: eigene Signale",
-          "disabled": "Stufe deaktiviert"
+          "defaults": "Werkseitige",
+          "custom": "Meine",
+          "disabled": "Aus"
         }
       },
       "emojiDictado": {

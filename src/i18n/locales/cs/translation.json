@@ -454,9 +454,9 @@
         "resetDefaults": "Zpět na výchozí",
         "disable": "Vypnout úroveň",
         "mode": {
-          "defaults": "Aktivní: výchozí signály",
-          "custom": "Aktivní: vlastní signály",
-          "disabled": "Úroveň vypnuta"
+          "defaults": "Tovární",
+          "custom": "Moje",
+          "disabled": "Vypnuto"
         }
       },
       "emojiDictado": {

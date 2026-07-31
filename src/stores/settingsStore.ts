@@ -164,6 +164,10 @@ const settingUpdaters: {
     commands.changeAutocorreccionActivaSetting(value as boolean),
   emoji_dictado: (value) =>
     commands.changeEmojiDictadoSetting(value as boolean),
+  autocorreccion_propias_borrado: (value) =>
+    commands.changeAutocorreccionPropiasBorradoSetting(value as string[]),
+  autocorreccion_propias_sustitucion: (value) =>
+    commands.changeAutocorreccionPropiasSustitucionSetting(value as string[]),
   autocorreccion_senales_borrado: (value) =>
     commands.changeAutocorreccionSenalesBorradoSetting(
       value as string[] | null,

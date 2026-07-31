@@ -563,6 +563,19 @@ pub struct AppSettings {
     /// Señales de borrado explícito (nivel 1). Mismo contrato que las
     /// muletillas: `null` = las de fábrica, `[]` = nivel apagado, lista propia
     /// = reemplaza a las de fábrica.
+    /// Las señales PROPIAS del usuario, recordadas aunque esté usando las de
+    /// fábrica.
+    ///
+    /// Sin esto, «volver a las de fábrica» borraba la lista propia para siempre:
+    /// el ajuste activo tiene tres estados (`None` = fábrica, `[]` = nivel
+    /// apagado, lista = propias) y al elegir fábrica la lista propia
+    /// desaparecía. Quien hubiera armado la suya no podía ir y volver.
+    ///
+    /// Aquí se guarda aparte del ajuste activo: cambiar de modo no pierde nada.
+    #[serde(default)]
+    pub autocorreccion_propias_borrado: Vec<String>,
+    #[serde(default)]
+    pub autocorreccion_propias_sustitucion: Vec<String>,
     #[serde(default)]
     pub autocorreccion_senales_borrado: Option<Vec<String>>,
     /// Señales de sustitución con paralelo (nivel 2). Mismo contrato que
@@ -1067,6 +1080,8 @@ pub fn get_default_settings() -> AppSettings {
         emoji_dictado: default_emoji_dictado(),
         modelo_antes_de_sistema: None,
         autocorreccion_activa: default_autocorreccion_activa(),
+        autocorreccion_propias_borrado: Vec::new(),
+        autocorreccion_propias_sustitucion: Vec::new(),
         autocorreccion_senales_borrado: None,
         autocorreccion_senales_sustitucion: None,
         transcribe_accelerator: TranscribeAcceleratorSetting::default(),

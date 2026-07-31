@@ -719,6 +719,32 @@ pub fn change_lazy_stream_close_setting(app: AppHandle, enabled: bool) -> Result
 /// Nada mas engañoso que un control que se deja pulsar y no hace nada. Cazado
 /// el 30/07 auditando el trabajo heredado.
 
+/// Recuerda la lista PROPIA aunque el usuario este usando las de fabrica, para
+/// que ir y volver entre las dos no le borre su trabajo.
+#[tauri::command]
+#[specta::specta]
+pub fn change_autocorreccion_propias_borrado_setting(
+    app: AppHandle,
+    senales: Vec<String>,
+) -> Result<(), String> {
+    let mut settings = settings::get_settings(&app);
+    settings.autocorreccion_propias_borrado = senales;
+    settings::write_settings(&app, settings);
+    Ok(())
+}
+
+#[tauri::command]
+#[specta::specta]
+pub fn change_autocorreccion_propias_sustitucion_setting(
+    app: AppHandle,
+    senales: Vec<String>,
+) -> Result<(), String> {
+    let mut settings = settings::get_settings(&app);
+    settings.autocorreccion_propias_sustitucion = senales;
+    settings::write_settings(&app, settings);
+    Ok(())
+}
+
 /// Las senales de fabrica de la autocorreccion hablada.
 ///
 /// Existe para que la pantalla no tenga que llevar su propia copia. La llevaba,

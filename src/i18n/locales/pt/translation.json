@@ -451,9 +451,9 @@
         "remove": "Remover {{senal}}",
         "duplicate": "“{{senal}}” já existe",
         "mode": {
-          "defaults": "Ativo: sinais de fábrica",
-          "custom": "Ativo: sinais próprios",
-          "disabled": "Nível desativado"
+          "defaults": "As de fábrica",
+          "custom": "As minhas",
+          "disabled": "Desligado"
         },
         "showDefaults": "Usar os de fábrica",
         "resetDefaults": "Voltar aos de fábrica",

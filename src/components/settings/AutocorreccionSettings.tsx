@@ -25,6 +25,10 @@ type ClaveSenales =
 
 interface EditorSenalesProps {
   clave: ClaveSenales;
+  /** Donde se RECUERDA la lista propia aunque esten activas las de fabrica. */
+  propiasClave:
+    | "autocorreccion_propias_borrado"
+    | "autocorreccion_propias_sustitucion";
   titulo: string;
   descripcion: string;
   deFabrica: string[];
@@ -33,10 +37,24 @@ interface EditorSenalesProps {
   disabled: boolean;
 }
 
-/** Editor de una lista de señales. Mismo contrato que las muletillas:
- *  `null` = las de fábrica · `[]` = ese nivel apagado · lista = la del usuario. */
+/**
+ * Editor de una lista de señales.
+ *
+ * TRES MODOS, y los tres SIEMPRE a la vista. Antes eran tres botones que
+ * aparecían y desaparecían segun el estado, y asi se llega a un sitio sin
+ * salida: Winston apago un nivel y no encontro como volver a encenderlo.
+ * Un control del que no se puede salir es peor que uno que no existe.
+ *
+ * El valor guardado sigue teniendo tres estados —`null` = las de fabrica,
+ * `[]` = nivel apagado, lista = las propias— pero eso es asunto del backend; en
+ * pantalla son tres opciones que se ven todas y se pueden pulsar todas.
+ *
+ * Las PROPIAS se recuerdan aparte (`propiasClave`), asi que ir a «de fabrica» y
+ * volver ya no borra el trabajo de nadie.
+ */
 const EditorSenales: React.FC<EditorSenalesProps> = ({
   clave,
+  propiasClave,
   titulo,
   descripcion,
   deFabrica,
@@ -49,18 +67,26 @@ const EditorSenales: React.FC<EditorSenalesProps> = ({
   const [nueva, setNueva] = useState("");
 
   const senales = getSetting(clave) ?? null;
+  const propias = getSetting(propiasClave) ?? [];
   const modo =
     senales === null
       ? "defaults"
       : senales.length === 0
         ? "disabled"
         : "custom";
-  // En modo «de fabrica» se muestran LAS DE FABRICA, no una lista vacia. Antes
-  // se pintaba vacia y la pantalla parecia decir «no hay ninguna senal», cuando
-  // en realidad estaban todas activas. Winston lo leyo asi, con razon: «¿de que
-  // sirve que la dejes habilitada si no tienes nada de fabrica?».
-  const actuales = senales ?? deFabrica;
+  // En «de fabrica» se muestran LAS DE FABRICA, no una lista vacia: son las que
+  // estan gobernando el comportamiento, y pintarlas vacias hacia creer que no
+  // habia ninguna.
+  const actuales =
+    modo === "custom" ? senales! : modo === "defaults" ? deFabrica : [];
+  const editable = modo === "custom";
   const ocupado = isUpdating(clave) || disabled;
+
+  /** Guarda una lista propia y la recuerda, para poder ir y volver. */
+  const guardarPropias = (lista: string[]) => {
+    updateSetting(clave, lista);
+    updateSetting(propiasClave, lista);
+  };
 
   const agregar = () => {
     const limpia = nueva
@@ -68,15 +94,29 @@ const EditorSenales: React.FC<EditorSenalesProps> = ({
       .replace(/[<>"']/g, "")
       .replace(/\s+/g, " ");
     if (!limpia || limpia.length > 50) return;
-    if (actuales.includes(limpia)) {
+    // Agregar desde «de fabrica» arranca la lista propia CON las de fabrica
+    // dentro: nadie quiere perder las siete que ya funcionaban por sumar una.
+    const base = modo === "custom" ? actuales : deFabrica;
+    if (base.includes(limpia)) {
       toast.error(
         t("settings.advanced.autocorreccion.duplicate", { senal: limpia }),
       );
       return;
     }
-    updateSetting(clave, [...actuales, limpia]);
+    guardarPropias([...base, limpia]);
     setNueva("");
   };
+
+  const OPCIONES: { id: string; onClick: () => void }[] = [
+    { id: "defaults", onClick: () => updateSetting(clave, null) },
+    {
+      id: "custom",
+      // Si nunca hubo propias, se siembran con las de fabrica: asi la opcion
+      // hace algo visible desde el primer clic en vez de dejar una lista vacia.
+      onClick: () => guardarPropias(propias.length ? propias : [...deFabrica]),
+    },
+    { id: "disabled", onClick: () => updateSetting(clave, []) },
+  ];
 
   return (
     <>
@@ -100,11 +140,16 @@ const EditorSenales: React.FC<EditorSenalesProps> = ({
             }}
             placeholder={t("settings.advanced.autocorreccion.placeholder")}
             variant="compact"
-            disabled={ocupado}
+            disabled={ocupado || modo === "disabled"}
           />
           <Button
             onClick={agregar}
-            disabled={ocupado || !nueva.trim() || nueva.trim().length > 50}
+            disabled={
+              ocupado ||
+              modo === "disabled" ||
+              !nueva.trim() ||
+              nueva.trim().length > 50
+            }
             variant="primary"
             size="md"
           >
@@ -112,68 +157,62 @@ const EditorSenales: React.FC<EditorSenalesProps> = ({
           </Button>
         </div>
       </SettingContainer>
+
+      {/* Los tres modos, siempre los tres. El activo va marcado. */}
       <div
         className={`px-4 p-2 ${grouped ? "" : "rounded-lg border border-mid-gray/20"} flex flex-wrap items-center gap-2`}
+        role="radiogroup"
+        aria-label={titulo}
       >
-        <span className="text-xs opacity-70">
-          {t(`settings.advanced.autocorreccion.mode.${modo}`)}
-        </span>
-        {modo !== "custom" && (
+        {OPCIONES.map((o) => (
           <Button
-            onClick={() => updateSetting(clave, [...deFabrica])}
+            key={o.id}
+            onClick={o.onClick}
             disabled={ocupado}
-            variant="secondary"
+            variant={modo === o.id ? "primary" : "secondary"}
             size="sm"
+            role="radio"
+            aria-checked={modo === o.id}
           >
-            {t("settings.advanced.autocorreccion.showDefaults")}
+            {t(`settings.advanced.autocorreccion.mode.${o.id}`)}
           </Button>
-        )}
-        {modo !== "defaults" && (
-          <Button
-            onClick={() => updateSetting(clave, null)}
-            disabled={ocupado}
-            variant="secondary"
-            size="sm"
-          >
-            {t("settings.advanced.autocorreccion.resetDefaults")}
-          </Button>
-        )}
-        {modo !== "disabled" && (
-          <Button
-            onClick={() => updateSetting(clave, [])}
-            disabled={ocupado}
-            variant="secondary"
-            size="sm"
-          >
-            {t("settings.advanced.autocorreccion.disable")}
-          </Button>
-        )}
+        ))}
       </div>
+
       {actuales.length > 0 && (
         <div
           className={`px-4 p-2 ${grouped ? "" : "rounded-lg border border-mid-gray/20"} flex flex-wrap gap-1`}
         >
-          {actuales.map((senal) => (
-            <Button
-              key={senal}
-              onClick={() =>
-                updateSetting(
-                  clave,
-                  actuales.filter((s) => s !== senal),
-                )
-              }
-              disabled={ocupado}
-              variant="secondary"
-              size="sm"
-              className="inline-flex items-center gap-1 cursor-pointer"
-              aria-label={t("settings.advanced.autocorreccion.remove", {
-                senal,
-              })}
-            >
-              <span>{senal}</span>
-              <X className="w-3 h-3" />
-            </Button>
-          ))}
+          {actuales.map((senal) =>
+            editable ? (
+              <Button
+                key={senal}
+                onClick={() =>
+                  guardarPropias(actuales.filter((s) => s !== senal))
+                }
+                disabled={ocupado}
+                variant="secondary"
+                size="sm"
+                className="inline-flex items-center gap-1 cursor-pointer"
+                aria-label={t("settings.advanced.autocorreccion.remove", {
+                  senal,
+                })}
+              >
+                <span>{senal}</span>
+                <X className="w-3 h-3" />
+              </Button>
+            ) : (
+              // En «de fabrica» las señales se ven pero no se borran: son la
+              // lista del producto. Para quitar una, pasas a «Las mias» —que se
+              // siembra con estas— y ahi mandas tu.
+              <span
+                key={senal}
+                className="px-2 py-1 text-sm rounded-md bg-mid-gray/10 text-text/70"
+              >
+                {senal}
+              </span>
+            ),
+          )}
         </div>
       )}
     </>
@@ -245,6 +284,7 @@ export const AutocorreccionSettings: React.FC<AutocorreccionSettingsProps> =
               descripcion={t(
                 "settings.advanced.autocorreccion.sustitucionDescription",
               )}
+              propiasClave="autocorreccion_propias_sustitucion"
               deFabrica={deFabrica.sustitucion}
               descriptionMode={descriptionMode}
               grouped={grouped}
@@ -256,6 +296,7 @@ export const AutocorreccionSettings: React.FC<AutocorreccionSettingsProps> =
               descripcion={t(
                 "settings.advanced.autocorreccion.borradoDescription",
               )}
+              propiasClave="autocorreccion_propias_borrado"
               deFabrica={deFabrica.borrado}
               descriptionMode={descriptionMode}
               grouped={grouped}

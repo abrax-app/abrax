@@ -629,6 +629,8 @@ pub fn run(cli_args: CliArgs) {
             commands::settings::change_vad_enabled_setting,
             commands::settings::change_correccion_numeros_setting,
             commands::settings::listar_senales_de_fabrica,
+            commands::settings::change_autocorreccion_propias_borrado_setting,
+            commands::settings::change_autocorreccion_propias_sustitucion_setting,
             commands::settings::change_autocorreccion_activa_setting,
             commands::settings::change_emoji_dictado_setting,
             commands::settings::change_autocorreccion_senales_borrado_setting,

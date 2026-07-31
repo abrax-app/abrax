@@ -454,9 +454,9 @@
         "resetDefaults": "恢复内置",
         "disable": "关闭该级别",
         "mode": {
-          "defaults": "当前：内置触发词",
-          "custom": "当前：自定义触发词",
-          "disabled": "该级别已关闭"
+          "defaults": "出厂自带",
+          "custom": "我的",
+          "disabled": "关闭"
         }
       },
       "emojiDictado": {
