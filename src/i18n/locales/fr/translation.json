@@ -444,8 +444,6 @@
         "ejemplo": "Exemple : « Programme la réunion pour mardi… non, pardon, pour mercredi » → « Programme la réunion pour mercredi. »",
         "sustitucionTitle": "Signaux de correction",
         "sustitucionDescription": "Ce que vous dites pour remplacer ce que vous venez de dire (p. ex. « non, pardon », « enfin »). Le remplacement n'a lieu que si un segment équivalent est trouvé avant le signal : même jour, même mois, même heure, même nombre ou même nom. Sinon, rien n'est modifié.",
-        "borradoTitle": "Signaux d'effacement",
-        "borradoDescription": "Ce que vous dites pour jeter toute la phrase précédente (p. ex. « efface ça », « oublie ça »). Cette phrase et le signal sont supprimés.",
         "placeholder": "Ajouter un signal",
         "add": "Ajouter",
         "remove": "Supprimer {{senal}}",
@@ -455,8 +453,7 @@
         "disable": "Désactiver le niveau",
         "mode": {
           "defaults": "Celles d’origine",
-          "custom": "Les miennes",
-          "disabled": "Désactivé"
+          "custom": "Les miennes"
         }
       },
       "emojiDictado": {

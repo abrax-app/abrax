@@ -19,16 +19,12 @@ import { SettingContainer } from "../ui/SettingContainer";
 // una en Rust, esta pantalla habria seguido ensenando la lista vieja.
 const SIN_SENALES: string[] = [];
 
-type ClaveSenales =
-  | "autocorreccion_senales_borrado"
-  | "autocorreccion_senales_sustitucion";
+type ClaveSenales = "autocorreccion_senales_sustitucion";
 
 interface EditorSenalesProps {
   clave: ClaveSenales;
   /** Donde se RECUERDA la lista propia aunque esten activas las de fabrica. */
-  propiasClave:
-    | "autocorreccion_propias_borrado"
-    | "autocorreccion_propias_sustitucion";
+  propiasClave: "autocorreccion_propias_sustitucion";
   titulo: string;
   descripcion: string;
   deFabrica: string[];
@@ -68,12 +64,11 @@ const EditorSenales: React.FC<EditorSenalesProps> = ({
 
   const senales = getSetting(clave) ?? null;
   const propias = getSetting(propiasClave) ?? [];
-  const modo =
-    senales === null
-      ? "defaults"
-      : senales.length === 0
-        ? "disabled"
-        : "custom";
+  // DOS modos, no tres. Hubo un «Apagado» aqui y era una segunda forma de
+  // apagar lo mismo que ya apaga el interruptor de arriba: dos controles para
+  // una sola decision, que es como el usuario acaba sin saber cual manda.
+  // Una lista vacia guardada (el estado viejo) se lee como «de fabrica».
+  const modo = senales === null || senales.length === 0 ? "defaults" : "custom";
   // En «de fabrica» se muestran LAS DE FABRICA, no una lista vacia: son las que
   // estan gobernando el comportamiento, y pintarlas vacias hacia creer que no
   // habia ninguna.
@@ -115,7 +110,6 @@ const EditorSenales: React.FC<EditorSenalesProps> = ({
       // hace algo visible desde el primer clic en vez de dejar una lista vacia.
       onClick: () => guardarPropias(propias.length ? propias : [...deFabrica]),
     },
-    { id: "disabled", onClick: () => updateSetting(clave, []) },
   ];
 
   return (
@@ -140,16 +134,11 @@ const EditorSenales: React.FC<EditorSenalesProps> = ({
             }}
             placeholder={t("settings.advanced.autocorreccion.placeholder")}
             variant="compact"
-            disabled={ocupado || modo === "disabled"}
+            disabled={ocupado}
           />
           <Button
             onClick={agregar}
-            disabled={
-              ocupado ||
-              modo === "disabled" ||
-              !nueva.trim() ||
-              nueva.trim().length > 50
-            }
+            disabled={ocupado || !nueva.trim() || nueva.trim().length > 50}
             variant="primary"
             size="md"
           >
@@ -241,10 +230,9 @@ export const AutocorreccionSettings: React.FC<AutocorreccionSettingsProps> =
     const activa = getSetting("autocorreccion_activa") ?? true;
     // Las de fábrica se piden al backend: es donde viven, y así esta pantalla no
     // puede quedarse enseñando una lista vieja.
-    const [deFabrica, setDeFabrica] = useState<{
-      borrado: string[];
-      sustitucion: string[];
-    }>({ borrado: [], sustitucion: [] });
+    const [deFabrica, setDeFabrica] = useState<{ sustitucion: string[] }>({
+      sustitucion: [],
+    });
     useEffect(() => {
       let vivo = true;
       commands
@@ -286,18 +274,6 @@ export const AutocorreccionSettings: React.FC<AutocorreccionSettingsProps> =
               )}
               propiasClave="autocorreccion_propias_sustitucion"
               deFabrica={deFabrica.sustitucion}
-              descriptionMode={descriptionMode}
-              grouped={grouped}
-              disabled={!activa}
-            />
-            <EditorSenales
-              clave="autocorreccion_senales_borrado"
-              titulo={t("settings.advanced.autocorreccion.borradoTitle")}
-              descripcion={t(
-                "settings.advanced.autocorreccion.borradoDescription",
-              )}
-              propiasClave="autocorreccion_propias_borrado"
-              deFabrica={deFabrica.borrado}
               descriptionMode={descriptionMode}
               grouped={grouped}
               disabled={!activa}

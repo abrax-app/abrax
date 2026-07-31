@@ -56,7 +56,21 @@ pub struct ResultadoCorreccion {
 pub fn corregir(texto: &str, modo: CorreccionModo, numeros: bool) -> ResultadoCorreccion {
     let mut t = texto.to_string();
     if matches!(modo, CorreccionModo::Limpio) {
-        t = reglas::autocorreccion_hablada(&t);
+        // AQUI CORRIA UN SEGUNDO MOTOR DE AUTOCORRECCION HABLADA, y se retiro
+        // el 31/07. Era un duplicado del de `audio_toolkit::autocorreccion`, y
+        // el peor de los dos:
+        //
+        //   · INVERTIA EL SENTIDO de frases normales —«No es caro, mas bien, es
+        //     carisimo» salia «No es carisimo»—, porque anclaba en el marcador
+        //     sin exigir un segmento paralelo hacia atras;
+        //   · el interruptor «Autocorreccion hablada» NO lo apagaba: ese
+        //     gobierna `autocorreccion_activa`, que es del OTRO motor. El
+        //     usuario no tenia ninguna forma de detenerlo.
+        //
+        // Dos motores para lo mismo, y el que se veia no era el que mandaba.
+        // Queda el de `audio_toolkit`, que corre ANTES (`transcription.rs`),
+        // tiene su interruptor, su regla de oro —sin paralelo no toca nada— y un
+        // corpus de disculpas y prosa real que lo prueba.
         // Repetición inmediata accidental: «después después» → «después».
         // Después de la autocorrección (que puede crear una) y antes de la
         // ortotipografía. Ver [`reglas::colapsar_repeticiones`].
@@ -163,13 +177,28 @@ mod tests {
         );
     }
 
+    /// El modo Limpio YA NO resuelve autocorrecciones habladas: ese motor era un
+    /// duplicado que invertia el sentido de frases normales y que el interruptor
+    /// del usuario no apagaba. Retirado el 31/07.
+    ///
+    /// Este test fija que la capa NO las toca, para que nadie la vuelva a
+    /// enchufar aqui creyendo que faltaba. Quien las resuelve es
+    /// `audio_toolkit::autocorreccion`, que corre antes y si tiene interruptor.
     #[test]
-    fn modo_limpio_resuelve_la_autocorreccion() {
+    fn modo_limpio_ya_no_toca_las_autocorrecciones_habladas() {
         let s = settings_con(CorreccionMotor::SoloReglas, CorreccionModo::Limpio);
         assert_eq!(
-            procesar("vamos el martes, perdón, el miércoles", &s),
-            "Vamos el miércoles"
+            procesar("Vamos el martes, perdón, el miércoles", &s),
+            "Vamos el martes, perdón, el miércoles"
         );
+        // Y la frase que el motor retirado destrozaba, invirtiendo su sentido.
+        assert_eq!(
+            procesar("No es caro, más bien, es carísimo.", &s),
+            "No es caro, más bien, es carísimo."
+        );
+        // El resto del modo Limpio sigue intacto: control de que se quito UNA
+        // capa y no el paquete.
+        assert_eq!(procesar("dame el cinco por ciento", &s), "Dame el 5%");
     }
 
     /// Guardián de la retirada: `pulido` almacenado en una instalación vieja

@@ -501,14 +501,6 @@ async listarSenalesDeFabrica() : Promise<SenalesDeFabrica> {
  * Recuerda la lista PROPIA aunque el usuario este usando las de fabrica, para
  * que ir y volver entre las dos no le borre su trabajo.
  */
-async changeAutocorreccionPropiasBorradoSetting(senales: string[]) : Promise<Result<null, string>> {
-    try {
-    return { status: "ok", data: await TAURI_INVOKE("change_autocorreccion_propias_borrado_setting", { senales }) };
-} catch (e) {
-    if(e instanceof Error) throw e;
-    else return { status: "error", error: e  as any };
-}
-},
 async changeAutocorreccionPropiasSustitucionSetting(senales: string[]) : Promise<Result<null, string>> {
     try {
     return { status: "ok", data: await TAURI_INVOKE("change_autocorreccion_propias_sustitucion_setting", { senales }) };
@@ -537,14 +529,6 @@ async changeEmojiDictadoSetting(activo: boolean) : Promise<Result<null, string>>
  * `None` = las senales de fabrica, `Some(vec![])` = nivel apagado, lista propia
  * = reemplaza a las de fabrica. Mismo contrato que las muletillas.
  */
-async changeAutocorreccionSenalesBorradoSetting(senales: string[] | null) : Promise<Result<null, string>> {
-    try {
-    return { status: "ok", data: await TAURI_INVOKE("change_autocorreccion_senales_borrado_setting", { senales }) };
-} catch (e) {
-    if(e instanceof Error) throw e;
-    else return { status: "error", error: e  as any };
-}
-},
 async changeAutocorreccionSenalesSustitucionSetting(senales: string[] | null) : Promise<Result<null, string>> {
     try {
     return { status: "ok", data: await TAURI_INVOKE("change_autocorreccion_senales_sustitucion_setting", { senales }) };
@@ -1439,23 +1423,17 @@ emoji_dictado?: boolean;
  */
 modelo_antes_de_sistema?: string | null; autocorreccion_activa?: boolean; 
 /**
- * Señales de borrado explícito (nivel 1). Mismo contrato que las
- * muletillas: `null` = las de fábrica, `[]` = nivel apagado, lista propia
- * = reemplaza a las de fábrica.
  * Las señales PROPIAS del usuario, recordadas aunque esté usando las de
  * fábrica.
  * 
- * Sin esto, «volver a las de fábrica» borraba la lista propia para siempre:
- * el ajuste activo tiene tres estados (`None` = fábrica, `[]` = nivel
- * apagado, lista = propias) y al elegir fábrica la lista propia
- * desaparecía. Quien hubiera armado la suya no podía ir y volver.
- * 
- * Aquí se guarda aparte del ajuste activo: cambiar de modo no pierde nada.
+ * Sin esto, volver a las de fábrica borraba la lista propia para siempre:
+ * el ajuste activo tiene dos estados (`None` = fábrica, lista = propias) y
+ * al elegir fábrica la lista propia desaparecía. Quien armara la suya no
+ * podía ir y volver.
  */
-autocorreccion_propias_borrado?: string[]; autocorreccion_propias_sustitucion?: string[]; autocorreccion_senales_borrado?: string[] | null; 
+autocorreccion_propias_sustitucion?: string[]; 
 /**
- * Señales de sustitución con paralelo (nivel 2). Mismo contrato que
- * `autocorreccion_senales_borrado`.
+ * `None` = las de fábrica · lista = las del usuario.
  */
 autocorreccion_senales_sustitucion?: string[] | null; transcribe_accelerator?: TranscribeAcceleratorSetting; ort_accelerator?: OrtAcceleratorSetting; transcribe_gpu_device?: number; extra_recording_buffer_ms?: number; vad_enabled?: boolean; 
 /**
@@ -1845,7 +1823,7 @@ export type RecordingRetentionPeriod = "never" | "preserve_limit" | "days_3" | "
  * Rust, la pantalla seguiria ensenando la lista vieja y el usuario leeria algo
  * que no es. Aqui hay una sola fuente y la otra la consulta.
  */
-export type SenalesDeFabrica = { borrado: string[]; sustitucion: string[] }
+export type SenalesDeFabrica = { sustitucion: string[] }
 export type ShortcutBinding = { id: string; name: string; description: string; default_binding: string; current_binding: string }
 export type SoundTheme = "abrax" | "marimba" | "pop" | "custom"
 /**

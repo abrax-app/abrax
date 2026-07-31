@@ -444,8 +444,6 @@
         "ejemplo": "Ví dụ: “Đặt lịch họp vào thứ Ba… à không, xin lỗi, thứ Tư” → “Đặt lịch họp vào thứ Tư.”",
         "sustitucionTitle": "Cụm từ báo hiệu sửa",
         "sustitucionDescription": "Những gì bạn nói để thay thế điều vừa nói (ví dụ “à không”, “ý tôi là”). Chỉ thay khi tìm thấy một đoạn tương đương trước cụm từ đó — cùng thứ trong tuần, tháng, giờ, con số hoặc tên. Nếu không tìm thấy, nó không đổi gì.",
-        "borradoTitle": "Cụm từ báo hiệu xóa",
-        "borradoDescription": "Những gì bạn nói để bỏ nguyên câu vừa nói (ví dụ “xóa câu đó”, “quên câu đó”). Câu đó và cụm từ báo hiệu đều bị xóa.",
         "placeholder": "Thêm cụm từ",
         "add": "Thêm",
         "remove": "Xóa {{senal}}",
@@ -455,8 +453,7 @@
         "disable": "Tắt cấp độ",
         "mode": {
           "defaults": "Mặc định",
-          "custom": "Của tôi",
-          "disabled": "Tắt"
+          "custom": "Của tôi"
         }
       },
       "emojiDictado": {

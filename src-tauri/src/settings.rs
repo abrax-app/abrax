@@ -560,26 +560,16 @@ pub struct AppSettings {
     pub modelo_antes_de_sistema: Option<String>,
     #[serde(default = "default_autocorreccion_activa")]
     pub autocorreccion_activa: bool,
-    /// Señales de borrado explícito (nivel 1). Mismo contrato que las
-    /// muletillas: `null` = las de fábrica, `[]` = nivel apagado, lista propia
-    /// = reemplaza a las de fábrica.
     /// Las señales PROPIAS del usuario, recordadas aunque esté usando las de
     /// fábrica.
     ///
-    /// Sin esto, «volver a las de fábrica» borraba la lista propia para siempre:
-    /// el ajuste activo tiene tres estados (`None` = fábrica, `[]` = nivel
-    /// apagado, lista = propias) y al elegir fábrica la lista propia
-    /// desaparecía. Quien hubiera armado la suya no podía ir y volver.
-    ///
-    /// Aquí se guarda aparte del ajuste activo: cambiar de modo no pierde nada.
-    #[serde(default)]
-    pub autocorreccion_propias_borrado: Vec<String>,
+    /// Sin esto, volver a las de fábrica borraba la lista propia para siempre:
+    /// el ajuste activo tiene dos estados (`None` = fábrica, lista = propias) y
+    /// al elegir fábrica la lista propia desaparecía. Quien armara la suya no
+    /// podía ir y volver.
     #[serde(default)]
     pub autocorreccion_propias_sustitucion: Vec<String>,
-    #[serde(default)]
-    pub autocorreccion_senales_borrado: Option<Vec<String>>,
-    /// Señales de sustitución con paralelo (nivel 2). Mismo contrato que
-    /// `autocorreccion_senales_borrado`.
+    /// `None` = las de fábrica · lista = las del usuario.
     #[serde(default)]
     pub autocorreccion_senales_sustitucion: Option<Vec<String>>,
     #[serde(default)]
@@ -1080,9 +1070,7 @@ pub fn get_default_settings() -> AppSettings {
         emoji_dictado: default_emoji_dictado(),
         modelo_antes_de_sistema: None,
         autocorreccion_activa: default_autocorreccion_activa(),
-        autocorreccion_propias_borrado: Vec::new(),
         autocorreccion_propias_sustitucion: Vec::new(),
-        autocorreccion_senales_borrado: None,
         autocorreccion_senales_sustitucion: None,
         transcribe_accelerator: TranscribeAcceleratorSetting::default(),
         ort_accelerator: OrtAcceleratorSetting::default(),
@@ -2162,10 +2150,6 @@ mod tests {
         );
         // Sus dos listas en `None` = las de fabrica. `Some(vec![])` seria el
         // nivel apagado, que es como NO tener la funcion.
-        assert!(
-            s.autocorreccion_senales_borrado.is_none(),
-            "las senales de borrado no vienen de fabrica"
-        );
         assert!(
             s.autocorreccion_senales_sustitucion.is_none(),
             "las senales de sustitucion no vienen de fabrica"

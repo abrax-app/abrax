@@ -444,8 +444,6 @@
         "ejemplo": "Beispiel: „Leg den Termin auf Dienstag … nein, Moment, auf Mittwoch“ wird zu „Leg den Termin auf Mittwoch.“",
         "sustitucionTitle": "Korrektursignale",
         "sustitucionDescription": "Was du sagst, um etwas gerade Gesagtes zu ersetzen (z. B. „nein, Moment“, „ich meine“). Ersetzt nur, wenn vor dem Signal ein gleichwertiger Abschnitt steht – gleicher Wochentag, Monat, Uhrzeit, Zahl oder Name. Findet sie keinen, ändert sie nichts.",
-        "borradoTitle": "Löschsignale",
-        "borradoDescription": "Was du sagst, um den ganzen vorherigen Satz zu verwerfen (z. B. „lösch das“, „vergiss das“). Dieser Satz und das Signal werden entfernt.",
         "placeholder": "Signal hinzufügen",
         "add": "Hinzufügen",
         "remove": "{{senal}} entfernen",
@@ -455,8 +453,7 @@
         "disable": "Stufe deaktivieren",
         "mode": {
           "defaults": "Werkseitige",
-          "custom": "Meine",
-          "disabled": "Aus"
+          "custom": "Meine"
         }
       },
       "emojiDictado": {

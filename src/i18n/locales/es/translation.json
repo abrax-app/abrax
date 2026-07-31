@@ -444,16 +444,13 @@
         "ejemplo": "Ejemplo: «Agenda la reunión para el martes… no, perdón, para el miércoles» → «Agenda la reunión para el miércoles.»",
         "sustitucionTitle": "Señales de corrección",
         "sustitucionDescription": "Lo que dices para reemplazar algo que acabas de decir (p. ej. «no, perdón», «digo»). Solo sustituye si encuentra antes un segmento equivalente —mismo día, mes, hora, número o nombre—; si no lo encuentra, no toca nada.",
-        "borradoTitle": "Señales de borrado",
-        "borradoDescription": "Lo que dices para descartar la oración anterior completa (p. ej. «borra eso», «olvida eso»). Se elimina esa oración y la señal.",
         "placeholder": "Agregar señal",
         "add": "Agregar",
         "remove": "Eliminar {{senal}}",
         "duplicate": "«{{senal}}» ya existe",
         "mode": {
           "defaults": "Las de fábrica",
-          "custom": "Las mías",
-          "disabled": "Apagado"
+          "custom": "Las mías"
         },
         "showDefaults": "Usar las de fábrica",
         "resetDefaults": "Volver a las de fábrica",

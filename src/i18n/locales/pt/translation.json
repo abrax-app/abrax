@@ -444,16 +444,13 @@
         "ejemplo": "Exemplo: “Marque a reunião para terça… não, desculpa, para quarta” → “Marque a reunião para quarta.”",
         "sustitucionTitle": "Sinais de correção",
         "sustitucionDescription": "O que você diz para substituir algo que acabou de falar (p. ex. “não, desculpa”, “quer dizer”). Só substitui se encontrar antes um trecho equivalente — mesmo dia da semana, mês, hora, número ou nome. Se não encontrar, não mexe em nada.",
-        "borradoTitle": "Sinais de exclusão",
-        "borradoDescription": "O que você diz para descartar a frase anterior inteira (p. ex. “apaga isso”, “esquece isso”). Essa frase e o sinal são removidos.",
         "placeholder": "Adicionar sinal",
         "add": "Adicionar",
         "remove": "Remover {{senal}}",
         "duplicate": "“{{senal}}” já existe",
         "mode": {
           "defaults": "As de fábrica",
-          "custom": "As minhas",
-          "disabled": "Desligado"
+          "custom": "As minhas"
         },
         "showDefaults": "Usar os de fábrica",
         "resetDefaults": "Voltar aos de fábrica",

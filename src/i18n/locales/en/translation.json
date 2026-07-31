@@ -444,16 +444,13 @@
         "ejemplo": "Example: “Schedule the meeting for Tuesday… no, sorry, for Wednesday” → “Schedule the meeting for Wednesday.”",
         "sustitucionTitle": "Correction cues",
         "sustitucionDescription": "What you say to replace something you just said (e.g. “no, sorry”, “I mean”). It only substitutes when it finds an equivalent segment before the cue — same weekday, month, time, number or name. If it finds none, it changes nothing.",
-        "borradoTitle": "Deletion cues",
-        "borradoDescription": "What you say to discard the whole previous sentence (e.g. “delete that”, “forget that”). That sentence and the cue are removed.",
         "placeholder": "Add cue",
         "add": "Add",
         "remove": "Remove {{senal}}",
         "duplicate": "“{{senal}}” already exists",
         "mode": {
           "defaults": "Factory ones",
-          "custom": "Mine",
-          "disabled": "Off"
+          "custom": "Mine"
         },
         "showDefaults": "Use the built-in ones",
         "resetDefaults": "Back to the built-in ones",

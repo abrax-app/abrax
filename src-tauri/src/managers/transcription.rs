@@ -1867,7 +1867,6 @@ fn post_process_transcription_text(
     let raw = if settings.autocorreccion_activa {
         crate::audio_toolkit::aplicar_autocorreccion(
             &raw,
-            &settings.autocorreccion_senales_borrado,
             &settings.autocorreccion_senales_sustitucion,
         )
     } else {

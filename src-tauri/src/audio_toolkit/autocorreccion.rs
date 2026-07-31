@@ -13,15 +13,30 @@
 //! y sin Post Proceso/BYOK. Refuerza el pilar «100% local» en vez de abrir una
 //! excepción.
 //!
-//! # Los dos niveles
+//! # Como funciona
 //!
-//! - **Nivel 1 — borrado explícito.** Señales inequívocas («borra eso»,
-//!   «olvida eso», «no, nada», «déjalo») borran la ORACIÓN ANTERIOR COMPLETA
-//!   más la señal. Se prueba primero justamente por ser inequívoco.
-//! - **Nivel 2 — sustitución con paralelo.** Tras la señal («no, perdón»,
-//!   «mejor dicho», «digo», …) se busca hacia atrás un SEGMENTO PARALELO —misma
-//!   preposición, mismo determinante y misma categoría (día, mes, hora, número,
-//!   nombre propio)— y se reemplaza por lo que vino después de la señal.
+//! Tras la senal («no, perdon», «perdon», «mejor dicho», «digo», …) se busca
+//! hacia atras un SEGMENTO PARALELO —misma preposicion y misma categoria (dia,
+//! mes, hora, numero, nombre propio)— y se reemplaza por lo que vino despues de
+//! la senal.
+//!
+//! # Hubo un segundo nivel, y se retiro
+//!
+//! Existio un «borrado explicito»: senales como «borra eso» u «olvida eso» que
+//! eliminaban LA ORACION ANTERIOR COMPLETA. Se retiro el 31/07 por decision de
+//! producto, y con razon: era la unica pieza de todo el dictado capaz de hacer
+//! desaparecer texto, y sus cuatro senales de fabrica son espanol de todos los
+//! dias. Medido con prosa normal, destrozaba seis de cada ocho frases:
+//!
+//! ```text
+//! «Termina el informe y dejalo para el lunes»  ->  «para el lunes»
+//! «Le dije que no, nada mas»                   ->  «mas»
+//! ```
+//!
+//! Llego a tener una guarda que exigia que la senal cerrara el dictado, y con
+//! ella dejaba de destrozar. Aun asi se fue: nadie la habia pedido, y una
+//! funcion que borra parrafos enteros no se sostiene por si sola al lado de una
+//! que solo sustituye una fecha.
 //!
 //! # REGLA DE ORO
 //!
@@ -62,10 +77,7 @@ const VENTANA_ATRAS: usize = 25;
 /// solo comparten una palabra lejana.
 const CABEZA_SEGMENTO: usize = 4;
 
-/// Señales de nivel 1 (borrado explícito) por defecto, en es-419.
-pub const BORRADO_POR_DEFECTO: &[&str] = &["borra eso", "olvida eso", "no, nada", "déjalo"];
-
-/// Señales de nivel 2 (sustitución con paralelo) por defecto, en es-419.
+/// Señales de correccion (sustitución con paralelo) por defecto, en es-419.
 ///
 /// **«perdón» sola SÍ entra**, desde el 31/07. Estuvo fuera por miedo a «perdón
 /// por la demora», que es una disculpa y no una retractación — pero ese miedo
@@ -457,33 +469,6 @@ fn fin_de_oracion(tokens: &[Token], desde: usize, tope: usize) -> usize {
     tope
 }
 
-/// Nivel 1: borra la oración anterior completa y la señal.
-/// ¿La señal de borrado CIERRA el dictado? Es lo que separa una orden de una
-/// frase que casualmente contiene esas palabras.
-///
-/// Cierra si no queda nada detrás, o si la propia señal termina en puntuación de
-/// cierre («… borra eso. Y ahora otra cosa»: ahí sí fue una orden y lo que sigue
-/// es dictado nuevo).
-fn borrado_cierra_el_dictado(tokens: &[Token], i: usize, n: usize) -> bool {
-    i + n >= tokens.len() || tokens[i + n - 1].cierra
-}
-
-fn aplicar_borrado(tokens: &[Token], i: usize, n: usize) -> String {
-    let mut inicio = i;
-    if i > 0 {
-        // El token anterior es el final de la oración a borrar; se retrocede
-        // hasta justo después del cierre anterior.
-        inicio = i - 1;
-        while inicio > 0 && !tokens[inicio - 1].cierra {
-            inicio -= 1;
-        }
-    }
-    let mut salida: Vec<&str> = Vec::with_capacity(tokens.len());
-    salida.extend(tokens[..inicio].iter().map(|t| t.crudo));
-    salida.extend(tokens[i + n..].iter().map(|t| t.crudo));
-    salida.join(" ")
-}
-
 /// ¿Son paralelos dos segmentos? Igualdad de forma, con UNA excepción medida.
 ///
 /// La regla general es exacta —misma preposición, mismo determinante, misma
@@ -583,41 +568,12 @@ fn aplicar_sustitucion(tokens: &[Token], i: usize, n: usize) -> Option<String> {
 /// Una pasada: aplica como mucho UNA corrección. `None` = no se tocó nada.
 fn una_pasada(
     texto: &str,
-    borrado: &[Vec<String>],
     sustitucion: &[Vec<String>],
     sustitucion_elipsis: &[Vec<String>],
 ) -> Option<String> {
     let tokens = tokenizar(texto);
     let mut i = 0;
     while i < tokens.len() {
-        // Nivel 1 primero: es inequívoco… PERO SOLO SI CIERRA EL DICTADO.
-        //
-        // Sin esa condición no era inequívoco en absoluto: las cuatro señales de
-        // fábrica son español corriente en mitad de una frase, y como el nivel 1
-        // borra LA ORACIÓN ANTERIOR COMPLETA, el destrozo era total. Medido el
-        // 30/07 sobre prosa normal, con las señales de fábrica:
-        //
-        //   «Termina el informe y déjalo para el lunes»  → «para el lunes»
-        //   «El archivo está en el escritorio, déjalo ahí» → «ahí»
-        //   «Le dije que no, nada más»                   → «más»
-        //   «Borra eso del pizarrón por favor»           → «del pizarrón por favor»
-        //
-        // Seis de ocho frases mutiladas. Por eso la función venía apagada de
-        // fábrica, y por eso no se podía encender sin esto.
-        //
-        // La condición sale de cómo se usa de verdad: «borra eso» es una ORDEN,
-        // y una orden se dicta al final —dices el texto, te arrepientes, dices
-        // «borra eso» y callas—. Si detrás sigue habiendo frase, no era una
-        // orden: era la frase.
-        if let Some(n) = casa_senal(&tokens, i, borrado) {
-            if borrado_cierra_el_dictado(&tokens, i, n) {
-                return Some(aplicar_borrado(&tokens, i, n));
-            }
-            // No era orden: se sigue buscando, igual que hace el nivel 2 cuando
-            // una señal suya no encuentra paralelo.
-            i += n;
-            continue;
-        }
         if let Some(n) = casa_senal(&tokens, i, sustitucion) {
             if let Some(nuevo) = aplicar_sustitucion(&tokens, i, n) {
                 return Some(nuevo);
@@ -652,21 +608,16 @@ fn una_pasada(
 ///
 /// Con ambas listas vacías la función es un no-op exacto: devuelve el texto sin
 /// tocar ni un espacio, que es lo que debe pasar con el ajuste apagado.
-pub fn aplicar_autocorreccion(
-    texto: &str,
-    senales_borrado: &Option<Vec<String>>,
-    senales_sustitucion: &Option<Vec<String>>,
-) -> String {
+pub fn aplicar_autocorreccion(texto: &str, senales_sustitucion: &Option<Vec<String>>) -> String {
     let a_lista = |propias: &Option<Vec<String>>, defecto: &[&str]| -> Vec<Vec<String>> {
         match propias {
             Some(v) => compilar(v),
             None => compilar(&defecto.iter().map(|s| s.to_string()).collect::<Vec<_>>()),
         }
     };
-    let borrado = a_lista(senales_borrado, BORRADO_POR_DEFECTO);
     let sustitucion = a_lista(senales_sustitucion, SUSTITUCION_POR_DEFECTO);
 
-    if borrado.is_empty() && sustitucion.is_empty() {
+    if sustitucion.is_empty() {
         return texto.to_string();
     }
 
@@ -685,7 +636,7 @@ pub fn aplicar_autocorreccion(
 
     let mut actual = texto.to_string();
     for _ in 0..MAX_PASADAS {
-        match una_pasada(&actual, &borrado, &sustitucion, &sustitucion_elipsis) {
+        match una_pasada(&actual, &sustitucion, &sustitucion_elipsis) {
             Some(nuevo) => actual = nuevo,
             None => return actual,
         }
@@ -698,7 +649,7 @@ mod tests {
     use super::*;
 
     fn corrige(texto: &str) -> String {
-        aplicar_autocorreccion(texto, &None, &None)
+        aplicar_autocorreccion(texto, &None)
     }
 
     // ───────────────────────── Nivel 2 — el caso principal ─────────────────
@@ -774,43 +725,6 @@ mod tests {
         // preposición, distinto sentido. No se toca nada.
         let texto = "Trabajo desde el martes, digo, para el miércoles";
         assert_eq!(corrige(texto), texto);
-    }
-
-    // ───────────────────────── Nivel 1 — borrado explícito ─────────────────
-
-    #[test]
-    fn nivel1_borra_la_oracion_anterior_completa() {
-        assert_eq!(
-            corrige("Hola equipo. Manda el informe hoy. Borra eso."),
-            "Hola equipo."
-        );
-    }
-
-    #[test]
-    fn nivel1_olvida_eso() {
-        assert_eq!(
-            corrige("Compra pan. Olvida eso. Compra leche."),
-            "Compra leche."
-        );
-    }
-
-    #[test]
-    fn nivel1_no_nada() {
-        assert_eq!(corrige("Llama a soporte. No, nada."), "");
-    }
-
-    #[test]
-    fn nivel1_dejalo() {
-        assert_eq!(corrige("Cancela el pedido. Déjalo."), "");
-    }
-
-    #[test]
-    fn nivel1_no_cruza_el_punto_hacia_atras() {
-        // Solo cae la última oración; la primera sobrevive intacta.
-        assert_eq!(
-            corrige("Primera oración. Segunda oración. Borra eso."),
-            "Primera oración."
-        );
     }
 
     // ─────────────── Falsos positivos OBLIGATORIOS de la orden ─────────────
@@ -920,7 +834,7 @@ mod tests {
             "",
         ] {
             assert_eq!(
-                aplicar_autocorreccion(texto, &vacio, &vacio),
+                aplicar_autocorreccion(texto, &vacio),
                 texto,
                 "el ajuste apagado no puede tocar el texto"
             );
@@ -932,12 +846,12 @@ mod tests {
         // Quien usa «nel» en vez de «no, perdón» lo configura y funciona…
         let propias = Some(vec!["nel".to_string()]);
         assert_eq!(
-            aplicar_autocorreccion("Vamos el martes nel el miércoles", &None, &propias),
+            aplicar_autocorreccion("Vamos el martes nel el miércoles", &propias),
             "Vamos el miércoles"
         );
         // …y las de fábrica dejan de aplicar, porque REEMPLAZAN, no se suman.
         let texto = "Vamos el martes, digo, el miércoles";
-        assert_eq!(aplicar_autocorreccion(texto, &None, &propias), texto);
+        assert_eq!(aplicar_autocorreccion(texto, &propias), texto);
     }
 
     #[test]
@@ -963,9 +877,18 @@ mod tests {
 
     #[test]
     fn tildes_y_mayusculas_no_impiden_reconocer_la_senal() {
-        // La señal se compara por clave normalizada: «Dejalo» sin tilde cae.
-        assert_eq!(corrige("Manda el correo. Dejalo."), "");
-        assert_eq!(corrige("Manda el correo. DÉJALO."), "");
+        // La señal se compara por clave normalizada, así que ni las mayúsculas
+        // ni las tildes que el dictado se come impiden reconocerla. (Se probaba
+        // con «Déjalo», del nivel de borrado retirado el 31/07; ahora con una
+        // señal de corrección, que es lo que queda.)
+        assert_eq!(
+            corrige("Nos vemos el lunes, PERDÓN, el martes."),
+            "Nos vemos el martes."
+        );
+        assert_eq!(
+            corrige("Nos vemos el lunes, perdon, el martes."),
+            "Nos vemos el martes."
+        );
     }
 
     // ──────────────── «no» tras puntos suspensivos (falso comienzo) ────────
@@ -1040,45 +963,7 @@ mod tests {
         // Las señales de elipsis siguen la suerte del nivel 2: apagado el
         // nivel, apagadas ellas — identidad exacta.
         let t = "Voy a las ocho… no, a las nueve.";
-        assert_eq!(aplicar_autocorreccion(t, &None, &Some(vec![])), t);
-    }
-
-    // ── Nivel 1: orden sí, frase no ────────────────────────────────────────
-    //
-    // Este bloque es la razón por la que la función se puede encender de
-    // fábrica. Antes de la guarda, las seis primeras salían mutiladas.
-
-    #[test]
-    fn nivel1_no_toca_prosa_donde_la_senal_va_en_medio() {
-        for texto in [
-            "Termina el informe y déjalo para el lunes",
-            "El archivo está en el escritorio, déjalo ahí",
-            "Ya revisé el contrato. Déjalo como está",
-            "No, nada que ver con eso",
-            "Le dije que no, nada más",
-            "Borra eso del pizarrón por favor",
-            "Olvida eso que te conté y sigamos",
-        ] {
-            assert_eq!(corrige(texto), texto, "mutiló: «{texto}»");
-        }
-    }
-
-    #[test]
-    fn nivel1_sigue_borrando_cuando_es_una_orden_de_verdad() {
-        // Dictas una frase, te arrepientes y dices la orden: la frase se va
-        // entera y no queda nada. Es lo que se pidió.
-        assert_eq!(corrige("Agenda la reunión para el martes. Borra eso"), "");
-        assert_eq!(corrige("Nos juntamos el lunes, borra eso"), "");
-        // Se borra SOLO la oración anterior, no todo lo dictado antes.
-        assert_eq!(
-            corrige("Primero esto. Segundo lo otro. Borra eso"),
-            "Primero esto."
-        );
-        // Con la señal cerrada por punto y dictado nuevo detrás.
-        assert_eq!(
-            corrige("Confirmo el envío. Olvida eso. Mando el correo mañana"),
-            "Mando el correo mañana"
-        );
+        assert_eq!(aplicar_autocorreccion(t, &Some(vec![])), t);
     }
 
     #[test]

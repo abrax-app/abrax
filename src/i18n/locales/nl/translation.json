@@ -444,8 +444,6 @@
         "ejemplo": "Voorbeeld: “Zet de vergadering op dinsdag… nee, sorry, op woensdag” wordt “Zet de vergadering op woensdag.”",
         "sustitucionTitle": "Correctiesignalen",
         "sustitucionDescription": "Wat je zegt om iets te vervangen wat je net hebt gezegd (bijvoorbeeld “nee, sorry” of “ik bedoel”). Er wordt alleen vervangen als er vóór het signaal een vergelijkbaar stuk staat: dezelfde weekdag, maand, tijd, getal of naam. Wordt dat niet gevonden, dan verandert er niets.",
-        "borradoTitle": "Wissignalen",
-        "borradoDescription": "Wat je zegt om de hele vorige zin te laten vallen (bijvoorbeeld “wis dat” of “vergeet dat”). Die zin en het signaal verdwijnen allebei.",
         "placeholder": "Signaal toevoegen",
         "add": "Toevoegen",
         "remove": "{{senal}} verwijderen",
@@ -455,8 +453,7 @@
         "disable": "Niveau uitzetten",
         "mode": {
           "defaults": "Standaard",
-          "custom": "De mijne",
-          "disabled": "Uit"
+          "custom": "De mijne"
         }
       },
       "emojiDictado": {

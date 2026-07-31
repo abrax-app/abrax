@@ -444,8 +444,6 @@
         "ejemplo": "例如：「把會議安排在週二……不對，抱歉，是週三」→「把會議安排在週三。」",
         "sustitucionTitle": "修正觸發詞",
         "sustitucionDescription": "你用來取代剛說過內容的話（例如「不對，抱歉」「我是說」）。只有在觸發詞之前找到同類的對應內容時才會取代——同為星期、月份、時間、數字或人名。找不到就不會更動。",
-        "borradoTitle": "刪除觸發詞",
-        "borradoDescription": "你用來作廢整句前文的話（例如「刪掉這句」「不要這句」）。那句話連同觸發詞一起被刪除。",
         "placeholder": "新增觸發詞",
         "add": "新增",
         "remove": "移除 {{senal}}",
@@ -455,8 +453,7 @@
         "disable": "關閉此層級",
         "mode": {
           "defaults": "原廠內建",
-          "custom": "我的",
-          "disabled": "關閉"
+          "custom": "我的"
         }
       },
       "emojiDictado": {

@@ -721,17 +721,6 @@ pub fn change_lazy_stream_close_setting(app: AppHandle, enabled: bool) -> Result
 
 /// Recuerda la lista PROPIA aunque el usuario este usando las de fabrica, para
 /// que ir y volver entre las dos no le borre su trabajo.
-#[tauri::command]
-#[specta::specta]
-pub fn change_autocorreccion_propias_borrado_setting(
-    app: AppHandle,
-    senales: Vec<String>,
-) -> Result<(), String> {
-    let mut settings = settings::get_settings(&app);
-    settings.autocorreccion_propias_borrado = senales;
-    settings::write_settings(&app, settings);
-    Ok(())
-}
 
 #[tauri::command]
 #[specta::specta]
@@ -753,16 +742,14 @@ pub fn change_autocorreccion_propias_sustitucion_setting(
 /// que no es. Aqui hay una sola fuente y la otra la consulta.
 #[derive(serde::Serialize, serde::Deserialize, specta::Type)]
 pub struct SenalesDeFabrica {
-    pub borrado: Vec<String>,
     pub sustitucion: Vec<String>,
 }
 
 #[tauri::command]
 #[specta::specta]
 pub fn listar_senales_de_fabrica() -> SenalesDeFabrica {
-    use crate::audio_toolkit::autocorreccion::{BORRADO_POR_DEFECTO, SUSTITUCION_POR_DEFECTO};
+    use crate::audio_toolkit::autocorreccion::SUSTITUCION_POR_DEFECTO;
     SenalesDeFabrica {
-        borrado: BORRADO_POR_DEFECTO.iter().map(|s| s.to_string()).collect(),
         sustitucion: SUSTITUCION_POR_DEFECTO
             .iter()
             .map(|s| s.to_string())
@@ -799,17 +786,6 @@ pub fn change_emoji_dictado_setting(app: AppHandle, activo: bool) -> Result<(), 
 
 /// `None` = las senales de fabrica, `Some(vec![])` = nivel apagado, lista propia
 /// = reemplaza a las de fabrica. Mismo contrato que las muletillas.
-#[tauri::command]
-#[specta::specta]
-pub fn change_autocorreccion_senales_borrado_setting(
-    app: AppHandle,
-    senales: Option<Vec<String>>,
-) -> Result<(), String> {
-    let mut settings = settings::get_settings(&app);
-    settings.autocorreccion_senales_borrado = senales;
-    settings::write_settings(&app, settings);
-    Ok(())
-}
 
 #[tauri::command]
 #[specta::specta]

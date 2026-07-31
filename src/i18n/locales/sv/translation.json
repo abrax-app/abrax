@@ -444,16 +444,13 @@
         "ejemplo": "Exempel: ”Boka mötet på tisdag… nej, förlåt, på onsdag” → ”Boka mötet på onsdag.”",
         "sustitucionTitle": "Rättelsesignaler",
         "sustitucionDescription": "Det du säger för att byta ut något du precis sagt (t.ex. ”nej, förlåt”, ”jag menar”). Bytet sker bara om det finns ett likvärdigt avsnitt före signalen – samma veckodag, månad, tid, siffra eller namn. Hittas inget ändras ingenting.",
-        "borradoTitle": "Raderingssignaler",
-        "borradoDescription": "Det du säger för att kasta hela föregående mening (t.ex. ”radera det”, ”glöm det”). Meningen och signalen tas bort.",
         "placeholder": "Lägg till signal",
         "add": "Lägg till",
         "remove": "Ta bort {{senal}}",
         "duplicate": "”{{senal}}” finns redan",
         "mode": {
           "defaults": "Fabriksinställda",
-          "custom": "Mina",
-          "disabled": "Av"
+          "custom": "Mina"
         },
         "showDefaults": "Använd de inbyggda",
         "resetDefaults": "Tillbaka till inbyggda",

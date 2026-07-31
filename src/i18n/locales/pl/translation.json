@@ -444,8 +444,6 @@
         "ejemplo": "Przykład: „Zaplanuj spotkanie na wtorek… nie, przepraszam, na środę” zmienia się w „Zaplanuj spotkanie na środę.”",
         "sustitucionTitle": "Sygnały poprawki",
         "sustitucionDescription": "To, co mówisz, żeby zastąpić coś, co przed chwilą zostało powiedziane (np. „nie, przepraszam”, „to znaczy”). Zamienia tylko wtedy, gdy przed sygnałem znajdzie odpowiadający fragment — ten sam dzień tygodnia, miesiąc, godzinę, liczbę lub imię. Jeśli nie znajdzie, niczego nie zmienia.",
-        "borradoTitle": "Sygnały usunięcia",
-        "borradoDescription": "To, co mówisz, żeby odrzucić całe poprzednie zdanie (np. „usuń to”, „zapomnij o tym”). Znika to zdanie razem z sygnałem.",
         "placeholder": "Dodaj sygnał",
         "add": "Dodaj",
         "remove": "Usuń {{senal}}",
@@ -455,8 +453,7 @@
         "disable": "Wyłącz poziom",
         "mode": {
           "defaults": "Fabryczne",
-          "custom": "Moje",
-          "disabled": "Wyłączone"
+          "custom": "Moje"
         }
       },
       "emojiDictado": {

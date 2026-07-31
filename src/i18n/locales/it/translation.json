@@ -444,8 +444,6 @@
         "ejemplo": "Esempio: «Fissa la riunione per martedì… no, scusa, per mercoledì» → «Fissa la riunione per mercoledì.»",
         "sustitucionTitle": "Segnali di correzione",
         "sustitucionDescription": "Quello che dici per sostituire qualcosa che hai appena detto (p. es. «no, scusa», «cioè»). Sostituisce solo se prima del segnale trova un segmento equivalente: stesso giorno, mese, ora, numero o nome. Se non lo trova, non cambia nulla.",
-        "borradoTitle": "Segnali di cancellazione",
-        "borradoDescription": "Quello che dici per scartare l'intera frase precedente (p. es. «cancella questo», «lascia stare»). Quella frase e il segnale vengono eliminati.",
         "placeholder": "Aggiungi segnale",
         "add": "Aggiungi",
         "remove": "Elimina {{senal}}",
@@ -455,8 +453,7 @@
         "disable": "Disattiva livello",
         "mode": {
           "defaults": "Quelle di fabbrica",
-          "custom": "Le mie",
-          "disabled": "Spento"
+          "custom": "Le mie"
         }
       },
       "emojiDictado": {
