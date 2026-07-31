@@ -1069,5 +1069,9 @@
   "soundPicker": {
     "custom": "Özel",
     "preview": "Temayı dinle (başlangıç ve bitiş)"
+  },
+  "vox": {
+    "atajoHint": "Herhangi bir uygulamada metni seç ve <k>{{atajo}}</k> tuşuna bas: VOX sesli okur.",
+    "atajoSinBinding": "VOX’un seçimi sesli okuması için Ayarlar’dan bir kısayol belirle."
   }
 }

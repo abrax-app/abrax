@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { type } from "@tauri-apps/plugin-os";
 import { MicrophoneSelector } from "../MicrophoneSelector";
 import { PruebaMicrofono } from "../PruebaMicrofono";
+import { AtajoVox } from "../../AtajoVox";
 import { ShortcutInput } from "../ShortcutInput";
 import { SettingsGroup } from "../../ui/SettingsGroup";
 import { OutputDeviceSelector } from "../OutputDeviceSelector";
@@ -31,6 +32,10 @@ export const GeneralSettings: React.FC = () => {
             atajo global, y todos los atajos se configuran en un mismo sitio: si
             estuviera en Escucha habría dos lugares donde buscar teclas. */}
         <ShortcutInput shortcutId="leer_seleccion" grouped={true} />
+        {/* El atajo se configura arriba; esto explica PARA QUE sirve y con que
+            gesto se usa. VOX no tiene boton porque el texto que lee vive fuera
+            de ABRAX: si no sabes la combinacion, la funcion no existe. */}
+        <AtajoVox className="px-4 pb-2" />
       </SettingsGroup>
       <ModelSettingsCard />
       <SettingsGroup title={t("settings.sound.title")}>

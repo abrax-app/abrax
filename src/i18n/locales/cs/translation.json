@@ -1069,5 +1069,9 @@
   "soundPicker": {
     "custom": "Vlastní",
     "preview": "Poslechnout motiv (start a stop)"
+  },
+  "vox": {
+    "atajoHint": "Označ text v jakékoli aplikaci a stiskni <k>{{atajo}}</k>: VOX ho přečte nahlas.",
+    "atajoSinBinding": "Nastav v Nastavení zkratku, aby VOX přečetl výběr nahlas."
   }
 }

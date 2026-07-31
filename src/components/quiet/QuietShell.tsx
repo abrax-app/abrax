@@ -27,6 +27,7 @@ import { GeneralSettings, HistorySettings, ModelsSettings } from "../settings";
 import { SECTIONS_CONFIG, type SidebarSection } from "../Sidebar";
 import { ShellSelector } from "../settings/ShellSelector";
 import { PaletteSelector } from "../settings/PaletteSelector";
+import { AtajoVox } from "../AtajoVox";
 import { Chip } from "../bancada/Chip";
 import { AudioLines, Eraser, Languages, MonitorSpeaker } from "lucide-react";
 import "./quiet.css";
@@ -296,6 +297,7 @@ export const QuietShell: React.FC = () => {
                     espacio central tiene que servir para algo. Son los cuatro
                     ajustes que de verdad se tocan al dictar, y son los MISMOS
                     componentes que usa Karting, no una copia. */}
+                <AtajoVox />
                 <div className="q-chips">
                   <Chip
                     icon={MonitorSpeaker}

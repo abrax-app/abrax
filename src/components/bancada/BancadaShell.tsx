@@ -40,6 +40,7 @@ import { ShellSelector } from "../settings/ShellSelector";
 import { PaletteSelector } from "../settings/PaletteSelector";
 import { ThemeSelector } from "../settings/ThemeSelector";
 import { SECTIONS_CONFIG, type SidebarSection } from "../Sidebar";
+import { AtajoVox } from "../AtajoVox";
 import { montarTacometro, type TacoHandle } from "./tacometro";
 import { ShiftLights, type ShiftLightsHandle } from "./ShiftLights";
 import { BotonDictar } from "./BotonDictar";
@@ -687,6 +688,7 @@ export const BancadaShell: React.FC = () => {
         />
       </div>
 
+      <AtajoVox className="bnc-vox" />
       {/* chips de ajustes (funcionales, con rótulo) */}
       <div className="bnc-chips">
         <Chip

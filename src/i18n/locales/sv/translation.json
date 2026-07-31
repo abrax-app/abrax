@@ -1069,5 +1069,9 @@
   "soundPicker": {
     "custom": "Anpassad",
     "preview": "Lyssna på temat (start och stopp)"
+  },
+  "vox": {
+    "atajoHint": "Markera text i valfri app och tryck på <k>{{atajo}}</k>: VOX läser upp den.",
+    "atajoSinBinding": "Ställ in ett kortkommando i Inställningar så att VOX kan läsa upp markeringen."
   }
 }

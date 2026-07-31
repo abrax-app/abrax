@@ -1069,5 +1069,9 @@
   "soundPicker": {
     "custom": "Benutzerdefiniert",
     "preview": "Klangthema anhören (Start und Stopp)"
+  },
+  "vox": {
+    "atajoHint": "Markiere Text in einer beliebigen App und drücke <k>{{atajo}}</k>: VOX liest ihn vor.",
+    "atajoSinBinding": "Lege in den Einstellungen ein Tastenkürzel fest, damit VOX die Auswahl vorlesen kann."
   }
 }

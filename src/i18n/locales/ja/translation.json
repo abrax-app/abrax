@@ -1069,5 +1069,9 @@
   "soundPicker": {
     "custom": "カスタム",
     "preview": "サウンドテーマを試聴（開始と終了）"
+  },
+  "vox": {
+    "atajoHint": "どのアプリでも文字を選んで <k>{{atajo}}</k> を押すと、VOX が読み上げます。",
+    "atajoSinBinding": "設定でショートカットを決めると、VOX が選択範囲を読み上げます。"
   }
 }

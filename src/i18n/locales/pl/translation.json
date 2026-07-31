@@ -1069,5 +1069,9 @@
   "soundPicker": {
     "custom": "Niestandardowy",
     "preview": "Odsłuchaj motyw (start i stop)"
+  },
+  "vox": {
+    "atajoHint": "Zaznacz tekst w dowolnej aplikacji i naciśnij <k>{{atajo}}</k>: VOX przeczyta go na głos.",
+    "atajoSinBinding": "Ustaw skrót w Ustawieniach, aby VOX czytał zaznaczenie na głos."
   }
 }

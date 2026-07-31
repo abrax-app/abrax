@@ -39,6 +39,7 @@ import { useSettings } from "@/hooks/useSettings";
 import { commands, events, type HistoryEntry } from "@/bindings";
 import { applyShell, UI_SHELL_OPTIONS } from "@/lib/utils/theme";
 import { SECTIONS_CONFIG } from "../Sidebar";
+import { AtajoVox } from "../AtajoVox";
 import type { UiShell } from "@/bindings";
 import { EsferaEngine, readEsferaPalette } from "../../overlay/esfera/engine";
 import "./retro.css";
@@ -625,6 +626,8 @@ export const RetroShell: React.FC = () => {
 
             Va en su propio marco con scroll porque la ventana del Retro es
             pequena a proposito y el panel de Avanzado es alto. */}
+        <AtajoVox className="rk-vox" />
+
         <div className="rk-cap">AVANZADO</div>
         <div className="rk-avanzado">
           <AvanzadoRetro />

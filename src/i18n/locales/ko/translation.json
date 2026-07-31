@@ -1069,5 +1069,9 @@
   "soundPicker": {
     "custom": "사용자 지정",
     "preview": "사운드 테마 미리 듣기(시작과 끝)"
+  },
+  "vox": {
+    "atajoHint": "어떤 앱에서든 텍스트를 선택하고 <k>{{atajo}}</k> 를 누르면 VOX가 읽어 줍니다.",
+    "atajoSinBinding": "설정에서 단축키를 지정하면 VOX가 선택한 텍스트를 읽어 줍니다."
   }
 }

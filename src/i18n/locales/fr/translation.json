@@ -1069,5 +1069,9 @@
   "soundPicker": {
     "custom": "Personnalisé",
     "preview": "Écouter le thème (début et fin)"
+  },
+  "vox": {
+    "atajoHint": "Sélectionnez du texte dans n’importe quelle app et appuyez sur <k>{{atajo}}</k> : VOX le lit à voix haute.",
+    "atajoSinBinding": "Définissez un raccourci dans les Réglages pour que VOX lise la sélection à voix haute."
   }
 }

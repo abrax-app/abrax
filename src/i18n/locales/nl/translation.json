@@ -1069,5 +1069,9 @@
   "soundPicker": {
     "custom": "Aangepast",
     "preview": "Thema beluisteren (start en stop)"
+  },
+  "vox": {
+    "atajoHint": "Selecteer tekst in elke app en druk op <k>{{atajo}}</k>: VOX leest het voor.",
+    "atajoSinBinding": "Stel een sneltoets in bij Instellingen zodat VOX je selectie kan voorlezen."
   }
 }

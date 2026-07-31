@@ -1069,5 +1069,9 @@
   "soundPicker": {
     "custom": "Custom",
     "preview": "Preview sound theme (start and stop)"
+  },
+  "vox": {
+    "atajoHint": "Select text in any app and press <k>{{atajo}}</k>: VOX reads it aloud.",
+    "atajoSinBinding": "Set a shortcut in Settings so VOX can read your selection aloud."
   }
 }

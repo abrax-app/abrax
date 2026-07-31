@@ -1069,5 +1069,9 @@
   "soundPicker": {
     "custom": "自定义",
     "preview": "试听声音主题（开始与结束）"
+  },
+  "vox": {
+    "atajoHint": "在任意应用中选中文字并按 <k>{{atajo}}</k>，VOX 就会朗读。",
+    "atajoSinBinding": "在设置中指定快捷键，VOX 就能朗读你选中的文字。"
   }
 }
