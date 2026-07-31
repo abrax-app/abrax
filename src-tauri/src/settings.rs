@@ -2111,4 +2111,81 @@ mod tests {
         apply_settings_migrations(&mut settings, &stored);
         assert!(!settings.autocorreccion_activa, "se pisó un apagado real");
     }
+
+    /// EL CONTRATO DE FABRICA, en un solo sitio.
+    ///
+    /// Winston pidio el 31/07 que todo esto llegue encendido y no quiere
+    /// «problemas despues». Este test es esa garantia: si alguien apaga
+    /// cualquiera de estas por descuido —o al resolver un conflicto, o
+    /// copiando un default viejo— el build falla y se entera antes de entregar.
+    ///
+    /// Ya paso una vez y de la peor manera: el modulo de correccion estuvo cinco
+    /// dias apagado Y con su pantalla oculta, sin que ningun test lo notara,
+    /// porque el unico que miraba el default exigia justamente que estuviera
+    /// apagado.
+    #[test]
+    fn el_contrato_de_fabrica_no_se_apaga_por_descuido() {
+        let s = get_default_settings();
+
+        // Correccion local: el paquete entero (simbolos, tildes, correos,
+        // tartamudeo, ortotipografia) vive detras de estos dos.
+        assert!(
+            matches!(s.correccion_motor, CorreccionMotor::SoloReglas),
+            "la correccion local nace apagada"
+        );
+        assert_eq!(
+            s.correccion_modo,
+            CorreccionModo::Limpio,
+            "en Literal solo hay espacios y mayusculas: el paquete no llega"
+        );
+        assert!(s.correccion_numeros, "el conversor de numeros nace apagado");
+
+        // Corregirse hablando.
+        assert!(
+            s.autocorreccion_activa,
+            "la autocorreccion hablada nace apagada"
+        );
+        // Sus dos listas en `None` = las de fabrica. `Some(vec![])` seria el
+        // nivel apagado, que es como NO tener la funcion.
+        assert!(
+            s.autocorreccion_senales_borrado.is_none(),
+            "las senales de borrado no vienen de fabrica"
+        );
+        assert!(
+            s.autocorreccion_senales_sustitucion.is_none(),
+            "las senales de sustitucion no vienen de fabrica"
+        );
+
+        // Emoji dictado y memoria.
+        assert!(s.emoji_dictado, "el emoji dictado nace apagado");
+        assert!(s.memoria_activa, "la memoria nace apagada");
+        assert!(s.memoria_en_sitio, "aprender en el sitio nace apagado");
+    }
+
+    /// Y que TODO eso alcance tambien a quien ya tenia Abrax instalado. Cambiar
+    /// un default no basta: serde solo lo aplica cuando la clave falta.
+    #[test]
+    fn el_contrato_de_fabrica_alcanza_a_un_store_viejo() {
+        let mut stored = default_settings_json();
+        {
+            let obj = stored.as_object_mut().unwrap();
+            obj.insert("settings_schema_version".into(), serde_json::json!(0));
+            obj.insert("correccion_motor".into(), serde_json::json!("desactivado"));
+            obj.insert("correccion_modo".into(), serde_json::json!("literal"));
+            obj.insert("autocorreccion_activa".into(), serde_json::json!(false));
+        }
+        let mut settings: AppSettings = serde_json::from_value(stored.clone()).unwrap();
+        apply_settings_migrations(&mut settings, &stored);
+
+        assert!(matches!(
+            settings.correccion_motor,
+            CorreccionMotor::SoloReglas
+        ));
+        assert_eq!(settings.correccion_modo, CorreccionModo::Limpio);
+        assert!(settings.autocorreccion_activa);
+        assert_eq!(
+            settings.settings_schema_version,
+            CURRENT_SETTINGS_SCHEMA_VERSION
+        );
+    }
 }

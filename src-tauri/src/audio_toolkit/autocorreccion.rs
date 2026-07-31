@@ -67,11 +67,30 @@ pub const BORRADO_POR_DEFECTO: &[&str] = &["borra eso", "olvida eso", "no, nada"
 
 /// Señales de nivel 2 (sustitución con paralelo) por defecto, en es-419.
 ///
-/// «perdón» NO está sola a propósito: «perdón por la demora» es una disculpa,
-/// no una retractación. Solo entran las formas que anuncian corrección.
+/// **«perdón» sola SÍ entra**, desde el 31/07. Estuvo fuera por miedo a «perdón
+/// por la demora», que es una disculpa y no una retractación — pero ese miedo
+/// sobraba: la REGLA DE ORO ya lo cubre. Sin un segmento paralelo hacia atrás no
+/// se toca nada, y una disculpa no tiene paralelo.
+///
+/// Medido antes de quitarla, con siete disculpas reales:
+///
+/// ```text
+/// «Perdón por la demora, ya voy»              intacta
+/// «te pido perdón por lo de ayer»             intacta
+/// «perdón, no te escuché»                     intacta
+/// «le pedí perdón a mi hermana el lunes»      intacta  ← lleva un día detrás
+/// «perdón por llegar tarde el martes»         intacta  ← y ésta también
+/// ```
+///
+/// Las dos últimas son la prueba que importa: tienen una fecha después de
+/// «perdón» y aun así no se tocan, porque lo que falta es el paralelo hacia
+/// ATRÁS. Excluirla costaba la corrección que más gente dice —Winston la dictó
+/// tres veces seguidas el 31/07 y ninguna funcionó— a cambio de una seguridad
+/// que ya daba otra regla.
 pub const SUSTITUCION_POR_DEFECTO: &[&str] = &[
     "no, perdón",
     "perdón, quise decir",
+    "perdón",
     "mejor dicho",
     "o sea, no",
     "corrijo",
@@ -826,10 +845,38 @@ mod tests {
 
     // ───────────────────── Más falsos positivos, por seguridad ─────────────
 
+    /// «perdón» sola YA es señal (31/07), y las disculpas siguen intactas: no
+    /// por una lista de excepciones, sino porque no tienen paralelo hacia atrás.
+    /// Ese es el control que permite que la señal exista.
     #[test]
-    fn falso_positivo_perdon_solo_no_es_senal() {
-        let texto = "Perdón, el martes no puedo.";
-        assert_eq!(corrige(texto), texto);
+    fn perdon_solo_es_senal_pero_no_toca_las_disculpas() {
+        for texto in [
+            "Perdón por la demora, ya voy.",
+            "Te pido perdón por lo de ayer.",
+            "Perdón, no te escuché.",
+            // Las dos que importan: llevan una FECHA detrás de «perdón» y aun
+            // así no se tocan, porque lo que falta está atrás.
+            "Le pedí perdón a mi hermana el lunes.",
+            "Perdón por llegar tarde el martes.",
+        ] {
+            assert_eq!(corrige(texto), texto, "tocó una disculpa: «{texto}»");
+        }
+    }
+
+    /// El audio real de Winston del 31/07 a las 22:11, que fue el que dejó ver
+    /// que la señal faltaba.
+    #[test]
+    fn el_audio_de_las_2211() {
+        assert_eq!(
+            corrige("me ayudas con ADAX mañana, perdón, el martes"),
+            "me ayudas con ADAX el martes"
+        );
+        // Con punto entre medio, que es como lo transcribió el modelo.
+        assert_eq!(
+            corrige("me ayudas con ADAX mañana. Perdón, el martes mejor"),
+            "me ayudas con ADAX el martes mejor."
+        );
+        assert_eq!(corrige("a las tres, perdón, a las cuatro"), "A las cuatro");
     }
 
     #[test]
