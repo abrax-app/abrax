@@ -260,10 +260,24 @@ impl TtsManager {
         #[cfg(feature = "advanced-tts")]
         {
             let recommended = self.recommended();
-            // Se listan todos, incluido Online (marcado needs_internet); la
-            // recomendación jamás apunta a un motor no-local.
+            // Solo se ofrece lo que ESTA MAQUINA puede habilitar de verdad.
+            //
+            // Kokoro y Online levantan un servidor Python y lo aprovisionan con
+            // `uv` (`pyserver::run_uv`), que NO viaja con la app. En cualquier
+            // equipo recien instalado —el Mac de un juez— pulsar «Habilitar»
+            // devolvia «no se pudo ejecutar 'uv' (¿instalado?)». Y en el equipo
+            // de desarrollo funcionaba, porque ahi `uv` estaba puesto a mano:
+            // por eso llego al dia de entrega sin que nadie lo viera.
+            //
+            // Piper NO pasa por ahi: es un binario nativo + un `.onnx`, los dos
+            // con sha256 fijado y con runtime publicado para Windows x64, Linux
+            // x64, macOS x64 y macOS aarch64. Ese sigue ofreciendose siempre.
+            //
+            // Un boton que falla es peor que un boton que no esta.
+            let hay_uv = super::pyserver::uv_disponible();
             EngineId::ALL
                 .iter()
+                .filter(|&&id| hay_uv || !super::registry::necesita_uv(id))
                 .map(|&id| {
                     let requirements = super::registry::requirements_for(id);
                     EngineStatus {

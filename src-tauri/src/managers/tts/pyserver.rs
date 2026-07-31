@@ -464,6 +464,23 @@ fn matar_procesos_del_runtime(runtime_dir: &std::path::Path) {
     }
 }
 
+/// ¿Está `uv` en el PATH? Los motores que levantan el servidor Python
+/// (Kokoro y Online) lo necesitan para aprovisionarse, y NO viaja con la app:
+/// sin esto, sus botones «Habilitar» fallan en cualquier equipo recién
+/// instalado. Se consulta ANTES de ofrecerlos, no después de que el usuario
+/// pulse.
+///
+/// Se comprueba en caliente y no se cachea: instalar `uv` a mitad de sesión es
+/// raro, pero si pasa la app se entera al siguiente repintado en vez de mentir
+/// hasta el reinicio.
+pub fn uv_disponible() -> bool {
+    crate::utils::comando_silencioso("uv")
+        .arg("--version")
+        .output()
+        .map(|o| o.status.success())
+        .unwrap_or(false)
+}
+
 /// Ejecuta `uv` con argumentos (aprovisionamiento de runtimes en el 1er uso).
 /// Requiere `uv` en el PATH; devuelve un error accionable si no está. Corre en
 /// un hilo bloqueante para no estancar el executor async.

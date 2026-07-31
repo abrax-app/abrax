@@ -21,6 +21,20 @@ pub struct PiperVoiceInfo {
     pub installed: bool,
 }
 
+/// ¿Este motor se aprovisiona con `uv` (servidor Python)?
+///
+/// No va en `EngineRequirements` a propósito: eso es lo que la UI PINTA
+/// («necesita descarga», «necesita internet»), y esto es una condición de la
+/// máquina, no del motor. Aquí decide si el motor se ofrece siquiera.
+pub fn necesita_uv(id: EngineId) -> bool {
+    match id {
+        // Nativos: binario + modelo, con sha256. Nada de Python.
+        EngineId::System | EngineId::Piper => false,
+        // Levantan `PyServerEngine`, que se aprovisiona con `uv`.
+        EngineId::Kokoro | EngineId::Online => true,
+    }
+}
+
 pub fn requirements_for(id: EngineId) -> EngineRequirements {
     match id {
         EngineId::System => EngineRequirements {
