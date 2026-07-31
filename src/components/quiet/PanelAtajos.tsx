@@ -108,18 +108,115 @@ const BotonIcono: React.FC<{
   );
 };
 
-/** Fila con icono a la izquierda, para los ajustes de apariencia y sonido. */
-const FilaIcono: React.FC<{ icon: LucideIcon; children: React.ReactNode }> = ({
-  icon: Icon,
-  children,
-}) => (
-  <div className="flex items-start gap-1">
-    <div className="ps-4 pt-4 shrink-0">
-      <Icon size={15} className="text-mid-gray" aria-hidden="true" />
-    </div>
-    <div className="flex-1 min-w-0">{children}</div>
-  </div>
-);
+/* ────────────────────────────── tarjeta General ────────────────────────────── */
+
+/**
+ * Apariencia y sonido en la misma barra de iconos que los interruptores.
+ *
+ * Aquí no son interruptores sino ELECCIONES (shell, paleta, overlay, micrófono,
+ * salida), así que el icono no enciende nada: abre debajo el control de
+ * siempre. Un botón que ciclara valores —como hace Retro con la paleta— no
+ * sirve para una lista de micrófonos, y además obligaría a reescribir la
+ * lógica de cada selector; aquí se muestran LOS MISMOS componentes, intactos.
+ *
+ * Con la barra cerrada, cinco filas rotuladas pasan a una. El hint no dice solo
+ * qué es cada icono: dice el VALOR ACTUAL, que es lo único que se pierde al
+ * quitar los rótulos.
+ */
+const TarjetaGeneral: React.FC = () => {
+  const { t } = useTranslation();
+  const { settings, getSetting } = useSettings();
+  const [abierto, setAbierto] = useState<string | null>(null);
+
+  const dispositivo = (v: unknown) =>
+    typeof v === "string" && v && v.toLowerCase() !== "default"
+      ? v
+      : t("common.systemDefault");
+
+  const items: {
+    id: string;
+    icon: LucideIcon;
+    nombre: string;
+    valor: string;
+    ayuda: string;
+    panel: React.ReactNode;
+  }[] = [
+    {
+      id: "shell",
+      icon: LayoutGrid,
+      nombre: t("shell.title"),
+      valor: t(`shell.options.${settings?.ui_shell ?? "classic"}`),
+      ayuda: t("shell.description"),
+      panel: <ShellSelector grouped />,
+    },
+    {
+      id: "paleta",
+      icon: Palette,
+      nombre: t("palette.title"),
+      valor: t(`palette.options.${settings?.ui_theme ?? "abrax"}`),
+      ayuda: t("palette.description"),
+      panel: <PaletteSelector grouped />,
+    },
+    {
+      id: "overlay",
+      icon: Monitor,
+      nombre: t("settings.advanced.overlay.style.title"),
+      valor: t(
+        `settings.advanced.overlay.style.options.${settings?.overlay_style ?? "live"}`,
+      ),
+      ayuda: t("settings.advanced.overlay.style.description"),
+      panel: <ShowOverlay grouped />,
+    },
+    {
+      id: "microfono",
+      icon: Mic,
+      nombre: t("settings.sound.microphone.title"),
+      valor: dispositivo(getSetting("selected_microphone")),
+      ayuda: t("settings.sound.microphone.description"),
+      panel: <MicrophoneSelector grouped />,
+    },
+    {
+      id: "salida",
+      icon: Headphones,
+      nombre: t("settings.sound.outputDevice.title"),
+      valor: dispositivo(getSetting("selected_output_device")),
+      ayuda: t("settings.sound.outputDevice.description"),
+      panel: <OutputDeviceSelector grouped />,
+    },
+  ];
+
+  const activo = items.find((i) => i.id === abierto);
+
+  return (
+    <Tarjeta icon={LayoutGrid} titulo={t("sidebar.general")}>
+      <div className="px-4 p-2">
+        <div className="q-pa-tools">
+          {items.map((i) => {
+            const Icon = i.icon;
+            const abiertoEste = abierto === i.id;
+            return (
+              <button
+                key={i.id}
+                type="button"
+                onClick={() => setAbierto(abiertoEste ? null : i.id)}
+                aria-expanded={abiertoEste}
+                aria-label={`${i.nombre}: ${i.valor}`}
+                title={`${i.nombre} · ${i.valor}\n${i.ayuda}`}
+              >
+                <Icon size={16} aria-hidden="true" />
+              </button>
+            );
+          })}
+        </div>
+      </div>
+      {activo && (
+        <div role="group" aria-label={activo.nombre}>
+          {activo.panel}
+        </div>
+      )}
+    </Tarjeta>
+  );
+};
 
 /* ──────────────────────────── selector de modelo ──────────────────────────── */
 
@@ -530,26 +627,10 @@ export const PanelAtajos: React.FC<{ grabando: boolean }> = ({ grabando }) => {
         <SelectorVoz />
       </Tarjeta>
 
-      <Tarjeta icon={LayoutGrid} titulo={t("sidebar.general")}>
-        <FilaIcono icon={LayoutGrid}>
-          <ShellSelector grouped />
-        </FilaIcono>
-        <FilaIcono icon={Palette}>
-          <PaletteSelector grouped />
-        </FilaIcono>
-        <FilaIcono icon={Monitor}>
-          <ShowOverlay grouped />
-        </FilaIcono>
-        <FilaIcono icon={Mic}>
-          <MicrophoneSelector grouped />
-        </FilaIcono>
-        {/* La salida NO se deshabilita aquí aunque los sonidos estén apagados:
-            este ajuste también decide por dónde habla VOX
-            (`managers/tts/manager.rs:307`), así que sigue haciendo algo. */}
-        <FilaIcono icon={Headphones}>
-          <OutputDeviceSelector grouped />
-        </FilaIcono>
-      </Tarjeta>
+      {/* La salida NO se deshabilita aquí aunque los sonidos estén apagados:
+          este ajuste también decide por dónde habla VOX
+          (`managers/tts/manager.rs:307`), así que sigue haciendo algo. */}
+      <TarjetaGeneral />
     </div>
   );
 };

@@ -442,6 +442,16 @@
   color: #06202b;
   box-shadow: 0 0 10px color-mix(in srgb, var(--q-a) 32%, transparent);
 }
+/* ABIERTO no es ENCENDIDO. En «General» el icono no activa nada: despliega su
+   control. Con el mismo relleno del acento, el micrófono azul se leería como
+   «micrófono activado», que es otra cosa. Así que abierto se marca con el borde
+   y un fondo apenas más claro, y el relleno queda reservado a los
+   interruptores de verdad. */
+.q-panel-atajos .q-pa-tools button[aria-expanded="true"] {
+  background: rgb(255 255 255 / 10%);
+  border-color: color-mix(in srgb, var(--q-a) 55%, var(--q-line));
+  color: var(--q-text);
+}
 .q-panel-atajos .q-pa-tools button:focus-visible {
   outline: 2px solid var(--q-a);
   outline-offset: 2px;
