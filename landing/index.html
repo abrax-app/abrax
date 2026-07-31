@@ -1248,17 +1248,16 @@
           const elR = document.getElementById("dictadoRes");
           if (!elT || !elR) return;
           const PARES = [
-            ["crea un use auth store que persista el token", "useAuthStore"],
             [
               "el deploy va el martes, no, perdón, el miércoles",
               "el miércoles",
             ],
             ["cámbiate a la rama fix slash audio", "fix/audio"],
             ["cierra con emoji fuego", "cierra con 🔥"],
-            ["kubectl get pods en staging", "kubectl -n staging get pods"],
             ["la reunión es a las diecisiete treinta", "a las 17:30"],
             ["etiquétalo con numeral abrax", "etiquétalo con #ABRAX"],
             ["este… o sea… quita las muletillas", "quita las muletillas"],
+            ["crea un use auth store que persista el token", "useAuthStore"],
           ];
           if (reduced) {
             elT.textContent = PARES[0][0];
