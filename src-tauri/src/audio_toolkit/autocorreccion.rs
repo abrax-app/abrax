@@ -125,6 +125,30 @@ static DIAS: Lazy<HashSet<&'static str>> = Lazy::new(|| {
     .collect()
 });
 
+/// Adverbios que señalan un DÍA sin nombrarlo. Ocupan la misma ranura que un
+/// día de la semana —«nos vemos mañana» y «nos vemos el martes» dicen lo mismo—
+/// y por eso comparten categoría con ellos.
+///
+/// Sin esto, la correccion que más gente intenta primero no funcionaba. Medido
+/// el 31/07 con el dictado real de Winston: «que me ayudes con ABRAX mañana,
+/// digo el martes» salía sin tocar, mientras «el lunes, digo el martes» sí se
+/// corregía. Es la misma frase para cualquiera menos para el emparejador.
+///
+/// Solo las formas ADVERBIALES desnudas. «la mañana» (el rato del día) lleva
+/// determinante, y el determinante es justo lo que las distingue.
+static ADVERBIOS_DIA: Lazy<HashSet<&'static str>> = Lazy::new(|| {
+    // La «ñ» va literal: `fold_accent` pliega tildes pero NO la ñ, y hace bien
+    // —es otra letra, no una n con adorno—. Escribir «manana» aqui dejaba la
+    // lista muerta sin que nada fallara.
+    //
+    // «pasado» NO entra aunque exista «pasado mañana»: suelto es una palabra
+    // corrientisima («el año pasado», «el mes pasado») y la daria por fecha.
+    // «pasado mañana» se reconoce igual, por su segunda palabra.
+    ["hoy", "mañana", "ayer", "anteayer", "anoche"]
+        .into_iter()
+        .collect()
+});
+
 static MESES: Lazy<HashSet<&'static str>> = Lazy::new(|| {
     [
         "enero",
@@ -318,7 +342,7 @@ fn casa_senal(tokens: &[Token], i: usize, senales: &[Vec<String>]) -> Option<usi
 }
 
 fn categoria_de(token: &Token) -> Option<Categoria> {
-    if DIAS.contains(token.clave.as_str()) {
+    if DIAS.contains(token.clave.as_str()) || ADVERBIOS_DIA.contains(token.clave.as_str()) {
         return Some(Categoria::DiaSemana);
     }
     if MESES.contains(token.clave.as_str()) {
@@ -441,6 +465,29 @@ fn aplicar_borrado(tokens: &[Token], i: usize, n: usize) -> String {
     salida.join(" ")
 }
 
+/// ¿Son paralelos dos segmentos? Igualdad de forma, con UNA excepción medida.
+///
+/// La regla general es exacta —misma preposición, mismo determinante, misma
+/// categoría— y así debe seguir: es lo que impide pegar cosas que no se
+/// corresponden.
+///
+/// La excepción son las FECHAS. En español el determinante de una fecha es
+/// opcional y no cambia nada de lo que se dice: «mañana», «el martes», «este
+/// jueves» ocupan la misma ranura. Exigir que coincida rompía justo la
+/// corrección más natural («…mañana, digo el martes») mientras dejaba pasar la
+/// menos frecuente («…el lunes, digo el martes»), y esa asimetría no la entiende
+/// nadie. La preposición SÍ se sigue exigiendo: es la que separa «el martes» de
+/// «hasta el martes».
+fn son_paralelas(a: &Forma, b: &Forma) -> bool {
+    if a.categoria != b.categoria || a.preposicion != b.preposicion {
+        return false;
+    }
+    if matches!(a.categoria, Some(Categoria::DiaSemana)) {
+        return true;
+    }
+    a.determinante == b.determinante
+}
+
 /// Nivel 2: sustitución con paralelo. Devuelve `None` —y por tanto NO toca
 /// nada— si no hay categoría o no aparece un segmento paralelo hacia atrás.
 fn aplicar_sustitucion(tokens: &[Token], i: usize, n: usize) -> Option<String> {
@@ -459,12 +506,29 @@ fn aplicar_sustitucion(tokens: &[Token], i: usize, n: usize) -> Option<String> {
     let mut candidato = None;
     for p in (piso..i).rev() {
         let fin_c = fin_de_oracion(tokens, p, i);
-        if forma_de(tokens, p, fin_c) == forma_r {
+        if son_paralelas(&forma_de(tokens, p, fin_c), &forma_r) {
             candidato = Some((p, fin_c));
             break;
         }
     }
-    let (ini_c, fin_c) = candidato?;
+    let (mut ini_c, fin_c) = candidato?;
+
+    // En fechas el determinante ya no separa (ver `son_paralelas`), asi que la
+    // busqueda hacia atras puede casar EMPEZANDO DESPUES del determinante del
+    // candidato. Si eso pasa, el tramo a sustituir tiene que absorberlo, porque
+    // el recambio trae el suyo o no trae ninguno. Los dos sentidos fallaban:
+    //
+    //   «el lunes, digo el martes»   ->  «el el martes»   (el recambio traia uno)
+    //   «el jueves, digo mañana»     ->  «el mañana»      (el recambio no traia)
+    //
+    // Los dos los cazaron tests: dos que ya existian y uno escrito para esto.
+    if matches!(forma_r.categoria, Some(Categoria::DiaSemana))
+        && forma_de(tokens, ini_c, fin_c).determinante.is_none()
+        && ini_c > 0
+        && DETERMINANTES.contains(tokens[ini_c - 1].clave.as_str())
+    {
+        ini_c -= 1;
+    }
 
     // El reemplazo hereda el cierre de oración del segmento sustituido cuando él
     // no trae uno propio: el «…» de la duda se convierte en el punto final.
@@ -990,5 +1054,60 @@ mod tests {
         ] {
             assert_eq!(corrige(texto), texto, "tocó: «{texto}»");
         }
+    }
+
+    // ── Fechas: el determinante no debe separar lo que es lo mismo ──────────
+
+    #[test]
+    fn el_dictado_real_de_winston_del_31_07() {
+        // Transcripcion literal de su prueba (21:55). Antes salia SIN TOCAR: el
+        // emparejador no reconocia «mañana» como fecha, asi que la correccion
+        // que cualquiera intenta primero no funcionaba.
+        assert_eq!(
+            corrige("quiero que me ayudes con ABRAX mañana, digo el martes"),
+            "quiero que me ayudes con ABRAX el martes"
+        );
+    }
+
+    #[test]
+    fn los_adverbios_de_dia_valen_en_los_dos_sentidos() {
+        assert_eq!(
+            corrige("nos vemos hoy, digo el jueves"),
+            "nos vemos el jueves"
+        );
+        assert_eq!(
+            corrige("nos vemos el jueves, digo mañana"),
+            "nos vemos mañana"
+        );
+        assert_eq!(corrige("lo dejamos ayer, digo hoy"), "lo dejamos hoy");
+        // Y el caso que ya funcionaba sigue igual, sin determinante duplicado.
+        assert_eq!(
+            corrige("nos vemos el lunes, digo el martes"),
+            "nos vemos el martes"
+        );
+    }
+
+    #[test]
+    fn la_fecha_se_sustituye_dejando_la_preposicion_en_pie() {
+        // El paralelo puede empezar DESPUES de la preposicion, y debe: quien
+        // dice «lo tengo hasta el lunes, digo el martes» quiere «hasta el
+        // martes», no repetir la preposicion ni perderla. Comportamiento previo
+        // a los adverbios de dia; se fija aqui para que no se rompa al tocarlo.
+        assert_eq!(
+            corrige("lo tengo hasta el lunes, digo el martes"),
+            "lo tengo hasta el martes"
+        );
+    }
+
+    #[test]
+    fn la_mañana_con_determinante_no_es_una_fecha() {
+        // «la mañana» es el rato del dia, no el dia siguiente. El determinante es
+        // justo lo que las distingue, y por eso solo entran las formas desnudas.
+        let t = "trabajo por la mañana, digo por la tarde";
+        assert_eq!(
+            corrige(t),
+            t,
+            "confundio el rato del dia con una fecha: {t}"
+        );
     }
 }
