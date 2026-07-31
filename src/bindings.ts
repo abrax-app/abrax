@@ -479,6 +479,51 @@ async changeVadEnabledSetting(enabled: boolean) : Promise<Result<null, string>> 
     else return { status: "error", error: e  as any };
 }
 },
+/**
+ * Los cuatro ajustes de abajo NO TENIAN COMANDO, y por eso sus interruptores
+ * eran un placebo: el valor cambiaba en pantalla, `settingsStore` no encontraba
+ * manejador, escribia un `console.warn` en una consola que nadie mira, y a Rust
+ * no llegaba nunca. Al reabrir Ajustes el interruptor volvia a su sitio.
+ * 
+ * Nada mas engañoso que un control que se deja pulsar y no hace nada. Cazado
+ * el 30/07 auditando el trabajo heredado.
+ */
+async changeAutocorreccionActivaSetting(activa: boolean) : Promise<Result<null, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("change_autocorreccion_activa_setting", { activa }) };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+async changeEmojiDictadoSetting(activo: boolean) : Promise<Result<null, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("change_emoji_dictado_setting", { activo }) };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+/**
+ * `None` = las senales de fabrica, `Some(vec![])` = nivel apagado, lista propia
+ * = reemplaza a las de fabrica. Mismo contrato que las muletillas.
+ */
+async changeAutocorreccionSenalesBorradoSetting(senales: string[] | null) : Promise<Result<null, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("change_autocorreccion_senales_borrado_setting", { senales }) };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+async changeAutocorreccionSenalesSustitucionSetting(senales: string[] | null) : Promise<Result<null, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("change_autocorreccion_senales_sustitucion_setting", { senales }) };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
 async changeAppLanguageSetting(language: string) : Promise<Result<null, string>> {
     try {
     return { status: "ok", data: await TAURI_INVOKE("change_app_language_setting", { language }) };

@@ -158,6 +158,18 @@ const settingUpdaters: {
   correccion_motor: (value) =>
     commands.changeCorreccionMotorSetting(value as string),
   vad_enabled: (value) => commands.changeVadEnabledSetting(value as boolean),
+  autocorreccion_activa: (value) =>
+    commands.changeAutocorreccionActivaSetting(value as boolean),
+  emoji_dictado: (value) =>
+    commands.changeEmojiDictadoSetting(value as boolean),
+  autocorreccion_senales_borrado: (value) =>
+    commands.changeAutocorreccionSenalesBorradoSetting(
+      value as string[] | null,
+    ),
+  autocorreccion_senales_sustitucion: (value) =>
+    commands.changeAutocorreccionSenalesSustitucionSetting(
+      value as string[] | null,
+    ),
   show_tray_icon: (value) =>
     commands.changeShowTrayIconSetting(value as boolean),
   transcribe_accelerator: (value) =>

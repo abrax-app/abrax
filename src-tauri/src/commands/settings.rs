@@ -695,6 +695,58 @@ pub fn change_lazy_stream_close_setting(app: AppHandle, enabled: bool) -> Result
     Ok(())
 }
 
+/// Los cuatro ajustes de abajo NO TENIAN COMANDO, y por eso sus interruptores
+/// eran un placebo: el valor cambiaba en pantalla, `settingsStore` no encontraba
+/// manejador, escribia un `console.warn` en una consola que nadie mira, y a Rust
+/// no llegaba nunca. Al reabrir Ajustes el interruptor volvia a su sitio.
+///
+/// Nada mas engañoso que un control que se deja pulsar y no hace nada. Cazado
+/// el 30/07 auditando el trabajo heredado.
+
+#[tauri::command]
+#[specta::specta]
+pub fn change_autocorreccion_activa_setting(app: AppHandle, activa: bool) -> Result<(), String> {
+    let mut settings = settings::get_settings(&app);
+    settings.autocorreccion_activa = activa;
+    settings::write_settings(&app, settings);
+    Ok(())
+}
+
+#[tauri::command]
+#[specta::specta]
+pub fn change_emoji_dictado_setting(app: AppHandle, activo: bool) -> Result<(), String> {
+    let mut settings = settings::get_settings(&app);
+    settings.emoji_dictado = activo;
+    settings::write_settings(&app, settings);
+    Ok(())
+}
+
+/// `None` = las senales de fabrica, `Some(vec![])` = nivel apagado, lista propia
+/// = reemplaza a las de fabrica. Mismo contrato que las muletillas.
+#[tauri::command]
+#[specta::specta]
+pub fn change_autocorreccion_senales_borrado_setting(
+    app: AppHandle,
+    senales: Option<Vec<String>>,
+) -> Result<(), String> {
+    let mut settings = settings::get_settings(&app);
+    settings.autocorreccion_senales_borrado = senales;
+    settings::write_settings(&app, settings);
+    Ok(())
+}
+
+#[tauri::command]
+#[specta::specta]
+pub fn change_autocorreccion_senales_sustitucion_setting(
+    app: AppHandle,
+    senales: Option<Vec<String>>,
+) -> Result<(), String> {
+    let mut settings = settings::get_settings(&app);
+    settings.autocorreccion_senales_sustitucion = senales;
+    settings::write_settings(&app, settings);
+    Ok(())
+}
+
 #[tauri::command]
 #[specta::specta]
 pub fn change_vad_enabled_setting(app: AppHandle, enabled: bool) -> Result<(), String> {
