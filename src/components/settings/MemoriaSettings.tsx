@@ -2,6 +2,7 @@ import React from "react";
 import { useTranslation } from "react-i18next";
 import { MoveRight, X } from "lucide-react";
 import { useSettings } from "../../hooks/useSettings";
+import { useOsType } from "../../hooks/useOsType";
 import { Button } from "../ui/Button";
 import { ToggleSwitch } from "../ui/ToggleSwitch";
 import type { ParMemoria } from "@/bindings";
@@ -21,6 +22,7 @@ export const MemoriaSettings: React.FC<MemoriaSettingsProps> = React.memo(
   ({ descriptionMode = "tooltip", grouped = false }) => {
     const { t } = useTranslation();
     const { getSetting, updateSetting, isUpdating } = useSettings();
+    const osType = useOsType();
     const activa = getSetting("memoria_activa") ?? true;
     const pares: ParMemoria[] = getSetting("memoria_correcciones") ?? [];
 
@@ -42,16 +44,27 @@ export const MemoriaSettings: React.FC<MemoriaSettingsProps> = React.memo(
           descriptionMode={descriptionMode}
           grouped={grouped}
         />
-        <ToggleSwitch
-          checked={activa && (getSetting("memoria_en_sitio") ?? true)}
-          onChange={(value) => updateSetting("memoria_en_sitio", value)}
-          disabled={!activa}
-          isUpdating={isUpdating("memoria_en_sitio")}
-          label={t("settings.advanced.memoria.enSitioTitle")}
-          description={t("settings.advanced.memoria.enSitioDescription")}
-          descriptionMode={descriptionMode}
-          grouped={grouped}
-        />
+        {/* Aprender EN EL SITIO es solo Windows: lee el campo de texto enfocado
+            por UI Automation, y fuera de Windows `leer_texto_enfocado` devuelve
+            None siempre (`memoria_en_sitio.rs`, ramas `#[cfg(not(windows))]`).
+            El interruptor estaba SIEMPRE visible y encendido de fábrica, así que
+            en macOS y Linux prometía algo que no podía cumplir — un control que
+            se deja pulsar y no hace nada es peor que no tenerlo.
+            No se toca el ajuste del backend: sigue existiendo con su valor y ahí
+            es un no-op inofensivo. Solo deja de ofrecerse donde no funciona,
+            calcado de cómo `TypingTool` se oculta fuera de Linux. */}
+        {osType === "windows" && (
+          <ToggleSwitch
+            checked={activa && (getSetting("memoria_en_sitio") ?? true)}
+            onChange={(value) => updateSetting("memoria_en_sitio", value)}
+            disabled={!activa}
+            isUpdating={isUpdating("memoria_en_sitio")}
+            label={t("settings.advanced.memoria.enSitioTitle")}
+            description={t("settings.advanced.memoria.enSitioDescription")}
+            descriptionMode={descriptionMode}
+            grouped={grouped}
+          />
+        )}
         <div
           className={`px-4 p-2 ${grouped ? "" : "rounded-lg border border-mid-gray/20"} space-y-1`}
         >
