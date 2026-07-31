@@ -3,64 +3,74 @@
   "generated_at": "2026-07-01T13:30:59+00:00",
   "models": [
     {
-      "id": "handy-computer/canary-180m-flash-gguf",
-      "slug": "canary-180m-flash",
-      "name": "Canary 180M Flash",
-      "architecture": "canary",
-      "family": "canary",
-      "parameters": "180M",
-      "description": "Tiny and instant, runs well on any hardware",
-      "base_model": "nvidia/canary-180m-flash",
-      "license": "cc-by-4.0",
-      "language_count": 4,
+      "id": "handy-computer/cohere-transcribe-03-2026-gguf",
+      "slug": "cohere-transcribe-03-2026",
+      "name": "Cohere Transcribe",
+      "architecture": "cohere_asr",
+      "family": "cohere",
+      "parameters": "2.0B",
+      "description": "Highest accuracy, 14 languages, slower",
+      "base_model": "CohereLabs/cohere-transcribe-03-2026",
+      "license": "apache-2.0",
+      "language_count": 14,
       "languages": [
         "en",
+        "fr",
         "de",
         "es",
-        "fr"
+        "it",
+        "pt",
+        "nl",
+        "pl",
+        "el",
+        "ar",
+        "ja",
+        "zh",
+        "vi",
+        "ko"
       ],
       "capabilities": {
         "streaming": false,
-        "translate": true,
+        "translate": false,
         "lang_detect": false,
         "timestamps": "none"
       },
-      "speed_score": 98,
-      "accuracy_score": 88,
+      "speed_score": 63,
+      "accuracy_score": 92,
       "files": [
         {
-          "filename": "canary-180m-flash-Q4_K_M.gguf",
+          "filename": "cohere-transcribe-03-2026-Q4_K_M.gguf",
           "quant": "Q4_K_M",
-          "size_bytes": 139223744
+          "size_bytes": 1558162944
         },
         {
-          "filename": "canary-180m-flash-Q5_K_M.gguf",
+          "filename": "cohere-transcribe-03-2026-Q5_K_M.gguf",
           "quant": "Q5_K_M",
-          "size_bytes": 158704320
+          "size_bytes": 1770270208
         },
         {
-          "filename": "canary-180m-flash-Q6_K.gguf",
+          "filename": "cohere-transcribe-03-2026-Q6_K.gguf",
           "quant": "Q6_K",
-          "size_bytes": 176291520
+          "size_bytes": 1972524544
         },
         {
-          "filename": "canary-180m-flash-Q8_0.gguf",
+          "filename": "cohere-transcribe-03-2026-Q8_0.gguf",
           "quant": "Q8_0",
-          "size_bytes": 218447552
+          "size_bytes": 2410655232
         },
         {
-          "filename": "canary-180m-flash-F16.gguf",
+          "filename": "cohere-transcribe-03-2026-BF16.gguf",
+          "quant": "BF16",
+          "size_bytes": 4105263104
+        },
+        {
+          "filename": "cohere-transcribe-03-2026-F16.gguf",
           "quant": "F16",
-          "size_bytes": 381632192
-        },
-        {
-          "filename": "canary-180m-flash-F32.gguf",
-          "quant": "F32",
-          "size_bytes": 756498112
+          "size_bytes": 4106644992
         }
       ],
-      "default_quant": "Q8_0",
-      "recommended": true,
+      "default_quant": "Q5_K_M",
+      "recommended": false,
       "recommended_rank": 1
     },
     {
@@ -453,74 +463,64 @@
       "recommended_rank": 4
     },
     {
-      "id": "handy-computer/cohere-transcribe-03-2026-gguf",
-      "slug": "cohere-transcribe-03-2026",
-      "name": "Cohere Transcribe",
-      "architecture": "cohere_asr",
-      "family": "cohere",
-      "parameters": "2.0B",
-      "description": "Highest accuracy, 14 languages, slower",
-      "base_model": "CohereLabs/cohere-transcribe-03-2026",
-      "license": "apache-2.0",
-      "language_count": 14,
+      "id": "handy-computer/canary-180m-flash-gguf",
+      "slug": "canary-180m-flash",
+      "name": "Canary 180M Flash",
+      "architecture": "canary",
+      "family": "canary",
+      "parameters": "180M",
+      "description": "Tiny and instant, runs well on any hardware",
+      "base_model": "nvidia/canary-180m-flash",
+      "license": "cc-by-4.0",
+      "language_count": 4,
       "languages": [
         "en",
-        "fr",
         "de",
         "es",
-        "it",
-        "pt",
-        "nl",
-        "pl",
-        "el",
-        "ar",
-        "ja",
-        "zh",
-        "vi",
-        "ko"
+        "fr"
       ],
       "capabilities": {
         "streaming": false,
-        "translate": false,
+        "translate": true,
         "lang_detect": false,
         "timestamps": "none"
       },
-      "speed_score": 63,
-      "accuracy_score": 92,
+      "speed_score": 98,
+      "accuracy_score": 88,
       "files": [
         {
-          "filename": "cohere-transcribe-03-2026-Q4_K_M.gguf",
+          "filename": "canary-180m-flash-Q4_K_M.gguf",
           "quant": "Q4_K_M",
-          "size_bytes": 1558162944
+          "size_bytes": 139223744
         },
         {
-          "filename": "cohere-transcribe-03-2026-Q5_K_M.gguf",
+          "filename": "canary-180m-flash-Q5_K_M.gguf",
           "quant": "Q5_K_M",
-          "size_bytes": 1770270208
+          "size_bytes": 158704320
         },
         {
-          "filename": "cohere-transcribe-03-2026-Q6_K.gguf",
+          "filename": "canary-180m-flash-Q6_K.gguf",
           "quant": "Q6_K",
-          "size_bytes": 1972524544
+          "size_bytes": 176291520
         },
         {
-          "filename": "cohere-transcribe-03-2026-Q8_0.gguf",
+          "filename": "canary-180m-flash-Q8_0.gguf",
           "quant": "Q8_0",
-          "size_bytes": 2410655232
+          "size_bytes": 218447552
         },
         {
-          "filename": "cohere-transcribe-03-2026-BF16.gguf",
-          "quant": "BF16",
-          "size_bytes": 4105263104
-        },
-        {
-          "filename": "cohere-transcribe-03-2026-F16.gguf",
+          "filename": "canary-180m-flash-F16.gguf",
           "quant": "F16",
-          "size_bytes": 4106644992
+          "size_bytes": 381632192
+        },
+        {
+          "filename": "canary-180m-flash-F32.gguf",
+          "quant": "F32",
+          "size_bytes": 756498112
         }
       ],
-      "default_quant": "Q5_K_M",
-      "recommended": false,
+      "default_quant": "Q8_0",
+      "recommended": true,
       "recommended_rank": 5
     }
   ],

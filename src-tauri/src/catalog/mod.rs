@@ -164,14 +164,19 @@ mod tests {
         // El id del descriptor es `org/repo/archivo.gguf`; comparamos por REPO
         // para que cambiar el quant por defecto no rompa este test.
         let ids: Vec<&str> = CATALOG.iter().map(|d| repo_de(&d.id)).collect();
+        // Orden editorial cambiado el 31/07 por decisión de producto: primero el
+        // que mejor transcribe, último el más rápido. El pequeño (Canary) se
+        // comía frases cortas —medido el 29/07 sobre loopback y otra vez el
+        // 31/07 sobre grabaciones reales de dictado: cadena VACÍA donde
+        // Nemotron sí entendió—, así que dejar de ofrecerlo el primero.
         assert_eq!(
             ids,
             vec![
-                "handy-computer/canary-180m-flash-gguf",
+                "handy-computer/cohere-transcribe-03-2026-gguf",
                 "handy-computer/whisper-large-v3-turbo-gguf",
                 "handy-computer/whisper-large-v3-gguf",
                 "handy-computer/nemotron-3.5-asr-streaming-0.6b-gguf",
-                "handy-computer/cohere-transcribe-03-2026-gguf",
+                "handy-computer/canary-180m-flash-gguf",
             ],
             "el catálogo enviado debe ser exactamente los 5 curados, en orden"
         );
