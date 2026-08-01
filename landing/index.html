@@ -517,14 +517,15 @@
             >macOS 13+</span
           >
           <ul class="lista">
-            <li>Apple Silicon e Intel</li>
+            <li>Apple Silicon (M1 o posterior)</li>
             <li>Atajo e inserción globales</li>
           </ul>
           <div class="limite-titulo">Límites honestos</div>
           <p>
             macOS bloquea la app la primera vez, porque no está firmada:
             <a href="#avisos">te explicamos abajo qué hacer</a>. Pide conceder
-            Accesibilidad y Micrófono. En Intel, los modelos grandes van lentos.
+            Accesibilidad y Micrófono. El instalador que publicamos es solo para
+            Apple Silicon; en un Mac Intel hay que compilar desde el código.
           </p>
         </div>
         <div class="card card--compat">
@@ -819,25 +820,23 @@
       <p class="cta-mantra" id="t-descarga">
         Gratis. Open source. Local. <em>Para siempre.</em>
       </p>
-      <!-- ══ ESTADO: EN ESPERA (no hay release publicado) ══
-           Enlazar a la pagina de releases mientras esta vacia es un boton
-           muerto: promete una descarga y entrega una pagina en blanco. Hasta
-           que exista el artefacto, los dos botones NO son enlaces (son <span>
-           con aria-disabled) y la unica accion viva es el codigo, que si
-           funciona hoy.
+      <!-- ══ ESTADO: PUBLICADO (release v1.0.0, 31/07/2026) ══
+           URL DIRECTA al artefacto, no a la pagina de releases: un boton que
+           promete descarga y entrega un listado es la misma mentira, mas suave.
+           Verificado ANONIMAMENTE (sin token) que los dos devuelven 200.
 
-           PARA PUBLICAR: sustituir cada <span class="btn btn--prim btn--espera"
-           aria-disabled="true"> por
-             <a class="btn btn--prim" href="URL_DEL_ARTEFACTO">
-           con la URL directa del .dmg y del .exe (no la de la pagina de
-           releases), quitar el parrafo .cta-espera de abajo, y devolver la
-           linea de formatos. Instrucciones completas en README.md. -->
+           Para subir de version: cambiar el numero en las dos URL y en la linea
+           de formatos. -->
       <div class="cta-botones">
-        <span class="btn btn--prim btn--espera" aria-disabled="true"
-          >macOS · el viernes 31</span
+        <a
+          class="btn btn--prim"
+          href="https://github.com/abrax-app/abrax/releases/download/v1.0.0/Abrax_1.0.0_aarch64.dmg"
+          >Descargar para macOS</a
         >
-        <span class="btn btn--prim btn--espera" aria-disabled="true"
-          >Windows · el viernes 31</span
+        <a
+          class="btn btn--prim"
+          href="https://github.com/abrax-app/abrax/releases/download/v1.0.0/Abrax_1.0.0_x64-setup.exe"
+          >Descargar para Windows</a
         >
         <a
           class="btn btn--ghost"
@@ -847,14 +846,9 @@
           >Ver el código ↗</a
         >
       </div>
-      <p class="cta-espera">
-        Todavía no hay descarga publicada. El instalador se libera el
-        <strong>viernes 31</strong>; hasta entonces, el código está entero y se
-        puede compilar.
-      </p>
       <div class="cta-formatos">
-        <span>.dmg · Silicon e Intel</span><span>·</span
-        ><span>.exe · Windows 10 y 11</span>
+        <span>.dmg · Apple Silicon (M1 o posterior)</span><span>·</span
+        ><span>.exe · Windows 10 y 11 (64 bits)</span>
       </div>
       <div class="checksum">
         <div>
@@ -897,13 +891,13 @@
             >Releases ↗</a
           >
           <a
-            href="https://github.com/abrax-app/abrax/blob/main/LICENSE"
+            href="https://github.com/abrax-app/abrax/blob/rebrand/product/LICENSE"
             target="_blank"
             rel="noopener"
             >Licencia MIT</a
           >
           <a
-            href="https://github.com/abrax-app/abrax/blob/main/LICENSES-THIRD-PARTY.md"
+            href="https://github.com/abrax-app/abrax/blob/rebrand/product/LICENSES-THIRD-PARTY.md"
             target="_blank"
             rel="noopener"
             >Licencias de terceros</a
