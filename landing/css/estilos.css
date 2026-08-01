@@ -1274,6 +1274,26 @@ h2::before {
   text-transform: uppercase;
   color: var(--suave);
 }
+/* en pantallas anchas la foto crece hasta llenar la card (una sola foto
+   anclada abajo dejaba un vacío gigante frente a la card de paletas) */
+@media (min-width: 641px) {
+  .card > .mini-grid {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+  }
+  .mini-grid figure {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+  }
+  .mini-grid img {
+    height: 100%;
+    aspect-ratio: auto;
+    object-fit: cover;
+    object-position: left top;
+  }
+}
 /* tiras de paleta: la misma pantalla, tres pieles de color */
 .paleta-ej {
   display: flex;
