@@ -4,6 +4,10 @@ use crate::settings::TypingTool;
 use crate::settings::{get_settings, AutoSubmitKey, ClipboardHandling, PasteMethod};
 use enigo::{Direction, Enigo, Key, Keyboard};
 use log::info;
+// Solo Linux: las rutas de wtype/ydotool/wl-copy lo usan. En Windows y macOS
+// no queda ningún `Command::new` directo (todos pasan por
+// `utils::comando_silencioso`), así que ahí el import sobraría.
+#[cfg(target_os = "linux")]
 use std::process::Command;
 use std::time::Duration;
 use tauri::{AppHandle, Manager};
@@ -11,6 +15,101 @@ use tauri_plugin_clipboard_manager::ClipboardExt;
 
 #[cfg(target_os = "linux")]
 use crate::utils::{is_kde_wayland, is_wayland};
+
+/// Captura lo que el usuario tiene SELECCIONADO en cualquier aplicación y
+/// devuelve el texto, **dejando el portapapeles como estaba**.
+///
+/// Cómo: guarda el portapapeles, envía Copiar a la ventana en foco, lee lo que
+/// aparezca y restaura lo guardado. Es la misma coreografía que el pegado del
+/// dictado, al revés, y con la misma regla dura (R5): jamás destruir lo que el
+/// usuario tenía copiado.
+///
+/// # Cómo se distingue «no hay selección» de «se copió algo»
+///
+/// No se puede preguntar al sistema si hay selección. Así que se compara con lo
+/// que había ANTES: si tras el Copiar el portapapeles no cambió, es que la app en
+/// foco no tenía nada seleccionado y el Copiar no hizo nada. Devuelve `Ok(None)`.
+///
+/// Tiene un falso negativo conocido y aceptado: si el usuario selecciona
+/// exactamente el mismo texto que ya tenía copiado, se lee como «sin selección».
+/// La alternativa —vaciar el portapapeles antes de copiar para detectar el
+/// cambio— arriesga dejarlo vacío si algo falla en medio, y perder lo copiado es
+/// peor que no leer una vez.
+pub fn leer_seleccion(app_handle: &AppHandle) -> Result<Option<String>, String> {
+    let clipboard = app_handle.clipboard();
+
+    // Igual que en el pegado: `read_text`/`read_image` devuelven Err si el
+    // formato no está, así que una imagen copiada no colapsa a cadena vacía.
+    let texto_previo = clipboard.read_text().ok();
+    let imagen_previa = clipboard.read_image().ok();
+
+    // Se usa la instancia GESTIONADA de Enigo, no una nueva: `lib.rs` deja su
+    // inicialización al frontend tras el onboarding a propósito, para no disparar
+    // el diálogo de permisos de macOS antes de que el usuario esté listo. Crear
+    // una aquí se saltaría ese diseño.
+    {
+        let enigo_state = app_handle
+            .try_state::<EnigoState>()
+            .ok_or("Enigo state not initialized")?;
+        let mut enigo = enigo_state
+            .0
+            .lock()
+            .map_err(|e| format!("Failed to lock Enigo: {}", e))?;
+        input::send_copy_ctrl_c(&mut enigo)?;
+    }
+
+    // SONDEO en vez de espera a ciegas. Antes había un `sleep(120ms)` fijo: se
+    // pagaban los 120 ms completos SIEMPRE, aunque la app hubiera escrito el
+    // portapapeles en 20. Ahora se pregunta cada 10 ms hasta que el contenido
+    // CAMBIE respecto a lo que había, con un tope.
+    //
+    // Dos ganancias, no una: se recorta la latencia hasta que la voz empieza —
+    // que es la queja— y la detección de «no había selección» deja de ser una
+    // comparación a posteriori: si el tope se agota sin que cambie nada, es que el
+    // Copiar no copió.
+    const SONDEO: Duration = Duration::from_millis(10);
+    const TOPE_COPIA: Duration = Duration::from_millis(400);
+    let inicio = std::time::Instant::now();
+    let mut copiado = None;
+    loop {
+        let ahora = clipboard.read_text().ok();
+        // Cambió respecto a lo previo → eso es la selección.
+        if ahora.is_some() && ahora.as_ref() != texto_previo.as_ref() {
+            copiado = ahora;
+            break;
+        }
+        if inicio.elapsed() >= TOPE_COPIA {
+            break;
+        }
+        std::thread::sleep(SONDEO);
+    }
+
+    // Restaurar SIEMPRE, y en el mismo orden de prioridad que el pegado: una
+    // imagen copiada es lo que más duele perder.
+    if let Some(img) = imagen_previa {
+        let _ = clipboard.write_image(&img);
+    } else if let Some(ref t) = texto_previo {
+        #[cfg(target_os = "linux")]
+        {
+            if is_wayland() && is_wl_copy_available() {
+                let _ = write_clipboard_via_wl_copy(t);
+            } else {
+                let _ = clipboard.write_text(t);
+            }
+        }
+        #[cfg(not(target_os = "linux"))]
+        {
+            let _ = clipboard.write_text(t);
+        }
+    }
+
+    match copiado {
+        Some(c) if c.trim().is_empty() => Ok(None),
+        Some(c) => Ok(Some(c)),
+        // El sondeo agotó el tope sin ver un cambio: no había selección.
+        None => Ok(None),
+    }
+}
 
 /// Pastes text using the clipboard: saves current content, writes text, sends paste keystroke, restores clipboard.
 fn paste_via_clipboard(
@@ -520,7 +619,7 @@ fn send_key_combo_via_xdotool(paste_method: &PasteMethod) -> Result<(), String> 
 fn paste_via_external_script(text: &str, script_path: &str) -> Result<(), String> {
     info!("Pasting via external script: {}", script_path);
 
-    let output = Command::new(script_path)
+    let output = crate::utils::comando_silencioso(script_path)
         .arg(text)
         .output()
         .map_err(|e| format!("Failed to execute external script '{}': {}", script_path, e))?;
@@ -604,6 +703,26 @@ fn should_send_auto_submit(auto_submit: bool, paste_method: PasteMethod) -> bool
     auto_submit && paste_method != PasteMethod::None
 }
 
+/// El manejo del portapapeles va atado al método de pegado.
+///
+/// Pegar por portapapeles ya escribe el texto ahí para poder mandar el atajo;
+/// dejarlo en «no modificar» solo sirve para restaurar lo anterior y deja al
+/// usuario sin el dictado en el portapapeles justo cuando acaba de pasar por
+/// él. Con esos métodos la app fija «copiar al portapapeles» y la UI lo enseña
+/// bloqueado. Directo, ninguno y script externo no tocan el portapapeles, así
+/// que ahí el ajuste sigue siendo del usuario.
+fn effective_clipboard_handling(
+    paste_method: PasteMethod,
+    configured: ClipboardHandling,
+) -> ClipboardHandling {
+    match paste_method {
+        PasteMethod::CtrlV | PasteMethod::CtrlShiftV | PasteMethod::ShiftInsert => {
+            ClipboardHandling::CopyToClipboard
+        }
+        PasteMethod::Direct | PasteMethod::None | PasteMethod::ExternalScript => configured,
+    }
+}
+
 pub fn paste(text: String, app_handle: AppHandle) -> Result<(), String> {
     let settings = get_settings(&app_handle);
     let paste_method = settings.paste_method;
@@ -670,7 +789,9 @@ pub fn paste(text: String, app_handle: AppHandle) -> Result<(), String> {
     }
 
     // After pasting, optionally copy to clipboard based on settings
-    if settings.clipboard_handling == ClipboardHandling::CopyToClipboard {
+    if effective_clipboard_handling(paste_method, settings.clipboard_handling)
+        == ClipboardHandling::CopyToClipboard
+    {
         let clipboard = app_handle.clipboard();
         clipboard
             .write_text(&text)
@@ -701,5 +822,39 @@ mod tests {
         assert!(should_send_auto_submit(true, PasteMethod::Direct));
         assert!(should_send_auto_submit(true, PasteMethod::CtrlShiftV));
         assert!(should_send_auto_submit(true, PasteMethod::ShiftInsert));
+    }
+
+    #[test]
+    fn clipboard_paste_forces_copy_to_clipboard() {
+        for method in [
+            PasteMethod::CtrlV,
+            PasteMethod::CtrlShiftV,
+            PasteMethod::ShiftInsert,
+        ] {
+            assert_eq!(
+                effective_clipboard_handling(method, ClipboardHandling::DontModify),
+                ClipboardHandling::CopyToClipboard,
+                "{:?} pega a través del portapapeles: no puede quedarse en «no modificar»",
+                method
+            );
+        }
+    }
+
+    #[test]
+    fn non_clipboard_paste_keeps_the_configured_handling() {
+        for method in [
+            PasteMethod::Direct,
+            PasteMethod::None,
+            PasteMethod::ExternalScript,
+        ] {
+            assert_eq!(
+                effective_clipboard_handling(method, ClipboardHandling::DontModify),
+                ClipboardHandling::DontModify
+            );
+            assert_eq!(
+                effective_clipboard_handling(method, ClipboardHandling::CopyToClipboard),
+                ClipboardHandling::CopyToClipboard
+            );
+        }
     }
 }

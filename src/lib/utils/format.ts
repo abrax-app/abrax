@@ -1,3 +1,9 @@
+const GB = 1_073_741_824;
+
+/** Bytes → gigabytes como string con `decimales` fijos (p.ej. "4.4"). */
+export const bytesAGb = (bytes: number, decimales = 1): string =>
+  (bytes / GB).toFixed(decimales);
+
 export const formatModelSize = (sizeMb: number | null | undefined): string => {
   if (!sizeMb || !Number.isFinite(sizeMb) || sizeMb <= 0) {
     return "Unknown size";

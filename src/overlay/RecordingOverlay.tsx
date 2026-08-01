@@ -4,25 +4,111 @@ import { useTranslation } from "react-i18next";
 import "./RecordingOverlay.css";
 import { commands, events } from "@/bindings";
 import type {
+  OverlayStyle,
   StreamPhase,
   StreamPhaseEvent,
   StreamTextEvent,
   StreamWorkKind,
 } from "@/bindings";
 import i18n, { syncLanguageFromSettings } from "@/i18n";
+import { applyAppearanceToRoot } from "@/lib/utils/theme";
 import { getLanguageDirection } from "@/lib/utils/rtl";
+import EsferaStage from "./EsferaStage";
+import type { EsferaState } from "./esfera/engine";
+import type { SpectrumPayload } from "@/lib/types/events";
 
-type OverlayState = "recording" | "streaming" | "transcribing" | "processing";
+type OverlayState =
+  | "recording"
+  | "streaming"
+  | "transcribing"
+  | "processing"
+  // Escucha leyendo en voz alta. No es dictado: no lleva micro, ni onda, ni
+  // temporizador — solo el parlante.
+  | "leyendo"
+  // Paso previo a `leyendo`: la selección ya se capturó y el motor está
+  // sintetizando. En un motor neuronal eso son SEGUNDOS de silencio, y sin
+  // señal alguna el atajo parecía no haber hecho nada.
+  | "preparando";
 
-// Number of reactive bars in the waveform (the simple, smoothed style shared by
-// every overlay form). Mic levels arrive as 16 FFT buckets; we take the first N.
-const WAVE_BARS = 9;
+// ── BARRAS REACTIVAS ───────────────────────────────────────────
+// Barras de ecualizador, la forma del upstream (Handy).
+//
+// Hubo una versión con una onda continua (una señal en el tiempo, tipo
+// osciloscopio) y se retiró el 30/07 por decisión de producto: pudo más lo
+// legible que lo distinto. Está entera en la historia —`0342608` la introdujo y
+// `c44af22` la arregló— por si alguna vez se quiere recuperar; no hace falta
+// reescribirla.
+//
+// El espectro llega como 32 bandas logarítmicas entre 70 y 8000 Hz. Cada barra
+// promedia 3 bandas consecutivas del rango de voz, y un suavizado exponencial
+// mantiene el movimiento calmado en vez de nervioso.
+
+/**
+ * Barras reactivas de la píldora. La forma la comparten todas sus variantes.
+ *
+ * 13 barras de 2 bandas (antes 9 de 3): más barras y más juntas leen como una
+ * ONDA, mientras que nueve separadas leían como una fila de puntos —que es
+ * justo lo que se veía en reposo—. El presupuesto no da para más: el espectro
+ * son 32 bandas y se arranca en la 2, así que 2 + 13×2 = 28 es el techo antes
+ * de pedir bandas que no existen y dibujar barras muertas al final.
+ */
+const WAVE_BARS = 13;
+/**
+ * Barras a cada lado del centro. El dibujo es SIMÉTRICO: el grave va al medio y
+ * el agudo se abre hacia los bordes, que es como se lee una onda.
+ *
+ * No es maquillaje, es la misma medida colocada de otra forma. Dibujando el
+ * espectro tal cual —grave a la izquierda, agudo a la derecha— la píldora
+ * mostraba SIEMPRE la misma rampa descendente, porque en cualquier sala el
+ * grave manda: parecía un fallo de dibujo antes que un medidor.
+ */
+const WAVE_HALF = (WAVE_BARS - 1) / 2;
+const WAVE_LEVELS = WAVE_HALF + 1;
+/**
+ * Primera banda que se muestrea (~130 Hz hacia arriba). Las más bajas llevan
+ * retumbe de la sala, no voz.
+ */
+const WAVE_FIRST_BAND = 2;
+const WAVE_BANDS_PER_BAR = 4;
+
+// ── SENSIBILIDAD DE LA ONDA ────────────────────────────────────
+// Medido el 31/07 sobre la pildora en marcha, contando pixeles de acento por
+// columna: EN SILENCIO la barra mas alta daba 6-8 px fisicos, o sea el suelo.
+// Con la curva anterior eso significa una banda por debajo de 0.033. Todo el
+// recorrido util quedaba por encima, y el habla normal apenas lo mordia.
+//
+// PUERTA: por debajo de esto es ruido de sala, y se planta en el suelo. Es lo
+// que permite subir la ganancia sin que la pildora en reposo parezca que esta
+// oyendo algo — la mentira contraria, y peor.
+const WAVE_GATE = 0.04;
+/** Ganancia sobre lo que queda tras la puerta. Satura cerca de banda 0.46. */
+const WAVE_GAIN = 2.4;
+/** Curva mas plana que la anterior (0.7): el habla baja usa mas recorrido. */
+const WAVE_CURVE = 0.5;
+const WAVE_FLOOR_PX = 5;
+/** Techo: 24 y no 18. La fila de la pildora mide 40 px, asi que sobra sitio. */
+const WAVE_CEIL_PX = 24;
+/** Sube rapido y baja despacio, como un medidor de pico: con el suavizado
+ *  simetrico de antes (0.3 en los dos sentidos) los picos se promediaban y la
+ *  onda no llegaba nunca a donde llego la voz. */
+const WAVE_ATTACK = 0.6;
+const WAVE_RELEASE = 0.22;
+
+/** Altura en px de una barra a partir del nivel 0..1 de su grupo de bandas. */
+const alturaBarra = (v: number): number => {
+  const g = Math.min(1, Math.max(0, v - WAVE_GATE) * WAVE_GAIN);
+  return (
+    WAVE_FLOOR_PX + Math.pow(g, WAVE_CURVE) * (WAVE_CEIL_PX - WAVE_FLOOR_PX)
+  );
+};
 
 const RecordingOverlay: React.FC = () => {
   const { t } = useTranslation();
   const [isVisible, setIsVisible] = useState(false);
   const [state, setState] = useState<OverlayState>("recording");
-  const [levels, setLevels] = useState<number[]>(Array(WAVE_BARS).fill(0));
+  const [style, setStyle] = useState<OverlayStyle>("minimal");
+  // Un valor por ANILLO de simetría (centro + 6), no por barra.
+  const [levels, setLevels] = useState<number[]>(Array(WAVE_LEVELS).fill(0));
   const [streamText, setStreamText] = useState<StreamTextEvent>({
     committed: "",
     tentative: "",
@@ -40,7 +126,7 @@ const RecordingOverlay: React.FC = () => {
   // while overflowing, so the resting first line stays crisp flush under the pill.
   const [overflowing, setOverflowing] = useState(false);
 
-  const smoothedLevelsRef = useRef<number[]>(Array(16).fill(0));
+  const smoothedLevelsRef = useRef<number[]>(Array(WAVE_LEVELS).fill(0));
   // Live-text scroll-back: the text region "sticks" to the newest line while the
   // user is at the bottom; if they scroll up to read history, auto-follow pauses
   // until they scroll back down.
@@ -53,12 +139,21 @@ const RecordingOverlay: React.FC = () => {
       const unlistenShow = await listen("show-overlay", async (event) => {
         await syncLanguageFromSettings();
         // The Live panel flows downward from a top overlay and upward from a
-        // bottom one; read the placement so the layout can flip to match.
+        // bottom one; read the placement so the layout can flip to match. The
+        // style decides which visual renders (pill, panel, or esfera).
         try {
           const settings = await commands.getAppSettings();
           if (settings.status === "ok") {
             setPosition(
               settings.data.overlay_position === "top" ? "top" : "bottom",
+            );
+            setStyle(settings.data.overlay_style ?? "minimal");
+            // La paleta activa llega por los mismos tokens CSS que la app:
+            // se aplica a la raíz ANTES de volverse visible, para que la
+            // esfera (que lee los tokens al montar) nazca ya teñida.
+            applyAppearanceToRoot(
+              settings.data.theme ?? "system",
+              settings.data.ui_theme ?? "abrax",
             );
           }
         } catch {
@@ -68,31 +163,57 @@ const RecordingOverlay: React.FC = () => {
         setState(overlayState);
         if (overlayState === "recording" || overlayState === "streaming") {
           setStreamText({ committed: "", tentative: "" });
+          setElapsed(0);
         }
         if (overlayState === "streaming") {
           setPhase("listening");
           setWorkKind("transcribing");
-          setElapsed(0);
           setSession((s) => s + 1); // remount the card fresh for this session
         }
         setIsVisible(true);
+        // Subscribe to spectrum frames only while visible (R8): the backend
+        // gates FFT + emission on this subscription.
+        //
+        // Y SOLO SI EL ESTADO LO NECESITA. `leyendo`/`preparando` son Escucha
+        // leyendo un texto en voz alta: no hay micrófono de por medio y no se
+        // dibuja onda alguna. Suscribirse ahí encendería la FFT del micro
+        // mientras al usuario simplemente le leen algo — desperdicio, y una
+        // activación del micrófono que nadie pidió. La letra de R8 se cumplía
+        // (el overlay está visible), pero no su intención.
+        if (overlayState !== "leyendo" && overlayState !== "preparando") {
+          void commands.startSpectrum();
+        }
       });
 
       const unlistenHide = await listen("hide-overlay", () => {
         setIsVisible(false);
+        // Unsubscribe immediately — emission must stop with the overlay.
+        void commands.stopSpectrum();
       });
 
-      const unlistenLevel = await listen<number[]>("mic-level", (event) => {
-        const newLevels = event.payload as number[];
-        // Exponential smoothing across the 16 buckets, then take the first N
-        // bars for the shared waveform.
-        const smoothed = smoothedLevelsRef.current.map((prev, i) => {
-          const target = newLevels[i] || 0;
-          return prev * 0.7 + target * 0.3;
-        });
-        smoothedLevelsRef.current = smoothed;
-        setLevels(smoothed.slice(0, WAVE_BARS));
-      });
+      const unlistenLevel = await listen<SpectrumPayload>(
+        "spectrum",
+        (event) => {
+          const { bands } = event.payload;
+          // Cada barra promedia un grupo de bandas consecutivas del rango de
+          // voz, y el suavizado exponencial mantiene el movimiento calmado.
+          const smoothed = smoothedLevelsRef.current.map((prev, i) => {
+            const start = WAVE_FIRST_BAND + i * WAVE_BANDS_PER_BAR;
+            let sum = 0;
+            for (let b = start; b < start + WAVE_BANDS_PER_BAR; b++) {
+              sum += bands[b] ?? 0;
+            }
+            const target = sum / WAVE_BANDS_PER_BAR;
+            // Asimetrico: el pico se alcanza, la caida se acompaña.
+            return (
+              prev +
+              (target - prev) * (target > prev ? WAVE_ATTACK : WAVE_RELEASE)
+            );
+          });
+          smoothedLevelsRef.current = smoothed;
+          setLevels(smoothed);
+        },
+      );
 
       const unlistenStream = await events.streamTextEvent.listen((event) => {
         setStreamText(event.payload);
@@ -123,12 +244,15 @@ const RecordingOverlay: React.FC = () => {
     };
   }, []);
 
-  // Elapsed timer while the Live overlay is visible.
+  // Elapsed timer while the Live overlay is visible (the Esfera style also
+  // shows it while listening).
   useEffect(() => {
-    if (state !== "streaming" || !isVisible) return;
+    const wantsTimer =
+      state === "streaming" || (style === "esfera" && state === "recording");
+    if (!wantsTimer || !isVisible) return;
     const id = setInterval(() => setElapsed((e) => e + 1), 1000);
     return () => clearInterval(id);
-  }, [state, isVisible]);
+  }, [state, style, isVisible]);
 
   // Stick to the bottom as text streams in — but only while pinned, so a user who
   // has scrolled up to read history isn't yanked back down by the next chunk.
@@ -157,13 +281,23 @@ const RecordingOverlay: React.FC = () => {
     `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`;
 
   // ---- Shared building blocks (one visual language for every overlay form) ----
+  // Las alturas van EN LINEA porque salen de los niveles del micro, que cambian
+  // con cada trama: no hay clase CSS que pueda expresarlas.
   const waveform = (
     <div className="swave">
-      {levels.map((v, i) => (
+      {Array.from({ length: WAVE_BARS }, (_, bar) => {
+        // Distancia al centro: la barra del medio lee el nivel 0 (el grave) y
+        // cada par simetrico lee el siguiente.
+        const v = levels[Math.abs(bar - WAVE_HALF)] ?? 0;
+        return { bar, v };
+      }).map(({ bar, v }) => (
         <i
-          key={i}
+          key={bar}
           style={{
-            height: `${Math.max(3, Math.min(18, 3 + Math.pow(v, 0.7) * 15))}px`,
+            // El suelo es 5 y no 3: en silencio TODAS las barras estan ahi, y a
+            // 3px con 13 barras la pildora se leia como una fila de puntos en
+            // vez de como una onda en reposo.
+            height: `${alturaBarra(v).toFixed(1)}px`,
           }}
         />
       ))}
@@ -202,6 +336,23 @@ const RecordingOverlay: React.FC = () => {
     </div>
   );
 
+  // Fila del overlay MINIMAL mientras graba: la onda y nada más.
+  //
+  // Antes llevaba también un punto que latía a la izquierda y la X a la derecha.
+  // En reposo —que es como se ve el 90% del tiempo, antes de que entre voz— eso
+  // era un punto, nueve cuadraditos y un botón: parecía un widget de depuración,
+  // no la marca en movimiento.
+  //
+  // La X no se pierde, se esconde hasta que el ratón entra en la píldora (CSS).
+  // Y cancelar tiene atajo propio desde siempre —`escape`, `settings.rs:968`—,
+  // así que la función sigue estando aunque nunca se pase el ratón por encima.
+  const waveOnlyRow = (
+    <div className="sbase sbase-solo-onda">
+      {waveform}
+      {cancelBtn}
+    </div>
+  );
+
   // spinner (left) | label (center) | cancel (right) — same 3-zone grid as the
   // listening row, so the label is centered.
   const workingRow = (label: string, showCancel: boolean) => (
@@ -213,6 +364,129 @@ const RecordingOverlay: React.FC = () => {
       <div className="sbase-r">{showCancel && cancelBtn}</div>
     </div>
   );
+
+  // ---- Overlay de PREPARACIÓN (Escucha) ------------------------------------
+  // El texto ya está capturado y el motor lo está sintetizando. En el motor del
+  // sistema eso es instantáneo, pero en uno neuronal son SEGUNDOS de silencio
+  // absoluto: se pulsaba el atajo y no pasaba nada visible, así que parecía
+  // roto. Esto dice «te oí, estoy trabajando» hasta que arranca la voz.
+  //
+  // Tres puntos y no una barra de progreso: no sabemos cuánto falta, y una
+  // barra que avanza sin medir nada sería un instrumento que miente.
+  if (state === "preparando") {
+    return (
+      <div
+        dir={direction}
+        className={`ov-stage ${position} ov-fade ${isVisible ? "show" : ""}`}
+      >
+        <div className="scard compact leyendo">
+          <svg
+            className="prep"
+            viewBox="0 0 24 24"
+            width="22"
+            height="22"
+            role="img"
+            aria-label={t("overlay.preparando")}
+          >
+            <circle className="prep-pt prep-pt-1" cx="5" cy="12" r="2.2" />
+            <circle className="prep-pt prep-pt-2" cx="12" cy="12" r="2.2" />
+            <circle className="prep-pt prep-pt-3" cx="19" cy="12" r="2.2" />
+          </svg>
+        </div>
+      </div>
+    );
+  }
+
+  // ---- Overlay de LECTURA (Escucha) ----------------------------------------
+  // Un parlante y nada más, mientras se lee en voz alta. Va ANTES de mirar el
+  // estilo a propósito: leer no es dictar, así que no hereda la esfera ni el
+  // panel Live — se ve igual con cualquier estilo elegido.
+  //
+  // Las ondas del parlante PULSAN, no miden. El motor de voz no expone amplitud,
+  // así que animarlas al ritmo real no es posible; fingir un medidor de nivel
+  // sería un instrumento que miente. Lo que comunica es «está sonando», que es
+  // exactamente lo que hay que saber.
+  if (state === "leyendo") {
+    return (
+      <div
+        dir={direction}
+        className={`ov-stage ${position} ov-fade ${isVisible ? "show" : ""}`}
+      >
+        <div className="scard compact leyendo">
+          <svg
+            className="spk"
+            viewBox="0 0 24 24"
+            width="22"
+            height="22"
+            role="img"
+            aria-label={t("overlay.leyendo")}
+          >
+            {/* cono del parlante */}
+            <path
+              className="spk-cono"
+              d="M4 9.5h3.2L12 5.6v12.8L7.2 14.5H4z"
+              fill="currentColor"
+            />
+            {/* dos ondas que laten desfasadas: la de dentro primero */}
+            <path
+              className="spk-onda spk-onda-1"
+              d="M15 9.2a4 4 0 0 1 0 5.6"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.8"
+              strokeLinecap="round"
+            />
+            <path
+              className="spk-onda spk-onda-2"
+              d="M17.6 6.8a7.6 7.6 0 0 1 0 10.4"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.8"
+              strokeLinecap="round"
+            />
+          </svg>
+        </div>
+      </div>
+    );
+  }
+
+  // ---- Esfera overlay: the audio-reactive sphere on a cosmic stage, with the
+  // shared control row underneath (timer + cancel while listening; spinner +
+  // label while working). Mounted only while visible — hide disposes the GPU.
+  if (style === "esfera") {
+    const working = state === "transcribing" || state === "processing";
+    const esferaState: EsferaState = working
+      ? (state as EsferaState)
+      : "recording";
+    return (
+      <div
+        dir={direction}
+        className={`ov-stage ${position} ov-fade ${isVisible ? "show" : ""}`}
+      >
+        <div className="scard esfera">
+          <div className="esfera-stage">
+            <EsferaStage state={esferaState} active={isVisible} />
+          </div>
+          {working ? (
+            workingRow(
+              state === "processing"
+                ? t("overlay.processing")
+                : t("overlay.transcribing"),
+              true,
+            )
+          ) : (
+            <div className="sbase">
+              <div className="sbase-l">
+                <span className="sdot" />
+              </div>
+              <span className="stimer">{fmtTime(elapsed)}</span>
+              <div className="sbase-r">{cancelBtn}</div>
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  }
 
   // ---- Live overlay: a pill that sculpts open into a panel ----
   if (state === "streaming") {
@@ -281,9 +555,9 @@ const RecordingOverlay: React.FC = () => {
       className={`ov-stage ${position} ov-fade ${isVisible ? "show" : ""}`}
     >
       <div
-        className={`scard compact ${working && isVisible ? "cworking" : ""}`}
+        className={`scard compact ${working ? "" : "solo-onda"} ${working && isVisible ? "cworking" : ""}`}
       >
-        {working ? workingRow(workLabel, true) : listeningRow(false, true)}
+        {working ? workingRow(workLabel, true) : waveOnlyRow}
       </div>
     </div>
   );

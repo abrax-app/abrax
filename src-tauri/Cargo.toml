@@ -1,7 +1,7 @@
 [package]
 name = "abrax"
-version = "0.1.0"
-description = "Abrax — dictado por voz local para vibe coders"
+version = "1.0.0"
+description = "Dictado con IA 100% local, en español de primera clase."
 authors = ["Equipo Abrax"]
 edition = "2021"
 license = "MIT"
@@ -18,6 +18,42 @@ incremental = true # Compile your binary in smaller steps.
 # This seems to be only an issue on Windows, see https://github.com/rust-lang/cargo/issues/8519
 name = "handy_app_lib"
 crate-type = ["staticlib", "cdylib", "rlib"]
+
+[features]
+# Motores de voz NEURONALES + detección de GPU (wgpu). OFF por defecto: el build
+# de entrega solo trae las Voces del Sistema (SAPI/AVSpeech/speech-dispatcher),
+# out-of-the-box y liviano (sin wgpu). Con `--features advanced-tts` se compilan
+# Piper/Kokoro/Online + la detección de hardware, para demos/uso avanzado.
+# "Diferir, no borrar": el código neuronal sigue en el árbol, solo no entra al
+# build por defecto. Ver kit/informes/ESTADO_TTS_2026-07-14.md.
+# ENCENDIDA. Lo que estaba mal no era la feature: era ofrecer motores que la
+# máquina no puede habilitar.
+#
+# Kokoro y Online levantan un servidor Python que se aprovisiona con `uv`, y
+# `uv` NO viaja con la app. En un equipo recién instalado —el Mac de un juez—
+# pulsar «Habilitar» devolvía «no se pudo ejecutar 'uv' (¿instalado?)», y encima
+# Kokoro llevaba la insignia «Recomendado». En el equipo de desarrollo funcionaba
+# porque ahí `uv` estaba puesto a mano: por eso llegó al día de entrega sin que
+# nadie lo viera.
+#
+# Se apagó entera un rato el 31/07 y eso se llevó por delante también a Piper,
+# que sí funciona en todas partes (binario nativo + `.onnx` con sha256, runtime
+# publicado para Windows x64, Linux x64, macOS x64 y macOS aarch64) y es el
+# único que da voz neuronal LOCAL. En Windows las voces del sistema son tres,
+# una sola en español, y suenan a SAPI de hace quince años.
+#
+# La solución no es apagar: es que `list_engines` ofrezca solo lo habilitable
+# (`manager.rs`, `pyserver::uv_disponible`). Máquina limpia → Sistema + Piper.
+# Con `uv` puesto → los cuatro.
+#
+# El Online sigue etiquetado y APAGADO de fábrica: es la única excepción al
+# principio 100% local, nunca se recomienda y nunca es fallback (ver
+# `managers/tts/online.rs`).
+#
+# La DETECCIÓN DE HARDWARE que trae wgpu se compila pero NO se muestra: se ocultó
+# en la UI a propósito (ver `MOSTRAR_HARDWARE` en `escucha/MotorVoz.tsx`).
+default = ["advanced-tts"]
+advanced-tts = ["dep:wgpu", "dep:pollster"]
 
 [build-dependencies]
 tauri-build = { version = "2", features = [] }
@@ -36,6 +72,7 @@ tauri-plugin-log = "2.7.1"
 tauri-plugin-opener = "2.5.2"
 tauri-plugin-store = "2.4.1"
 tauri-plugin-os = "2.3.2"
+tauri-plugin-notification = "2"
 tauri-plugin-clipboard-manager = "2.3.2"
 tauri-plugin-macos-permissions = "2.3.0"
 tauri-plugin-process = "2.3.1"
@@ -53,10 +90,11 @@ tokio = "1.43.0"
 vad-rs = { git = "https://github.com/cjpais/vad-rs", default-features = false }
 enigo = "0.6.1"
 rodio = { git = "https://github.com/cjpais/rodio.git" }
-reqwest = { version = "0.12", features = ["json", "stream"] }
+reqwest = { version = "0.12", features = ["json", "stream", "blocking"] }
 futures-util = "0.3"
 rustfft = "6.4.0"
 strsim = "0.11.0"
+ignore = "0.4"
 natural = "0.5.0"
 regex = "1"
 chrono = "0.4"
@@ -64,14 +102,27 @@ rusqlite = { version = "0.37", features = ["bundled"] }
 tar = "0.4.44"
 flate2 = "1.0"
 sha2 = "0.10"
+# Enumerar discos/volúmenes con espacio libre, para elegir dónde descargar los
+# modelos (pesan varios GB). Solo la feature de discos, sin lo demás de sysinfo.
+sysinfo = { version = "0.33", default-features = false, features = ["disk"] }
 # Whisper-family models run through transcribe-cpp (GGUF/ggml, native backends);
 # transcribe-rs is now ONNX-only (Parakeet, Moonshine, SenseVoice, GigaAM,
 # Canary, Cohere). Per-platform backend features are added in the target tables.
 transcribe-rs = { version = "0.3.8", features = ["onnx"] }
 transcribe-cpp = { version = "0.1.2", default-features = false }
+# Diarización de hablantes (offline): reusa el ONNX Runtime (ort) que ya trae
+# transcribe-rs — MISMA versión, default-features=false → Cargo unifica sin bajar
+# un segundo onnxruntime ni tocar el linkado por ORT_LIB_LOCATION. (rustfft, para
+# el fbank, ya está arriba — lo usa el espectro.)
+ort = { version = "=2.0.0-rc.12", default-features = false }
 handy-keys = "0.3.0"
 ferrous-opencc = "0.2.3"
 clap = { version = "4", features = ["derive"] }
+# [ESCUCHA] Motor de lectura en voz alta sobre el TTS del sistema operativo
+# (WinRT en Windows, AVSpeech en macOS, speech-dispatcher en Linux).
+tts = "0.26"
+# [ESCUCHA] Segmentación markdown del preprocesador de lectura.
+pulldown-cmark = { version = "0.13", default-features = false }
 specta = "=2.0.0-rc.22"
 specta-typescript = "0.0.9"
 tauri-specta = { version = "=2.0.0-rc.21", features = ["derive", "typescript"] }
@@ -79,6 +130,20 @@ tauri-plugin-dialog = "2.6"
 hf-hub = { git = "https://github.com/cjpais/hf-hub", branch = "cancellable-downloads", features = [
   "tokio",
 ] }
+# [TTS] Detección de GPU cross-platform para recomendar el motor de voz: se usa
+# solo `Instance::enumerate_adapters` → `AdapterInfo` (vendor por PCI ID + tipo
+# discreta/integrada). No creamos device ni renderizamos nada.
+#
+# Sin backend DX12 a propósito: `wgpu-hal 30`+`gpu-allocator` chocan por versión
+# de `windows`/`windows-core` (0.62 vs. nuestro pin 0.61) SOLO en el path DX12.
+# Para enumerar adaptadores en Windows basta Vulkan (ya presente para whisper);
+# Vulkan reporta vendor (PCI id) y tipo discreta/integrada igual que DX12.
+wgpu = { version = "30.0.0", default-features = false, optional = true, features = [
+  "vulkan",
+  "metal",
+] }
+pollster = { version = "1.0.1", optional = true }
+zip = { version = "2", default-features = false, features = ["deflate"] }
 
 [target.'cfg(unix)'.dependencies]
 signal-hook = "0.3"
@@ -104,6 +169,39 @@ windows = { version = "0.61.3", features = [
   "Win32_System_Variant",
   "Win32_Foundation",
   "Win32_UI_WindowsAndMessaging",
+  # Memoria en el sitio: leer el campo de texto enfocado vía UI Automation
+  # (100% local) para aprender de las correcciones hechas donde se dicta.
+  "Win32_UI_Accessibility",
+  # Estado FISICO del teclado (`GetAsyncKeyState`): antes de sintetizar un
+  # Copiar hay que esperar a que el usuario SUELTE los modificadores del
+  # atajo, o el combo sale contaminado (Ctrl+Shift+C en vez de Ctrl+C) y el
+  # estado del teclado se desincroniza — teclas pegadas. Ver `input.rs`.
+  "Win32_UI_Input_KeyboardAndMouse",
+  # Job Objects: los procesos hijo (servidores de voz, Piper) se asocian a un
+  # Job con KILL_ON_JOB_CLOSE para que el SO los mate cuando muera Abrax, PASE
+  # LO QUE PASE. `Drop` no corre en un cierre forzado, y sin esto quedaban
+  # huerfanos que bloqueaban reinstalar el motor. Ver `utils::adoptar_hijo`.
+  "Win32_System_JobObjects",
+  # `CreateJobObjectW` recibe `SECURITY_ATTRIBUTES` (le pasamos `None`), y la
+  # crate la deja tras `Win32_Security`. Sin esta feature el modulo compila
+  # pero la funcion no existe.
+  "Win32_Security",
+  # `JOBOBJECT_EXTENDED_LIMIT_INFORMATION` lleva dentro `IO_COUNTERS`, que vive
+  # en Threading. Hoy otra dependencia ya lo activa y compila igual sin
+  # declararlo, pero eso es unificacion de features ajena: se declara aqui para
+  # que el dia que esa dependencia cambie no se caiga este modulo.
+  "Win32_System_Threading",
+  "Win32_System_Com",
+  # [TTS] Lectura de VRAM dedicada por adaptador (DXGI) para la detección de
+  # hardware: wgpu no expone la VRAM total, así que en Windows se consulta
+  # `IDXGIAdapter1::GetDesc1().DedicatedVideoMemory` como best-effort.
+  #
+  # DXGI se usa además para enumerar adaptadores en el BUILD DE ENTREGA (sin
+  # `advanced-tts`, donde no se enlaza wgpu). Por eso este bloque no es opcional.
+  "Win32_Graphics_Dxgi",
+  "Win32_Graphics_Dxgi_Common",
+  # RAM total instalada (`GlobalMemoryStatusEx`) para recomendar modelo de dictado.
+  "Win32_System_SystemInformation",
 ] }
 winreg = "0.55"
 

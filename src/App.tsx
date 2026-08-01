@@ -1,25 +1,87 @@
 import { useEffect, useState, useRef, type ReactNode } from "react";
 import { toast, Toaster } from "sonner";
 import { useTranslation } from "react-i18next";
-import { listen } from "@tauri-apps/api/event";
 import { platform } from "@tauri-apps/plugin-os";
 import {
   checkAccessibilityPermission,
   checkMicrophonePermission,
 } from "tauri-plugin-macos-permissions-api";
-import { ModelStateEvent, RecordingErrorEvent } from "./lib/types/events";
 import "./App.css";
 import AccessibilityPermissions from "./components/AccessibilityPermissions";
+import AlertsBanner, { alertTitleKey } from "./components/AlertsBanner";
 import Footer from "./components/footer";
-import Onboarding, { AccessibilityOnboarding } from "./components/onboarding";
+import Onboarding, {
+  AccessibilityOnboarding,
+  Welcome,
+} from "./components/onboarding";
 import { Sidebar, SidebarSection, SECTIONS_CONFIG } from "./components/Sidebar";
+import { RetroShell } from "./components/retro/RetroShell";
+import { QuietShell } from "./components/quiet/QuietShell";
+import { BancadaShell } from "./components/bancada/BancadaShell";
 import { WhatsNewGate } from "./components/whats-new";
 import { useSettings } from "./hooks/useSettings";
 import { useSettingsStore } from "./stores/settingsStore";
-import { commands } from "@/bindings";
+import { useModelStore } from "./stores/modelStore";
+import { commands, events } from "@/bindings";
 import { getLanguageDirection, initializeRTL } from "@/lib/utils/rtl";
+import { formatKeyCombination } from "@/lib/utils/keyboard";
+import { useOsType } from "./hooks/useOsType";
 
-type OnboardingStep = "accessibility" | "model" | "done";
+type OnboardingStep = "welcome" | "accessibility" | "model" | "done";
+
+/**
+ * Modelos aptos para audio del sistema, en el mismo orden que manda el backend
+ * (`ModelManager::modelo_para_sistema_descargado`, `managers/model.rs`). Se
+ * comparan por REPO, sin el quant, para que cambiar el quant por defecto no
+ * despiste.
+ *
+ * Nemotron primero: con audio real de loopback dio lo mismo que Turbo, pesa
+ * 130 MB menos y es el único de los cinco con streaming.
+ *
+ * ⚠️ Si cambia el orden en Rust, cambia aquí. Es un espejo deliberado —igual que
+ * el preset es-419 de las muletillas— para poder ofrecer el botón con el nombre
+ * y el peso REALES del registro, sin inventar ids ni tamaños.
+ */
+const REPOS_APTOS_SISTEMA = [
+  "nemotron-3.5-asr-streaming-0.6b",
+  "whisper-large-v3-turbo",
+  "whisper-large-v3",
+  "cohere-transcribe-03-2026",
+];
+
+/**
+ * El primer modelo apto que NO esté descargado, tomado del registro real (de ahí
+ * salen el id con su quant y el peso). `undefined` si no hay ninguno que ofrecer
+ * — entonces el aviso va sin botón, nunca con uno que no haga nada.
+ */
+const modeloRecomendadoParaSistema = () => {
+  const { models } = useModelStore.getState();
+  for (const repo of REPOS_APTOS_SISTEMA) {
+    const m = models.find((x) => x.id.includes(repo) && !x.is_downloaded);
+    if (m) return m;
+  }
+  return undefined;
+};
+
+/**
+ * Baja el modelo y lleva a Modelos, para que el progreso se vea en vez de
+ * ocurrir en silencio.
+ *
+ * La navegacion solo surte efecto en el shell Clasico —`setCurrentSection` es
+ * suyo— pero la DESCARGA arranca en los cuatro, que es lo que el usuario pidio
+ * al pulsar. En los otros shells se confirma con un aviso, porque un boton que
+ * se pulsa y no da senal ninguna se lee como roto.
+ */
+const descargarYMostrar = (
+  id: string,
+  irASeccion: (s: SidebarSection) => void,
+  aviso: string,
+  esClasico: boolean,
+) => {
+  void useModelStore.getState().downloadModel(id);
+  if (esClasico) irASeccion("models");
+  else toast.info(aviso);
+};
 
 const renderSettingsContent = (section: SidebarSection) => {
   const ActiveComponent =
@@ -38,6 +100,11 @@ function App() {
   const [currentSection, setCurrentSection] =
     useState<SidebarSection>("general");
   const { settings, updateSetting } = useSettings();
+  // Solo el shell Clasico consume `setCurrentSection`; los demas se renderizan
+  // antes y nunca lo leen. Se calcula aqui para que los avisos sepan si pueden
+  // llevar al usuario a Modelos o si tienen que confirmar la descarga a mano.
+  const esClasico = (settings?.ui_shell ?? "classic") === "classic";
+  const osType = useOsType();
   const direction = getLanguageDirection(i18n.language);
   const refreshAudioDevices = useSettingsStore(
     (state) => state.refreshAudioDevices,
@@ -96,75 +163,139 @@ function App() {
     };
   }, [settings?.debug_mode, updateSetting]);
 
-  // Listen for recording errors from the backend and show a toast
+  // Canal único de errores (F1): un solo listener convierte cada UserAlertEvent
+  // en un toast localizado. La persistencia (centro de errores) vive en
+  // alertsStore/AlertsBanner, y la notificación nativa con ventana oculta la
+  // envía el backend — misma fuente, tres superficies.
   useEffect(() => {
-    const unlisten = listen<RecordingErrorEvent>("recording-error", (event) => {
-      const { error_type, detail } = event.payload;
-
-      if (error_type === "microphone_permission_denied") {
+    const unlisten = events.userAlertEvent.listen((event) => {
+      const { kind, detail } = event.payload;
+      const title = t(alertTitleKey(kind));
+      if (kind === "recording_permission_denied") {
         const currentPlatform = platform();
-        const platformKey = `errors.micPermissionDenied.${currentPlatform}`;
-        const description = t(platformKey, {
+        const description = t(`errors.micPermissionDenied.${currentPlatform}`, {
           defaultValue: t("errors.micPermissionDenied.generic"),
         });
-        toast.error(t("errors.micPermissionDeniedTitle"), { description });
-      } else if (error_type === "no_input_device") {
-        toast.error(t("errors.noInputDeviceTitle"), {
-          description: t("errors.noInputDevice"),
+        toast.error(title, { description });
+      } else if (kind === "recording_no_device") {
+        toast.error(title, { description: t("errors.noInputDevice") });
+      } else if (kind === "recording_too_short") {
+        // El usuario soltó la tecla antes de hablar. Se le dice qué teclas
+        // mantener, con el atajo REAL que tenga configurado y ya formateado
+        // para su plataforma — nada de culpar al micrófono.
+        const atajo = formatKeyCombination(
+          settings?.bindings?.transcribe?.current_binding ?? "",
+          osType,
+        );
+        toast.error(title, {
+          description: atajo
+            ? t("errors.recordingTooShort", { atajo })
+            : t("errors.recordingTooShortNoBinding"),
         });
-      } else {
-        toast.error(
-          t("errors.recordingFailed", { error: detail ?? "Unknown error" }),
-        );
-      }
-    });
-    return () => {
-      unlisten.then((fn) => fn());
-    };
-  }, [t]);
-
-  // Listen for paste failures and show a toast.
-  // The technical error detail is logged to handy.log on the Rust side
-  // (see actions.rs `error!("Failed to paste transcription: ...")`),
-  // so we show a localized, user-friendly message here instead of the raw error.
-  useEffect(() => {
-    const unlisten = listen("paste-error", () => {
-      toast.error(t("errors.pasteFailedTitle"), {
-        description: t("errors.pasteFailed"),
-      });
-    });
-    return () => {
-      unlisten.then((fn) => fn());
-    };
-  }, [t]);
-
-  // Listen for transcription failures and show a toast.
-  // The payload is the backend error message (also logged to handy.log).
-  useEffect(() => {
-    const unlisten = listen<string>("transcription-error", (event) => {
-      toast.error(t("errors.transcriptionFailedTitle"), {
-        description: event.payload,
-      });
-    });
-    return () => {
-      unlisten.then((fn) => fn());
-    };
-  }, [t]);
-
-  // Listen for model loading failures and show a toast
-  useEffect(() => {
-    const unlisten = listen<ModelStateEvent>("model-state-changed", (event) => {
-      if (event.payload.event_type === "loading_failed") {
-        toast.error(
-          t("errors.modelLoadFailed", {
-            model:
-              event.payload.model_name || t("errors.modelLoadFailedUnknown"),
-          }),
-          {
-            description: event.payload.error,
+      } else if (kind === "transcription_empty") {
+        toast.error(title, { description: t("errors.transcriptionEmpty") });
+      } else if (kind === "sistema_modelo_cambiado_sin_vivo") {
+        // NO es un error: la app hizo lo correcto. Va como aviso informativo,
+        // nombrando el modelo que puso y lo que se pierde con el —de los cinco
+        // del catalogo solo Nemotron transmite en vivo—. Sin esto el usuario ve
+        // el texto en vivo y las palabras por minuto desaparecer sin motivo.
+        {
+          // El aviso del cambio TAMBIEN ofrece la descarga. Antes solo la
+          // llevaba el caso «no hay ningun modelo apto»; en este —que es el
+          // frecuente, porque basta tener uno cualquiera bajado— se le decia al
+          // usuario que perdia el texto en vivo y se le dejaba sin forma de
+          // recuperarlo. Enterarse de lo que falta y no poder pedirlo es la
+          // mitad de un aviso.
+          const mejor = modeloRecomendadoParaSistema();
+          toast.info(title, {
+            description: t("errors.sistemaModeloCambiado", {
+              modelo: detail ?? "",
+            }),
+            action: mejor
+              ? {
+                  label: t("errors.sistemaSinModeloAptoDescargar", {
+                    mb: mejor.size_mb,
+                  }),
+                  onClick: () =>
+                    descargarYMostrar(
+                      mejor.id,
+                      setCurrentSection,
+                      t("errors.descargaIniciada"),
+                      esClasico,
+                    ),
+                }
+              : undefined,
+          });
+        }
+      } else if (kind === "sistema_sin_modelo_apto") {
+        // El modo quedó activo (lo pidió el usuario) pero el modelo puesto no
+        // alcanza y no hay otro descargado. Se nombra el que hace falta y su
+        // peso, porque «no reconocí palabras» a secas manda a revisar el audio
+        // —que está bien— en vez de la descarga que falta.
+        //
+        // Y se ofrece la descarga AQUÍ: decirle qué le falta y dejarlo buscando
+        // la sección de Modelos es dejarlo a mitad de camino. El botón baja el
+        // modelo y lleva a Modelos, para que el progreso sea visible en vez de
+        // ocurrir en silencio.
+        const recomendado = modeloRecomendadoParaSistema();
+        toast.error(title, {
+          description: t("errors.sistemaSinModeloApto"),
+          action: recomendado
+            ? {
+                label: t("errors.sistemaSinModeloAptoDescargar", {
+                  mb: recomendado.size_mb,
+                }),
+                onClick: () =>
+                  descargarYMostrar(
+                    recomendado.id,
+                    setCurrentSection,
+                    t("errors.descargaIniciada"),
+                    esClasico,
+                  ),
+              }
+            : undefined,
+        });
+      } else if (kind === "shortcut_registration") {
+        toast.error(title, { description: t("errors.shortcutRegistration") });
+      } else if (kind === "atajo_ocupado") {
+        // Otra aplicación ya tenía esa combinación. Se NOMBRA el atajo (viene en
+        // `detail`) y se lleva a Ajustes, porque «un atajo no se registró» sin
+        // decir cuál deja al usuario probando teclas a ciegas.
+        //
+        // Ningún default puede garantizarse: depende del software instalado. Este
+        // aviso es la defensa real, no acertar la tecla.
+        toast.error(title, {
+          description: t("errors.atajoOcupado", { atajos: detail ?? "" }),
+          action: {
+            label: t("errors.atajoOcupadoCambiar"),
+            onClick: () => setCurrentSection("general"),
           },
-        );
+        });
+      } else if (kind === "paste") {
+        toast.error(title, { description: t("errors.pasteFailed") });
+      } else {
+        toast.error(title, { description: detail ?? undefined });
       }
+    });
+    return () => {
+      unlisten.then((fn) => fn());
+    };
+  }, [t, settings?.bindings?.transcribe?.current_binding, osType, esClasico]);
+
+  // Memoria en el sitio: cuando ABRAX aprende de una corrección hecha donde
+  // se dicta, se celebra con el mismo toast del aprendizaje por Historial y
+  // se refresca el store (la escritura fue backend-side, sin evento de
+  // settings) para que la sección Memoria muestre el par al instante.
+  useEffect(() => {
+    const unlisten = events.memoriaAprendida.listen((event) => {
+      const pares = event.payload.pares;
+      if (pares.length === 0) return;
+      toast.success(
+        t("settings.history.edit.learned", {
+          pares: pares.map((p) => `«${p.de} → ${p.a}»`).join(", "),
+        }),
+      );
+      void useSettingsStore.getState().refreshSettings();
     });
     return () => {
       unlisten.then((fn) => fn());
@@ -228,9 +359,10 @@ function App() {
 
         setOnboardingStep("done");
       } else {
-        // New user - start full onboarding
+        // Usuario nuevo: primero saber QUÉ es esto. Quien ya completó el
+        // onboarding y solo vuelve por permisos no la ve de nuevo.
         setIsReturningUser(false);
-        setOnboardingStep("accessibility");
+        setOnboardingStep("welcome");
       }
     } catch (error) {
       console.error("Failed to check onboarding status:", error);
@@ -278,12 +410,35 @@ function App() {
   // stable wrapper around this node, so crossing between onboarding steps and
   // the main app never remounts it (which would drop any in-flight toast).
   let content: ReactNode;
-  if (onboardingStep === "accessibility") {
+  if (onboardingStep === "welcome") {
+    content = <Welcome onContinue={() => setOnboardingStep("accessibility")} />;
+  } else if (onboardingStep === "accessibility") {
     content = (
       <AccessibilityOnboarding onComplete={handleAccessibilityComplete} />
     );
   } else if (onboardingStep === "model") {
     content = <Onboarding onModelSelected={handleModelSelected} />;
+  } else if (settings?.ui_shell === "retro") {
+    // Shell retro: ventanas apilables que hospedan las mismas secciones.
+    content = (
+      <div dir={direction}>
+        <RetroShell />
+      </div>
+    );
+  } else if (settings?.ui_shell === "quiet") {
+    // Shell quiet: panel minimalista oscuro (mockup PROPUESTA 1).
+    content = (
+      <div dir={direction}>
+        <QuietShell />
+      </div>
+    );
+  } else if (settings?.ui_shell === "bancada") {
+    // Shell bancada: consola de garaje / banco de pruebas (shell F1).
+    content = (
+      <div dir={direction}>
+        <BancadaShell />
+      </div>
+    );
   } else {
     content = (
       <div
@@ -301,6 +456,7 @@ function App() {
           <div className="flex-1 flex flex-col overflow-hidden">
             <div className="flex-1 overflow-y-auto">
               <div className="flex flex-col items-center p-4 gap-4">
+                <AlertsBanner />
                 <AccessibilityPermissions />
                 {renderSettingsContent(currentSection)}
               </div>

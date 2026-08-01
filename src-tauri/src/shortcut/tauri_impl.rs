@@ -15,28 +15,38 @@ use super::handler::handle_shortcut_event;
 
 /// Initialize shortcuts using Tauri's global-shortcut plugin
 pub fn init_shortcuts(app: &AppHandle) {
+    // Auto-sanado (antes de registrar): cura configs peligrosas heredadas —
+    // p. ej. un `transcribe = "up"` — que secuestrarían el teclado. Es la misma
+    // red que en handy_keys; imprescindible aquí porque Tauri es el default en
+    // Linux y el destino del fallback HandyKeys→Tauri.
+    super::sanear_bindings_peligrosos(app);
+
     let default_bindings = settings::get_default_settings().bindings;
     let user_settings = settings::load_or_create_app_settings(app);
 
     // Register all default shortcuts, applying user customizations
+    // Los que fallan se ACUMULAN y se avisan de una vez al final: un aviso por
+    // atajo sería una ráfaga de notificaciones al arrancar.
+    let mut ocupados: Vec<String> = Vec::new();
+
     for (id, default_binding) in default_bindings {
         if id == "cancel" {
             continue; // Skip cancel shortcut, it will be registered dynamically
-        }
-        // Skip post-processing shortcut when the feature is disabled
-        if id == "transcribe_with_post_process" && !user_settings.post_process_enabled {
-            continue;
         }
         let binding = user_settings
             .bindings
             .get(&id)
             .cloned()
             .unwrap_or(default_binding);
+        let combinacion = binding.current_binding.clone();
 
         if let Err(e) = register_shortcut(app, binding) {
             error!("Failed to register shortcut {} during init: {}", id, e);
+            ocupados.push(format!("{id} ({combinacion})"));
         }
     }
+
+    super::avisar_atajos_ocupados(app, &ocupados);
 }
 
 /// Validate a shortcut string for the Tauri global-shortcut implementation.

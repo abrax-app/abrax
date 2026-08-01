@@ -6,16 +6,23 @@
     "unloadModel": "Разтоварване на модела",
     "model": "Модел",
     "quit": "Изход",
-    "cancel": "Отказ"
+    "cancel": "Отказ",
+    "errorTitle": "Abrax се натъкна на проблем",
+    "errorRecording": "Записът не можа да започне. Отвори Abrax, за да видиш причината.",
+    "errorTranscription": "Транскрипцията се провали. Отвори Abrax, за да опиташ отново от историята.",
+    "errorPaste": "Текстът не можа да се постави. Записан е в историята ти.",
+    "errorModelLoad": "Гласовият модел не можа да се зареди. Отвори Abrax за причината.",
+    "errorModelDownload": "Изтеглянето на модела се провали. Отвори Abrax, за да опиташ отново.",
+    "show": "Show Abrax"
   },
   "sidebar": {
     "general": "Общи",
     "models": "Модели",
     "advanced": "Разширени",
-    "postProcessing": "Постобработка",
     "history": "История",
     "debug": "Отстраняване",
-    "about": "За приложението"
+    "about": "За приложението",
+    "escucha": "VOX"
   },
   "onboarding": {
     "subtitle": "За да започнете, изберете модел за транскрипция",
@@ -46,11 +53,11 @@
         "name": "Whisper Large",
         "description": "Добра точност, но по-бавен."
       },
-      "parakeet-tdt-0.6b-v2": {
+      "parakeet-tdt-0_6b-v2": {
         "name": "Parakeet V2",
         "description": "Само английски. Най-добрият модел за носители на английски."
       },
-      "parakeet-tdt-0.6b-v3": {
+      "parakeet-tdt-0_6b-v3": {
         "name": "Parakeet V3",
         "description": "Бърз и точен."
       },
@@ -93,6 +100,21 @@
       "cohere-int8": {
         "name": "Cohere",
         "description": "Голям, по-бавен, но много точен многоезичен модел."
+      },
+      "handy-computer_canary-180m-flash-gguf": {
+        "description": "Най-лекият и бърз — сваля се за под минута и върви дори на стар лаптоп. В замяна при много кратки фрази понякога не разбира нищо."
+      },
+      "handy-computer_whisper-large-v3-turbo-gguf": {
+        "description": "Balanced — the everyday pick: understands 100 languages and doesn't keep you waiting."
+      },
+      "handy-computer_whisper-large-v3-gguf": {
+        "description": "Widest coverage — the big Whisper, the one everyone names. Slower, but complete."
+      },
+      "handy-computer_nemotron-3_5-asr-streaming-0_6b-gguf": {
+        "description": "Live — writes as you speak, word by word. This is the one that makes the sphere dance."
+      },
+      "handy-computer_cohere-transcribe-03-2026-gguf": {
+        "description": "Максимална точност — най-точният в каталога, на 14 езика. Него препоръчваме за начало. Тежи 1,6 GB и иска мощен компютър."
       }
     },
     "errors": {
@@ -117,6 +139,15 @@
         "checkFailed": "Проверката на разрешенията не бе успешна. Опитайте отново.",
         "requestFailed": "Заявката за разрешение не бе успешна. Опитайте отново."
       }
+    },
+    "emptyCatalog": "Няма налични модели. Провери лога и рестартирай Abrax.",
+    "welcome": {
+      "pitch": "Говорете и текстът се появява, на вашия компютър.",
+      "badgeLocal": "100% локално",
+      "badgeNoCloud": "Без облак",
+      "badgeFree": "Безплатно",
+      "whyModel": "За да ви чуе, Abrax трябва веднъж да изтегли гласов модел. После работи без интернет.",
+      "start": "Начало"
     }
   },
   "modelSelector": {
@@ -151,7 +182,18 @@
       "translate": "Превод на английски",
       "streaming": "Показва транскрипция на живо, докато говорите"
     },
-    "legacy": "Наследен"
+    "legacy": "Наследен",
+    "downloadFailed": "Изтеглянето се провали",
+    "downloadFailedHelp": "Моделът не можа да бъде изтеглен. Провери връзката си и опитай отново.",
+    "checkFailed": "Състоянието на модела не можа да се провери",
+    "loadFailed": "Моделът не можа да се зареди",
+    "switchFailed": "Смяната на модела не успя",
+    "statusTitle": "Състояние на модела: {{estado}}",
+    "confirmDownload": {
+      "title": "Download model",
+      "body": "{{modelName}} — {{size}}\n\n{{description}}\n\nIt downloads once and stays on your machine. After that it works offline.",
+      "ok": "Download"
+    }
   },
   "settings": {
     "modelSettings": {
@@ -174,6 +216,10 @@
           "cancel": {
             "name": "Бърз клавиш за отказ",
             "description": "Клавишната комбинация за отмяна на текущия запис."
+          },
+          "leer_seleccion": {
+            "name": "Прочети избраното на глас",
+            "description": "Прочита на глас текста, който сте избрали в което и да е приложение. Натиснете отново, за да спрете."
           },
           "transcribe_with_post_process": {
             "name": "Бърз клавиш за постобработка",
@@ -245,7 +291,10 @@
         "output": "Изход",
         "transcription": "Транскрипция",
         "history": "История",
-        "experimental": "Експериментални"
+        "experimental": "Експериментални",
+        "dictionary": "Жив речник",
+        "correccion": "Локална корекция",
+        "memoria": "Памет"
       },
       "experimentalToggle": {
         "label": "Експериментални функции",
@@ -278,7 +327,7 @@
       },
       "showTrayIcon": {
         "label": "Икона в системната област",
-        "description": "Показване на иконата на Abrax в системната област."
+        "description": "Показване на иконата на Abrax в системната област. Без нея затварянето на прозореца спира Abrax напълно (в macOS остава в Dock)."
       },
       "overlay": {
         "style": {
@@ -287,7 +336,8 @@
           "options": {
             "none": "Няма",
             "minimal": "Minimal",
-            "live": "Live"
+            "live": "Live",
+            "esfera": "Esfera"
           }
         },
         "position": {
@@ -296,6 +346,14 @@
           "options": {
             "bottom": "Долу",
             "top": "Горе"
+          }
+        },
+        "esferaModo": {
+          "title": "Режим Esfera",
+          "description": "Как се държи сферата Esfera. Звук: сферата реагира на гласа ви. Думи: продиктуваните думи политат към сферата, прочитат се за миг и се разтварят в мембраната ѝ (най-добре с поточен модел, при който думите пристигат на живо, докато говорите).",
+          "options": {
+            "audio": "Реагираща на звук",
+            "palabras": "Живи думи"
           }
         }
       },
@@ -322,6 +380,7 @@
       "clipboardHandling": {
         "title": "Работа с клипборда",
         "description": "„Без промяна на клипборда“ запазва съдържанието на клипборда след транскрипция. „Копиране в клипборда“ оставя резултата в клипборда след поставяне.",
+        "lockedByPasteMethod": "Locked by the paste method: pasting through the clipboard already leaves the transcription there. Choose Direct or None if you want your clipboard left untouched.",
         "options": {
           "dontModify": "Без промяна на клипборда",
           "copyToClipboard": "Копиране в клипборда"
@@ -380,63 +439,85 @@
         "resetDefaults": "Възстанови списъка по подразбиране",
         "disable": "Изключи филтъра"
       },
-      "voiceActivityDetection": {
-        "title": "Voice Activity Detection",
-        "description": "Filter silence from recordings. Streaming-capable models use a longer VAD tail; disabling VAD records raw audio."
-      }
-    },
-    "postProcessing": {
-      "hotkey": {
-        "title": "Бърз клавиш"
-      },
-      "api": {
-        "title": "API (съвместим с OpenAI)",
-        "provider": {
-          "title": "Доставчик",
-          "description": "Изберете доставчик, съвместим с OpenAI."
-        },
-        "appleIntelligence": {
-          "unavailable": "Apple Intelligence не е налична на това устройство. Необходим е Mac с Apple Silicon и macOS Tahoe (26.0) или по-нова с включена Apple Intelligence в Системните настройки."
-        },
-        "baseUrl": {
-          "title": "Базов URL",
-          "description": "Базов API URL за избрания доставчик. Редактируем е само при персонализиран доставчик.",
-          "placeholder": "https://api.openai.com/v1"
-        },
-        "apiKey": {
-          "title": "API ключ",
-          "description": "API ключ за избрания доставчик.",
-          "placeholder": "sk-..."
-        },
-        "model": {
-          "title": "Модел",
-          "descriptionCustom": "Въведете идентификатора на модела, очакван от вашия персонализиран краен адрес.",
-          "descriptionDefault": "Изберете модел, предлаган от избрания доставчик.",
-          "placeholderWithOptions": "Търсене или избор на модел",
-          "placeholderNoOptions": "Въведете име на модел",
-          "refreshModels": "Опресняване на моделите"
+      "autocorreccion": {
+        "title": "Гласова самокорекция",
+        "description": "Ако се поправяте на глас, докато диктувате — „не, извинявай“, „исках да кажа“ — текстът излиза вече поправен. По правила, мигновено и офлайн: без модел с ИИ. Заменя само това, което сте поправили, никога не изтрива по своя инициатива и при съмнение не пипа нищо. Включено по подразбиране.",
+        "ejemplo": "Пример: „Насрочи срещата за вторник… не, извинявай, за сряда“ става „Насрочи срещата за сряда.“",
+        "sustitucionTitle": "Сигнали за поправка",
+        "sustitucionDescription": "Това, което казваш, за да замениш нещо току-що казано (напр. „не, извинявай“, „искам да кажа“). Заменя само ако преди сигнала намери равностоен елемент – същия ден от седмицата, месец, час, число или име. Ако не намери такъв, не променя нищо.",
+        "placeholder": "Добави сигнал",
+        "add": "Добави",
+        "remove": "Премахни {{senal}}",
+        "duplicate": "„{{senal}}“ вече съществува",
+        "showDefaults": "Използвай вградените",
+        "resetDefaults": "Върни вградените",
+        "disable": "Изключи нивото",
+        "mode": {
+          "defaults": "Фабричните",
+          "custom": "Моите"
         }
       },
-      "prompts": {
-        "title": "Подкана",
-        "selectedPrompt": {
-          "title": "Избрана подкана",
-          "description": "Изберете шаблон за подобряване на транскрипции или създайте нов. Използвайте ${output} в текста на подканата, за да препратите към уловения транскрипт."
-        },
-        "noPrompts": "Няма налични подкани",
-        "selectPrompt": "Изберете подкана",
-        "createNew": "Нова подкана",
-        "promptLabel": "Етикет на подканата",
-        "promptLabelPlaceholder": "Въведете име на подканата",
-        "promptInstructions": "Инструкции за подканата",
-        "promptInstructionsPlaceholder": "Напишете инструкциите за изпълнение след транскрипция. Пример: Подобрете граматиката и яснотата на следния текст: ${output}",
-        "promptTip": "Съвет: Използвайте <code>${output}</code>, за да вмъкнете транскрибирания текст в подканата.",
-        "updatePrompt": "Обновяване на подканата",
-        "deletePrompt": "Изтриване на подканата",
-        "createPrompt": "Създаване на подкана",
-        "cancel": "Отказ",
-        "selectToEdit": "Изберете подкана по-горе, за да видите и редактирате подробностите ѝ.",
-        "createFirst": "Натиснете „Нова подкана“ по-горе, за да създадете първата си подкана за постобработка."
+      "emojiDictado": {
+        "title": "Диктувани емоджи",
+        "description": "Кажете думата „емоджи“ и веднага след нея името му, и емоджито се вмъква. По таблица, мигновено и офлайн: не участва никакъв модел с изкуствен интелект. Без тази дума нищо не се променя, а ако името не бъде разпознато, текстът остава точно както сте го диктували.",
+        "ejemplo": "Пример: „изпрати му емоджи палец нагоре“ става „изпрати му 👍“. Работи и с „емоджи огън“ → 🔥.",
+        "verDiccionario": "Вижте имената",
+        "copiado": "{{emoji}} е копиран",
+        "noCopiado": "Копирането не бе успешно",
+        "diccionario": {
+          "titulo": "Имена на емоджи",
+          "ayuda": "Кажете името след думата „емоджи“. Докоснете, за да копирате.",
+          "buscar": "Търсене на име",
+          "copiar": "Копиране",
+          "cargando": "Зареждане…",
+          "error": "Списъкът не можа да се зареди.",
+          "sinResultados": "Няма съвпадения.",
+          "total": "Имена: {{total}}",
+          "recorte": "Показани са {{mostrados}} от {{total}}. Уточнете търсенето."
+        }
+      },
+      "voiceActivityDetection": {
+        "title": "Разпознаване на глас",
+        "description": "Filter silence from recordings. Streaming-capable models use a longer VAD tail; disabling VAD records raw audio."
+      },
+      "dictionary": {
+        "title": "Речник на проекта",
+        "description": "Гласовите модели не познават жаргона на кода ти. Abrax го научава, като индексира активния проект: идентификатори, git клонове и имена на файлове поправят диктовката.",
+        "pickProject": "Избери проект",
+        "changeProject": "Смени проекта",
+        "pickTitle": "Избери папката на проекта",
+        "reindex": "Преиндексирай",
+        "enable": "Учи се от този проект",
+        "enableDescription": "Когато е включено, индексираните термини поправят диктовката. Изключи, за да паузираш без загуба на индекса.",
+        "termCount": "{{count}} индексирани термина",
+        "noIndex": "Все още не е индексирано",
+        "lastIndexed": "индексирано на {{date}}",
+        "indexed": "Проектът е индексиран: {{count}} термина",
+        "indexError": "Индексирането се провали: {{error}}",
+        "privacy": "Индексът живее на твоя диск. Нищо от кода ти не напуска този компютър.",
+        "source": {
+          "code": "от репото",
+          "branch": "git клон",
+          "path": "име на файл"
+        }
+      },
+      "customReplacements": {
+        "title": "Точни замени",
+        "description": "Когато моделът винаги чува грешно дадена дума, поправи я детерминистично: точно съвпадение на токена, чувствително към регистъра.",
+        "fromPlaceholder": "Чуто",
+        "toPlaceholder": "Замени с",
+        "add": "Добави",
+        "remove": "Премахни {{word}}",
+        "duplicate": "Вече има замяна за \"{{word}}\""
+      },
+      "memoria": {
+        "title": "Памет за корекции",
+        "description": "ABRAX се учи, когато поправите транскрипция в Историята: изтрийте дума, въведете правилната и следващия път тя се изписва вярно. Всичко локално.",
+        "empty": "Все още няма научени корекции. Редактирайте транскрипция в Историята (икона молив) и ABRAX ще се научи от промените ви.",
+        "forget": "Забрави тази корекция",
+        "clearAll": "Забрави всичко",
+        "enSitioTitle": "Учи се където диктуваш",
+        "enSitioDescription": "При започване на диктовка ABRAX препрочита полето, в което пишете (чрез достъпност, 100% локално), и се учи от корекциите, които сте направили там на предишната диктовка. Нищо от полето не се записва и не напуска устройството."
       }
     },
     "history": {
@@ -452,7 +533,17 @@
       "retranscribe": "Повторна транскрипция",
       "retranscribeError": "Повторната транскрипция не бе успешна. Опитайте отново.",
       "transcribing": "Транскрибиране...",
-      "transcriptionFailed": "Транскрипцията не бе успешна. Можете да опитате отново с иконата за повторен опит."
+      "transcriptionFailed": "Транскрипцията не бе успешна. Можете да опитате отново с иконата за повторен опит.",
+      "loadError": "Историята не можа да се зареди. Диктовките ти са все още на диска.",
+      "edit": {
+        "action": "Редактирай транскрипцията",
+        "save": "Запази",
+        "cancel": "Отказ",
+        "hint": "При запазване Паметта научава корекциите ви.",
+        "saved": "Транскрипцията е обновена.",
+        "learned": "Памет: научено {{pares}}",
+        "error": "Редакцията не можа да се запази."
+      }
     },
     "debug": {
       "title": "Отстраняване",
@@ -510,10 +601,6 @@
         "title": "Микрофон при затворен капак",
         "description": "Микрофон за използване, когато капакът на лаптопа е затворен"
       },
-      "postProcessingToggle": {
-        "label": "Постобработка",
-        "description": "Включване на подобряване на текста с ИИ след транскрипция"
-      },
       "muteWhileRecording": {
         "label": "Заглушаване при запис",
         "description": "Заглушаване на системния звук по време на запис"
@@ -568,9 +655,9 @@
         "button": "Вижте в GitHub"
       },
       "supportDevelopment": {
-        "title": "Подкрепете разработката",
-        "description": "Помогнете ни да продължим да развиваме Abrax",
-        "button": "Дарение"
+        "title": "Подкрепете Handy (оригиналния проект)",
+        "description": "Даренията отиват при CJ Pais, създателя на Handy — проектът, от който ABRAX е форк.",
+        "button": "Подкрепете Handy"
       },
       "acknowledgments": {
         "title": "Благодарности",
@@ -583,11 +670,21 @@
           "title": "ggml",
           "description": "Високопроизводително изпълнение на автоматичния модел за разпознаване на реч Whisper на OpenAI",
           "details": "Abrax използва ggml за бързо локално реч-към-текст. Благодарности на Georgi Gerganov и сътрудниците за отличната работа."
+        },
+        "modelos": {
+          "title": "Модели за разпознаване на реч",
+          "description": "Моделите се изтеглят при поискване и не са част от инсталатора. Всеки запазва собствения си лиценз; тези под CC-BY изискват посочване на авторството, което е дадено тук. Пълният текст е в LICENSES-THIRD-PARTY.md."
         }
       },
       "whatsNewUpdates": {
         "label": "Показвай новостите",
         "description": "Показвай бележки към изданието след актуализации на Abrax"
+      }
+    },
+    "streaming": {
+      "systemAudio": {
+        "label": "Записване на звука от системата",
+        "description": "Преписва това, което звучи на компютъра —лекция, видео, среща— вместо микрофона. Нужен е модел, подходящ за звука на системата; ако активният не е, Abrax сменя с подходящ."
       }
     }
   },
@@ -611,7 +708,14 @@
     "open": "Отваряне",
     "copy": "Копиране",
     "clear": "Изчистване",
-    "noOptionsFound": "Няма намерени опции"
+    "noOptionsFound": "Няма намерени опции",
+    "retry": "Опитай отново",
+    "play": "Възпроизвеждане",
+    "pause": "Пауза",
+    "seek": "Позиция на възпроизвеждане",
+    "moreInfo": "Повече информация",
+    "selectOption": "Изберете опция…",
+    "systemDefault": "По подразбиране"
   },
   "accessibility": {
     "permissionsDescription": "Abrax се нуждае от разрешения за достъпност, за да въвежда транскрибирания текст.",
@@ -627,13 +731,37 @@
       "linux": "Дайте достъп до микрофона в настройките за звук или поверителност на системата."
     },
     "noInputDeviceTitle": "Не е намерен микрофон",
+    "recordingNoAudioTitle": "No audio detected",
     "noInputDevice": "Не е открито аудио входно устройство. Свържете микрофон или слушалки и опитайте отново.",
     "recordingFailed": "Стартирането на записа не бе успешно: {{error}}",
     "modelLoadFailed": "Зареждането на модела не бе успешно: {{model}}",
     "modelLoadFailedUnknown": "неизвестен модел",
     "pasteFailedTitle": "Неуспешно поставяне на текст",
     "pasteFailed": "Текстът не можа да бъде поставен в активното приложение.",
-    "transcriptionFailedTitle": "Неуспешна транскрипция"
+    "transcriptionFailedTitle": "Неуспешна транскрипция",
+    "recordingFailedTitle": "Записът се провали",
+    "modelLoadFailedTitle": "Моделът не можа да се зареди",
+    "modelDownloadFailedTitle": "Изтеглянето на модела се провали",
+    "center": {
+      "title": "Скорошни известия ({{count}})",
+      "dismiss": "Отхвърли",
+      "toggle": "Показване на всички известия"
+    },
+    "recordingTooShortTitle": "Почти нищо не беше записано",
+    "recordingTooShort": "Записът продължи по-малко от секунда. Ако използвате прекия път, задръжте {{atajo}}, докато говорите.",
+    "recordingTooShortNoBinding": "Записът продължи по-малко от секунда. Говорете за момент, преди да го спрете.",
+    "transcriptionEmptyTitle": "Нищо не беше разбрано",
+    "transcriptionEmpty": "Не бяха разпознати думи. Опитайте отново, като говорите малко по-силно или по-близо.",
+    "sistemaSinModeloAptoTitle": "Нужен е по-добър модел",
+    "sistemaSinModeloApto": "Системният звук беше прихванат, но текущият модел не разпознава реч от срещи или видеа. Изтеглете Nemotron Streaming 3.5 (716 MB) или Whisper Large v3 Turbo (845 MB) в „Модели“ и Abrax сам ще премине към него.",
+    "sistemaSinModeloAptoDescargar": "Изтегляне ({{mb}} MB)",
+    "shortcutRegistrationTitle": "Прекият път не можа да се активира",
+    "shortcutRegistration": "Abrax не можа да регистрира клавишната комбинация. Рестартирайте; ако продължи, задайте друга в Настройки → Общи.",
+    "atajoOcupado": "Друго приложение вече използва тази комбинация: {{atajos}}. Променете я в настройките, за да работи.",
+    "atajoOcupadoCambiar": "Промени комбинацията",
+    "sistemaModeloCambiadoTitle": "Моделът е сменен за системния звук",
+    "sistemaModeloCambiado": "Abrax премина към {{modelo}}, който разбира системния звук. Този модел не показва текст, докато говорите, нито думи в минута — всичко се появява при пускане. За текст на живо изтеглете Nemotron Streaming 3.5 (716 МБ) в „Модели“.",
+    "descargaIniciada": "Моделът се изтегля. Вижте в „Модели“."
   },
   "appLanguage": {
     "title": "Език на приложението",
@@ -648,14 +776,352 @@
       "dark": "Тъмна"
     }
   },
+  "palette": {
+    "title": "Палитра",
+    "description": "Изберете цветовата палитра на Abrax. Imperial е тъмна по дизайн: докато е активна, налага тъмен режим.",
+    "options": {
+      "abrax": "ABRAX",
+      "imperial": "Imperial",
+      "escuderia": "Escudería"
+    }
+  },
   "overlay": {
     "transcribing": "Транскрибиране...",
-    "processing": "Обработка..."
+    "processing": "Обработка...",
+    "leyendo": "Чете на глас",
+    "preparando": "Подготовка за четене"
   },
   "whatsNew": {
     "title": "Ново в Abrax v{{version}}"
   },
+  "correccion": {
+    "motor": {
+      "title": "Модул за корекция",
+      "description": "Почиства диктовката между транскрипцията и поставянето. Изключено оставя всичко точно както е транскрибирано. Само правила прилага мигновени детерминистични поправки.",
+      "options": {
+        "solo_reglas": "Само правила",
+        "desactivado": "Изключено"
+      }
+    },
+    "modo": {
+      "title": "Ниво на корекция",
+      "description": "Буквален поправя само интервалите и главните букви в началото на изречение. Чист прави и: символи („пет процента“ → 5%), изпуснати знаци, имейли и пътища, повторения („после после“) и — ако го оставите включено по-долу — числата с цифри. Гласовата автокорекция не зависи от това: има си собствен превключвател.",
+      "options": {
+        "literal": "Дословно",
+        "limpio": "Изчистено"
+      }
+    },
+    "numeros": {
+      "title": "Числа с цифри",
+      "description": "Превръща изговорените числа в цифри: „дванайсет хиляди и осемстотин“ → 12800, „в седемнайсет и трийсет“ → 17:30. Превръща ВСИЧКИ, не само техническите: „тези две минути“ става „тези 2 минути“. Предпочитате с думи? Изключете — останалото от „Чисто“ продължава да работи."
+    }
+  },
+  "pruebaMic": {
+    "title": "Тест на микрофона",
+    "description": "Записва 3 секунди от точно това, което би чул моделът (16 kHz, без VAD), възпроизвежда го и дава присъда с реални нива. Разкрива и кое устройство наистина стои зад Default.",
+    "boton": "Запис 3 с",
+    "grabando": "Записване…",
+    "niveles": "RMS {{rms}} dBFS · pico {{pico}} dBFS",
+    "nivelClip": " · clip {{clip}}%",
+    "veredicto": {
+      "sin_senal": "Няма сигнал — микрофонът не подава звук",
+      "muy_bajo": "Много ниско — на това ниво диктовката ще се проваля",
+      "bajo": "Ниско — работи, но точността страда",
+      "sano": "Здравословно ниво",
+      "saturado": "Клипинг — микрофонът изрязва"
+    },
+    "dispositivo": "Микрофон: {{nombre}} ({{contexto}})",
+    "esElDefault": "системен по подразбиране",
+    "esElegido": "избран в настройките"
+  },
+  "shell": {
+    "title": "Форма на прозореца",
+    "description": "Изберете формата на прозореца на Abrax. Класически е стандартният прозорец с настройки; Quiet е минималистичен тъмен панел със сферата на началния екран. Рамката на прозореца се обновява напълно при рестартиране на Abrax.",
+    "options": {
+      "classic": "Класически",
+      "retro": "Retro",
+      "quiet": "Quiet",
+      "bancada": "Karting"
+    }
+  },
+  "bancada": {
+    "local": "Procesamiento local · 0% Nube",
+    "tray": "Enviar a la bandeja",
+    "min": "Minimizar",
+    "close": "Cerrar",
+    "nav": {
+      "tablero": "TABLERO",
+      "bitacora": "BITÁCORA",
+      "setup": "SETUP"
+    },
+    "pitRadio": "PIT RADIO",
+    "lcdReady": "En boxes · listo",
+    "lcdListening": "Escuchando…",
+    "launch": "TU LARGADA · {{atajo}}",
+    "start": "Arrancar dictado",
+    "stop": "Detener dictado",
+    "dictate": "Dictar",
+    "stopping": "Detener",
+    "ignitionStart": "START",
+    "ignitionStop": "STOP",
+    "appearance": "APARIENCIA",
+    "speakers": "Hablantes",
+    "systemAudio": "System audio",
+    "speakersAuto": "Auto",
+    "speakersN": "{{n}}",
+    "mergeInto": "Actually is…",
+    "resetSpeakers": "Reset",
+    "wpmUnit": "PAL/MIN",
+    "copied": "Copiado al portapapeles",
+    "on": "ON",
+    "off": "OFF",
+    "btn": {
+      "cancel": "Cancelar",
+      "copy": "Copiar",
+      "clear": "Limpiar",
+      "translate": "Traducir → EN",
+      "fillers": "Muletillas",
+      "log": "Bitácora"
+    },
+    "dial": {
+      "vad": "VAD",
+      "palette": "Paleta"
+    },
+    "lamp": {
+      "idle": "RALENTÍ",
+      "rec": "REC",
+      "transcribing": "TRANSCRIBIENDO",
+      "polishing": "PULIENDO",
+      "error": "FALLA"
+    },
+    "estado": {
+      "idle": "Ralentí",
+      "rec": "Grabando",
+      "transcribing": "Transcribiendo",
+      "polishing": "Puliendo",
+      "error": "Falla"
+    },
+    "speakerLabel": "Говорещ {{n}}"
+  },
+  "retro": {
+    "menu": "Меню на Abrax",
+    "titleMain": "ABRAX · РЕТРО РЕЖИМ",
+    "titleSettings": "ABRAX · БЪРЗИ НАСТРОЙКИ",
+    "titleHistory": "ABRAX · ИСТОРИЯ",
+    "fold": "Сгъни",
+    "close": "Затвори",
+    "marquee": "ABRAX ··· КАЖИ ДУМАТА ··· РЕТРО РЕЖИМ ··· 100% ЛОКАЛНО ··· ИСПАНСКИ НА ПЪРВО МЯСТО ···",
+    "lamp": {
+      "model": "Модел",
+      "local": "ЛОКАЛНО",
+      "filler": "ПАРАЗИТИ",
+      "dict": "РЕЧНИК",
+      "ptt": "PTT",
+      "vad": "VAD",
+      "translate": "ПРЕВОД",
+      "sphere": "СФЕРА"
+    },
+    "dictate": "Диктувай",
+    "stop": "Спри",
+    "settings": "Бързи настройки",
+    "history": "История",
+    "compiler": "Компилатор на промптове",
+    "sections": "СЕКЦИИ ▾",
+    "slider": {
+      "buffer": "БУФЕР",
+      "volume": "СИЛА",
+      "threshold": "ПРАГ"
+    },
+    "emptyHistory": "Все още няма диктовки — задръж комбинацията и говори.",
+    "copyHint": "Двоен клик за копиране",
+    "copy": "КОПИРАЙ",
+    "save": "★ ЗАПАЗИ",
+    "delete": "ИЗТРИЙ",
+    "compile": "✦ КОМПИЛИРАЙ",
+    "count": "{{n}} диктовки · ЛОКАЛНО",
+    "copied": "Копирано в клипборда",
+    "menuSections": "СЕКЦИИ",
+    "menuWindows": "ПРОЗОРЦИ",
+    "toClassic": "Обратно към Класически",
+    "theme": "Тема",
+    "footer": "РЕТРО РЕЖИМ — скин на ABRAX · същият прозрачен прозорец",
+    "tray": "Send to tray",
+    "minimize": "Minimize",
+    "localBadge": "Локална обработка · 0% облак",
+    "infoPalette": "Палитра",
+    "infoLanguage": "Език",
+    "infoFillers": "Паразитни думи",
+    "infoTranslate": "Превод",
+    "infoAutoVoice": "Автоглас",
+    "infoVisual": "Визуално",
+    "words": "Думи: {{n}}",
+    "actCopy": "Копирай",
+    "actClear": "Изчисти",
+    "emptyTranscriptions": "Все още няма транскрипции.",
+    "activeModel": "АКТИВЕН МОДЕЛ",
+    "localFull": "100% локална обработка · Без облак",
+    "backToClassic": "ОБРАТНО КЪМ КЛАСИЧЕСКИЯ СКИН"
+  },
   "logo": {
     "tagline": "« Di la <accent>palabra</accent>. »"
+  },
+  "escucha": {
+    "title": "VOX",
+    "openFile": "Отвори файл…",
+    "readClipboard": "Прочети клипборда",
+    "play": "Чети",
+    "pause": "Пауза",
+    "pauseHint": "Пауза в края на текущото изречение",
+    "resume": "Продължи",
+    "stop": "Спри",
+    "speed": "Скорост",
+    "voiceProse": "Глас за проза",
+    "voiceCode": "Глас за код",
+    "noVoices": "Не са намерени системни гласове",
+    "empty": "Отвори файл или прочети клипборда, за да започнеш.",
+    "engineUnavailable": "Системният гласов двигател не е наличен.",
+    "errorRead": "Съдържанието не можа да бъде прочетено.",
+    "errorSpeak": "Четенето не можа да бъде възпроизведено.",
+    "escHint": "Esc спира четенето.",
+    "clipboard": "Клипборд",
+    "clipboardEmpty": "Клипбордът не съдържа текст.",
+    "fileFilter": "Текст, Markdown или код",
+    "sentences": "{{total}} изречения",
+    "verbosity": "Символи",
+    "verbosityNatural": "Естествено (по-малко шум)",
+    "verbosityLiteral": "Буквално (всички символи)"
+  },
+  "tts": {
+    "voiceLangEs": "Испански",
+    "voiceLangEn": "Английски",
+    "voiceSettings": "Настройки на гласа",
+    "speed": "Скорост",
+    "pitch": "Височина",
+    "pitchLow": "Ниска",
+    "pitchNormal": "Нормална",
+    "pitchHigh": "Висока",
+    "pitchHint": "Височината се прилага само за онлайн гласа.",
+    "vram": "({{gb}} GB VRAM)",
+    "descOnline": "Невронни гласове на Microsoft (Azure). Не е локално: изпраща текста през интернет.",
+    "onlineWarning": "изисква интернет · текстът напуска устройството",
+    "preparingVoice": "Подготвя се {{engine}}… първия път отнема няколко секунди.",
+    "engineSystem": "Системни гласове",
+    "title": "Гласов двигател",
+    "localBadge": "100% локално",
+    "detecting": "Разпознаваме вашето устройство…",
+    "detected": "Разпознахме вашето устройство:",
+    "recommendation": "Препоръчваме {{engine}} за най-добър глас — локално и без интернет.",
+    "activeEngine": "Активен двигател: {{engine}}",
+    "detectFailed": "Хардуерът не можа да бъде разпознат; ще се използват системните гласове.",
+    "useRecommended": "Използвай препоръчания",
+    "chooseOther": "Избери друг двигател",
+    "redetect": "Разпознай отново",
+    "testVoice": "Пробвай гласа",
+    "sampleTextEs": "Hola, soy la voz de Abrax. Di la palabra y yo la leo por ti.",
+    "sampleTextEn": "Hi, I'm the voice of Abrax. Say the word and I'll read it for you.",
+    "voice": "Глас",
+    "noGpu": "без специализиран GPU",
+    "available": "Наличен",
+    "unavailable": "Не е наличен",
+    "needsGpu": "изисква съвместим GPU (NVIDIA или Apple Silicon)",
+    "needsDownload": "изисква изтегляне на двигателя",
+    "recommended": "Препоръчан",
+    "activeShort": "Активен",
+    "use": "Използвай",
+    "download": "Активиране",
+    "downloading": "Изтегляне…",
+    "installed": "Двигателят е инсталиран",
+    "errorDownload": "Двигателят не можа да бъде изтеглен.",
+    "errorSetEngine": "Двигателят не можа да бъде сменен.",
+    "descSystem": "Гласове на операционната система. Винаги налични, без изтегляния.",
+    "descPiper": "Невронен глас на български, лек, работи на CPU.",
+    "descKokoro": "Висококачествен невронен глас, работи на CPU."
+  },
+  "carpetaModelos": {
+    "titulo": "Models folder",
+    "cambiar": "Change",
+    "discoConNombre": "{{nombre}} ({{punto}})",
+    "removible": "· removable",
+    "espacio": "{{libre}} GB free of {{total}} GB",
+    "volverPorDefecto": "Back to the original folder",
+    "avisoNoMueve": "New downloads will go to this folder. Already-downloaded models stay where they were; if they don't show up, go back to the original folder or download them again here.",
+    "moverPregunta": "Да се преместят ли вече изтеглените модели ({{gb}} GB) в новата папка?",
+    "moverAhora": "Премести сега",
+    "soloNuevas": "Само нови изтегляния",
+    "cancelar": "Отказ",
+    "moviendo": "Преместване на {{archivo}}…",
+    "moverError": "Преместването не можа да завърши: {{detalle}}. Нищо не е изгубено: непреместеното си остава в предишната папка."
+  },
+  "quiet": {
+    "nav": {
+      "listen": "Слушане",
+      "shortcuts": "Клавишни комбинации",
+      "streaming": "Стрийминг",
+      "transcriptions": "Transcriptions",
+      "models": "Models",
+      "settings": "Settings",
+      "more": "Още"
+    },
+    "ready": "ABRAX is ready",
+    "holdHint": "Задръжте <k>{{atajo}}</k>, докато говорите, и го пуснете накрая.",
+    "holdHintNoBinding": "Задайте пряк път в Настройки и го задръжте, докато говорите.",
+    "start": "Start transcription",
+    "stop": "Stop",
+    "recent": "Recent transcriptions",
+    "empty": "No transcriptions yet. Hold the shortcut and say the word.",
+    "local": "Local processing",
+    "noCloud": "No cloud connection",
+    "min": "Minimize",
+    "max": "Maximize",
+    "close": "Close",
+    "tray": "Send to tray",
+    "dictando": "Слушам ви… пуснете накрая",
+    "panel": {
+      "modelo": "Модел",
+      "sinModelo": "Няма модел",
+      "descargar": "изтегляне",
+      "descargando": "Изтегляне на {{modelo}} · {{pct}}%",
+      "voz": "Глас",
+      "hint": {
+        "fillers": "Премахва паразитните думи («ъъ», «нали») от това, което диктувате.",
+        "autocorreccion": "Ако се поправите на глас («не, извинявай»), текстът излиза вече поправен.",
+        "emoji": "Кажете «емоджи» и името му и то се вмъква. По таблица, без ИИ.",
+        "systemAudio": "Преписва това, което звучи на компютъра, вместо микрофона. Ако активният модел не става, Abrax сменя с подходящ."
+      },
+      "sinModeloSistema": "Изтеглете някой от тези модели, за да записвате звука на системата.",
+      "elegirModelo": "Изберете модел",
+      "usaraSistema": "Не е избран. Ако включите звука на системата, Abrax ще използва „{{modelo}}“.",
+      "descargado": "изтеглен"
+    },
+    "modo": {
+      "grupo": {
+        "gesto": "Как се задейства",
+        "microfono": "Вашият микрофон",
+        "texto": "Какво става с текста",
+        "pegado": "Къде се пише",
+        "salida": "Откъде се чува",
+        "fuente": "Откъде идва звукът",
+        "apariencia": "Външен вид"
+      },
+      "streaming": {
+        "que": "Преписва това, което звучи на компютъра —лекция, видео, среща— вместо микрофона.",
+        "resto": "Останалото —корекция, паразитни думи, речник, поставяне— е същото като в Слушане: настройва се веднъж и важи за двете."
+      },
+      "vox": {
+        "que": "Чете на глас текста, който сте избрали, в което и да е приложение.",
+        "como": "Натиснете <k>{{atajo}}</k> и започва да чете; натиснете пак, за да спре."
+      },
+      "escucha": {
+        "que": "Говорите и текстът се появява там, където пишете. Всичко става на вашия компютър — нищо не отива в интернет."
+      }
+    }
+  },
+  "soundPicker": {
+    "custom": "Персонализиран",
+    "preview": "Чуй темата (старт и стоп)"
+  },
+  "vox": {
+    "atajoHint": "За VOX натиснете <k>{{atajo}}</k> и той чете на глас текста, избран в което и да е приложение.",
+    "atajoSinBinding": "За VOX задайте клавишна комбинация в Настройки и ще чете избрания текст на глас."
   }
 }

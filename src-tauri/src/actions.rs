@@ -1,5 +1,3 @@
-#[cfg(all(target_os = "macos", target_arch = "aarch64"))]
-use crate::apple_intelligence;
 use crate::audio_feedback::{play_feedback_sound, play_feedback_sound_blocking, SoundType};
 use crate::audio_toolkit::{is_microphone_access_denied, is_no_input_device_error, VadPolicy};
 use crate::managers::audio::AudioRecordingManager;
@@ -7,30 +5,27 @@ use crate::managers::history::HistoryManager;
 use crate::managers::model::ModelManager;
 use crate::managers::transcription::StreamWorkKind;
 use crate::managers::transcription::TranscriptionManager;
-use crate::settings::{get_settings, AppSettings, OverlayStyle, APPLE_INTELLIGENCE_PROVIDER_ID};
+use crate::managers::tts::manager::TtsManager;
+use crate::overlay::{
+    hide_recording_overlay, show_recording_overlay, show_streaming_overlay,
+    show_transcribing_overlay,
+};
+use crate::settings::{get_settings, AppSettings, OverlayStyle};
 use crate::shortcut;
 use crate::tray::{change_tray_icon, TrayIconState};
-use crate::utils::{
-    self, show_processing_overlay, show_recording_overlay, show_transcribing_overlay,
-};
+use crate::utils;
 use crate::TranscriptionCoordinator;
 use ferrous_opencc::{config::BuiltinConfig, OpenCC};
-use log::{debug, error, warn};
+use log::{debug, error, info, warn};
 use once_cell::sync::Lazy;
 use std::collections::HashMap;
 use std::future::Future;
 use std::sync::Arc;
 use std::time::{Duration, Instant};
+use tauri::AppHandle;
 use tauri::Manager;
-use tauri::{AppHandle, Emitter};
 
 const CANCELLATION_POLL_INTERVAL: Duration = Duration::from_millis(25);
-
-#[derive(Clone, serde::Serialize)]
-struct RecordingErrorEvent {
-    error_type: String,
-    detail: Option<String>,
-}
 
 /// Drop guard that notifies the [`TranscriptionCoordinator`] when the
 /// transcription pipeline finishes — whether it completes normally or panics.
@@ -49,32 +44,118 @@ pub trait ShortcutAction: Send + Sync {
     fn stop(&self, app: &AppHandle, binding_id: &str, shortcut_str: &str);
 }
 
-// Transcribe Action
-struct TranscribeAction {
-    post_process: bool,
+// Transcribe Action. Tuvo un campo `post_process` y una segunda entrada
+// en ACTION_MAP para el atajo dedicado; los dos se fueron con la funcion
+// «Post Proceso» el 29/07.
+struct TranscribeAction;
+
+/// Diarización opt-in (env `ABRAX_DIARIZE`): corre el diarizador sobre el buffer
+/// 16 kHz y devuelve el texto con prefijos `[Hablante N]`, alineando cada palabra
+/// de whisper (canal lateral de Fase 1) con el hablante por máximo solapamiento
+/// temporal. `None` si no hay palabras con tiempo o fallan los modelos.
+/// Carpeta de los modelos ONNX de diarización: `ABRAX_DIARIZE_MODELS` si está
+/// (dev), si no `<app_data_dir>/diarization`.
+pub(crate) fn diarization_models_dir(ah: &AppHandle) -> std::path::PathBuf {
+    if let Ok(d) = std::env::var("ABRAX_DIARIZE_MODELS") {
+        return std::path::PathBuf::from(d);
+    }
+    ah.path()
+        .app_data_dir()
+        .map(|d| d.join("diarization"))
+        .unwrap_or_else(|_| std::path::PathBuf::from("diarization"))
 }
 
-/// Field name for structured output JSON schema
-const TRANSCRIPTION_FIELD: &str = "transcription";
-
-/// Strip invisible Unicode characters that some LLMs may insert
-fn strip_invisible_chars(s: &str) -> String {
-    s.replace(['\u{200B}', '\u{200C}', '\u{200D}', '\u{FEFF}'], "")
+pub(crate) fn diarize_and_label(
+    samples: &[f32],
+    words: &[crate::managers::transcription::TimedWord],
+    models_dir: &std::path::Path,
+    num_speakers: Option<usize>,
+    meeting: bool,
+) -> Option<String> {
+    if words.is_empty() {
+        return None;
+    }
+    let mut diar = match crate::managers::diarization::Diarizer::new(
+        &models_dir.join("seg.onnx"),
+        &models_dir.join("emb.onnx"),
+    ) {
+        Ok(d) => d,
+        Err(e) => {
+            warn!("diarización: no se pudieron cargar los modelos: {}", e);
+            return None;
+        }
+    };
+    match diar.diarize(samples, num_speakers, meeting) {
+        Ok(segs) if !segs.is_empty() => {
+            let speakers = segs
+                .iter()
+                .map(|s| s.speaker)
+                .collect::<std::collections::BTreeSet<_>>()
+                .len();
+            info!(
+                "diarización: {} hablante(s) en {} segmento(s), {} palabra(s) (pista={:?})",
+                speakers,
+                segs.len(),
+                words.len(),
+                num_speakers
+            );
+            Some(label_by_speaker(words, &segs))
+        }
+        Ok(_) => {
+            warn!("diarización: sin segmentos de hablante; se usa el texto sin etiquetar");
+            None
+        }
+        Err(e) => {
+            warn!("diarización falló: {}", e);
+            None
+        }
+    }
 }
 
-/// Build a system prompt from the user's prompt template.
-/// Removes `${output}` placeholder since the transcription is sent as the user message.
-fn build_system_prompt(prompt_template: &str) -> String {
-    prompt_template.replace("${output}", "").trim().to_string()
+/// Formatea milisegundos (desde el inicio de la grabación) como `MM:SS`.
+fn fmt_ms(ms: i64) -> String {
+    let total = (ms.max(0) / 1000) as u64;
+    format!("{:02}:{:02}", total / 60, total % 60)
 }
 
-/// Returns `true` when a transcription has no meaningful content to
-/// post-process (empty or whitespace-only). Used to skip the post-processing
-/// LLM call when nothing was actually transcribed, which would otherwise make
-/// the model reply with an error message such as "you need to provide the
-/// transcription".
-fn is_blank_transcription(transcription: &str) -> bool {
-    transcription.trim().is_empty()
+/// Antepone `[MM:SS] [Hablante N]` en cada cambio de turno (marca de minuto estilo
+/// minuta de reunión): por cada palabra elige el hablante con mayor solapamiento
+/// temporal.
+fn label_by_speaker(
+    words: &[crate::managers::transcription::TimedWord],
+    segs: &[crate::managers::diarization::SpeakerSegment],
+) -> String {
+    let speaker_at = |t0: i64, t1: i64| -> usize {
+        let (mut best, mut best_ov) = (0usize, 0i64);
+        for s in segs {
+            let ov = (t1.min(s.t1_ms) - t0.max(s.t0_ms)).max(0);
+            if ov > best_ov {
+                best_ov = ov;
+                best = s.speaker;
+            }
+        }
+        best
+    };
+    let mut out = String::new();
+    let mut cur: Option<usize> = None;
+    for w in words {
+        let txt = w.text.trim();
+        if txt.is_empty() {
+            continue;
+        }
+        let spk = speaker_at(w.t0_ms, w.t1_ms).max(1);
+        if Some(spk) != cur {
+            if !out.is_empty() {
+                out.push_str("\n\n");
+            }
+            out.push_str(&format!("[{}] [Hablante {}] ", fmt_ms(w.t0_ms), spk));
+            cur = Some(spk);
+        } else if !out.ends_with(char::is_whitespace) {
+            out.push(' ');
+        }
+        out.push_str(txt);
+    }
+    out
 }
 
 async fn complete_unless_cancelled<F, C>(operation: F, is_cancelled: C) -> Option<F::Output>
@@ -99,244 +180,6 @@ where
 
 fn should_use_streaming_overlay(style: OverlayStyle, is_streaming: bool) -> bool {
     style == OverlayStyle::Live && is_streaming
-}
-
-async fn post_process_transcription(settings: &AppSettings, transcription: &str) -> Option<String> {
-    if is_blank_transcription(transcription) {
-        debug!("Post-processing skipped because the transcription is empty");
-        return None;
-    }
-
-    let provider = match settings.active_post_process_provider().cloned() {
-        Some(provider) => provider,
-        None => {
-            debug!("Post-processing enabled but no provider is selected");
-            return None;
-        }
-    };
-
-    let model = settings
-        .post_process_models
-        .get(&provider.id)
-        .cloned()
-        .unwrap_or_default();
-
-    if model.trim().is_empty() {
-        debug!(
-            "Post-processing skipped because provider '{}' has no model configured",
-            provider.id
-        );
-        return None;
-    }
-
-    let selected_prompt_id = match &settings.post_process_selected_prompt_id {
-        Some(id) => id.clone(),
-        None => {
-            debug!("Post-processing skipped because no prompt is selected");
-            return None;
-        }
-    };
-
-    let prompt = match settings
-        .post_process_prompts
-        .iter()
-        .find(|prompt| prompt.id == selected_prompt_id)
-    {
-        Some(prompt) => prompt.prompt.clone(),
-        None => {
-            debug!(
-                "Post-processing skipped because prompt '{}' was not found",
-                selected_prompt_id
-            );
-            return None;
-        }
-    };
-
-    if prompt.trim().is_empty() {
-        debug!("Post-processing skipped because the selected prompt is empty");
-        return None;
-    }
-
-    debug!(
-        "Starting LLM post-processing with provider '{}' (model: {})",
-        provider.id, model
-    );
-
-    let api_key = settings
-        .post_process_api_keys
-        .get(&provider.id)
-        .cloned()
-        .unwrap_or_default();
-
-    // Disable reasoning for providers where post-processing rarely benefits from it.
-    // - custom: top-level reasoning_effort (works for local OpenAI-compat servers)
-    // - openrouter: nested reasoning object; exclude:true also keeps reasoning text
-    //   out of the response so it can't pollute structured-output JSON parsing
-    let (reasoning_effort, reasoning) = match provider.id.as_str() {
-        "custom" => (Some("none".to_string()), None),
-        "openrouter" => (
-            None,
-            Some(crate::llm_client::ReasoningConfig {
-                effort: Some("none".to_string()),
-                exclude: Some(true),
-            }),
-        ),
-        _ => (None, None),
-    };
-
-    if provider.supports_structured_output {
-        debug!("Using structured outputs for provider '{}'", provider.id);
-
-        let system_prompt = build_system_prompt(&prompt);
-        let user_content = transcription.to_string();
-
-        // Handle Apple Intelligence separately since it uses native Swift APIs
-        if provider.id == APPLE_INTELLIGENCE_PROVIDER_ID {
-            #[cfg(all(target_os = "macos", target_arch = "aarch64"))]
-            {
-                if !apple_intelligence::check_apple_intelligence_availability() {
-                    debug!(
-                        "Apple Intelligence selected but not currently available on this device"
-                    );
-                    return None;
-                }
-
-                let token_limit = model.trim().parse::<i32>().unwrap_or(0);
-                return match apple_intelligence::process_text_with_system_prompt(
-                    &system_prompt,
-                    &user_content,
-                    token_limit,
-                ) {
-                    Ok(result) => {
-                        if result.trim().is_empty() {
-                            debug!("Apple Intelligence returned an empty response");
-                            None
-                        } else {
-                            let result = strip_invisible_chars(&result);
-                            debug!(
-                                "Apple Intelligence post-processing succeeded. Output length: {} chars",
-                                result.len()
-                            );
-                            Some(result)
-                        }
-                    }
-                    Err(err) => {
-                        error!("Apple Intelligence post-processing failed: {}", err);
-                        None
-                    }
-                };
-            }
-
-            #[cfg(not(all(target_os = "macos", target_arch = "aarch64")))]
-            {
-                debug!("Apple Intelligence provider selected on unsupported platform");
-                return None;
-            }
-        }
-
-        // Define JSON schema for transcription output
-        let json_schema = serde_json::json!({
-            "type": "object",
-            "properties": {
-                (TRANSCRIPTION_FIELD): {
-                    "type": "string",
-                    "description": "The cleaned and processed transcription text"
-                }
-            },
-            "required": [TRANSCRIPTION_FIELD],
-            "additionalProperties": false
-        });
-
-        match crate::llm_client::send_chat_completion_with_schema(
-            &provider,
-            api_key.clone(),
-            &model,
-            user_content,
-            Some(system_prompt),
-            Some(json_schema),
-            reasoning_effort.clone(),
-            reasoning.clone(),
-        )
-        .await
-        {
-            Ok(Some(content)) => {
-                // Parse the JSON response to extract the transcription field
-                match serde_json::from_str::<serde_json::Value>(&content) {
-                    Ok(json) => {
-                        if let Some(transcription_value) =
-                            json.get(TRANSCRIPTION_FIELD).and_then(|t| t.as_str())
-                        {
-                            let result = strip_invisible_chars(transcription_value);
-                            debug!(
-                                "Structured output post-processing succeeded for provider '{}'. Output length: {} chars",
-                                provider.id,
-                                result.len()
-                            );
-                            return Some(result);
-                        } else {
-                            error!("Structured output response missing 'transcription' field");
-                            return Some(strip_invisible_chars(&content));
-                        }
-                    }
-                    Err(e) => {
-                        error!(
-                            "Failed to parse structured output JSON: {}. Returning raw content.",
-                            e
-                        );
-                        return Some(strip_invisible_chars(&content));
-                    }
-                }
-            }
-            Ok(None) => {
-                error!("LLM API response has no content");
-                return None;
-            }
-            Err(e) => {
-                warn!(
-                    "Structured output failed for provider '{}': {}. Falling back to legacy mode.",
-                    provider.id, e
-                );
-                // Fall through to legacy mode below
-            }
-        }
-    }
-
-    // Legacy mode: Replace ${output} variable in the prompt with the actual text
-    let processed_prompt = prompt.replace("${output}", transcription);
-    debug!("Processed prompt length: {} chars", processed_prompt.len());
-
-    match crate::llm_client::send_chat_completion(
-        &provider,
-        api_key,
-        &model,
-        processed_prompt,
-        reasoning_effort,
-        reasoning,
-    )
-    .await
-    {
-        Ok(Some(content)) => {
-            let content = strip_invisible_chars(&content);
-            debug!(
-                "LLM post-processing succeeded for provider '{}'. Output length: {} chars",
-                provider.id,
-                content.len()
-            );
-            Some(content)
-        }
-        Ok(None) => {
-            error!("LLM API response has no content");
-            None
-        }
-        Err(e) => {
-            error!(
-                "LLM post-processing failed for provider '{}': {}. Falling back to original transcription.",
-                provider.id,
-                e
-            );
-            None
-        }
-    }
 }
 
 async fn maybe_convert_chinese_variant(
@@ -414,15 +257,17 @@ fn resolve_effective_language(app: &AppHandle, settings: &AppSettings) -> String
     }
 }
 
+/// Transforma la transcripción cruda en el texto que se inserta: conversión de
+/// variante china + la capa de corrección determinista.
+///
+/// Ya no recibe `post_process: bool`: el paso de post-proceso por LLM (la función
+/// «Post Proceso», con API BYOK) se retiró el 29/07.
 pub(crate) async fn process_transcription_output(
     app: &AppHandle,
     transcription: &str,
-    post_process: bool,
 ) -> ProcessedTranscription {
     let settings = get_settings(app);
     let mut final_text = transcription.to_string();
-    let mut post_processed_text: Option<String> = None;
-    let mut post_process_prompt: Option<String> = None;
 
     // Resolve the language the transcription actually ran in (the persisted
     // intent coerced against the loaded model's capabilities) so OpenCC keys off
@@ -434,29 +279,31 @@ pub(crate) async fn process_transcription_output(
         final_text = converted_text;
     }
 
-    if post_process {
-        if let Some(processed_text) = post_process_transcription(&settings, &final_text).await {
-            post_processed_text = Some(processed_text.clone());
-            final_text = processed_text;
+    // Corrección local (módulo `correccion`): con el motor por defecto
+    // (`desactivado`) es passthrough byte a byte; solo transforma si el usuario
+    // la activó en ajustes. Todo determinista y síncrono desde que se retiró el
+    // «Pulido con IA» — ya no hay sidecar que resolver ni nada que esperar.
+    final_text = crate::correccion::procesar(&final_text, &settings);
 
-            if let Some(prompt_id) = &settings.post_process_selected_prompt_id {
-                if let Some(prompt) = settings
-                    .post_process_prompts
-                    .iter()
-                    .find(|prompt| &prompt.id == prompt_id)
-                {
-                    post_process_prompt = Some(prompt.prompt.clone());
-                }
-            }
-        }
-    } else if final_text != transcription {
-        post_processed_text = Some(final_text.clone());
-    }
+    // `post_processed_text` guarda el texto TRANSFORMADO cuando alguna capa lo
+    // cambió, para que el historial pueda mostrar crudo vs. final. Ese uso NO era
+    // del LLM —ya existía para la conversión china y la corrección determinista—
+    // así que sobrevive a la retirada del «Post Proceso»: antes era la rama
+    // `else`, ahora es la regla.
+    let post_processed_text = if final_text != transcription {
+        Some(final_text.clone())
+    } else {
+        None
+    };
 
     ProcessedTranscription {
         final_text,
         post_processed_text,
-        post_process_prompt,
+        // El prompt solo tenía sentido con el LLM. Se conserva el campo porque
+        // mapea a una columna de SQLite que NO se toca (las migraciones son
+        // append-only e indexadas por `user_version`: quitar una corrompería las
+        // bases existentes). Queda siempre `None`.
+        post_process_prompt: None,
     }
 }
 
@@ -468,6 +315,23 @@ impl ShortcutAction for TranscribeAction {
         // Load model in the background
         let tm = app.state::<Arc<TranscriptionManager>>();
         let rm = app.state::<Arc<AudioRecordingManager>>();
+
+        // Si la sección Escucha está leyendo en voz alta, córtala al empezar a
+        // dictar: el TTS no debe competir con el dictado (dos audios) ni que el
+        // micrófono capte la propia lectura. `stop()` es instantáneo y no-op si
+        // no hay nada sonando.
+        let _ = app.state::<Arc<TtsManager>>().stop();
+
+        // Memoria en el sitio: en este instante el foco sigue en el campo
+        // donde el usuario dicta — releerlo (accesibilidad, local) y aprender
+        // de las correcciones que hizo sobre el dictado anterior. En hilo
+        // aparte: la lectura COM no debe retrasar el inicio de la grabación.
+        {
+            let app_memoria = app.clone();
+            std::thread::spawn(move || {
+                crate::memoria_en_sitio::aprender_del_campo(&app_memoria);
+            });
+        }
 
         // Load ASR model and VAD model in parallel
         let kickoff_started = Instant::now();
@@ -501,14 +365,20 @@ impl ShortcutAction for TranscribeAction {
             .as_ref()
             .map(|m| m.supports_streaming)
             .unwrap_or(false);
+        // Mantener el streaming en vivo SIEMPRE que el modelo lo soporte (texto +
+        // PAL/MIN en tiempo real, aunque Hablantes esté activo). La diarización
+        // necesita timestamps por palabra que el streaming no da; se resuelven
+        // RE-TRANSCRIBIENDO el buffer en batch AL FINALIZAR (ver el bloque de
+        // diarización en `Ok(transcription)`), sin sacrificar el preview en vivo.
+        let use_streaming = model_supports_streaming;
         let vad_policy = if !settings.vad_enabled {
             VadPolicy::Disabled
-        } else if model_supports_streaming {
+        } else if use_streaming {
             VadPolicy::Streaming
         } else {
             VadPolicy::Offline
         };
-        if model_supports_streaming {
+        if use_streaming {
             tm.start_stream();
         }
         let plan_elapsed = plan_started.elapsed();
@@ -518,8 +388,10 @@ impl ShortcutAction for TranscribeAction {
         // pill instead of an oversized transparent live window.
         let overlay_started = Instant::now();
         match settings.overlay_style {
-            OverlayStyle::Live if model_supports_streaming => utils::show_streaming_overlay(app),
-            OverlayStyle::Live | OverlayStyle::Minimal => show_recording_overlay(app),
+            OverlayStyle::Live if use_streaming => show_streaming_overlay(app),
+            OverlayStyle::Live | OverlayStyle::Minimal | OverlayStyle::Esfera => {
+                show_recording_overlay(app)
+            }
             OverlayStyle::None => {} // show_overlay_state no-ops on None anyway
         }
         // Everything above runs before capture can begin, so each span here is
@@ -584,23 +456,17 @@ impl ShortcutAction for TranscribeAction {
             // Starting failed (for example due to blocked microphone permissions).
             // Revert UI state so we don't stay stuck in the recording overlay.
             tm.cancel_stream();
-            utils::hide_recording_overlay(app);
+            hide_recording_overlay(app);
             change_tray_icon(app, TrayIconState::Idle);
             if let Some(err) = recording_error {
-                let error_type = if is_microphone_access_denied(&err) {
-                    "microphone_permission_denied"
+                let kind = if is_microphone_access_denied(&err) {
+                    crate::user_alerts::AlertKind::RecordingPermissionDenied
                 } else if is_no_input_device_error(&err) {
-                    "no_input_device"
+                    crate::user_alerts::AlertKind::RecordingNoDevice
                 } else {
-                    "unknown"
+                    crate::user_alerts::AlertKind::Recording
                 };
-                let _ = app.emit(
-                    "recording-error",
-                    RecordingErrorEvent {
-                        error_type: error_type.to_string(),
-                        detail: Some(err),
-                    },
-                );
+                crate::user_alerts::alert(app, kind, Some(err));
             }
         }
 
@@ -644,7 +510,6 @@ impl ShortcutAction for TranscribeAction {
         play_feedback_sound(app, SoundType::Stop);
 
         let binding_id = binding_id.to_string(); // Clone binding_id for the async task
-        let post_process = self.post_process;
         let cancel_generation = rm.cancel_generation();
 
         tauri::async_runtime::spawn(async move {
@@ -665,17 +530,52 @@ impl ShortcutAction for TranscribeAction {
                 if rm.was_cancelled_since(cancel_generation) {
                     debug!("Transcription operation cancelled after recording stop");
                     tm.cancel_stream();
-                    utils::hide_recording_overlay(&ah);
+                    hide_recording_overlay(&ah);
                     change_tray_icon(&ah, TrayIconState::Idle);
                     return;
                 }
 
                 if samples.is_empty() {
                     debug!("Recording produced no audio samples; skipping persistence");
+                    // No llegó audio. Hay DOS causas y culpar a la equivocada le
+                    // cuesta al usuario diez minutos revisando su micrófono: en la
+                    // medición del 26/07 pasó exactamente eso. Si la grabación duró
+                    // menos que un parpadeo, el usuario soltó la tecla antes de
+                    // hablar — el micrófono no tiene nada que ver.
+                    const DEMASIADO_CORTA: Duration = Duration::from_millis(300);
+                    let duracion = rm.last_recording_duration();
+                    let solto_enseguida = duracion.is_some_and(|d| d < DEMASIADO_CORTA);
+
+                    if solto_enseguida {
+                        debug!(
+                            "Recording lasted {:?} (< {:?}): user released the key too early",
+                            duracion, DEMASIADO_CORTA
+                        );
+                        // El detalle lo compone el frontend, que es quien sabe el
+                        // idioma y sabe formatear el atajo real por plataforma.
+                        crate::user_alerts::alert(
+                            &ah,
+                            crate::user_alerts::AlertKind::RecordingTooShort,
+                            None,
+                        );
+                    } else {
+                        // Si estaba en «Audio del sistema», casi seguro no había nada
+                        // sonando (ese modo escucha los parlantes, no el micrófono).
+                        let detail = if get_settings(&ah).capture_system_audio {
+                            "No se detectó audio del sistema. ¿Está sonando la reunión? El chip «Audio sistema» escucha lo que suena en tu PC, no tu micrófono."
+                        } else {
+                            "No se detectó audio del micrófono. Revisá que esté conectado, con permiso y sin silenciar."
+                        };
+                        crate::user_alerts::alert(
+                            &ah,
+                            crate::user_alerts::AlertKind::RecordingNoAudio,
+                            Some(detail.to_string()),
+                        );
+                    }
                     // Tear down any streaming worker so its channel doesn't leak
                     // and block the next start_stream.
                     tm.cancel_stream();
-                    utils::hide_recording_overlay(&ah);
+                    hide_recording_overlay(&ah);
                     change_tray_icon(&ah, TrayIconState::Idle);
                 } else {
                     // Save WAV concurrently with transcription
@@ -691,17 +591,31 @@ impl ShortcutAction for TranscribeAction {
                     // Transcribe concurrently with WAV save. If a live stream was
                     // running, finalize it and use its text (all audio was already
                     // fed to the stream); otherwise batch-transcribe the samples.
+                    // Diarización opt-in (setting `diarization_enabled`, o env
+                    // ABRAX_DIARIZE para dev/CLI): clona el buffer ANTES de que
+                    // transcribe() lo consuma, para poder diarizarlo después.
+                    let diar_samples = if get_settings(&ah).diarization_enabled
+                        || std::env::var("ABRAX_DIARIZE").is_ok()
+                    {
+                        Some(samples.clone())
+                    } else {
+                        None
+                    };
                     let transcription_time = Instant::now();
-                    let transcription_result = match tm.finalize_stream() {
+                    // `streamed` marks text that came from a live stream, whose
+                    // words the streaming path already fed to the Esfera overlay
+                    // one by one — so the batch word emission below must skip it
+                    // to avoid sending them twice.
+                    let (transcription_result, streamed) = match tm.finalize_stream() {
                         // A finalized stream with usable text wins. An empty result
                         // (no active stream, produced nothing, or a finalize error
                         // after the engine was returned) falls back to a full batch
                         // transcription of the same audio. A finalize timeout is
                         // surfaced instead — the worker may still hold the engine,
                         // so a batch fallback would contend with it.
-                        Ok(Some(text)) if !text.trim().is_empty() => Ok(text),
-                        Ok(_) => tm.transcribe(samples),
-                        Err(err) => Err(err),
+                        Ok(Some(text)) if !text.trim().is_empty() => (Ok(text), true),
+                        Ok(_) => (tm.transcribe(samples), false),
+                        Err(err) => (Err(err), false),
                     };
 
                     // Await WAV save and verify
@@ -730,13 +644,60 @@ impl ShortcutAction for TranscribeAction {
 
                     if rm.was_cancelled_since(cancel_generation) {
                         debug!("Transcription operation cancelled before output handling");
-                        utils::hide_recording_overlay(&ah);
+                        hide_recording_overlay(&ah);
                         change_tray_icon(&ah, TrayIconState::Idle);
                         return;
                     }
 
                     match transcription_result {
                         Ok(transcription) => {
+                            // Diarización (opt-in): etiqueta el texto por hablante al
+                            // SOLTAR (el preview en vivo ya se mostró vía streaming).
+                            // Necesita timestamps por palabra, que solo da el batch; si
+                            // veníamos de streaming, `last_words` está vacío, así que
+                            // RE-TRANSCRIBIMOS el buffer en batch aquí para obtenerlos.
+                            let transcription = match diar_samples {
+                                Some(ds) => {
+                                    let mut words = tm.take_last_words().unwrap_or_default();
+                                    if words.is_empty() {
+                                        // Path streaming (o motor sin canal lateral de
+                                        // tiempos): re-transcribe en batch para poblar
+                                        // last_words. El overlay ya muestra «trabajando».
+                                        let _ = tm.transcribe(ds.clone());
+                                        words = tm.take_last_words().unwrap_or_default();
+                                    }
+                                    if words.is_empty() {
+                                        transcription
+                                    } else {
+                                        let dir = diarization_models_dir(&ah);
+                                        let s = get_settings(&ah);
+                                        // Pista de nº de hablantes: 0 = auto, N = TOPE.
+                                        let num_speakers = match s.diarization_num_speakers {
+                                            0 => None,
+                                            n => Some(n as usize),
+                                        };
+                                        // Modo reunión (audio del sistema) → segmentación
+                                        // fina para captar voces breves de la reunión.
+                                        let meeting = s.capture_system_audio;
+                                        let base = transcription.clone();
+                                        // Diariza en un hilo bloqueante (carga ONNX + inferencia).
+                                        tauri::async_runtime::spawn_blocking(move || {
+                                            diarize_and_label(
+                                                &ds,
+                                                &words,
+                                                &dir,
+                                                num_speakers,
+                                                meeting,
+                                            )
+                                        })
+                                        .await
+                                        .ok()
+                                        .flatten()
+                                        .unwrap_or(base)
+                                    }
+                                }
+                                None => transcription,
+                            };
                             // Privacy: log timing and length, never the dictated
                             // text, so handy.log stays free of transcript bodies
                             // by default (S3).
@@ -746,28 +707,38 @@ impl ShortcutAction for TranscribeAction {
                                 transcription.chars().count()
                             );
 
-                            if post_process {
-                                if use_streaming_overlay {
-                                    tm.emit_stream_working(StreamWorkKind::Polishing);
-                                } else {
-                                    show_processing_overlay(&ah);
-                                }
+                            // Esfera "palabras" mode with a non-streaming model:
+                            // the whole transcript lands at once, so split it into
+                            // words and hand them to the sphere (the overlay paces
+                            // their arrival). Streamed text already flew in word by
+                            // word, so skip it here to avoid duplicates. Note: with
+                            // a batch model the overlay hides shortly after paste,
+                            // so the visible effect is brief — the words mode is
+                            // designed for streaming models, where words arrive live
+                            // while recording.
+                            if !streamed && tm.esfera_words_enabled() {
+                                let words: Vec<String> = transcription
+                                    .split_whitespace()
+                                    .map(str::to_string)
+                                    .collect();
+                                tm.emit_transcript_words(words);
                             }
+
                             let Some(processed) = complete_unless_cancelled(
-                                process_transcription_output(&ah, &transcription, post_process),
+                                process_transcription_output(&ah, &transcription),
                                 || rm.was_cancelled_since(cancel_generation),
                             )
                             .await
                             else {
                                 debug!("Transcription operation cancelled during output handling");
-                                utils::hide_recording_overlay(&ah);
+                                hide_recording_overlay(&ah);
                                 change_tray_icon(&ah, TrayIconState::Idle);
                                 return;
                             };
 
                             if rm.was_cancelled_since(cancel_generation) {
                                 debug!("Transcription operation cancelled before paste");
-                                utils::hide_recording_overlay(&ah);
+                                hide_recording_overlay(&ah);
                                 change_tray_icon(&ah, TrayIconState::Idle);
                                 return;
                             }
@@ -777,7 +748,10 @@ impl ShortcutAction for TranscribeAction {
                                 if let Err(err) = hm.save_entry(
                                     file_name,
                                     transcription,
-                                    post_process,
+                                    // `post_process_requested`: siempre false,
+                                    // la funcion se retiro. La columna se
+                                    // conserva (migraciones append-only).
+                                    false,
                                     processed.post_processed_text.clone(),
                                     processed.post_process_prompt.clone(),
                                 ) {
@@ -786,37 +760,83 @@ impl ShortcutAction for TranscribeAction {
                             }
 
                             if processed.final_text.is_empty() {
-                                utils::hide_recording_overlay(&ah);
+                                // Se grabó y el motor terminó bien, pero no salió ni
+                                // una palabra. Esta rama ocultaba el overlay y no
+                                // decía NADA: para el usuario era «apreté el atajo y
+                                // no pasó nada», sin una sola pista. Ahora avisa.
+                                debug!("Transcription produced no text; alerting the user");
+                                // Con «Audio del sistema» y un modelo que se
+                                // queda corto, «no reconocí palabras» es
+                                // verdadero pero inútil: el 29/07 el audio
+                                // estaba a −14 dBFS y el usuario concluyó que
+                                // la captura no funcionaba. Aquí sí sabemos la
+                                // causa, así que se nombra.
+                                let s_vacio = get_settings(&ah);
+                                let corto = crate::managers::model::ModelManager::se_queda_corto_para_sistema(
+                                    &s_vacio.selected_model,
+                                );
+                                let kind = if s_vacio.capture_system_audio && corto {
+                                    crate::user_alerts::AlertKind::SistemaSinModeloApto
+                                } else {
+                                    crate::user_alerts::AlertKind::TranscriptionEmpty
+                                };
+                                crate::user_alerts::alert(&ah, kind, None);
+                                hide_recording_overlay(&ah);
                                 change_tray_icon(&ah, TrayIconState::Idle);
                             } else {
                                 let ah_clone = ah.clone();
                                 let paste_time = Instant::now();
                                 let final_text = processed.final_text;
                                 let rm_for_paste = Arc::clone(&rm);
+                                let tm_for_paste = Arc::clone(&tm);
                                 ah.run_on_main_thread(move || {
                                     if rm_for_paste.was_cancelled_since(cancel_generation) {
                                         debug!("Transcription operation cancelled before paste");
-                                        utils::hide_recording_overlay(&ah_clone);
+                                        hide_recording_overlay(&ah_clone);
                                         change_tray_icon(&ah_clone, TrayIconState::Idle);
                                         return;
                                     }
 
-                                    match utils::paste(final_text, ah_clone.clone()) {
-                                        Ok(()) => debug!(
-                                            "Text pasted successfully in {:?}",
-                                            paste_time.elapsed()
-                                        ),
+                                    let texto_para_memoria = final_text.clone();
+                                    match crate::clipboard::paste(final_text, ah_clone.clone()) {
+                                        Ok(()) => {
+                                            debug!(
+                                                "Text pasted successfully in {:?}",
+                                                paste_time.elapsed()
+                                            );
+                                            // Memoria en el sitio: recordar QUÉ
+                                            // se tipeó y DÓNDE, para aprender de
+                                            // las correcciones al próximo dictado.
+                                            crate::memoria_en_sitio::registrar_dictado(
+                                                &texto_para_memoria,
+                                            );
+                                        }
                                         Err(e) => {
                                             error!("Failed to paste transcription: {}", e);
-                                            let _ = ah_clone.emit("paste-error", ());
+                                            crate::user_alerts::alert(
+                                                &ah_clone,
+                                                crate::user_alerts::AlertKind::Paste,
+                                                None,
+                                            );
                                         }
                                     }
-                                    utils::hide_recording_overlay(&ah_clone);
+                                    // Modo palabras de la esfera: el overlay se
+                                    // queda lo justo para que las palabras del
+                                    // finalize completen su ciclo (el texto ya
+                                    // se pegó; la ventana no roba foco). En
+                                    // cualquier otro modo el linger es cero y
+                                    // el hide es inmediato, como siempre.
+                                    let linger = if tm_for_paste.esfera_words_enabled() {
+                                        tm_for_paste.esfera_words_linger()
+                                    } else {
+                                        std::time::Duration::ZERO
+                                    };
+                                    crate::overlay::hide_recording_overlay_after(&ah_clone, linger);
                                     change_tray_icon(&ah_clone, TrayIconState::Idle);
                                 })
                                 .unwrap_or_else(|e| {
                                     error!("Failed to run paste on main thread: {:?}", e);
-                                    utils::hide_recording_overlay(&ah);
+                                    hide_recording_overlay(&ah);
                                     change_tray_icon(&ah, TrayIconState::Idle);
                                 });
                             }
@@ -826,28 +846,37 @@ impl ShortcutAction for TranscribeAction {
                                 debug!(
                                     "Transcription operation cancelled after transcription error"
                                 );
-                                utils::hide_recording_overlay(&ah);
+                                hide_recording_overlay(&ah);
                                 change_tray_icon(&ah, TrayIconState::Idle);
                                 return;
                             }
 
                             error!("Transcription failed: {}", err);
-                            // Surface the failure to the UI (toast). The full
-                            // message is also in handy.log via the line above.
-                            let _ = ah.emit("transcription-error", err.to_string());
+                            // Surface the failure through the single alert
+                            // channel (toast + centro + notificación nativa si
+                            // la ventana está oculta). El mensaje completo
+                            // también queda en handy.log por la línea de arriba.
+                            crate::user_alerts::alert(
+                                &ah,
+                                crate::user_alerts::AlertKind::Transcription,
+                                Some(err.to_string()),
+                            );
                             // Save entry with empty text so user can retry
                             if wav_saved {
                                 if let Err(save_err) = hm.save_entry(
                                     file_name,
                                     String::new(),
-                                    post_process,
+                                    // `post_process_requested`: siempre false,
+                                    // la funcion se retiro. La columna se
+                                    // conserva (migraciones append-only).
+                                    false,
                                     None,
                                     None,
                                 ) {
                                     error!("Failed to save failed history entry: {}", save_err);
                                 }
                             }
-                            utils::hide_recording_overlay(&ah);
+                            hide_recording_overlay(&ah);
                             change_tray_icon(&ah, TrayIconState::Idle);
                         }
                     }
@@ -856,7 +885,7 @@ impl ShortcutAction for TranscribeAction {
                 debug!("No samples retrieved from recording stop");
                 // Tear down any streaming worker so its channel doesn't leak.
                 tm.cancel_stream();
-                utils::hide_recording_overlay(&ah);
+                hide_recording_overlay(&ah);
                 change_tray_icon(&ah, TrayIconState::Idle);
             }
         });
@@ -870,6 +899,229 @@ impl ShortcutAction for TranscribeAction {
 
 // Cancel Action
 struct CancelAction;
+
+/// Lee en voz alta lo que el usuario tenga SELECCIONADO en cualquier aplicación.
+///
+/// Es un TOGGLE: si ya está leyendo, la pulsación calla. Si no, captura la
+/// selección de la ventana en foco y la lee con la voz elegida en Escucha.
+///
+/// La captura va por el portapapeles (copiar → leer → restaurar) porque no hay
+/// forma portable de leer la selección de otra app sin copiar; ver
+/// [`crate::clipboard::leer_seleccion`], que garantiza la restauración (R5).
+///
+/// Todo el trabajo va a una tarea aparte: la acción del atajo NO puede bloquear
+/// el hilo que atiende el teclado, o la pulsación se sentiría pegajosa.
+struct LeerSeleccionAction;
+
+/// ¿Hay una lectura EN CURSO pedida por el atajo?
+///
+/// No basta con preguntarle al motor si está hablando, y esa fue una carrera real
+/// (encontrada el 30/07 probando con voz neuronal): entre pulsar el atajo y que
+/// empiece a sonar, un motor neuronal tarda SEGUNDOS sintetizando, y en esa
+/// ventana `hablando` es `false`. Pulsar otra vez para callar no callaba: capturaba
+/// la selección otra vez y arrancaba una SEGUNDA lectura encima.
+///
+/// Esta bandera se levanta al pedir la lectura y se baja al terminarla, así que
+/// cubre también el tramo de síntesis. El toggle pregunta por ella, no por el
+/// motor.
+static LEYENDO: std::sync::atomic::AtomicBool = std::sync::atomic::AtomicBool::new(false);
+
+impl ShortcutAction for LeerSeleccionAction {
+    fn start(&self, app: &AppHandle, _binding_id: &str, _shortcut_str: &str) {
+        use std::sync::atomic::Ordering;
+
+        let app = app.clone();
+        tauri::async_runtime::spawn(async move {
+            let Some(tts) = app.try_state::<Arc<TtsManager>>() else {
+                warn!("leer selección: el motor de voz no está inicializado");
+                return;
+            };
+            let tts = tts.inner().clone();
+
+            // Toggle. Se pregunta por NUESTRA bandera además del motor: la bandera
+            // cubre el tramo de síntesis (donde el motor dice que no habla) y el
+            // motor cubre el caso de que algo la dejara colgada.
+            let leyendo =
+                LEYENDO.load(Ordering::SeqCst) || matches!(tts.status(), Ok(e) if e.hablando);
+            if leyendo {
+                LEYENDO.store(false, Ordering::SeqCst);
+                // Esta rama sale ANTES de crear el guard, así que oculta ella.
+                crate::overlay::hide_recording_overlay(&app);
+                if let Err(e) = tts.stop() {
+                    warn!("[leer] no se pudo detener la lectura: {e}");
+                }
+                info!("[leer] lectura detenida por el usuario");
+                return;
+            }
+            LEYENDO.store(true, Ordering::SeqCst);
+
+            // La bandera se baja en TODAS las salidas. Si una rama de error se
+            // olvidara de bajarla, el atajo quedaría creyendo que sigue leyendo y
+            // la siguiente pulsación intentaría callar algo que no suena: el atajo
+            // quedaría muerto hasta reiniciar. El guard lo hace por construcción.
+            // El guard baja la bandera Y oculta el overlay. Los dos en el mismo
+            // sitio a propósito: si el overlay se ocultara en una línea al final,
+            // cualquier `return` de error dejaría un parlante flotando en pantalla
+            // para siempre. `Drop` lo hace por construcción.
+            struct BajarAlSalir(AppHandle);
+            impl Drop for BajarAlSalir {
+                fn drop(&mut self) {
+                    LEYENDO.store(false, std::sync::atomic::Ordering::SeqCst);
+                    crate::overlay::hide_recording_overlay(&self.0);
+                }
+            }
+            let _guard = BajarAlSalir(app.clone());
+
+            // Traza del camino completo. Una lectura correcta no escribía NADA en
+            // el log, así que ante «no funciona» no había forma de saber en qué
+            // paso se rompió. Sin contenido del dictado, solo longitudes (S3).
+            let t0 = Instant::now();
+            info!("[leer] atajo pulsado, capturando selección");
+
+            let seleccion = match crate::clipboard::leer_seleccion(&app) {
+                Ok(Some(t)) => {
+                    info!(
+                        "[leer] selección capturada: {} chars en {:?}",
+                        t.chars().count(),
+                        t0.elapsed()
+                    );
+                    t
+                }
+                Ok(None) => {
+                    // Sin selección no se dice nada y no se molesta con un error:
+                    // pulsar el atajo sin seleccionar es un accidente común.
+                    info!("[leer] no había nada seleccionado ({:?})", t0.elapsed());
+                    return;
+                }
+                Err(e) => {
+                    warn!("[leer] no se pudo capturar la selección: {e}");
+                    return;
+                }
+            };
+
+            // DESENVOLVER antes de leer. Un PDF no guarda párrafos, guarda líneas
+            // colocadas en la página: al copiar, cada línea VISUAL trae su salto y
+            // el motor lo lee como fin de frase — una pausa cada seis palabras.
+            // Word no sufre esto porque copia el párrafo entero en una línea, y por
+            // eso ahí sonaba bien y en PDF no. Reportado el 30/07 leyendo una ley.
+            let seleccion = crate::managers::escucha::preproceso::desenvolver_lineas(&seleccion);
+
+            // Misma voz y mismos ajustes de velocidad/tono que el panel Escucha:
+            // el atajo no es un modo aparte, es el mismo lector.
+            let settings = get_settings(&app);
+            let voz = settings.escucha_voz_prosa.clone();
+            let velocidad = settings.tts_velocidad;
+            let tono = settings.tts_tono;
+
+            info!("[leer] hablando con voz {voz:?} tras {:?}", t0.elapsed());
+            // Se muestra AQUÍ y no al capturar: si no había selección, el overlay
+            // habría aparecido y desaparecido de golpe, un parpadeo sin sentido.
+            //
+            // Y arranca en «preparando», no en «leyendo». Entre este punto y la
+            // primera muestra de audio hay un hueco que en el motor del sistema
+            // es imperceptible pero en uno neuronal son SEGUNDOS de síntesis. Un
+            // parlante «retumbando» durante ese silencio sería un instrumento que
+            // miente: diría que está sonando algo que aún no suena.
+            crate::overlay::show_preparando_overlay(&app);
+
+            // Cadencia y techos, compartidos por el vigía de arranque y por la
+            // espera del final. 120 ms es imperceptible para el ojo y no le pesa
+            // a nadie; los techos existen para que ningún fallo de `status` deje
+            // el overlay clavado en pantalla.
+            const SONDEO: Duration = Duration::from_millis(120);
+            const ESPERA_ARRANQUE: Duration = Duration::from_secs(2);
+            // Cuánto se espera a que ARRANQUE la voz mostrando «preparando». Un
+            // motor neuronal sintetizando un texto largo en CPU puede tardar de
+            // verdad, así que es generoso; si se agota, no se finge nada.
+            const TECHO_ARRANQUE: Duration = Duration::from_secs(120);
+            // Techo duro del total: si `status` mintiera, el overlay no puede
+            // quedarse en pantalla para siempre. Diez minutos es más de lo que
+            // dura cualquier selección razonable y es un final garantizado.
+            const TECHO: Duration = Duration::from_secs(600);
+
+            // Vigía que cambia el overlay a «leyendo» en cuanto empieza a sonar
+            // de verdad. Va en su propia tarea porque `speak` BLOQUEA todo el
+            // tiempo que dura la lectura en los motores neuronales: si el cambio
+            // se hiciera después de esperarlo, llegaría cuando ya terminó.
+            //
+            // `hablando` viene de `is_playing()` del servicio de reproducción, es
+            // decir de audio saliendo — no de «se aceptó el encargo».
+            {
+                let app_vigia = app.clone();
+                let tts_vigia = tts.clone();
+                tauri::async_runtime::spawn(async move {
+                    let inicio = Instant::now();
+                    loop {
+                        // Si la lectura ya terminó o el usuario la paró, salir sin
+                        // tocar nada: el overlay ya lo ocultó el guard, y mostrarlo
+                        // aquí dejaría un parlante huérfano en pantalla.
+                        if !LEYENDO.load(Ordering::SeqCst) {
+                            return;
+                        }
+                        if matches!(tts_vigia.status(), Ok(e) if e.hablando) {
+                            // Se vuelve a comprobar pegado al cambio para cerrar la
+                            // carrera con el guard.
+                            if LEYENDO.load(Ordering::SeqCst) {
+                                info!("[leer] la voz arrancó tras {:?}", inicio.elapsed());
+                                crate::overlay::show_leyendo_overlay(&app_vigia);
+                            }
+                            return;
+                        }
+                        if inicio.elapsed() > TECHO_ARRANQUE {
+                            // Nunca sonó. Se deja en «preparando» y el guard lo
+                            // ocultará: no se finge una voz que no existe.
+                            warn!("[leer] la voz no arrancó en {TECHO_ARRANQUE:?}");
+                            return;
+                        }
+                        tokio::time::sleep(SONDEO).await;
+                    }
+                });
+            }
+
+            // `speak` va a un hilo de bloqueo porque en los motores neuronales SÍ
+            // bloquea hasta sintetizar y reproducir.
+            let tts_sonda = tts.clone();
+            let _ = tauri::async_runtime::spawn_blocking(move || {
+                if let Err(e) = tts.speak(seleccion, voz, Some(velocidad), Some(tono)) {
+                    warn!("[leer] la síntesis falló: {e}");
+                }
+            })
+            .await;
+
+            // PERO EL MOTOR DEL SISTEMA NO BLOQUEA: encola la frase y vuelve al
+            // instante. Medido el 30/07 con la traza de arriba — 655 caracteres
+            // «leídos» en 322 ms, cuando son treinta segundos de voz. Sin esperar
+            // aquí, el overlay se mostraba y el guard lo ocultaba 64 ms después:
+            // un parpadeo que ni llegaba a pintarse, y por eso «no aparece nada».
+            // Y la bandera de lectura se bajaba enseguida, así que el atajo tampoco
+            // podía parar nada.
+            //
+            // Se espera a que el motor DEJE de hablar de verdad. Primero a que
+            // EMPIECE (encolar tarda un momento y preguntar demasiado pronto
+            // devuelve «no habla»), y después a que termine.
+            let hablando = || matches!(tts_sonda.status(), Ok(e) if e.hablando);
+            let arranque = Instant::now();
+            while !hablando() && arranque.elapsed() < ESPERA_ARRANQUE {
+                tokio::time::sleep(SONDEO).await;
+            }
+            let inicio = Instant::now();
+            while hablando() {
+                // Si el usuario pulsó el atajo otra vez, la bandera ya está abajo:
+                // salir deja que el guard oculte el overlay sin esperar al motor.
+                if !LEYENDO.load(Ordering::SeqCst) || inicio.elapsed() > TECHO {
+                    break;
+                }
+                tokio::time::sleep(SONDEO).await;
+            }
+            info!("[leer] lectura terminada, total {:?}", t0.elapsed());
+        });
+    }
+
+    fn stop(&self, _app: &AppHandle, _binding_id: &str, _shortcut_str: &str) {
+        // Nada al soltar: el toggle vive en `start`. Si se detuviera aquí, un
+        // atajo pulsado y soltado (lo normal) callaría al instante.
+    }
+}
 
 impl ShortcutAction for CancelAction {
     fn start(&self, app: &AppHandle, _binding_id: &str, _shortcut_str: &str) {
@@ -905,21 +1157,30 @@ impl ShortcutAction for TestAction {
 }
 
 // Static Action Map
+/// Acciones por id de atajo.
+///
+/// **INVARIANTE: todo id de `settings::bindings` necesita su entrada aquí.** Un
+/// binding sin acción se registra en el sistema operativo y no hace nada: un
+/// atajo global fantasma, que le roba la combinación al resto de las apps para
+/// nada. Es peor que no tenerlo.
+///
+/// No hay test que lo compruebe, y no por descuido: referenciar `ACTION_MAP`
+/// desde cualquier test de esta crate impide que arranque el binario de test en
+/// Windows (`STATUS_ENTRYPOINT_NOT_FOUND`) porque arrastra dependencias nativas
+/// que el ejecutable de test no tiene al lado. Se sostiene leyendo las dos listas.
 pub static ACTION_MAP: Lazy<HashMap<String, Arc<dyn ShortcutAction>>> = Lazy::new(|| {
     let mut map = HashMap::new();
     map.insert(
         "transcribe".to_string(),
-        Arc::new(TranscribeAction {
-            post_process: false,
-        }) as Arc<dyn ShortcutAction>,
-    );
-    map.insert(
-        "transcribe_with_post_process".to_string(),
-        Arc::new(TranscribeAction { post_process: true }) as Arc<dyn ShortcutAction>,
+        Arc::new(TranscribeAction) as Arc<dyn ShortcutAction>,
     );
     map.insert(
         "cancel".to_string(),
         Arc::new(CancelAction) as Arc<dyn ShortcutAction>,
+    );
+    map.insert(
+        "leer_seleccion".to_string(),
+        Arc::new(LeerSeleccionAction) as Arc<dyn ShortcutAction>,
     );
     map.insert(
         "test".to_string(),
@@ -930,26 +1191,13 @@ pub static ACTION_MAP: Lazy<HashMap<String, Arc<dyn ShortcutAction>>> = Lazy::ne
 
 #[cfg(test)]
 mod tests {
-    use super::{complete_unless_cancelled, is_blank_transcription, should_use_streaming_overlay};
+    use super::{complete_unless_cancelled, should_use_streaming_overlay};
     use crate::settings::OverlayStyle;
     use std::future;
     use std::sync::atomic::{AtomicBool, Ordering};
     use std::sync::Arc;
     use std::thread;
     use std::time::Duration;
-
-    #[test]
-    fn blank_transcription_is_detected() {
-        assert!(is_blank_transcription(""));
-        assert!(is_blank_transcription("   "));
-        assert!(is_blank_transcription("\t\n  \r\n"));
-    }
-
-    #[test]
-    fn non_blank_transcription_is_kept() {
-        assert!(!is_blank_transcription("hello"));
-        assert!(!is_blank_transcription("  hello  "));
-    }
 
     #[test]
     fn completed_operation_returns_its_output() {

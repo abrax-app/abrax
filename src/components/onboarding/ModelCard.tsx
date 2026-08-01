@@ -1,6 +1,7 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
 import {
+  AlertTriangle,
   AudioLines,
   Check,
   Download,
@@ -8,6 +9,7 @@ import {
   HardDrive,
   Languages,
   Loader2,
+  RotateCcw,
   Trash2,
 } from "lucide-react";
 import type { ModelInfo } from "@/bindings";
@@ -74,6 +76,9 @@ interface ModelCardProps {
   downloadProgress?: number;
   downloadSpeed?: number; // MB/s
   showRecommended?: boolean;
+  /** Causa del último fallo de descarga/extracción (F3): se muestra en la
+   * card con un botón Reintentar en vez de fallar en silencio. */
+  errorMessage?: string;
 }
 
 const ModelCard: React.FC<ModelCardProps> = ({
@@ -89,6 +94,7 @@ const ModelCard: React.FC<ModelCardProps> = ({
   downloadProgress,
   downloadSpeed,
   showRecommended = true,
+  errorMessage,
 }) => {
   const { t } = useTranslation();
   const isFeatured = variant === "featured";
@@ -340,6 +346,41 @@ const ModelCard: React.FC<ModelCardProps> = ({
           <p className="text-xs text-text/50 mt-1">
             {t("modelSelector.extractingGeneric")}
           </p>
+        </div>
+      )}
+      {/* Fallo de descarga/extracción: causa visible + Reintentar (F3) */}
+      {errorMessage && status === "downloadable" && (
+        <div className="w-full mt-2 flex items-start gap-2 rounded-lg border border-red-500/30 bg-red-500/10 px-3 py-2">
+          <AlertTriangle className="w-4 h-4 shrink-0 text-red-500 mt-0.5" />
+          <div className="flex-1 min-w-0">
+            <p className="text-xs font-medium text-text">
+              {t("modelSelector.downloadFailed")}
+            </p>
+            {/* El detalle tecnico llega del backend en ingles y en jerga de
+                protocolo («Header content-range is missing»): no se le enseña a
+                quien acaba de instalar. Se queda en el `title`, que es donde lo
+                busca quien sabe leerlo. */}
+            <p
+              className="text-xs text-text/60 break-words"
+              title={errorMessage}
+            >
+              {t("modelSelector.downloadFailedHelp")}
+            </p>
+          </div>
+          {onDownload && (
+            <Button
+              variant="secondary"
+              size="sm"
+              onClick={(e) => {
+                e.stopPropagation();
+                onDownload(model.id);
+              }}
+              className="flex items-center gap-1.5 shrink-0"
+            >
+              <RotateCcw className="w-3.5 h-3.5" />
+              <span>{t("common.retry")}</span>
+            </Button>
+          )}
         </div>
       )}
     </div>

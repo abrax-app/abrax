@@ -6,16 +6,23 @@
     "unloadModel": "卸載模型",
     "model": "模型",
     "quit": "結束",
-    "cancel": "取消"
+    "cancel": "取消",
+    "errorTitle": "Abrax 遇到問題",
+    "errorRecording": "無法開始錄音。開啟 Abrax 查看原因。",
+    "errorTranscription": "轉錄失敗。開啟 Abrax 從歷史記錄重試。",
+    "errorPaste": "無法貼上文字。已儲存在歷史記錄中。",
+    "errorModelLoad": "語音模型載入失敗。開啟 Abrax 查看原因。",
+    "errorModelDownload": "模型下載失敗。開啟 Abrax 重試。",
+    "show": "Show Abrax"
   },
   "sidebar": {
     "general": "一般",
     "models": "模型",
     "advanced": "進階",
-    "postProcessing": "後處理",
     "history": "歷史紀錄",
     "debug": "偵錯",
-    "about": "關於"
+    "about": "關於",
+    "escucha": "VOX"
   },
   "onboarding": {
     "subtitle": "首先，請選擇一種模型",
@@ -46,11 +53,11 @@
         "name": "Whisper Large",
         "description": "準確度高，但速度較慢"
       },
-      "parakeet-tdt-0.6b-v2": {
+      "parakeet-tdt-0_6b-v2": {
         "name": "Parakeet V2",
         "description": "僅支援英語，英語使用者的最佳模型"
       },
-      "parakeet-tdt-0.6b-v3": {
+      "parakeet-tdt-0_6b-v3": {
         "name": "Parakeet V3",
         "description": "快速且準確"
       },
@@ -93,6 +100,21 @@
       "cohere-int8": {
         "name": "Cohere",
         "description": "大型模型，速度較慢，但多語言辨識非常準確。"
+      },
+      "handy-computer_canary-180m-flash-gguf": {
+        "description": "最輕最快 — 一分鐘內下載完，連舊筆電也跑得動。代價是遇到很短的句子有時什麼都聽不出來。"
+      },
+      "handy-computer_whisper-large-v3-turbo-gguf": {
+        "description": "Balanced — the everyday pick: understands 100 languages and doesn't keep you waiting."
+      },
+      "handy-computer_whisper-large-v3-gguf": {
+        "description": "Widest coverage — the big Whisper, the one everyone names. Slower, but complete."
+      },
+      "handy-computer_nemotron-3_5-asr-streaming-0_6b-gguf": {
+        "description": "Live — writes as you speak, word by word. This is the one that makes the sphere dance."
+      },
+      "handy-computer_cohere-transcribe-03-2026-gguf": {
+        "description": "最高精度 — 目錄中最準確的，支援 14 種語言。建議從這個開始。體積 1.6 GB，需要效能不錯的電腦。"
       }
     },
     "errors": {
@@ -117,6 +139,15 @@
         "checkFailed": "檢查權限失敗，請重試",
         "requestFailed": "請求權限失敗，請重試"
       }
+    },
+    "emptyCatalog": "沒有可用的模型。請檢查日誌並重新啟動 Abrax。",
+    "welcome": {
+      "pitch": "說話，文字就出現在你自己的電腦上。",
+      "badgeLocal": "100% 本機",
+      "badgeNoCloud": "無需雲端",
+      "badgeFree": "免費",
+      "whyModel": "為了聽清你說話，Abrax 需要下載一次語音模型。之後即可離線使用。",
+      "start": "開始"
     }
   },
   "modelSelector": {
@@ -151,7 +182,18 @@
       "translate": "翻譯為英語",
       "streaming": "在您說話時即時顯示轉錄"
     },
-    "legacy": "舊版"
+    "legacy": "舊版",
+    "downloadFailed": "下載失敗",
+    "downloadFailedHelp": "無法下載模型。請檢查網路連線後重試。",
+    "checkFailed": "無法檢查模型狀態",
+    "loadFailed": "無法載入模型",
+    "switchFailed": "無法切換模型",
+    "statusTitle": "模型狀態：{{estado}}",
+    "confirmDownload": {
+      "title": "Download model",
+      "body": "{{modelName}} — {{size}}\n\n{{description}}\n\nIt downloads once and stays on your machine. After that it works offline.",
+      "ok": "Download"
+    }
   },
   "settings": {
     "modelSettings": {
@@ -174,6 +216,10 @@
           "cancel": {
             "name": "取消快捷鍵",
             "description": "用於取消目前錄製的鍵盤快捷鍵"
+          },
+          "leer_seleccion": {
+            "name": "朗讀選取的內容",
+            "description": "朗讀你在任意應用程式中選取的文字。再按一次即可停止。"
           },
           "transcribe_with_post_process": {
             "name": "後處理快捷鍵",
@@ -245,7 +291,10 @@
         "output": "輸出",
         "transcription": "轉錄",
         "history": "歷史",
-        "experimental": "實驗性"
+        "experimental": "實驗性",
+        "dictionary": "活字典",
+        "correccion": "本地校正",
+        "memoria": "記憶"
       },
       "experimentalToggle": {
         "label": "實驗性功能",
@@ -278,7 +327,7 @@
       },
       "showTrayIcon": {
         "label": "顯示系統匣圖示",
-        "description": "在系統匣中顯示 Abrax 圖示"
+        "description": "在系統匣中顯示 Abrax 圖示 不顯示時，關閉視窗會完全結束 Abrax（在 macOS 上會保留在 Dock 中）。"
       },
       "overlay": {
         "style": {
@@ -287,7 +336,8 @@
           "options": {
             "none": "無",
             "minimal": "Minimal",
-            "live": "Live"
+            "live": "Live",
+            "esfera": "Esfera"
           }
         },
         "position": {
@@ -296,6 +346,14 @@
           "options": {
             "bottom": "底部",
             "top": "頂部"
+          }
+        },
+        "esferaModo": {
+          "title": "Esfera 模式",
+          "description": "Esfera 球體的行為方式。音訊：球體會回應你的聲音。文字：你口述的詞語飛入球體，短暫顯示後融入其膜中（搭配串流模型效果最佳，說話時詞語會即時抵達）。",
+          "options": {
+            "audio": "音訊回應",
+            "palabras": "靈動文字"
           }
         }
       },
@@ -322,6 +380,7 @@
       "clipboardHandling": {
         "title": "剪貼簿處理",
         "description": "不修改剪貼簿將在轉錄後保留目前剪貼簿內容。複製到剪貼簿會在貼上後將轉錄結果留在剪貼簿中",
+        "lockedByPasteMethod": "Locked by the paste method: pasting through the clipboard already leaves the transcription there. Choose Direct or None if you want your clipboard left untouched.",
         "options": {
           "dontModify": "不修改剪貼簿",
           "copyToClipboard": "複製到剪貼簿"
@@ -380,63 +439,85 @@
         "resetDefaults": "還原預設清單",
         "disable": "關閉過濾"
       },
-      "voiceActivityDetection": {
-        "title": "Voice Activity Detection",
-        "description": "Filter silence from recordings. Streaming-capable models use a longer VAD tail; disabling VAD records raw audio."
-      }
-    },
-    "postProcessing": {
-      "hotkey": {
-        "title": "快捷鍵"
-      },
-      "api": {
-        "title": "API（相容 OpenAI）",
-        "provider": {
-          "title": "供應商",
-          "description": "選擇一個相容 OpenAI 的供應商"
-        },
-        "appleIntelligence": {
-          "unavailable": "Apple Intelligence 在此裝置上不可用。需要執行 macOS Tahoe（26.0）或更高版本的 Apple Silicon Mac，並在系統設定中啟用 Apple Intelligence"
-        },
-        "baseUrl": {
-          "title": "基礎網址",
-          "description": "所選供應商的 API 基礎網址，僅自訂供應商可編輯",
-          "placeholder": "https://api.openai.com/v1"
-        },
-        "apiKey": {
-          "title": "API 金鑰",
-          "description": "所選供應商的 API 金鑰",
-          "placeholder": "sk-..."
-        },
-        "model": {
-          "title": "模型",
-          "descriptionCustom": "輸入自訂端點所需的模型 ID",
-          "descriptionDefault": "從所選供應商的可用模型中選擇",
-          "placeholderWithOptions": "搜尋或選擇模型",
-          "placeholderNoOptions": "輸入模型名稱",
-          "refreshModels": "重新整理模型"
+      "autocorreccion": {
+        "title": "口說自我修正",
+        "description": "口述時如果你出聲改口——「不對，抱歉」「我是說」——文字會直接以更正後的樣子出現。基於規則，即時且離線：不使用任何 AI 模型。它只取代你更正的部分，絕不會自行刪除，拿不準時什麼都不動。預設開啟。",
+        "ejemplo": "例如：「把會議安排在週二……不對，抱歉，是週三」→「把會議安排在週三。」",
+        "sustitucionTitle": "修正觸發詞",
+        "sustitucionDescription": "你用來取代剛說過內容的話（例如「不對，抱歉」「我是說」）。只有在觸發詞之前找到同類的對應內容時才會取代——同為星期、月份、時間、數字或人名。找不到就不會更動。",
+        "placeholder": "新增觸發詞",
+        "add": "新增",
+        "remove": "移除 {{senal}}",
+        "duplicate": "「{{senal}}」已存在",
+        "showDefaults": "改用內建",
+        "resetDefaults": "恢復內建",
+        "disable": "關閉此層級",
+        "mode": {
+          "defaults": "原廠內建",
+          "custom": "我的"
         }
       },
-      "prompts": {
-        "title": "提示詞",
-        "selectedPrompt": {
-          "title": "已選提示詞",
-          "description": "選擇用於最佳化轉錄的範本或建立新範本。在提示詞文字中使用 ${output} 來引用轉錄結果"
-        },
-        "noPrompts": "沒有可用的提示詞",
-        "selectPrompt": "選擇提示詞",
-        "createNew": "建立新提示詞",
-        "promptLabel": "提示詞名稱",
-        "promptLabelPlaceholder": "輸入提示詞名稱",
-        "promptInstructions": "提示詞指令",
-        "promptInstructionsPlaceholder": "撰寫轉錄後要執行的指令。範例：改善以下文字的語法和清晰度: ${output}",
-        "promptTip": "提示：使用 <code>${output}</code> 將轉錄文字插入到您的提示詞中",
-        "updatePrompt": "更新提示詞",
-        "deletePrompt": "刪除提示詞",
-        "createPrompt": "建立提示詞",
-        "cancel": "取消",
-        "selectToEdit": "選擇上方的提示詞以檢視和編輯其詳細資訊",
-        "createFirst": "點選上方的「建立新提示詞」來建立您的第一個後處理提示詞"
+      "emojiDictado": {
+        "title": "語音輸入 emoji",
+        "description": "說出「emoji」這個詞，接著說出它的名稱，就會插入對應的表情符號。以對照表為準、即時且離線：不會用到任何 AI 模型。沒有說這個詞就不會有任何變動；若名稱無法辨識，文字會完全按照你口述的內容保留。",
+        "ejemplo": "範例：「傳一個 emoji 讚給他」會變成「傳一個 👍 給他」。也可以說「emoji 火」→ 🔥。",
+        "verDiccionario": "檢視名稱",
+        "copiado": "已複製 {{emoji}}",
+        "noCopiado": "無法複製",
+        "diccionario": {
+          "titulo": "表情符號名稱",
+          "ayuda": "先說「emoji」，再說名稱。點按即可複製。",
+          "buscar": "搜尋名稱",
+          "copiar": "複製",
+          "cargando": "正在載入…",
+          "error": "無法載入清單。",
+          "sinResultados": "沒有相符的名稱。",
+          "total": "{{total}} 個名稱",
+          "recorte": "顯示 {{total}} 個中的 {{mostrados}} 個。請縮小搜尋範圍。"
+        }
+      },
+      "voiceActivityDetection": {
+        "title": "語音活動偵測",
+        "description": "Filter silence from recordings. Streaming-capable models use a longer VAD tail; disabling VAD records raw audio."
+      },
+      "dictionary": {
+        "title": "專案詞典",
+        "description": "語音模型不懂你程式碼裡的行話。Abrax 透過索引你的作用中專案來學習：識別符、git 分支和檔案名稱會糾正你的聽寫。",
+        "pickProject": "選擇專案",
+        "changeProject": "更換專案",
+        "pickTitle": "選擇專案資料夾",
+        "reindex": "重新索引",
+        "enable": "從此專案學習",
+        "enableDescription": "開啟後，已索引的詞條會糾正你的聽寫。關閉可暫停且不遺失索引。",
+        "termCount": "已索引 {{count}} 個詞條",
+        "noIndex": "尚未索引",
+        "lastIndexed": "索引於 {{date}}",
+        "indexed": "專案已索引：{{count}} 個詞條",
+        "indexError": "索引失敗：{{error}}",
+        "privacy": "索引保存在你的磁碟上。你的程式碼不會離開這台電腦。",
+        "source": {
+          "code": "來自儲存庫",
+          "branch": "git 分支",
+          "path": "檔案名稱"
+        }
+      },
+      "customReplacements": {
+        "title": "精確替換",
+        "description": "當模型總是聽錯某個詞時，用確定性方式修正：區分大小寫的精確詞元比對。",
+        "fromPlaceholder": "聽到的",
+        "toPlaceholder": "替換為",
+        "add": "新增",
+        "remove": "移除 {{word}}",
+        "duplicate": "「{{word}}」的替換已存在"
+      },
+      "memoria": {
+        "title": "糾正記憶",
+        "description": "當你在歷史記錄中修正轉寫時，ABRAX 會學習：刪掉一個詞並輸入正確的詞，下次就會寫對。全部在本機進行。",
+        "empty": "還沒有學到的糾正。在歷史記錄中編輯轉寫（鉛筆圖示），ABRAX 會從你的修改中學習。",
+        "forget": "忘記此糾正",
+        "clearAll": "全部忘記",
+        "enSitioTitle": "在你聽寫的地方學習",
+        "enSitioDescription": "開始聽寫時，ABRAX 會重新讀取你正在書寫的輸入框（透過無障礙介面，100% 本機），並從你在那裡對上次聽寫所做的修改中學習。輸入框內容不會被儲存，也不會離開你的裝置。"
       }
     },
     "history": {
@@ -452,7 +533,17 @@
       "retranscribe": "重新轉錄",
       "retranscribeError": "重新轉錄失敗，請重試。",
       "transcribing": "轉錄中...",
-      "transcriptionFailed": "轉錄失敗。您可以使用重試圖示重新轉錄。"
+      "transcriptionFailed": "轉錄失敗。您可以使用重試圖示重新轉錄。",
+      "loadError": "無法載入歷史記錄。你的聽寫內容仍保存在磁碟上。",
+      "edit": {
+        "action": "編輯轉寫",
+        "save": "儲存",
+        "cancel": "取消",
+        "hint": "儲存時，記憶會學習你的糾正。",
+        "saved": "轉寫已更新。",
+        "learned": "記憶：已學會 {{pares}}",
+        "error": "無法儲存編輯。"
+      }
     },
     "debug": {
       "title": "偵錯",
@@ -510,10 +601,6 @@
         "title": "闔蓋麥克風",
         "description": "筆記型電腦闔蓋時使用的麥克風"
       },
-      "postProcessingToggle": {
-        "label": "後處理",
-        "description": "啟用轉錄後的 AI 文字最佳化"
-      },
       "muteWhileRecording": {
         "label": "錄製時靜音",
         "description": "錄製期間靜音系統音訊"
@@ -568,9 +655,9 @@
         "button": "在 GitHub 上檢視"
       },
       "supportDevelopment": {
-        "title": "支持開發",
-        "description": "幫助我們繼續開發 Abrax",
-        "button": "捐贈"
+        "title": "支持 Handy（原始專案）",
+        "description": "捐款將支付給 Handy 的作者 CJ Pais——ABRAX 是該專案的分支。",
+        "button": "支持 Handy"
       },
       "acknowledgments": {
         "title": "致謝",
@@ -583,11 +670,21 @@
           "title": "ggml",
           "description": "針對 OpenAI Whisper 自動語音識別模型的高效能推理引擎",
           "details": "Abrax 使用 ggml 進行快速的本機語音轉文字處理。感謝 Georgi Gerganov 和貢獻者們的傑出工作"
+        },
+        "modelos": {
+          "title": "語音辨識模型",
+          "description": "模型會依需求下載，並未包含在安裝程式中。每個模型各自保留其授權條款；採用 CC-BY 的模型要求標示出處，此處即為標示。完整內容請見 LICENSES-THIRD-PARTY.md。"
         }
       },
       "whatsNewUpdates": {
         "label": "顯示新功能",
         "description": "Abrax 更新後顯示版本資訊"
+      }
+    },
+    "streaming": {
+      "systemAudio": {
+        "label": "擷取系統聲音",
+        "description": "轉寫電腦裡正在播放的聲音——一堂課、一段影片、一場會議——而不是麥克風。需要適合系統音訊的模型；若目前的模型不合適，Abrax 會換成合適的。"
       }
     }
   },
@@ -611,7 +708,14 @@
     "open": "開啟",
     "copy": "複製",
     "clear": "清除",
-    "noOptionsFound": "未找到選項"
+    "noOptionsFound": "未找到選項",
+    "retry": "重試",
+    "play": "播放",
+    "pause": "暫停",
+    "seek": "播放位置",
+    "moreInfo": "更多資訊",
+    "selectOption": "選擇一個選項…",
+    "systemDefault": "預設"
   },
   "accessibility": {
     "permissionsDescription": "Abrax 需要輔助使用權限才能輸入轉錄的文字",
@@ -627,13 +731,37 @@
       "linux": "在系統的聲音或隱私設定中授予麥克風存取權限。"
     },
     "noInputDeviceTitle": "找不到麥克風",
+    "recordingNoAudioTitle": "No audio detected",
     "noInputDevice": "未偵測到音訊輸入裝置。請連接麥克風或耳機後重試。",
     "recordingFailed": "錄音啟動失敗: {{error}}",
     "modelLoadFailed": "載入模型失敗: {{model}}",
     "modelLoadFailedUnknown": "未知模型",
     "pasteFailedTitle": "貼上文字失敗",
     "pasteFailed": "無法將文字貼上至目前作用中的應用程式。",
-    "transcriptionFailedTitle": "轉錄失敗"
+    "transcriptionFailedTitle": "轉錄失敗",
+    "recordingFailedTitle": "錄音失敗",
+    "modelLoadFailedTitle": "模型載入失敗",
+    "modelDownloadFailedTitle": "模型下載失敗",
+    "center": {
+      "title": "最近的提示（{{count}}）",
+      "dismiss": "關閉",
+      "toggle": "顯示全部提示"
+    },
+    "recordingTooShortTitle": "幾乎沒有錄到內容",
+    "recordingTooShort": "錄音不到一秒。如果你使用快速鍵，說話時請按住 {{atajo}}。",
+    "recordingTooShortNoBinding": "錄音不到一秒。停止前先說一會兒。",
+    "transcriptionEmptyTitle": "沒有聽清任何內容",
+    "transcriptionEmpty": "沒有辨識到任何字詞。請再試一次，說得大聲一點或靠近一些。",
+    "sistemaSinModeloAptoTitle": "需要更好的模型",
+    "sistemaSinModeloApto": "已擷取系統音訊，但目前的模型無法辨識會議或影片中的語音。請在「模型」中下載 Nemotron Streaming 3.5（716 MB）或 Whisper Large v3 Turbo（845 MB），Abrax 會自動改用該模型。",
+    "sistemaSinModeloAptoDescargar": "下載 ({{mb}} MB)",
+    "shortcutRegistrationTitle": "無法啟用快速鍵",
+    "shortcutRegistration": "Abrax 無法註冊鍵盤快速鍵。請重新啟動；若仍如此，請在設定 → 一般中改用其他快速鍵。",
+    "atajoOcupado": "另一個應用程式已在使用該快速鍵：{{atajos}}。請在設定中變更以使其生效。",
+    "atajoOcupadoCambiar": "變更快速鍵",
+    "sistemaModeloCambiadoTitle": "已為系統音訊切換模型",
+    "sistemaModeloCambiado": "Abrax 已切換到能辨識系統音訊的 {{modelo}}。該模型不會在說話時顯示文字，也不顯示每分鐘字數，全部內容會在放開後出現。想要即時顯示，請在「模型」中下載 Nemotron Streaming 3.5（716 MB）。",
+    "descargaIniciada": "正在下載模型，可在「模型」中查看。"
   },
   "appLanguage": {
     "title": "應用程式語言",
@@ -648,14 +776,352 @@
       "dark": "深色"
     }
   },
+  "palette": {
+    "title": "調色盤",
+    "description": "選擇 Abrax 的配色方案。Imperial 是刻意設計的深色主題：啟用期間將強制使用深色模式。",
+    "options": {
+      "abrax": "ABRAX",
+      "imperial": "Imperial",
+      "escuderia": "Escudería"
+    }
+  },
   "overlay": {
     "transcribing": "正在轉錄...",
-    "processing": "處理中..."
+    "processing": "處理中...",
+    "leyendo": "正在朗讀",
+    "preparando": "正在準備朗讀"
   },
   "whatsNew": {
     "title": "Abrax v{{version}} 新功能"
   },
+  "correccion": {
+    "motor": {
+      "title": "校正引擎",
+      "description": "在轉寫與貼上之間整理你的口述。關閉:保持轉寫原樣。僅規則:只套用即時的確定性修正。",
+      "options": {
+        "solo_reglas": "僅規則",
+        "desactivado": "關閉"
+      }
+    },
+    "modo": {
+      "title": "校正級別",
+      "description": "原樣只修正空格和句首大寫。整潔還會處理：符號（「百分之五」→ 5%）、口述漏掉的符號、信箱和路徑、重複（「然後 然後」），以及——如果你在下面保持開啟——把數字寫成阿拉伯數字。口述改口更正不受此影響：它有自己的開關。",
+      "options": {
+        "literal": "逐字",
+        "limpio": "清爽"
+      }
+    },
+    "numeros": {
+      "title": "數字寫成阿拉伯數字",
+      "description": "把你說出的數字變成阿拉伯數字：「一萬二千八百」→12800，「十七點三十」→17:30。它會轉換全部，而不只是技術數字，所以「那兩分鐘」會變成「那 2 分鐘」。想保留國字？關掉即可——「整理」的其餘功能照常。"
+    }
+  },
+  "pruebaMic": {
+    "title": "測試麥克風",
+    "description": "錄製 3 秒與模型將聽到的完全相同的聲音(16 kHz,無 VAD),回放並給出帶真實電平的判定。同時顯示 Default 背後實際是哪個裝置。",
+    "boton": "錄製 3 秒",
+    "grabando": "錄音中…",
+    "niveles": "RMS {{rms}} dBFS · pico {{pico}} dBFS",
+    "nivelClip": " · clip {{clip}}%",
+    "veredicto": {
+      "sin_senal": "無訊號 — 麥克風沒有傳來音訊",
+      "muy_bajo": "非常低 — 此電平下聽寫將失敗",
+      "bajo": "偏低 — 可以運作,但準確率受影響",
+      "sano": "電平正常",
+      "saturado": "削波 — 麥克風已飽和"
+    },
+    "dispositivo": "麥克風:{{nombre}}({{contexto}})",
+    "esElDefault": "系統預設",
+    "esElegido": "在設定中選擇"
+  },
+  "shell": {
+    "title": "視窗外觀",
+    "description": "選擇 Abrax 視窗的外形。經典是標準的設定視窗；Quiet 是首頁帶有球體的極簡深色面板。視窗邊框會在重新啟動 Abrax 後完全更新。",
+    "options": {
+      "classic": "經典",
+      "retro": "Retro",
+      "quiet": "Quiet",
+      "bancada": "Karting"
+    }
+  },
+  "bancada": {
+    "local": "Procesamiento local · 0% Nube",
+    "tray": "Enviar a la bandeja",
+    "min": "Minimizar",
+    "close": "Cerrar",
+    "nav": {
+      "tablero": "TABLERO",
+      "bitacora": "BITÁCORA",
+      "setup": "SETUP"
+    },
+    "pitRadio": "PIT RADIO",
+    "lcdReady": "En boxes · listo",
+    "lcdListening": "Escuchando…",
+    "launch": "TU LARGADA · {{atajo}}",
+    "start": "Arrancar dictado",
+    "stop": "Detener dictado",
+    "dictate": "Dictar",
+    "stopping": "Detener",
+    "ignitionStart": "START",
+    "ignitionStop": "STOP",
+    "appearance": "APARIENCIA",
+    "speakers": "Hablantes",
+    "systemAudio": "System audio",
+    "speakersAuto": "Auto",
+    "speakersN": "{{n}}",
+    "mergeInto": "Actually is…",
+    "resetSpeakers": "Reset",
+    "wpmUnit": "PAL/MIN",
+    "copied": "Copiado al portapapeles",
+    "on": "ON",
+    "off": "OFF",
+    "btn": {
+      "cancel": "Cancelar",
+      "copy": "Copiar",
+      "clear": "Limpiar",
+      "translate": "Traducir → EN",
+      "fillers": "Muletillas",
+      "log": "Bitácora"
+    },
+    "dial": {
+      "vad": "VAD",
+      "palette": "Paleta"
+    },
+    "lamp": {
+      "idle": "RALENTÍ",
+      "rec": "REC",
+      "transcribing": "TRANSCRIBIENDO",
+      "polishing": "PULIENDO",
+      "error": "FALLA"
+    },
+    "estado": {
+      "idle": "Ralentí",
+      "rec": "Grabando",
+      "transcribing": "Transcribiendo",
+      "polishing": "Puliendo",
+      "error": "Falla"
+    },
+    "speakerLabel": "說話者 {{n}}"
+  },
+  "retro": {
+    "menu": "Abrax 選單",
+    "titleMain": "ABRAX · 復古模式",
+    "titleSettings": "ABRAX · 快速設定",
+    "titleHistory": "ABRAX · 歷史記錄",
+    "fold": "收合",
+    "close": "關閉",
+    "marquee": "ABRAX ··· 開口說話 ··· 復古模式 ··· 100% 本機 ··· 西班牙語優先 ···",
+    "lamp": {
+      "model": "模型",
+      "local": "本機",
+      "filler": "贅字",
+      "dict": "字典",
+      "ptt": "PTT",
+      "vad": "VAD",
+      "translate": "翻譯",
+      "sphere": "球體"
+    },
+    "dictate": "聽寫",
+    "stop": "停止",
+    "settings": "快速設定",
+    "history": "歷史記錄",
+    "compiler": "提示詞編譯器",
+    "sections": "區段 ▾",
+    "slider": {
+      "buffer": "緩衝",
+      "volume": "音量",
+      "threshold": "閾值"
+    },
+    "emptyHistory": "尚無聽寫內容 — 按住快速鍵並開口說話。",
+    "copyHint": "雙擊即可複製",
+    "copy": "複製",
+    "save": "★ 儲存",
+    "delete": "刪除",
+    "compile": "✦ 編譯",
+    "count": "{{n}} 則聽寫 · 本機",
+    "copied": "已複製到剪貼簿",
+    "menuSections": "區段",
+    "menuWindows": "視窗",
+    "toClassic": "返回經典",
+    "theme": "主題",
+    "footer": "復古模式 — 一款 ABRAX 外觀 · 相同的透明視窗",
+    "tray": "Send to tray",
+    "minimize": "Minimize",
+    "localBadge": "本機處理 · 0% 雲端",
+    "infoPalette": "配色",
+    "infoLanguage": "語言",
+    "infoFillers": "填充詞",
+    "infoTranslate": "翻譯",
+    "infoAutoVoice": "自動語音",
+    "infoVisual": "視覺",
+    "words": "{{n}} 個字",
+    "actCopy": "複製",
+    "actClear": "清空",
+    "emptyTranscriptions": "尚無轉錄紀錄。",
+    "activeModel": "目前模型",
+    "localFull": "100% 本機處理 · 無雲端",
+    "backToClassic": "返回經典外觀"
+  },
   "logo": {
     "tagline": "« Di la <accent>palabra</accent>. »"
+  },
+  "escucha": {
+    "title": "VOX",
+    "openFile": "開啟檔案…",
+    "readClipboard": "朗讀剪貼簿",
+    "play": "朗讀",
+    "pause": "暫停",
+    "pauseHint": "在目前句子結束時暫停",
+    "resume": "繼續",
+    "stop": "停止",
+    "speed": "語速",
+    "voiceProse": "文字語音",
+    "voiceCode": "程式碼語音",
+    "noVoices": "找不到系統語音",
+    "empty": "開啟檔案或朗讀剪貼簿即可開始。",
+    "engineUnavailable": "系統語音引擎無法使用。",
+    "errorRead": "無法讀取內容。",
+    "errorSpeak": "無法播放朗讀。",
+    "escHint": "按 Esc 停止朗讀。",
+    "clipboard": "剪貼簿",
+    "clipboardEmpty": "剪貼簿中沒有文字。",
+    "fileFilter": "文字、Markdown 或程式碼",
+    "sentences": "{{total}} 個句子",
+    "verbosity": "符號",
+    "verbosityNatural": "自然（較少雜訊）",
+    "verbosityLiteral": "逐字（所有符號）"
+  },
+  "tts": {
+    "voiceLangEs": "西班牙文",
+    "voiceLangEn": "英文",
+    "voiceSettings": "語音設定",
+    "speed": "語速",
+    "pitch": "音調",
+    "pitchLow": "低",
+    "pitchNormal": "正常",
+    "pitchHigh": "高",
+    "pitchHint": "音調僅適用於線上語音。",
+    "vram": "({{gb}} GB VRAM)",
+    "descOnline": "微軟神經語音（Azure）。非本機：透過網際網路傳送文字。",
+    "onlineWarning": "需要連網 · 文字會離開本機",
+    "preparingVoice": "正在準備 {{engine}}… 首次需要幾秒鐘。",
+    "engineSystem": "系統語音",
+    "title": "語音引擎",
+    "localBadge": "100% 本機",
+    "detecting": "正在偵測你的裝置…",
+    "detected": "已偵測到你的裝置：",
+    "recommendation": "我們推薦 {{engine}}，可獲得最佳語音——本機運行、無需連線。",
+    "activeEngine": "使用中的引擎：{{engine}}",
+    "detectFailed": "無法偵測硬體，將改用系統語音。",
+    "useRecommended": "使用推薦引擎",
+    "chooseOther": "選擇其他引擎",
+    "redetect": "重新偵測",
+    "testVoice": "試聽語音",
+    "sampleTextEs": "Hola, soy la voz de Abrax. Di la palabra y yo la leo por ti.",
+    "sampleTextEn": "Hi, I'm the voice of Abrax. Say the word and I'll read it for you.",
+    "voice": "語音",
+    "noGpu": "無獨立 GPU",
+    "available": "可用",
+    "unavailable": "無法使用",
+    "needsGpu": "需要相容的 GPU（NVIDIA 或 Apple Silicon）",
+    "needsDownload": "需要下載引擎",
+    "recommended": "推薦",
+    "activeShort": "使用中",
+    "use": "使用",
+    "download": "啟用",
+    "downloading": "正在下載…",
+    "installed": "引擎已安裝",
+    "errorDownload": "無法下載引擎。",
+    "errorSetEngine": "無法切換引擎。",
+    "descSystem": "作業系統內建語音。隨時可用，無需下載。",
+    "descPiper": "輕量中文神經網路語音，可在 CPU 上運行。",
+    "descKokoro": "在 CPU 上運行的高品質神經網路語音。"
+  },
+  "carpetaModelos": {
+    "titulo": "Models folder",
+    "cambiar": "Change",
+    "discoConNombre": "{{nombre}} ({{punto}})",
+    "removible": "· removable",
+    "espacio": "{{libre}} GB free of {{total}} GB",
+    "volverPorDefecto": "Back to the original folder",
+    "avisoNoMueve": "New downloads will go to this folder. Already-downloaded models stay where they were; if they don't show up, go back to the original folder or download them again here.",
+    "moverPregunta": "要把已下載的模型（{{gb}} GB）移到新資料夾嗎？",
+    "moverAhora": "立即移動",
+    "soloNuevas": "僅新下載",
+    "cancelar": "取消",
+    "moviendo": "正在移動 {{archivo}}…",
+    "moverError": "移動未能完成：{{detalle}}。沒有任何遺失：未移動的內容仍在原本的資料夾中。"
+  },
+  "quiet": {
+    "nav": {
+      "listen": "聆聽",
+      "shortcuts": "快捷鍵",
+      "streaming": "串流",
+      "transcriptions": "Transcriptions",
+      "models": "Models",
+      "settings": "Settings",
+      "more": "更多"
+    },
+    "ready": "ABRAX is ready",
+    "holdHint": "說話時按住 <k>{{atajo}}</k>，說完再放開。",
+    "holdHintNoBinding": "在設定中指定一個快速鍵，說話時按住它。",
+    "start": "Start transcription",
+    "stop": "Stop",
+    "recent": "Recent transcriptions",
+    "empty": "No transcriptions yet. Hold the shortcut and say the word.",
+    "local": "Local processing",
+    "noCloud": "No cloud connection",
+    "min": "Minimize",
+    "max": "Maximize",
+    "close": "Close",
+    "tray": "Send to tray",
+    "dictando": "我在聽… 說完放開",
+    "panel": {
+      "modelo": "模型",
+      "sinModelo": "無模型",
+      "descargar": "下載",
+      "descargando": "正在下載 {{modelo}} · {{pct}}%",
+      "voz": "語音",
+      "hint": {
+        "fillers": "從口述內容中去掉口頭禪（「嗯」「那個」）。",
+        "autocorreccion": "說話時自我更正（「不對，抱歉」），文字直接出正確的版本。",
+        "emoji": "說「表情符號」再說名稱就會插入。查表實作，不用 AI。",
+        "systemAudio": "轉寫電腦裡正在播放的聲音，而不是麥克風。若目前的模型不合適，Abrax 會換成合適的。"
+      },
+      "sinModeloSistema": "下載其中一個模型才能擷取系統音訊。",
+      "elegirModelo": "選擇模型",
+      "usaraSistema": "未選擇。若開啟系統音訊，Abrax 會使用「{{modelo}}」。",
+      "descargado": "已下載"
+    },
+    "modo": {
+      "grupo": {
+        "gesto": "怎麼開始",
+        "microfono": "你的麥克風",
+        "texto": "文字會經過什麼處理",
+        "pegado": "寫到哪裡",
+        "salida": "從哪裡播放",
+        "fuente": "聲音來自哪裡",
+        "apariencia": "外觀"
+      },
+      "streaming": {
+        "que": "轉寫電腦裡正在播放的聲音——一堂課、一段影片、一場會議——而不是麥克風。",
+        "resto": "其餘的（自動更正、口頭禪、詞典、貼上方式）與「聽寫」相同：設定一次，兩邊都生效。"
+      },
+      "vox": {
+        "que": "在任何應用程式中朗讀你選取的文字。",
+        "como": "按 <k>{{atajo}}</k> 開始朗讀；再按一次停止。"
+      },
+      "escucha": {
+        "que": "你說話，文字就出現在你正在輸入的地方。一切都在本機完成，不會上傳到網路。"
+      }
+    }
+  },
+  "soundPicker": {
+    "custom": "自訂",
+    "preview": "試聽音效主題（開始與結束）"
+  },
+  "vox": {
+    "atajoHint": "使用 VOX：按 <k>{{atajo}}</k>，它就會朗讀你在任意應用程式中選取的文字。",
+    "atajoSinBinding": "使用 VOX：在設定中指定快速鍵，它就會朗讀你選取的文字。"
   }
 }

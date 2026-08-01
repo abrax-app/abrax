@@ -62,9 +62,11 @@ export const ClamshellMicrophoneSelector: React.FC<ClamshellMicrophoneSelectorPr
       await resetSetting("clamshell_microphone");
     };
 
+    // Ver MicrophoneSelector: "Default" es valor de backend, no texto de UI.
     const microphoneOptions = audioDevices.map((device) => ({
       value: device.name,
-      label: device.name,
+      label:
+        device.name === "Default" ? t("common.systemDefault") : device.name,
     }));
 
     return (

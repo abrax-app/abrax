@@ -1,5 +1,11 @@
 /* Colores ABRAX — paleta v1 (cian señal #2FD9FF · violeta ABRAX #8B5CF6 ·
-   magenta vivo #F23DC4 · tinta #05060F), kit de marca aprobado 2026-07-12 */
+   magenta vivo #F23DC4 · tinta #05060F), kit de marca aprobado 2026-07-12.
+
+   Paletas de UI (`ui_theme`): además del claro/oscuro ABRAX, cada paleta
+   alternativa se activa con `data-ui-theme` en la raíz y re-apunta estos
+   mismos tokens. IMPERIAL (oro #F2C41D · ámbar #E88A1A · rojo #E8442A sobre
+   tinta cálida #0A0906) es oscura por diseño: el JS fuerza `data-theme="dark"`
+   mientras está activa (ver lib/utils/theme.ts). */
 
 :root {
   /* Palette source of truth. Each themed color is defined once as a
@@ -22,6 +28,32 @@
   --color-background-ui: #8b5cf6;
   --color-text-stroke: #f6f6f6;
   --color-mid-gray: #808080;
+  /* Texto sobre superficies de acento (botón primario, toggle activo). */
+  --color-on-accent: #ffffff;
+
+  /* Lockup ABRAX: el degradado multicolor es exclusivo de la paleta ABRAX;
+     otras paletas lo aplanan a su acento (variante monocroma). */
+  --lockup-stop-a: #2fd9ff;
+  --lockup-stop-b: #8b5cf6;
+  --lockup-stop-c: #f23dc4;
+
+  /* Esfera del overlay: stops del degradado, núcleos de estado y escenario.
+     El motor (overlay/esfera/engine.ts) los lee por getComputedStyle al
+     montar; cualquier shell (clásico, Quiet…) que redefina estos
+     tokens re-tiñe la esfera sin tocar el motor. Valores = prototipo v2. */
+  --esfera-stop-a: #33bfff; /* exterior frío */
+  --esfera-stop-b: #7326d9; /* exterior cálido */
+  --esfera-stop-c: #ff40cc; /* anillo interior */
+  --esfera-blanco: #fff7fc; /* base clara de picos y núcleo */
+  --esfera-nucleo-grabando: #ffffff;
+  --esfera-nucleo-transcribiendo: #2fd9ff;
+  --esfera-nucleo-procesando: #8b5cf6;
+  --esfera-halo: #ff78c8; /* halo suave alrededor del núcleo */
+  --esfera-glow: #c8f0ff; /* brillo central */
+  --esfera-fondo: #05060f; /* núcleo opaco + borde del escenario */
+  --esfera-fondo-claro: #0a0c1c; /* centro del radial del escenario */
+  --esfera-palabra-tech: #7fe9ff; /* palabra/chispa de término técnico */
+  --esfera-palabra-suave: #bfe0ff; /* palabra/chispa de término llano */
 
   /* Active palette — defaults to light, follows the OS via the media query
      below, or is forced by `data-theme` (see App.css). */
@@ -40,4 +72,100 @@
     --color-logo-stroke: var(--dark-color-logo-stroke);
     --color-brand-cyan: var(--dark-color-brand-cyan);
   }
+}
+
+/* Explicit light/dark override driven by the `theme` setting via
+   `data-theme` en la raíz. Vive AQUÍ (no en App.css) para que las dos
+   ventanas que importan este archivo —la principal y el overlay— honren el
+   modo forzado; App.css no lo carga el overlay. Imperial fuerza `dark` (JS),
+   así que estos overrides también aplican bajo Imperial, y su bloque de
+   abajo (mayor especificidad + posterior) gana sobre los colores de marca. */
+:root[data-theme="light"] {
+  --color-text: var(--light-color-text);
+  --color-background: var(--light-color-background);
+  --color-logo-primary: var(--light-color-logo-primary);
+  --color-logo-stroke: var(--light-color-logo-stroke);
+  --color-brand-cyan: var(--light-color-brand-cyan);
+}
+
+:root[data-theme="dark"] {
+  --color-text: var(--dark-color-text);
+  --color-background: var(--dark-color-background);
+  --color-logo-primary: var(--dark-color-logo-primary);
+  --color-logo-stroke: var(--dark-color-logo-stroke);
+  --color-brand-cyan: var(--dark-color-brand-cyan);
+}
+
+/* ============================================================
+   Paleta IMPERIAL — oscura por diseño (data-theme="dark" viene forzado por
+   el JS, de ahí el segundo selector: su especificidad 0-3-0 gana a los
+   overrides [data-theme] de App.css). Solo re-apunta color; la geometría y
+   los sabores visuales propios de cada shell (grilla, brackets) NO viven aquí.
+   ============================================================ */
+:root[data-ui-theme="imperial"],
+:root[data-ui-theme="imperial"][data-theme="dark"] {
+  --color-text: #d9d2b8;
+  --color-background: #0a0906;
+  --color-logo-primary: #f2c41d; /* acento1 oro */
+  --color-logo-stroke: #fff6dc;
+  --color-brand-cyan: #f2c41d; /* el acento del tagline sigue al acento1 */
+  --color-background-ui: #f2c41d;
+  --color-mid-gray: #8c845f; /* suave */
+  --color-on-accent: #0a0906; /* tinta sobre oro: contraste legible */
+
+  --lockup-stop-a: #f2c41d;
+  --lockup-stop-b: #f2c41d;
+  --lockup-stop-c: #f2c41d;
+
+  --esfera-stop-a: #f2c41d; /* oro */
+  --esfera-stop-b: #e88a1a; /* ámbar */
+  --esfera-stop-c: #e8442a; /* rojo */
+  --esfera-blanco: #fff6dc; /* blanco cálido */
+  --esfera-nucleo-grabando: #e8442a; /* rojo imperial */
+  --esfera-nucleo-transcribiendo: #f2c41d;
+  --esfera-nucleo-procesando: #e88a1a;
+  --esfera-halo: #e8442a;
+  --esfera-glow: #fff6dc;
+  --esfera-fondo: #0a0906;
+  --esfera-fondo-claro: #171106;
+  --esfera-palabra-tech: #f2c41d; /* oro imperial para términos técnicos */
+  --esfera-palabra-suave: #ffe6b0; /* ámbar claro para términos llanos */
+}
+
+/* ============================================================
+   Paleta ESCUDERÍA — rojo de carreras sobre negro, blanca de texto. Oscura
+   por diseño (el JS fuerza data-theme="dark"; de ahí el segundo selector, cuya
+   especificidad 0-3-0 gana a los overrides [data-theme] de App.css). Acento de
+   marca rojo #EE3F2C; el negro se mantiene como base (near-black para sostener
+   la elevación de superficies del log). Solo re-apunta color; la geometría de
+   cada shell NO vive aquí.
+   ============================================================ */
+:root[data-ui-theme="escuderia"],
+:root[data-ui-theme="escuderia"][data-theme="dark"] {
+  --color-text: #f4f5f7; /* blanco frío */
+  --color-background: #0a0a0c; /* negro (near-black: deja respirar el log) */
+  --color-logo-primary: #ee3f2c; /* rojo de marca */
+  --color-logo-stroke: #f4f5f7;
+  --color-brand-cyan: #ee3f2c; /* el acento del tagline sigue al acento1 */
+  --color-background-ui: #ee3f2c;
+  --color-mid-gray: #8a8a92; /* gris neutro */
+  --color-on-accent: #ffffff; /* blanco sobre el rojo (como el botón del diseño) */
+
+  --lockup-stop-a: #ff6a4a;
+  --lockup-stop-b: #ee3f2c;
+  --lockup-stop-c: #c0271a;
+
+  --esfera-stop-a: #ff7a5c; /* exterior frío → coral claro */
+  --esfera-stop-b: #ee3f2c; /* exterior cálido → rojo base */
+  --esfera-stop-c: #a01c10; /* anillo interior → rojo profundo */
+  --esfera-blanco: #fff5f3; /* blanco cálido */
+  --esfera-nucleo-grabando: #ff4a36; /* rojo caliente */
+  --esfera-nucleo-transcribiendo: #ff9d7a; /* coral claro */
+  --esfera-nucleo-procesando: #e8552e; /* rojo-naranja */
+  --esfera-halo: #ff6a4a;
+  --esfera-glow: #ffd9cc; /* brillo cálido */
+  --esfera-fondo: #0a0a0c;
+  --esfera-fondo-claro: #1a0b08; /* rojo muy oscuro en el centro del radial */
+  --esfera-palabra-tech: #ff8a5a; /* coral para términos técnicos */
+  --esfera-palabra-suave: #ffcbb8; /* durazno claro para términos llanos */
 }

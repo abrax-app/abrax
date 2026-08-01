@@ -3,7 +3,6 @@ import { subscribeWithSelector } from "zustand/middleware";
 import { produce } from "immer";
 import { listen } from "@tauri-apps/api/event";
 import { commands, type ModelInfo } from "@/bindings";
-import { toast } from "sonner";
 
 interface DownloadProgress {
   model_id: string;
@@ -28,6 +27,9 @@ interface ModelsStore {
   extractingModels: Record<string, true>;
   downloadProgress: Record<string, DownloadProgress>;
   downloadStats: Record<string, DownloadStats>;
+  /** Último error de descarga/extracción por modelo (F3): la card lo muestra
+   * con su botón Reintentar; se limpia al reintentar la descarga. */
+  downloadErrors: Record<string, string>;
   loading: boolean;
   error: string | null;
   initialized: boolean;
@@ -51,6 +53,8 @@ interface ModelsStore {
   // Internal setters
   setModels: (models: ModelInfo[]) => void;
   setCurrentModel: (modelId: string) => void;
+  /** Re-lee del backend cuál es el modelo activo. Ver su implementación. */
+  refreshCurrentModel: () => Promise<void>;
   setError: (error: string | null) => void;
   setLoading: (loading: boolean) => void;
 }
@@ -64,6 +68,7 @@ export const useModelStore = create<ModelsStore>()(
     extractingModels: {},
     downloadProgress: {},
     downloadStats: {},
+    downloadErrors: {},
     loading: true,
     error: null,
     initialized: false,
@@ -72,6 +77,25 @@ export const useModelStore = create<ModelsStore>()(
     // Internal setters
     setModels: (models) => set({ models }),
     setCurrentModel: (currentModel) => set({ currentModel }),
+
+    /**
+     * Vuelve a preguntar cuál es el modelo activo.
+     *
+     * `currentModel` solo se movía cuando el usuario elegía un modelo desde
+     * esta tienda, y el backend lo cambia por su cuenta en al menos un caso:
+     * «Audio del sistema» pone uno apto al encender y restaura el anterior al
+     * apagar. Sin volver a leer, la app se queda enseñando el modelo viejo —
+     * medido el 31/07: el backend restauró Canary y las dos pantallas seguían
+     * diciendo Nemotron cinco segundos después.
+     */
+    refreshCurrentModel: async () => {
+      try {
+        const result = await commands.getCurrentModel();
+        if (result.status === "ok") set({ currentModel: result.data });
+      } catch (err) {
+        console.error("Failed to refresh current model:", err);
+      }
+    },
     setError: (error) => set({ error }),
     setLoading: (loading) => set({ loading }),
 
@@ -160,10 +184,29 @@ export const useModelStore = create<ModelsStore>()(
     },
 
     downloadModel: async (modelId: string) => {
+      // UNA descarga por modelo. Dos a la vez del MISMO archivo no se pisan
+      // sin más: la segunda choca con el candado que puso la primera en la
+      // caché de Hugging Face y muere con
+      //
+      //   Hugging Face download failed: Lock acquisition failed: ...blobs\<sha>.lock
+      //
+      // que es un mensaje que no dice nada y parece que el modelo está roto.
+      // Peor: el `catch` de abajo limpia `downloadingModels` al fallar la
+      // SEGUNDA, así que la barra de progreso de la primera —que sigue viva y
+      // bajando gigas— desaparece de la pantalla.
+      //
+      // Pasó el 31/07 con Cohere (1,77 GB): dos descargas separadas por UN
+      // segundo en el log, la segunda con el error, y 1,7 GB bajados que se
+      // quedaron sin terminar de instalar.
+      //
+      // No se avisa de nada: pedir dos veces lo que ya está en marcha no es un
+      // error del usuario, es la misma petición.
+      if (get().downloadingModels[modelId]) return true;
       try {
         set({ error: null });
         set(
           produce((state) => {
+            delete state.downloadErrors[modelId];
             state.downloadingModels[modelId] = true;
             state.downloadProgress[modelId] = {
               model_id: modelId,
@@ -343,9 +386,11 @@ export const useModelStore = create<ModelsStore>()(
               delete state.downloadProgress[modelId];
               delete state.downloadStats[modelId];
               state.error = error;
+              // La card del modelo muestra causa + Reintentar (F3); el toast
+              // lo emite el canal único de alertas (App.tsx).
+              state.downloadErrors[modelId] = error;
             }),
           );
-          toast.error(error);
         },
       );
 
@@ -394,6 +439,7 @@ export const useModelStore = create<ModelsStore>()(
             produce((state) => {
               delete state.extractingModels[modelId];
               state.error = `Failed to extract model: ${event.payload.error}`;
+              state.downloadErrors[modelId] = event.payload.error;
             }),
           );
         },

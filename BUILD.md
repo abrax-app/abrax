@@ -1,6 +1,6 @@
 # Build Instructions
 
-This guide covers how to set up the development environment and build Handy from source across different platforms.
+This guide covers how to set up the development environment and build Abrax from source across different platforms.
 
 ## Prerequisites
 
@@ -91,8 +91,8 @@ ORT_LIB_LOCATION=$(brew --prefix onnxruntime)/lib ORT_PREFER_DYNAMIC_LINK=1 bun 
 ### 1. Clone the Repository
 
 ```bash
-git clone git@github.com:cjpais/Handy.git
-cd Handy
+git clone git@github.com:abrax-app/abrax.git
+cd abrax
 ```
 
 ### 2. Install Dependencies
@@ -115,27 +115,51 @@ bun run tauri build
 
 This compiles a release binary and generates platform-specific bundles (deb, rpm, AppImage on Linux; dmg on macOS; msi on Windows).
 
+## Voice engines: the `advanced-tts` feature
+
+By default Abrax builds with only the **System** text-to-speech voices
+(Windows SAPI, macOS AVSpeech, Linux speech-dispatcher). This keeps the
+default build lightweight and fully offline out of the box — no `wgpu`, no
+extra runtimes.
+
+The optional `advanced-tts` Cargo feature adds the local neural engines
+(**Piper**, **Kokoro**) and an opt-in **online** engine (edge-tts), plus
+GPU/hardware detection (via `wgpu`) that recommends the best engine the
+machine can run. Enable it for development or a full-featured demo:
+
+```bash
+bun run tauri dev --features advanced-tts
+bun run tauri build --features advanced-tts
+```
+
+> [!NOTE]
+> Without the feature, the "Motor de voz" panel in **Escucha** shows only the
+> System voices (and `detect_hardware` returns an empty result) — this is the
+> expected default, not a regression. Enabling `advanced-tts` compiles `wgpu`
+> (a heavier first build), and the neural engines fetch their runtimes on
+> first use.
+
 ## Linux Install (from source)
 
-The raw binary (`src-tauri/target/release/handy`) cannot run standalone — it needs Tauri resource files (tray icons, sounds, VAD model) to be co-located at the expected path.
+The raw binary (`src-tauri/target/release/abrax`) cannot run standalone — it needs Tauri resource files (tray icons, sounds, VAD model) to be co-located at the expected path.
 
 **Install from the deb bundle** (works on any Linux distro):
 
 ```bash
 cd /tmp
-ar x /path/to/Handy/src-tauri/target/release/bundle/deb/Handy_*_amd64.deb data.tar.gz
+ar x /path/to/abrax/src-tauri/target/release/bundle/deb/Abrax_*_amd64.deb data.tar.gz
 tar xzf data.tar.gz
-sudo cp usr/bin/handy /usr/bin/
+sudo cp usr/bin/abrax /usr/bin/
 sudo cp -a usr/lib/. /usr/lib/
 sudo cp -r usr/share/icons/hicolor/* /usr/share/icons/hicolor/
-sudo cp usr/share/applications/Handy.desktop /usr/share/applications/
+sudo cp usr/share/applications/Abrax.desktop /usr/share/applications/
 sudo ldconfig
 ```
 
 After subsequent rebuilds, copy the binary and any refreshed runtime libraries:
 
 ```bash
-sudo cp src-tauri/target/release/handy /usr/bin/
+sudo cp src-tauri/target/release/abrax /usr/bin/
 sudo cp -a src-tauri/transcribe-libs/. /usr/lib/
 sudo ldconfig
 ```
@@ -151,7 +175,7 @@ Resources only need re-copying if they change upstream (new icons, sounds, model
 The error from Tauri:
 
 ```
-Bundling Handy_*_amd64.AppImage
+Bundling Abrax_*_amd64.AppImage
 failed to bundle project `failed to run linuxdeploy`
 ```
 
@@ -160,7 +184,7 @@ Tauri swallows the real linuxdeploy error. To see it, run linuxdeploy manually:
 ```bash
 cd src-tauri/target/release/bundle/appimage
 ~/.cache/tauri/linuxdeploy-x86_64.AppImage --appimage-extract-and-run \
-  --appdir Handy.AppDir --plugin gtk --output appimage
+  --appdir Abrax.AppDir --plugin gtk --output appimage
 ```
 
 **Workaround:** The binary, deb, and rpm bundles all build fine — only the AppImage step fails. To skip it:
@@ -198,7 +222,7 @@ sub-project (`...\vulkan-shaders-gen-prefix\src\vulkan-shaders-gen-build\...`),
 which alone adds ~140 characters on top of Cargo's already-deep
 `target\release\build\<crate>-<hash>\out\build\...` directory. If your checkout
 isn't very shallow, the build overflows the limit. (CI doesn't hit this because
-it builds from a short root such as `D:\a\Handy`.)
+it builds from a short root such as `D:\a\abrax`.)
 
 **You need BOTH of the following fixes.** Different parts of the toolchain hit
 the limit in different ways: MSBuild's native `FileTracker` (`tracker.exe`)
@@ -221,7 +245,7 @@ git config --global core.longpaths true
 $env:CARGO_TARGET_DIR = "C:\h"
 
 # Or persist it for all future terminals (note: redirects ALL your
-# Rust projects' build output, not just Handy):
+# Rust projects' build output, not just Abrax):
 [Environment]::SetEnvironmentVariable('CARGO_TARGET_DIR', 'C:\h', 'User')
 ```
 
@@ -232,24 +256,12 @@ Open a **new terminal** afterward — both the registry flag and the persisted
 environment variable are only picked up by freshly started processes. Then
 `bun run tauri dev` and `bun run tauri build` work normally.
 
-### Windows `tauri build` fails at bundling with `program not found`
+### Code signing
 
-If the build compiles all the way to `Built application at: ...\handy.exe` and
-then fails with:
-
-```
-Signing C:\...\handy.exe with a custom signing command
-failed to bundle project `program not found`
-```
-
-that's the code-signing step: `tauri.conf.json` configures a custom
-`signCommand` (`trusted-signing-cli`, Azure Trusted Signing) that only exists
-in the release CI environment. Local development doesn't need it:
+Local builds are unsigned by design — `tauri.conf.json` does not configure a
+`signCommand`. Release signing (and its secrets) is a CI concern; see
+[docs/RELEASING.md](docs/RELEASING.md). To skip bundling entirely:
 
 ```powershell
-# Development (no bundling/signing at all):
-bun run tauri dev
-
-# Or compile a release binary without the installer/signing step:
 bun run tauri build --no-bundle
 ```

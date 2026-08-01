@@ -1,6 +1,13 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
-import { Cog, FlaskConical, History, Info, Sparkles, Cpu } from "lucide-react";
+import {
+  AudioLines,
+  Cog,
+  FlaskConical,
+  History,
+  Info,
+  Cpu,
+} from "lucide-react";
 import AbraxLogo from "./icons/AbraxLogo";
 import AbraxGlyph from "./icons/AbraxGlyph";
 import { useSettings } from "../hooks/useSettings";
@@ -10,8 +17,9 @@ import {
   HistorySettings,
   DebugSettings,
   AboutSettings,
-  PostProcessingSettings,
   ModelsSettings,
+  // [ESCUCHA]
+  EscuchaSettings,
 } from "./settings";
 
 export type SidebarSection = keyof typeof SECTIONS_CONFIG;
@@ -56,11 +64,12 @@ export const SECTIONS_CONFIG = {
     component: HistorySettings,
     enabled: () => true,
   },
-  postprocessing: {
-    labelKey: "sidebar.postProcessing",
-    icon: Sparkles,
-    component: PostProcessingSettings,
-    enabled: (settings) => settings?.post_process_enabled ?? false,
+  // [ESCUCHA]
+  escucha: {
+    labelKey: "sidebar.escucha",
+    icon: AudioLines,
+    component: EscuchaSettings,
+    enabled: () => true,
   },
   debug: {
     labelKey: "sidebar.debug",
@@ -94,7 +103,12 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
   return (
     <div className="flex flex-col w-40 h-full border-e border-mid-gray/20 items-center px-2">
-      <AbraxLogo variant="stacked" width={118} withTagline className="mt-4 mb-3" />
+      <AbraxLogo
+        variant="stacked"
+        width={118}
+        withTagline
+        className="mt-4 mb-3"
+      />
       <div className="flex flex-col w-full items-center gap-1 pt-2 border-t border-mid-gray/20">
         {availableSections.map((section) => {
           const Icon = section.icon;

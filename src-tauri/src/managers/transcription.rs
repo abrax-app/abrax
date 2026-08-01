@@ -53,6 +53,47 @@ pub struct StreamTextEvent {
     pub tentative: String,
 }
 
+/// Words that have just been finalized in the transcription, for the Esfera
+/// overlay's "palabras" mode: each one flies to the sphere, is read and dissolves
+/// into the membrane. Emitted only while the user has the words mode active
+/// (`overlay_style == Esfera && esfera_modo == Palabras`), so the sphere never
+/// receives text it will not use. Carries a batch so a segment's words arrive in
+/// one event; the frontend paces their arrival.
+#[derive(Clone, Debug, Serialize, Deserialize, Type, tauri_specta::Event)]
+pub struct TranscriptWordsEvent {
+    pub words: Vec<String>,
+}
+
+/// Espejo del ritmo de inyección del overlay (`WORD_RELEASE_MS` en
+/// EsferaStage.tsx): la cola del frontend entrega una palabra a la esfera cada
+/// tanto. Si aquel valor cambia, este debe cambiar con él.
+const ESFERA_WORD_DRAIN_MS: u64 = 130;
+/// Vida visible de una palabra tras inyectarse: vuelo (700) + lectura (380) +
+/// disolución (260), ver las constantes WORD_* de engine.ts.
+const ESFERA_WORD_FLIGHT_MS: u64 = 1340;
+/// Tope del linger del overlay tras el paste: ni una cola enorme retiene la
+/// esfera en pantalla más que esto.
+const ESFERA_LINGER_CAP_MS: u64 = 3500;
+
+/// Instante en que la cola del overlay quedará drenada si a `prev` (drenado
+/// pendiente, si sigue vigente) se le apila un batch de `batch` palabras.
+fn esfera_drained_after(prev: Option<Instant>, now: Instant, batch: usize) -> Instant {
+    let base = prev.filter(|t| *t > now).unwrap_or(now);
+    base + Duration::from_millis(ESFERA_WORD_DRAIN_MS * batch as u64)
+}
+
+/// Cuánto retener el overlay visible para que las palabras aún en cola o en
+/// vuelo completen su ciclo. Cero sin palabras pendientes o con el drenado ya
+/// vencido; nunca más que el tope.
+fn esfera_linger_from(drained_at: Option<Instant>, now: Instant) -> Duration {
+    let Some(t) = drained_at else {
+        return Duration::ZERO;
+    };
+    (t + Duration::from_millis(ESFERA_WORD_FLIGHT_MS))
+        .saturating_duration_since(now)
+        .min(Duration::from_millis(ESFERA_LINGER_CAP_MS))
+}
+
 /// Phase of the streaming overlay card, emitted to drive its UI state.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize, Type)]
 #[serde(rename_all = "lowercase")]
@@ -156,6 +197,34 @@ impl StreamRouter {
     }
 }
 
+/// Words in `committed` that are safe to hand to the Esfera overlay given that
+/// `already_emitted` of them have already been sent. The last word is held back
+/// unless `committed` ends on whitespace, because a streaming model can still
+/// append to it (the "flicker-free" prefix grows by appending, so `func` may
+/// become `function` before a space lands). Returns the new words and the new
+/// emitted count. `finalize` releases the held-back last word once the stream is
+/// done growing.
+fn new_committed_words(
+    committed: &str,
+    already_emitted: usize,
+    finalize: bool,
+) -> (Vec<String>, usize) {
+    let words: Vec<&str> = committed.split_whitespace().collect();
+    let safe = if finalize || committed.ends_with(char::is_whitespace) {
+        words.len()
+    } else {
+        words.len().saturating_sub(1)
+    };
+    if safe <= already_emitted {
+        return (Vec::new(), already_emitted);
+    }
+    let fresh = words[already_emitted..safe]
+        .iter()
+        .map(|w| w.to_string())
+        .collect();
+    (fresh, safe)
+}
+
 enum LoadedEngine {
     /// Whisper-family models (whisper, breeze-asr, custom .bin/.gguf) via
     /// transcribe-cpp. Holds the live `Session`, which keeps its `Model` alive
@@ -257,6 +326,25 @@ pub struct TranscriptionManager {
     /// `is_model_loaded()` consults this so the model still reports "loaded"
     /// while the worker holds it.
     active_engine_lease: Arc<AtomicU64>,
+    /// Instante en que la cola de palabras del overlay (modo Esfera «palabras»)
+    /// terminará de drenar, modelando el ritmo del frontend. Lo consume el hide
+    /// de éxito para retener el overlay lo justo y que las últimas palabras
+    /// completen su ciclo antes del fade.
+    esfera_words_drained_at: Arc<Mutex<Option<Instant>>>,
+    /// Timestamps por palabra del ÚLTIMO transcribe() (motor whisper /
+    /// transcribe-cpp), para la diarización offline. Canal lateral: se puebla en
+    /// el arm TranscribeCpp y lo consume la ruta de dictado (actions.rs) tras
+    /// transcribir. `None` si el motor no da tiempos por palabra.
+    last_words: Arc<Mutex<Option<Vec<TimedWord>>>>,
+}
+
+/// Una palabra transcrita con sus tiempos, en ms sobre el MISMO buffer de audio
+/// que ve el modelo. Base para alinear texto ↔ hablante en la diarización.
+#[derive(Clone, Debug)]
+pub struct TimedWord {
+    pub text: String,
+    pub t0_ms: i64,
+    pub t1_ms: i64,
 }
 
 impl TranscriptionManager {
@@ -277,6 +365,8 @@ impl TranscriptionManager {
             next_stream_worker_id: Arc::new(AtomicU64::new(1)),
             active_stream_worker: Arc::new(AtomicU64::new(0)),
             active_engine_lease: Arc::new(AtomicU64::new(0)),
+            esfera_words_drained_at: Arc::new(Mutex::new(None)),
+            last_words: Arc::new(Mutex::new(None)),
         };
 
         // Start the idle watcher
@@ -494,6 +584,11 @@ impl TranscriptionManager {
                     error: Some(error_msg.to_string()),
                 },
             );
+            crate::user_alerts::alert(
+                &self.app_handle,
+                crate::user_alerts::AlertKind::ModelLoad,
+                Some(format!("{}: {}", model_info.name, error_msg)),
+            );
             return Err(anyhow::anyhow!(error_msg));
         }
 
@@ -522,6 +617,11 @@ impl TranscriptionManager {
                     model_name: Some(model_info.name.clone()),
                     error: Some(error_msg.to_string()),
                 },
+            );
+            crate::user_alerts::alert(
+                &self.app_handle,
+                crate::user_alerts::AlertKind::ModelLoad,
+                Some(format!("{}: {}", model_info.name, error_msg)),
             );
         };
 
@@ -717,6 +817,21 @@ impl TranscriptionManager {
             let settings = get_settings(&self_clone.app_handle);
             if let Err(e) = self_clone.load_model(&settings.selected_model) {
                 error!("Failed to load model: {}", e);
+                // load_model alerta en sus fallos internos, pero los errores
+                // previos (modelo inexistente/no seleccionado) salían solo por
+                // el log — el usuario dictaba contra una app muda.
+                if settings.selected_model.is_empty()
+                    || self_clone
+                        .model_manager
+                        .get_model_info(&settings.selected_model)
+                        .is_none()
+                {
+                    crate::user_alerts::alert(
+                        &self_clone.app_handle,
+                        crate::user_alerts::AlertKind::ModelLoad,
+                        Some(e.to_string()),
+                    );
+                }
             }
             let mut is_loading = self_clone.is_loading.lock().unwrap();
             *is_loading = false;
@@ -903,6 +1018,19 @@ impl TranscriptionManager {
         // the engine can be moved into return_engine().
         let mut finalize_reply: Option<mpsc::Sender<Option<String>>> = None;
         let mut finalize_result: Option<Option<String>> = None;
+        // Esfera "palabras" mode: feed each committed word to the sphere as it is
+        // transcribed. Read the flag once here (not per feed) so the settings
+        // parse never lands on the hot streaming path.
+        let emit_words = settings.overlay_style == crate::settings::OverlayStyle::Esfera
+            && settings.esfera_modo == crate::settings::EsferaModo::Palabras;
+        // Observability: without this line a closed gate is indistinguishable
+        // from a frontend that dropped the events (the perf counter only tracks
+        // StreamTextEvent, never TranscriptWordsEvent).
+        debug!(
+            "esfera words: emission {} for this streaming session",
+            if emit_words { "ACTIVE" } else { "inactive" }
+        );
+        let mut emitted_words: usize = 0;
         let stream_started = 'stream: {
             let session = match &mut engine {
                 LoadedEngine::TranscribeCpp(s) => s,
@@ -951,6 +1079,15 @@ impl TranscriptionManager {
                                     let text = stream.text();
                                     perf.record_emit();
                                     self.emit_stream_text(&text.committed, &text.tentative);
+                                    if emit_words && update.committed_changed {
+                                        let (fresh, next) = new_committed_words(
+                                            &text.committed,
+                                            emitted_words,
+                                            false,
+                                        );
+                                        emitted_words = next;
+                                        self.emit_transcript_words(fresh);
+                                    }
                                 }
                                 perf.maybe_log();
                             }
@@ -973,7 +1110,20 @@ impl TranscriptionManager {
                                     update.audio_committed_ms,
                                     update.buffered_ms,
                                 );
-                                Some(stream.text().display())
+                                let final_text = stream.text();
+                                if emit_words {
+                                    // Release the word(s) held back while the
+                                    // stream could still grow them. This is the
+                                    // last read of `emitted_words`, so the new
+                                    // count is not stored back.
+                                    let (fresh, _) = new_committed_words(
+                                        &final_text.committed,
+                                        emitted_words,
+                                        true,
+                                    );
+                                    self.emit_transcript_words(fresh);
+                                }
+                                Some(final_text.display())
                             }
                             Err(e) => {
                                 perf.record_compute(finalize_start.elapsed());
@@ -1099,7 +1249,47 @@ impl TranscriptionManager {
         .emit(&self.app_handle);
     }
 
-    pub fn transcribe(&self, audio: Vec<f32>) -> Result<String> {
+    /// Whether the Esfera overlay is in "palabras" mode right now, i.e. the
+    /// sphere wants each transcribed word. Read once per dictation (not per
+    /// frame) so a JSON settings parse never lands on the hot streaming path.
+    pub fn esfera_words_enabled(&self) -> bool {
+        let settings = get_settings(&self.app_handle);
+        settings.overlay_style == crate::settings::OverlayStyle::Esfera
+            && settings.esfera_modo == crate::settings::EsferaModo::Palabras
+    }
+
+    /// Emit a batch of freshly-transcribed words to the Esfera overlay. No-op on
+    /// an empty batch so callers can pass a diff without guarding.
+    pub fn emit_transcript_words(&self, words: Vec<String>) {
+        if words.is_empty() {
+            return;
+        }
+        let batch = words.len();
+        let _ = TranscriptWordsEvent { words }.emit(&self.app_handle);
+        // Privacy (S3): word COUNT only, never the words themselves.
+        debug!("esfera words: emitted a batch of {} word(s)", batch);
+        // Modela la cola del overlay (una palabra cada ESFERA_WORD_DRAIN_MS):
+        // los batches se apilan sobre el drenado pendiente, nunca en paralelo.
+        let mut drained = self.esfera_words_drained_at.lock().unwrap();
+        *drained = Some(esfera_drained_after(*drained, Instant::now(), batch));
+    }
+
+    /// Cuánto retener el overlay visible tras el paste para que las palabras
+    /// aún en cola o en vuelo completen su ciclo. Consumible: una lectura por
+    /// dictado (el hide de éxito); las rutas de cancelación no lo leen y un
+    /// valor viejo expira solo (un instante pasado da linger cero).
+    pub fn esfera_words_linger(&self) -> Duration {
+        let drained = self.esfera_words_drained_at.lock().unwrap().take();
+        esfera_linger_from(drained, Instant::now())
+    }
+
+    /// Consume los timestamps por palabra del último `transcribe()` (canal
+    /// lateral para la diarización). Se vacía al leerlos.
+    pub fn take_last_words(&self) -> Option<Vec<TimedWord>> {
+        self.last_words.lock().ok().and_then(|mut g| g.take())
+    }
+
+    pub fn transcribe(&self, mut audio: Vec<f32>) -> Result<String> {
         #[cfg(debug_assertions)]
         if std::env::var("HANDY_FORCE_TRANSCRIPTION_FAILURE").is_ok() {
             return Err(anyhow::anyhow!(
@@ -1110,6 +1300,11 @@ impl TranscriptionManager {
         // Update last activity timestamp
         self.touch_activity();
 
+        // Limpia los tiempos del dictado anterior (canal lateral de diarización).
+        if let Ok(mut g) = self.last_words.lock() {
+            *g = None;
+        }
+
         let st = std::time::Instant::now();
         let audio_len = audio.len();
 
@@ -1119,6 +1314,18 @@ impl TranscriptionManager {
             debug!("Empty audio vector");
             self.maybe_unload_immediately("empty audio");
             return Ok(String::new());
+        }
+
+        // AGC: con micrófonos que entregan poco nivel (las apps de llamadas lo
+        // compensan con su propio AGC, nosotros recibimos la señal cruda) el
+        // motor degenera en bucles de repetición. Solo actúa bajo la zona sana
+        // del veredicto del micrófono; con nivel sano es un no-op.
+        let ganancia = crate::audio_toolkit::normalizar_nivel_para_stt(&mut audio);
+        if ganancia > 1.0 {
+            info!(
+                "Nivel de entrada bajo: AGC aplicó {:.1}x antes de transcribir",
+                ganancia
+            );
         }
 
         // Check if model is loaded, if not try to load it
@@ -1247,6 +1454,10 @@ impl TranscriptionManager {
                             language: run_plan.language,
                             target_language: run_plan.target_language,
                             family,
+                            // NO forzamos granularidad: el default (Auto) pide los
+                            // tiempos que el modelo soporte (algunos backends rechazan
+                            // Word con "unsupported timestamp granularity"). Se
+                            // capturan abajo para la diarización offline.
                             ..Default::default()
                         };
 
@@ -1259,7 +1470,36 @@ impl TranscriptionManager {
 
                         session
                             .run(&audio, &run_options)
-                            .map(|t| t.text)
+                            .map(|t| {
+                                // Canal lateral para diarización: usa PALABRAS si el
+                                // modelo las dio; si no, cae a SEGMENTOS (soportados
+                                // por casi todos). Ambos traen t0_ms/t1_ms + texto.
+                                let timed: Vec<TimedWord> = if !t.words.is_empty() {
+                                    t.words
+                                        .iter()
+                                        .map(|w| TimedWord {
+                                            text: w.text.clone(),
+                                            t0_ms: w.t0_ms,
+                                            t1_ms: w.t1_ms,
+                                        })
+                                        .collect()
+                                } else {
+                                    t.segments
+                                        .iter()
+                                        .map(|s| TimedWord {
+                                            text: s.text.clone(),
+                                            t0_ms: s.t0_ms,
+                                            t1_ms: s.t1_ms,
+                                        })
+                                        .collect()
+                                };
+                                if !timed.is_empty() {
+                                    if let Ok(mut g) = self.last_words.lock() {
+                                        *g = Some(timed);
+                                    }
+                                }
+                                t.text
+                            })
                             .map_err(|e| {
                                 anyhow::anyhow!("transcribe-cpp transcription failed: {}", e)
                             })
@@ -1613,21 +1853,82 @@ fn post_process_transcription_text(
     settings: &AppSettings,
     custom_words_already_prompted: bool,
 ) -> String {
-    let corrected = if !settings.custom_words.is_empty() && !custom_words_already_prompted {
-        apply_custom_words(
+    // 0. Salida degenerada del motor (bucles de repetición con audio casi
+    //    inaudible): se recorta ANTES de cualquier otro paso — jamás debe
+    //    llegar al editor del usuario una ristra de «qqqq…».
+    let raw = crate::audio_toolkit::recortar_repeticion_degenerada(&raw);
+
+    // 0.5 Autocorrección hablada (encendida de fábrica, con interruptor): si el hablante
+    //     se corrigió a sí mismo en voz alta, el texto sale ya corregido.
+    //     Va ANTES de las capas difusas a propósito: `apply_custom_words`
+    //     corrige por Levenshtein, así que un usuario con la palabra propia
+    //     «Diego» convertiría la señal «digo» en «Diego» y la corrección se
+    //     perdería. Aquí el texto todavía es lo que se dijo.
+    let raw = if settings.autocorreccion_activa {
+        crate::audio_toolkit::aplicar_autocorreccion(
             &raw,
-            &settings.custom_words,
-            settings.word_correction_threshold,
+            &settings.autocorreccion_senales_sustitucion,
         )
     } else {
         raw
     };
 
-    filter_transcription_output(
-        &corrected,
+    // 0.6 Emoji dictado: «emoji cara feliz» → 🙂. Va ANTES de las capas difusas
+    //     por lo mismo que la autocorrección: `apply_custom_words` corrige por
+    //     Levenshtein y podría deformar el nombre del emoji («fuego» → una
+    //     palabra propia parecida) antes de que la tabla lo reconozca. Aquí el
+    //     texto todavía es lo que se dijo.
+    let raw = if settings.emoji_dictado {
+        crate::correccion::emoji::aplicar_emoji_dictado(&raw)
+    } else {
+        raw
+    };
+
+    // 1. Reemplazos exactos del Diccionario Vivo (F5.1): intención explícita
+    //    del usuario, van primero para que el fuzzy no toque sus tokens.
+    let replacement_pairs: Vec<(String, String)> = settings
+        .custom_replacements
+        .iter()
+        .map(|r| (r.from.clone(), r.to.clone()))
+        .collect();
+    let replaced = crate::audio_toolkit::apply_custom_replacements(&raw, &replacement_pairs);
+
+    // 2. Corrección difusa de custom words (salvo que ya viajaran como prompt).
+    let corrected = if !settings.custom_words.is_empty() && !custom_words_already_prompted {
+        apply_custom_words(
+            &replaced,
+            &settings.custom_words,
+            settings.word_correction_threshold,
+        )
+    } else {
+        replaced
+    };
+
+    // 3. Diccionario del proyecto (F5.3/F5.4): join multi-token exacto +
+    //    fuzzy protegido por stoplist. No-op si está apagado.
+    let with_dictionary = crate::dictionary::apply_active(&corrected, settings);
+
+    // 4. Muletillas, tartamudeos y espacios.
+    let filtered = filter_transcription_output(
+        &with_dictionary,
         &settings.app_language,
         &settings.custom_filler_words,
-    )
+    );
+
+    // 5. Memoria de correcciones — al FINAL a propósito: los pares se
+    //    aprenden diffeando el texto FINAL del Historial, así que deben
+    //    aplicarse en ese mismo espacio (y así corrigen también los errores
+    //    de las capas difusas anteriores) — hallado en revisión.
+    if settings.memoria_activa && !settings.memoria_correcciones.is_empty() {
+        let pares: Vec<(String, String)> = settings
+            .memoria_correcciones
+            .iter()
+            .map(|p| (p.de.clone(), p.a.clone()))
+            .collect();
+        crate::audio_toolkit::apply_exact_phrase_replacements(&filtered, &pares)
+    } else {
+        filtered
+    }
 }
 
 /// Decide a transcribe-cpp run's task + translation target from settings.
@@ -1894,12 +2195,122 @@ pub fn get_available_accelerators() -> AvailableAccelerators {
     }
 }
 
+impl Drop for TranscriptionManager {
+    fn drop(&mut self) {
+        // Skip shutdown unless this is the very last clone. TranscriptionManager
+        // is cloned by initiate_model_load() and the watcher thread — those
+        // clones dropping must not kill the watcher. The watcher thread holds
+        // its own clone, so engine's strong_count is always >= 2 while the
+        // watcher is alive. When it reaches 1, only this instance remains
+        // and we can safely shut down.
+        if Arc::strong_count(&self.engine) > 1 {
+            return;
+        }
+
+        // Signal the watcher thread to shutdown
+        self.shutdown_signal.store(true, Ordering::Relaxed);
+
+        // Wait for the thread to finish gracefully.
+        // Use match instead of unwrap to avoid panicking if the mutex is
+        // poisoned — a panic inside Drop calls abort().
+        let mut guard = match self.watcher_handle.lock() {
+            Ok(g) => g,
+            Err(e) => {
+                warn!("Recovered poisoned watcher_handle mutex during TranscriptionManager drop — a panic occurred earlier this session");
+                e.into_inner()
+            }
+        };
+        if let Some(handle) = guard.take() {
+            if let Err(e) = handle.join() {
+                warn!("Failed to join idle watcher thread: {:?}", e);
+            } else {
+                debug!("Idle watcher thread joined successfully");
+            }
+        }
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
 
     fn languages(codes: &[&str]) -> Vec<String> {
         codes.iter().map(|code| (*code).to_string()).collect()
+    }
+
+    #[test]
+    fn esfera_linger_models_queue_drain_and_flight() {
+        let now = Instant::now();
+
+        // Sin palabras pendientes → cero linger.
+        assert_eq!(esfera_linger_from(None, now), Duration::ZERO);
+
+        // Un batch fresco de 6 palabras drena en 6·DRAIN y la última vive
+        // FLIGHT más; el linger es exactamente esa suma.
+        let drained = esfera_drained_after(None, now, 6);
+        assert_eq!(
+            drained.duration_since(now),
+            Duration::from_millis(6 * ESFERA_WORD_DRAIN_MS)
+        );
+        assert_eq!(
+            esfera_linger_from(Some(drained), now),
+            Duration::from_millis(6 * ESFERA_WORD_DRAIN_MS + ESFERA_WORD_FLIGHT_MS)
+        );
+
+        // Batches sucesivos se apilan sobre el drenado pendiente (la cola del
+        // overlay es serial), y un drenado ya vencido rebasa a `now`.
+        let stacked = esfera_drained_after(Some(drained), now, 4);
+        assert_eq!(
+            stacked.duration_since(now),
+            Duration::from_millis(10 * ESFERA_WORD_DRAIN_MS)
+        );
+        let stale = now - Duration::from_secs(60);
+        let refreshed = esfera_drained_after(Some(stale), now, 2);
+        assert_eq!(
+            refreshed.duration_since(now),
+            Duration::from_millis(2 * ESFERA_WORD_DRAIN_MS)
+        );
+
+        // Un drenado viejo con vuelo ya cumplido da cero (saturating), y una
+        // cola enorme queda topada por el cap.
+        assert_eq!(esfera_linger_from(Some(stale), now), Duration::ZERO);
+        let huge = esfera_drained_after(None, now, 500);
+        assert_eq!(
+            esfera_linger_from(Some(huge), now),
+            Duration::from_millis(ESFERA_LINGER_CAP_MS)
+        );
+    }
+
+    #[test]
+    fn new_committed_words_holds_back_growing_last_word() {
+        // No trailing space: the last token may still grow, so it is held back.
+        let (fresh, next) = new_committed_words("crea una func", 0, false);
+        assert_eq!(fresh, vec!["crea".to_string(), "una".to_string()]);
+        assert_eq!(next, 2);
+
+        // The held-back token grew ("func" -> "función"); still no space, still
+        // held back, and nothing already-emitted is re-sent.
+        let (fresh, next) = new_committed_words("crea una función", 2, false);
+        assert!(fresh.is_empty());
+        assert_eq!(next, 2);
+
+        // A trailing space releases it exactly once (no duplicates).
+        let (fresh, next) = new_committed_words("crea una función ", 2, false);
+        assert_eq!(fresh, vec!["función".to_string()]);
+        assert_eq!(next, 3);
+    }
+
+    #[test]
+    fn new_committed_words_finalize_flushes_last_word() {
+        // Finalize releases the trailing word even without a trailing space.
+        let (fresh, next) = new_committed_words("hola mundo", 1, true);
+        assert_eq!(fresh, vec!["mundo".to_string()]);
+        assert_eq!(next, 2);
+
+        // Idempotent once everything has been emitted.
+        let (fresh, next) = new_committed_words("hola mundo", 2, true);
+        assert!(fresh.is_empty());
+        assert_eq!(next, 2);
     }
 
     #[test]
@@ -1936,40 +2347,5 @@ mod tests {
         assert!(matches!(plan.task, Task::Transcribe));
         assert_eq!(plan.language.as_deref(), Some("es"));
         assert_eq!(plan.target_language, None);
-    }
-}
-
-impl Drop for TranscriptionManager {
-    fn drop(&mut self) {
-        // Skip shutdown unless this is the very last clone. TranscriptionManager
-        // is cloned by initiate_model_load() and the watcher thread — those
-        // clones dropping must not kill the watcher. The watcher thread holds
-        // its own clone, so engine's strong_count is always >= 2 while the
-        // watcher is alive. When it reaches 1, only this instance remains
-        // and we can safely shut down.
-        if Arc::strong_count(&self.engine) > 1 {
-            return;
-        }
-
-        // Signal the watcher thread to shutdown
-        self.shutdown_signal.store(true, Ordering::Relaxed);
-
-        // Wait for the thread to finish gracefully.
-        // Use match instead of unwrap to avoid panicking if the mutex is
-        // poisoned — a panic inside Drop calls abort().
-        let mut guard = match self.watcher_handle.lock() {
-            Ok(g) => g,
-            Err(e) => {
-                warn!("Recovered poisoned watcher_handle mutex during TranscriptionManager drop — a panic occurred earlier this session");
-                e.into_inner()
-            }
-        };
-        if let Some(handle) = guard.take() {
-            if let Err(e) = handle.join() {
-                warn!("Failed to join idle watcher thread: {:?}", e);
-            } else {
-                debug!("Idle watcher thread joined successfully");
-            }
-        }
     }
 }

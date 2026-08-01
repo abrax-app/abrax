@@ -9,7 +9,6 @@ use crate::audio_toolkit::{
 use crate::helpers::clamshell;
 use crate::managers::transcription::StreamRouter;
 use crate::settings::{get_settings, AppSettings};
-use crate::utils;
 use log::{debug, error, info, warn};
 use std::path::Path;
 use std::sync::atomic::{AtomicU64, Ordering};
@@ -116,7 +115,14 @@ const WHISPER_SAMPLE_RATE: usize = 16000;
 #[derive(Clone, Debug)]
 pub enum RecordingState {
     Idle,
-    Recording { binding_id: String },
+    Recording {
+        binding_id: String,
+        /// Cuándo empezó esta grabación. Sirve para distinguir «el usuario soltó
+        /// la tecla enseguida» de «el micrófono no entregó audio»: son dos fallos
+        /// distintos y confundirlos manda al usuario a revisar el micrófono
+        /// equivocado.
+        started_at: Instant,
+    },
     Stopping,
 }
 
@@ -157,10 +163,13 @@ fn create_audio_recorder(
         )
         .with_level_callback({
             let app_handle = app_handle.clone();
-            move |levels| {
-                utils::emit_levels(&app_handle, &levels);
+            move |frame| {
+                crate::overlay::emit_spectrum(&app_handle, &frame);
             }
         })
+        // Subscription gate (R8): the FFT only runs while some window called
+        // start_spectrum — never 24/7 with an always-on microphone.
+        .with_spectrum_gate(crate::overlay::spectrum_gate())
         .with_audio_callback({
             let router = stream_router;
             move |frame| {
@@ -193,6 +202,10 @@ pub struct AudioRecordingManager {
     /// so the retry re-enumerates. The system-default case is never cached —
     /// the recorder resolves the current default itself, cheaply.
     cached_device: Arc<Mutex<Option<(String, cpal::Device)>>>,
+    /// Cuánto duró la última grabación, medida de principio a fin. La lee el
+    /// orquestador del dictado para elegir el aviso correcto cuando no llega
+    /// audio.
+    last_recording_duration: Arc<Mutex<Option<Duration>>>,
 }
 
 impl AudioRecordingManager {
@@ -220,6 +233,7 @@ impl AudioRecordingManager {
             did_mute: Arc::new(Mutex::new(false)),
             close_generation: Arc::new(AtomicU64::new(0)),
             cancel_generation: Arc::new(AtomicU64::new(0)),
+            last_recording_duration: Arc::new(Mutex::new(None)),
             stream_router,
             cached_device: Arc::new(Mutex::new(None)),
         };
@@ -253,8 +267,30 @@ impl AudioRecordingManager {
         settings.selected_microphone.clone()
     }
 
+    /// Cuánto duró la última grabación. `None` si todavía no hubo ninguna.
+    pub fn last_recording_duration(&self) -> Option<Duration> {
+        *self.last_recording_duration.lock().unwrap()
+    }
+
     pub fn invalidate_device_cache(&self) {
         *self.cached_device.lock().unwrap() = None;
+    }
+
+    /// Dispositivo de SALIDA por defecto para capturar el audio del sistema en
+    /// loopback (cpal WASAPI activa loopback al abrir input sobre un render
+    /// endpoint) — se MEZCLA con la mic cuando «Audio sistema» está activo. Sin
+    /// caché: re-resuelve el default actual cada vez.
+    fn get_loopback_device(&self, settings: &AppSettings) -> Option<cpal::Device> {
+        if !settings.capture_system_audio {
+            return None;
+        }
+        use cpal::traits::HostTrait;
+        let dev = crate::audio_toolkit::get_cpal_host().default_output_device();
+        debug!(
+            "device resolve: AUDIO DEL SISTEMA (loopback, para mezclar) -> salida por defecto (found={})",
+            dev.is_some()
+        );
+        dev
     }
 
     fn get_effective_microphone_device(&self, settings: &AppSettings) -> Option<cpal::Device> {
@@ -387,6 +423,8 @@ impl AudioRecordingManager {
         let settings = get_settings(&self.app_handle);
         let resolve_started = Instant::now();
         let selected_device = self.get_effective_microphone_device(&settings);
+        // Loopback del sistema para MEZCLAR con la mic (None si «Audio sistema» off).
+        let loopback_device = self.get_loopback_device(&settings);
         let resolve_elapsed = resolve_started.elapsed();
 
         // Ensure VAD is loaded if it wasn't for whatever reason
@@ -397,14 +435,14 @@ impl AudioRecordingManager {
         let open_started = Instant::now();
         let mut recorder_opt = self.recorder.lock().unwrap();
         if let Some(rec) = recorder_opt.as_mut() {
-            if let Err(first_err) = rec.open(selected_device.clone()) {
+            if let Err(first_err) = rec.open(selected_device.clone(), loopback_device.clone()) {
                 // A cached device or config may have gone stale (unplugged,
                 // rate/format changed). Re-resolve from a fresh enumeration and
                 // retry once before surfacing the error.
                 warn!("Recorder open failed ({first_err}); re-resolving device and retrying once");
                 self.invalidate_device_cache();
                 let fresh_device = self.get_effective_microphone_device(&settings);
-                rec.open(fresh_device)
+                rec.open(fresh_device, loopback_device.clone())
                     .map_err(|e| anyhow::anyhow!("Failed to open recorder: {}", e))?;
             }
         }
@@ -502,6 +540,7 @@ impl AudioRecordingManager {
                     *self.is_recording.lock().unwrap() = true;
                     *state = RecordingState::Recording {
                         binding_id: binding_id.to_string(),
+                        started_at: Instant::now(),
                     };
                     debug!("Recording started for binding {binding_id}");
                     return Ok(());
@@ -541,7 +580,9 @@ impl AudioRecordingManager {
         match *state {
             RecordingState::Recording {
                 binding_id: ref active,
+                started_at,
             } if active == binding_id => {
+                *self.last_recording_duration.lock().unwrap() = Some(started_at.elapsed());
                 *state = RecordingState::Stopping;
                 drop(state);
 

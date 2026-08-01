@@ -25,14 +25,19 @@
      the card's max footprint (--ov-work-w for compact, --ov-open-w for Live),
      since the card is anchored flush to the screen edge in CSS. Keep overlay.rs
      in sync when these change. */
-  --ov-rest-w: 172px; /* resting compact pill (minimal, recording) -- roomy enough
-                         for the English working label before the grow starts */
+  --ov-rest-w: 104px; /* pildora en reposo (minimal, grabando): ahora hospeda SOLO
+                         la onda, asi que se cine a ella. Antes eran 172px porque
+                         llevaba tambien el punto y la X. */
+  --ov-rest-hover-w: 140px; /* la misma, con el raton encima: crece lo justo para
+                               descubrir la X sin taparle la onda */
   --ov-pill-w: 184px; /* base width / Live pill before it opens or collapses */
   --ov-work-w: 216px; /* working pill (transcribing / polishing) -- wide enough to
                          center longer labels; shared by Live (collapsed) + minimal */
   --ov-open-w: 392px; /* Live panel, expanded */
   --ov-base-h: 40px; /* control-row height (.sbase) */
   --ov-cap-max-h: 64px; /* max height of the scrolling live-text region */
+  --ov-esfera-w: 216px; /* Esfera card width */
+  --ov-esfera-stage-h: 196px; /* Esfera canvas stage height */
 }
 @media (prefers-color-scheme: dark) {
   :root {
@@ -49,6 +54,23 @@
     --s-border: color-mix(in srgb, var(--color-text) 12%, transparent);
     --s-hair: color-mix(in srgb, var(--color-text) 8%, transparent);
   }
+}
+
+/* Modo oscuro forzado (`data-theme="dark"`, que Imperial impone siempre):
+   mismos grises que el media query. Necesario porque el overlay no carga los
+   overrides de App.css — sin esto, la fila de control (etiqueta, hairlines)
+   se quedaría con los grises de modo claro sobre la superficie oscura de
+   Imperial cuando el SO está en claro. */
+:root[data-theme="dark"] {
+  --s-accent-soft: color-mix(
+    in srgb,
+    var(--color-logo-primary) 20%,
+    transparent
+  );
+  --s-muted: #a3a09a;
+  --s-faint: #6f6c66;
+  --s-border: color-mix(in srgb, var(--color-text) 12%, transparent);
+  --s-hair: color-mix(in srgb, var(--color-text) 8%, transparent);
 }
 
 /* ============================================================
@@ -291,22 +313,77 @@
   opacity: 1;
 }
 
-/* Waveform — simple reactive bars, themed; heights set inline from mic levels. */
+/* Barras reactivas del microfono, la forma del upstream (Handy). Tematizadas
+   por `--s-accent`; las alturas llegan en linea desde JS. */
+/* 24 px y no 18: la fila de la pildora mide 40, asi que el recorrido de la
+   onda pasa de 13 px a 19 sin tocar el tamaño de nada. Con 13 px de margen, el
+   habla normal movia las barras un pelo y la pildora parecia dormida. */
 .swave {
   display: flex;
   align-items: center;
   gap: 3px;
   padding-right: 8px;
-  height: 18px;
+  height: 24px;
   flex: none;
 }
+/* Las alturas las pone JS en linea, desde los niveles del microfono. La
+   transicion solo lima el escalon entre trama y trama: a 80 ms se comia los
+   picos —las tramas llegan cada 33— asi que baja a 55. */
 .swave i {
-  width: 4px;
-  min-height: 3px;
-  max-height: 18px;
+  width: 3px;
+  min-height: 4px;
+  max-height: 24px;
   border-radius: 2px;
   background: var(--s-accent);
-  transition: height 80ms linear;
+  transition: height 55ms linear;
+}
+
+/* ── Fila de SOLO ONDA (overlay Minimal, grabando) ─────────────────────────
+   Una sola columna centrada en vez de las tres zonas (punto | onda | botones):
+   aqui no hay nada a los lados que centrar. La X se superpone a la derecha y
+   solo aparece al pasar el raton; en reposo la pildora es exactamente la onda,
+   que es la marca en movimiento. Cancelar sigue teniendo su atajo (Esc). */
+.sbase-solo-onda {
+  position: relative;
+  grid-template-columns: 1fr;
+  justify-items: center;
+}
+/* El hueco de 8px a la derecha existe para equilibrar la rejilla de 3 zonas;
+   con una sola columna descentraria la onda. */
+.sbase-solo-onda .swave {
+  padding-right: 0;
+}
+.sbase-solo-onda .sx {
+  position: absolute;
+  right: 8px;
+  opacity: 0;
+  pointer-events: none;
+  transition:
+    opacity 160ms ease,
+    background-color 150ms ease,
+    transform 150ms ease;
+}
+/* Al pasar el raton la pildora crece lo justo para que la X no tape la onda.
+   El estado va en una clase del propio .scard y no en `:has()`: es un selector
+   reciente y esto corre dentro de un WebView cuya version no elegimos. */
+.scard.solo-onda:hover .sx,
+.scard.solo-onda:focus-within .sx {
+  opacity: 1;
+  pointer-events: auto;
+}
+.scard.solo-onda:hover,
+.scard.solo-onda:focus-within {
+  width: var(--ov-rest-hover-w);
+}
+/* Con movimiento reducido el ensanchado sigue —si no, la X taparia la onda—,
+   pero llega de golpe en vez de deslizarse. */
+@media (prefers-reduced-motion: reduce) {
+  .scard.solo-onda {
+    transition: none;
+  }
+  .sbase-solo-onda .sx {
+    transition: none;
+  }
 }
 .sx {
   width: 22px;
@@ -342,6 +419,43 @@
   transform: scale(0.95);
 }
 
+/* ============================================================
+   Esfera style — the audio-reactive sphere on a cosmic porthole, with the
+   shared control row underneath. The porthole keeps the prototype's deep-ink
+   backdrop in both themes (art direction); the row inherits the theme tokens
+   like every other overlay form.
+   ============================================================ */
+.scard.esfera {
+  width: var(--ov-esfera-w);
+  border-radius: 20px;
+  animation: none; /* the stage fades via .ov-fade, like the compact pill */
+  /* No width morphing either: the canvas bitmap is sized from the card, so a
+     transitioning width would capture a mid-animation measurement. */
+  transition: none;
+}
+.esfera-stage {
+  position: relative;
+  width: 100%;
+  height: var(--ov-esfera-stage-h);
+  /* Escenario de tinta profunda en ambos temas (dirección de arte); los
+     tokens siguen a la paleta activa (theme.css) junto con la esfera. */
+  background: radial-gradient(
+    ellipse at 50% 42%,
+    var(--esfera-fondo-claro, #0a0c1c) 0%,
+    var(--esfera-fondo, #05060f) 72%
+  );
+}
+.esfera-stage canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+/* The timer is always readable in the esfera row (no .open state to gate it). */
+.scard.esfera .stimer {
+  opacity: 1;
+  justify-self: center;
+}
+
 /* working state (transcribing / polishing) — spinner + label */
 .sspinner {
   width: 13px;
@@ -366,4 +480,114 @@
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+/* ── Overlay de LECTURA (Escucha) ─────────────────────────────────────────────
+   Un parlante diminuto mientras se lee en voz alta. Las ondas laten desfasadas
+   para que se lea como sonido saliendo, no como un icono estático.
+
+   El latido es DECORATIVO y no mide nada: el motor de voz no expone amplitud, y
+   fingir un medidor de nivel sería un instrumento que miente. Comunica «está
+   sonando», que es lo único que hace falta saber. */
+.scard.leyendo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 14px;
+  gap: 0;
+}
+.spk {
+  color: var(--s-accent);
+  display: block;
+}
+.spk-cono {
+  transform-origin: 8px 12px;
+  animation: spk-cono 0.9s ease-in-out infinite;
+}
+.spk-onda {
+  transform-origin: 12px 12px;
+  animation: spk-onda 0.9s ease-in-out infinite;
+}
+/* La onda de dentro sale primero; la de fuera la sigue. Ese desfase es lo que
+   hace que se lea como una onda que VIAJA y no como dos líneas parpadeando. */
+.spk-onda-1 {
+  animation-delay: 0s;
+}
+.spk-onda-2 {
+  animation-delay: 0.18s;
+}
+
+@keyframes spk-cono {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.09);
+  }
+}
+@keyframes spk-onda {
+  0%,
+  100% {
+    opacity: 0.35;
+    transform: translateX(0);
+  }
+  50% {
+    opacity: 1;
+    transform: translateX(1px);
+  }
+}
+
+/* Tres puntos mientras el motor sintetiza, antes de que suene la voz. Comparten
+   la tarjeta y el tamaño de `.leyendo` a propósito: al arrancar la voz el
+   contenido se cambia en el sitio y la ventana NO se redimensiona ni salta. */
+.prep {
+  color: var(--s-accent);
+  display: block;
+}
+.prep-pt {
+  fill: currentColor;
+  opacity: 0.3;
+  /* En SVG el origen de transformación es el (0,0) del viewBox, no el centro de
+     la figura: sin esto los puntos no crecerían en su sitio, se irían hacia la
+     esquina superior izquierda. `fill-box` lo ancla a cada círculo. */
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: prep-pt 1.05s ease-in-out infinite;
+}
+.prep-pt-2 {
+  animation-delay: 0.15s;
+}
+.prep-pt-3 {
+  animation-delay: 0.3s;
+}
+
+@keyframes prep-pt {
+  0%,
+  70%,
+  100% {
+    opacity: 0.3;
+    transform: scale(0.85);
+  }
+  35% {
+    opacity: 1;
+    transform: scale(1.15);
+  }
+}
+
+/* Reduced motion: se detiene el latido y las ondas quedan visibles y quietas.
+   El overlay sigue apareciendo y desapareciendo, que es la señal que de verdad
+   importa — lo que se retira es la animación continua, no la información. */
+@media (prefers-reduced-motion: reduce) {
+  .spk-cono,
+  .spk-onda {
+    animation: none;
+  }
+  .spk-onda {
+    opacity: 0.85;
+  }
+  .prep-pt {
+    animation: none;
+    opacity: 0.85;
+  }
 }

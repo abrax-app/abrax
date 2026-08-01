@@ -1,0 +1,75 @@
+/* Estilo del Chip, junto al componente y no dentro de `bancada.css`.
+ *
+ * Vivía ahí, y `bancada.css` solo se carga cuando se abre Karting: al reusar el
+ * Chip en el inicio de Quiet salía DESNUDO —sin fondo, sin borde, sin color—,
+ * porque ni las reglas ni las variables `--bnc-*` existían fuera de ese shell.
+ * Un componente compartido tiene que traerse su propio aspecto.
+ *
+ * Cada color usa el token de Karting con RESPALDO en los tokens globales de
+ * marca. Dentro de `#bancada-stage` mandan los suyos y el chip se ve exactamente
+ * como antes; fuera, cae a los de la app. Y como el respaldo cuelga de
+ * `--color-logo-primary`, el acento sigue a la paleta activa —ABRAX, Imperial o
+ * Escudería— sin una sola línea por paleta.
+ */
+
+.bnc-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 14px;
+  border-radius: 12px;
+  cursor: pointer;
+  background: var(
+    --bnc-surface,
+    color-mix(in srgb, var(--color-mid-gray) 12%, transparent)
+  );
+  border: 1px solid
+    var(--bnc-line, color-mix(in srgb, var(--color-mid-gray) 28%, transparent));
+  color: var(--bnc-dim, color-mix(in srgb, var(--color-text) 62%, transparent));
+  font:
+    600 12.5px/1 ui-sans-serif,
+    system-ui,
+    sans-serif;
+  transition:
+    background 0.12s ease,
+    color 0.12s ease,
+    border-color 0.12s ease;
+}
+
+.bnc-chip:hover {
+  background: var(
+    --bnc-surface2,
+    color-mix(in srgb, var(--color-mid-gray) 20%, transparent)
+  );
+  color: var(--bnc-text, var(--color-text));
+}
+
+/* Encendido: el acento de la paleta activa, en el borde y en un velo de fondo.
+   Se distingue del apagado por color Y por peso del borde, no solo por color. */
+.bnc-chip.on {
+  color: var(--bnc-text, var(--color-text));
+  border-color: color-mix(
+    in srgb,
+    var(--bnc-accent, var(--color-logo-primary)) 55%,
+    transparent
+  );
+  background: color-mix(
+    in srgb,
+    var(--bnc-accent, var(--color-logo-primary)) 14%,
+    var(--bnc-surface, transparent)
+  );
+}
+
+.bnc-chip:focus-visible {
+  outline: 2px solid var(--bnc-accent, var(--color-logo-primary));
+  outline-offset: 2px;
+}
+
+.bnc-chip-ic {
+  flex: 0 0 auto;
+  color: var(--bnc-dim, color-mix(in srgb, var(--color-text) 55%, transparent));
+}
+
+.bnc-chip.on .bnc-chip-ic {
+  color: var(--bnc-accent, var(--color-logo-primary));
+}

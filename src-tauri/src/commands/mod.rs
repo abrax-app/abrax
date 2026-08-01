@@ -1,7 +1,15 @@
 pub mod audio;
+/// Módulo de corrección local (estado del motor para la UI).
+pub mod discos;
+// [ESCUCHA]
+pub mod escucha;
 pub mod history;
+pub mod memoria;
 pub mod models;
+pub mod settings;
 pub mod transcription;
+// [TTS] Motor de voz adaptativo (detección, motores, descarga de assets).
+pub mod tts;
 
 use crate::settings::{get_settings, write_settings, AppSettings, LogLevel};
 use crate::utils::cancel_current_operation;
@@ -110,21 +118,6 @@ pub fn open_app_data_dir(app: AppHandle) -> Result<(), String> {
         .map_err(|e| format!("Failed to open app data directory: {}", e))?;
 
     Ok(())
-}
-
-/// Check if Apple Intelligence is available on this device.
-/// Called by the frontend when the user selects Apple Intelligence provider.
-#[specta::specta]
-#[tauri::command]
-pub fn check_apple_intelligence_available() -> bool {
-    #[cfg(all(target_os = "macos", target_arch = "aarch64"))]
-    {
-        crate::apple_intelligence::check_apple_intelligence_availability()
-    }
-    #[cfg(not(all(target_os = "macos", target_arch = "aarch64")))]
-    {
-        false
-    }
 }
 
 /// Try to initialize Enigo (keyboard/mouse simulation).

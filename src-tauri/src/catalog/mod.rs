@@ -1,9 +1,10 @@
 //! The bundled, offline model catalog.
 //!
-//! `catalog.json` is generated at build time by `scripts/gen_catalog.py` from the
-//! `handy-computer` Hugging Face org (card `transcribe_cpp` capabilities +
-//! benchmarks, a GGUF header probe for name/params, and local curation for the
-//! recommended set). It is compiled into the binary so Abrax ships a complete
+//! `catalog.json` is regenerated MANUALLY (offline, not as a build step) with
+//! `scripts/gen_catalog.py` from the `handy-computer` Hugging Face org (card
+//! `transcribe_cpp` capabilities + benchmarks, a GGUF header probe for
+//! name/params, and local curation for the recommended set). The committed JSON
+//! is compiled into the binary via `include_str!`, so Abrax ships a complete
 //! model list with zero network access.
 //!
 //! Each entry is normalised into a [`ModelDescriptor`] — the same source-agnostic
@@ -126,6 +127,11 @@ mod tests {
     use crate::managers::model_capabilities::KNOWN_ARCHES;
     use std::collections::BTreeSet;
 
+    /// `org/repo/archivo.gguf` -> `org/repo`.
+    fn repo_de(id: &str) -> &str {
+        id.rsplit_once('/').map(|(repo, _)| repo).unwrap_or(id)
+    }
+
     #[test]
     fn catalog_parses_and_is_nonempty() {
         assert!(!CATALOG.is_empty(), "bundled catalog should contain models");
@@ -145,6 +151,82 @@ mod tests {
         for d in CATALOG.iter() {
             assert!((0.0..=1.0).contains(&d.speed_score), "{} speed", d.id);
             assert!((0.0..=1.0).contains(&d.accuracy_score), "{} acc", d.id);
+        }
+    }
+
+    /// ABRAX envía CINCO modelos curados, no los 65 de la organización upstream
+    /// (D1). Este test es el que impide que la poda se deshaga sola: correr
+    /// `scripts/gen_catalog.py` sin su lista blanca `ENVIADOS` devuelve el
+    /// catálogo completo, y sin esta comprobación el binario saldría con 65
+    /// modelos y nadie se enteraría hasta ver la pantalla.
+    #[test]
+    fn catalog_ships_the_curated_five() {
+        // El id del descriptor es `org/repo/archivo.gguf`; comparamos por REPO
+        // para que cambiar el quant por defecto no rompa este test.
+        let ids: Vec<&str> = CATALOG.iter().map(|d| repo_de(&d.id)).collect();
+        // Orden editorial cambiado el 31/07 por decisión de producto: primero el
+        // que mejor transcribe, último el más rápido. El pequeño (Canary) se
+        // comía frases cortas —medido el 29/07 sobre loopback y otra vez el
+        // 31/07 sobre grabaciones reales de dictado: cadena VACÍA donde
+        // Nemotron sí entendió—, así que dejar de ofrecerlo el primero.
+        assert_eq!(
+            ids,
+            vec![
+                "handy-computer/cohere-transcribe-03-2026-gguf",
+                "handy-computer/whisper-large-v3-turbo-gguf",
+                "handy-computer/whisper-large-v3-gguf",
+                "handy-computer/nemotron-3.5-asr-streaming-0.6b-gguf",
+                "handy-computer/canary-180m-flash-gguf",
+            ],
+            "el catálogo enviado debe ser exactamente los 5 curados, en orden"
+        );
+        let ranks: Vec<Option<u32>> = CATALOG.iter().map(|d| d.recommended_rank).collect();
+        assert_eq!(
+            ranks,
+            vec![Some(1), Some(2), Some(3), Some(4), Some(5)],
+            "los rangos editoriales deben ser 1..5 sin huecos ni repetidos"
+        );
+    }
+
+    /// Una insignia que llevan cinco de cinco no recomienda nada. La medición en
+    /// equipo limpio pidió que la recomendación fuera evidente: exactamente una.
+    #[test]
+    fn exactly_one_model_carries_the_recommended_badge() {
+        let badged: Vec<&str> = CATALOG
+            .iter()
+            .filter(|d| d.recommended)
+            .map(|d| repo_de(&d.id))
+            .collect();
+        // La insignia pasó a Cohere el 31/07, con el orden editorial: es la que
+        // decide qué ofrece PRIMERO la pantalla de bienvenida
+        // (`Onboarding.tsx` separa `is_recommended` del resto), así que dejarla
+        // en Canary habría enseñado el catálogo en un orden y recomendado el
+        // contrario. Cuesta más descarga —1,6 GB frente a 208 MB— y el texto de
+        // la tarjeta lo dice; lo que no se puede es recomendar el que devuelve
+        // vacío con frases cortas.
+        assert_eq!(
+            badged,
+            vec!["handy-computer/cohere-transcribe-03-2026-gguf"],
+            "solo el modelo de arranque lleva insignia «Recomendado»"
+        );
+    }
+
+    /// ABRAX vende dictado en español. Un modelo que no lo transcribe no tiene
+    /// nada que hacer en un catálogo de cinco.
+    #[test]
+    fn every_shipped_model_transcribes_spanish() {
+        for d in CATALOG.iter() {
+            let languages = d
+                .caps
+                .languages
+                .as_ref()
+                .unwrap_or_else(|| panic!("{} no declara idiomas", d.id));
+            assert!(
+                languages.iter().any(|l| l == "es"),
+                "{} no transcribe español: {:?}",
+                d.id,
+                languages
+            );
         }
     }
 

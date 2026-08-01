@@ -1,0 +1,549 @@
+/* Skin "Quiet" — minimalista y discreta (mockup PROPUESTA 1). Panel oscuro
+   redondeado (ventana frameless/transparente), sidebar limpia, hero con esfera.
+   Neutros oscuros propios (siempre oscuro, es su identidad); los ACENTOS salen
+   de los tokens de marca (--lockup-stop-*), así retiñen con ui_theme. */
+
+#quiet-stage {
+  position: fixed;
+  inset: 0;
+  --q-bg: #0a0a0f;
+  --q-bg2: #101018;
+  --q-line: rgb(255 255 255 / 8%);
+  --q-text: #f3f4f8;
+  --q-dim: #8b8c98;
+  --q-a: var(--lockup-stop-a, #2fd9ff);
+  --q-b: var(--lockup-stop-b, #8b5cf6);
+  --q-c: var(--lockup-stop-c, #f23dc4);
+  --q-grad: linear-gradient(90deg, var(--q-a), var(--q-b), var(--q-c));
+  --q-ok: #46d19e;
+
+  /* Los componentes embebidos (Transcripciones/Ajustes) usan los tokens BASE
+     del tema, no los --q-*. Con dark forzado su superficie sería #2c2b29 (un
+     gris CÁLIDO) que choca con el negro FRÍO de Quiet. Re-apuntamos aquí esos
+     tokens a una superficie oscura fría que cuadra con la paleta de Quiet:
+     tarjetas #181a22 (frías, elevadas sobre el escenario #0a0a0f) y el acento
+     al violeta de marca. Al ser un id, gana sobre el :root[data-theme]. */
+  --color-background: #181a22;
+  --color-background-ui: var(--q-b);
+}
+
+.q-panel {
+  position: absolute;
+  top: 0;
+  left: 0;
+  /* Sin escala: tipografía y controles a tamaño fijo, como el shell Clásico.
+     Agrandar o maximizar la ventana solo muestra más espacio (el contenido
+     principal se centra con max-width). El zoom proporcional anterior
+     (--q-zoom = ancho/718) agrandaba TODO al maximizar y se pidió quitarlo. */
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--q-bg);
+  color: var(--q-text);
+  border: 1px solid var(--q-line);
+  border-radius: 12px;
+  font-family:
+    system-ui,
+    -apple-system,
+    "Segoe UI",
+    Roboto,
+    Helvetica,
+    Arial,
+    sans-serif;
+}
+
+/* ── barra superior: arrastre + controles de ventana ── */
+.q-topbar {
+  flex: none;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 0 6px;
+}
+.q-winctl {
+  display: flex;
+  gap: 2px;
+}
+.q-winctl button {
+  width: 36px;
+  height: 28px;
+  display: grid;
+  place-items: center;
+  background: none;
+  border: none;
+  border-radius: 8px;
+  color: var(--q-dim);
+  cursor: pointer;
+}
+.q-winctl button:hover {
+  background: rgb(255 255 255 / 6%);
+  color: var(--q-text);
+}
+.q-winctl .q-close:hover {
+  background: #e8442a;
+  color: #fff;
+}
+
+/* ── cuerpo: sidebar + main ── */
+.q-body {
+  flex: 1;
+  display: flex;
+  min-height: 0;
+}
+
+.q-side {
+  width: 206px;
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 0 14px 16px;
+  border-right: 1px solid var(--q-line);
+}
+.q-brand {
+  padding: 2px 8px 16px;
+  opacity: 0.96;
+}
+.q-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.q-navit {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 11px 14px;
+  border-radius: 12px;
+  background: none;
+  border: none;
+  color: var(--q-dim);
+  font-size: 14.5px;
+  cursor: pointer;
+  text-align: left;
+  transition:
+    background 0.15s ease,
+    color 0.15s ease;
+}
+.q-navit:hover {
+  background: rgb(255 255 255 / 5%);
+  color: var(--q-text);
+}
+.q-navit.on {
+  background: color-mix(in srgb, var(--q-b) 22%, transparent);
+  color: var(--q-text);
+}
+.q-navit.on svg {
+  color: color-mix(in srgb, var(--q-c) 80%, var(--q-text));
+}
+
+/* Avisos recientes, entre el menú y los sellos de privacidad. La columna son
+   178 px útiles, así que el banner se aprieta: tipografía menor y los botones
+   (desplegar / descartar) sin holgura de sobra. Con varios avisos desplegados
+   la lista hace scroll ELLA, y no expulsa los sellos fuera de la ventana. */
+.q-side-avisos {
+  /* La sidebar es una columna flex de altura fija y el hueco entre el menú y
+     los sellos es el que es. Así que este bloque SÍ puede encogerse
+     (`flex: 0 1 auto` + `min-height: 0`) y, cuando no cabe, hace scroll DENTRO.
+     Con `flex: none` no se encogía y, al desplegar tres avisos, empujaba
+     «Procesamiento local» y «Sin conexión a la nube» fuera de la ventana: dos
+     sellos que son media promesa del producto no pueden desaparecer porque
+     hubo tres fallos. */
+  flex: 0 1 auto;
+  min-height: 0;
+  margin: 8px 0 6px;
+  max-height: 30vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+  font-size: 12px;
+}
+/* La barra por defecto del WebView es blanca y con flechas: en un panel negro
+   canta más que el propio aviso. Misma barra discreta que el área principal. */
+.q-side-avisos::-webkit-scrollbar {
+  width: 8px;
+}
+.q-side-avisos::-webkit-scrollbar-thumb {
+  background: rgb(255 255 255 / 14%);
+  border-radius: 8px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+.q-side-avisos::-webkit-scrollbar-track {
+  background: transparent;
+}
+/* Sin avisos el banner no pinta nada, pero el hueco seguiría reservando su
+   margen y separando el menú de los sellos sin motivo. */
+.q-side-avisos:empty {
+  display: none;
+}
+.q-side-avisos .text-xs {
+  font-size: 11px;
+  line-height: 1.3;
+}
+.q-side-avisos button {
+  padding: 2px;
+  min-width: 0;
+}
+
+.q-foot {
+  margin-top: auto;
+  /* Nunca se encoge: es lo último que puede ceder sitio. */
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  padding: 10px 8px 2px;
+}
+.q-badge {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 12.5px;
+  color: var(--q-dim);
+}
+.q-badge svg {
+  color: color-mix(in srgb, var(--q-ok) 85%, var(--q-dim));
+  flex: none;
+}
+
+/* ── main / hero ── */
+.q-main {
+  flex: 1;
+  min-width: 0;
+  overflow-y: auto;
+}
+
+.q-hero {
+  max-width: 560px;
+  margin: 0 auto;
+  padding: 12px 24px 30px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+.q-h1 {
+  margin: 4px 0 16px;
+  font-size: 25px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--q-text);
+}
+.q-hint {
+  font-size: 13.5px;
+  color: var(--q-dim);
+  margin: 0 0 10px;
+}
+/* El hint se enciende cuando el atajo se dispara de verdad: confirma al usuario
+   que funcionó, en el instante exacto en que lo está probando. */
+.q-hint.on {
+  color: var(--q-text);
+}
+
+.q-kbd {
+  display: inline-block;
+  margin: 0 3px;
+  padding: 2px 9px;
+  border-radius: 7px;
+  border: 1px solid color-mix(in srgb, var(--q-c) 45%, var(--q-line));
+  background: color-mix(in srgb, var(--q-c) 12%, transparent);
+  color: color-mix(in srgb, var(--q-c) 72%, var(--q-text));
+  font-size: 13px;
+  font-family: ui-monospace, "Cascadia Code", monospace;
+}
+
+/* Las teclas de los ATAJOS, con los mismos colores que la tecla del hero.
+   Ese aviso —«Mantén Ctrl + Space presionado»— es lo primero que se lee al
+   abrir Abrax, y hasta ahora la MISMA tecla se pintaba gris tres centímetros
+   más abajo, en «Atajos». Dos aspectos para la misma cosa hacen dudar de si
+   son la misma cosa.
+
+   El gancho es `.atajo-tecla`, una clase propia puesta en los dos
+   componentes de atajo (el de Tauri y el de handy-keys). Colgar de sus clases
+   de utilidad habría atado este estilo a que nadie reordene un `hover:` en un
+   archivo que no habla de Quiet. Solo se tiñe DENTRO de `#quiet-stage`: los
+   demás shells conservan el suyo. */
+#quiet-stage .atajo-tecla {
+  border-color: color-mix(in srgb, var(--q-c) 45%, var(--q-line));
+  background: color-mix(in srgb, var(--q-c) 12%, transparent);
+  color: color-mix(in srgb, var(--q-c) 72%, var(--q-text));
+  font-family: ui-monospace, "Cascadia Code", monospace;
+}
+#quiet-stage .atajo-tecla:hover {
+  border-color: color-mix(in srgb, var(--q-c) 70%, var(--q-line));
+  background: color-mix(in srgb, var(--q-c) 20%, transparent);
+  color: color-mix(in srgb, var(--q-c) 90%, var(--q-text));
+}
+/* Grabando una combinación nueva: el mismo tono, encendido del todo, para que
+   se note que ahora sí está escuchando el teclado. */
+#quiet-stage .atajo-tecla.grabando,
+#quiet-stage .atajo-tecla.grabando:hover {
+  border-color: var(--q-c);
+  background: color-mix(in srgb, var(--q-c) 30%, transparent);
+  color: var(--q-text);
+}
+
+.q-orb {
+  width: 185px;
+  height: 185px;
+  margin: 0;
+}
+.q-orb-cv {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.q-cta {
+  margin-top: 10px;
+  padding: 12px 34px;
+  border: none;
+  border-radius: 14px;
+  background: var(--q-grad);
+  color: #fff;
+  font-size: 15.5px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 8px 30px color-mix(in srgb, var(--q-b) 32%, transparent);
+  transition:
+    transform 0.1s ease,
+    box-shadow 0.2s ease,
+    filter 0.2s ease;
+}
+.q-cta:hover {
+  filter: brightness(1.08);
+  box-shadow: 0 10px 38px color-mix(in srgb, var(--q-b) 42%, transparent);
+}
+.q-cta:active {
+  transform: translateY(1px);
+}
+.q-cta.rec {
+  background: linear-gradient(90deg, var(--q-c), #ff5a5a);
+  box-shadow: 0 8px 30px color-mix(in srgb, var(--q-c) 40%, transparent);
+}
+
+.q-recent {
+  width: 100%;
+  max-width: 520px;
+  margin-top: 16px;
+  text-align: left;
+}
+.q-recent-h {
+  font-size: 13px;
+  color: var(--q-dim);
+  margin: 0 6px 6px;
+}
+.q-recent-list {
+  display: flex;
+  flex-direction: column;
+}
+.q-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 7px 12px;
+  border: none;
+  border-top: 1px solid var(--q-line);
+  border-radius: 10px;
+  background: none;
+  color: var(--q-text);
+  cursor: pointer;
+  text-align: left;
+}
+.q-row:first-child {
+  border-top: none;
+}
+.q-row:hover {
+  background: rgb(255 255 255 / 4%);
+}
+.q-row-t {
+  flex: none;
+  width: 72px;
+  white-space: nowrap;
+  font-size: 11px;
+  color: var(--q-dim);
+}
+.q-row-x {
+  flex: 1;
+  font-size: 12.5px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.q-empty {
+  padding: 18px 14px;
+  font-size: 13.5px;
+  color: var(--q-dim);
+}
+
+/* ── vistas de sección (hospedan settings reales) ── */
+.q-sec {
+  /* Pegadas a la izquierda (sin margin auto): con la ventana grande o
+     maximizada el contenido queda junto a la sidebar, no flotando al centro. */
+  max-width: 780px;
+  padding: 6px 26px 44px;
+}
+
+/* Los modelos de dictado, dentro de la pantalla «Escucha». El hero de arriba
+   esta centrado; la lista no puede heredarlo o las tarjetas saldrian con el
+   texto al medio. Se separa con una linea para que se lea como «lo de abajo es
+   otra cosa» sin necesidad de un titulo mas. */
+.q-hero-modelos {
+  width: 100%;
+  margin-top: 34px;
+  padding-top: 26px;
+  border-top: 1px solid var(--color-mid-gray, #6e6e6e33);
+  text-align: start;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.q-ajustes {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* ── panel «Atajos»: cuatro tarjetas a lo ancho ──
+   Las tarjetas ocupan el ANCHO de la ventana y nada más: se estiran con ella y
+   se topan a 980 px para que en una pantalla grande el desplegable no acabe a
+   medio metro de su rótulo. El tope de 780 px de `.q-sec` se levanta aquí
+   porque estas tarjetas son el contenido principal, no una columna de lectura. */
+.q-sec-ancha {
+  max-width: 980px;
+  width: 100%;
+}
+.q-panel-atajos {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+/* Barra de opciones con la FORMA de la de Retro —solo iconos, el activo
+   encendido— pero con los colores de Quiet: el acento de marca en vez del cian
+   de Winamp. Los rótulos completos («Autocorrección hablada») ocupaban tres
+   píldoras anchas y dos filas para tres interruptores; ahora es una línea, y lo
+   que decían vive en el hint del ratón. */
+.q-panel-atajos .q-pa-tools {
+  /* La cubeta se ajusta a los botones (`fit-content`) en vez de cruzar la
+     tarjeta: con tres botones sobraban dos tercios de canal vacío, y con uno
+     —el de «Streaming»— era una regleta entera para un interruptor. */
+  display: flex;
+  width: fit-content;
+  gap: 5px;
+  padding: 5px;
+  border: 1px solid var(--q-line);
+  border-radius: 9px;
+  background: rgb(0 0 0 / 22%);
+}
+.q-panel-atajos .q-pa-tools button {
+  flex: 1 1 0;
+  min-width: 44px;
+  max-width: 104px;
+  display: grid;
+  place-items: center;
+  padding: 8px 0;
+  border: 1px solid var(--q-line);
+  border-radius: 7px;
+  background: rgb(255 255 255 / 4%);
+  color: var(--q-dim);
+  cursor: pointer;
+  transition:
+    background 0.15s ease,
+    color 0.15s ease,
+    border-color 0.15s ease;
+}
+.q-panel-atajos .q-pa-tools button:hover {
+  background: rgb(255 255 255 / 9%);
+  color: var(--q-text);
+}
+/* Encendido: además del color cambia el RELLENO y el contraste del icono, así
+   que se distingue sin depender del tono. El estado también va en
+   `aria-pressed` y escrito en el hint. */
+.q-panel-atajos .q-pa-tools button.on {
+  background: linear-gradient(
+    180deg,
+    var(--q-a),
+    color-mix(in srgb, var(--q-a) 62%, #0a3247)
+  );
+  border-color: color-mix(in srgb, var(--q-a) 55%, var(--q-line));
+  color: #06202b;
+  box-shadow: 0 0 10px color-mix(in srgb, var(--q-a) 32%, transparent);
+}
+/* ABIERTO no es ENCENDIDO. En «General» el icono no activa nada: despliega su
+   control. Con el mismo relleno del acento, el micrófono azul se leería como
+   «micrófono activado», que es otra cosa. Así que abierto se marca con el borde
+   y un fondo apenas más claro, y el relleno queda reservado a los
+   interruptores de verdad. */
+.q-panel-atajos .q-pa-tools button[aria-expanded="true"] {
+  background: rgb(255 255 255 / 10%);
+  border-color: color-mix(in srgb, var(--q-a) 55%, var(--q-line));
+  color: var(--q-text);
+}
+.q-panel-atajos .q-pa-tools button:focus-visible {
+  outline: 2px solid var(--q-a);
+  outline-offset: 2px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .q-panel-atajos .q-pa-tools button {
+    transition: none;
+  }
+}
+
+/* ── sub-pestañas del ítem «Más» ──
+   Hospedan las secciones reales (Avanzado, Escucha, Post Proceso, Acerca de).
+   `flex-wrap` es el requisito de cierre: en el ancho mínimo de la ventana Quiet
+   (600 px) las cuatro no caben en una línea, así que bajan en vez de salirse o
+   provocar scroll horizontal. */
+.q-subtabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--q-line);
+}
+.q-subtab {
+  padding: 6px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--q-line);
+  background: none;
+  color: var(--q-dim);
+  font-size: 13.5px;
+  cursor: pointer;
+  transition:
+    background 0.15s ease,
+    color 0.15s ease;
+}
+.q-subtab:hover {
+  background: rgb(255 255 255 / 5%);
+  color: var(--q-text);
+}
+.q-subtab.on {
+  background: color-mix(in srgb, var(--q-b) 22%, transparent);
+  border-color: color-mix(in srgb, var(--q-b) 45%, transparent);
+  color: var(--q-text);
+}
+/* Foco visible: Quiet se navega entero con teclado y eso no se pierde. */
+.q-subtab:focus-visible {
+  outline: 2px solid var(--q-a);
+  outline-offset: 2px;
+}
+
+/* scrollbar discreta */
+.q-main::-webkit-scrollbar {
+  width: 10px;
+}
+.q-main::-webkit-scrollbar-thumb {
+  background: rgb(255 255 255 / 10%);
+  border-radius: 8px;
+  border: 3px solid transparent;
+  background-clip: padding-box;
+}
+.q-main::-webkit-scrollbar-thumb:hover {
+  background: rgb(255 255 255 / 18%);
+  background-clip: padding-box;
+}

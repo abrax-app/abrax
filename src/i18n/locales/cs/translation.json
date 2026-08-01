@@ -6,16 +6,23 @@
     "unloadModel": "Uvolnit model",
     "model": "Model",
     "quit": "Ukončit",
-    "cancel": "Zrušit"
+    "cancel": "Zrušit",
+    "errorTitle": "Abrax narazil na problém",
+    "errorRecording": "Nahrávání se nepodařilo spustit. Otevřete Abrax pro podrobnosti.",
+    "errorTranscription": "Přepis selhal. Otevřete Abrax a zkuste to znovu z historie.",
+    "errorPaste": "Text se nepodařilo vložit. Je uložen v historii.",
+    "errorModelLoad": "Hlasový model se nepodařilo načíst. Otevřete Abrax pro příčinu.",
+    "errorModelDownload": "Stažení modelu selhalo. Otevřete Abrax a zkuste to znovu.",
+    "show": "Show Abrax"
   },
   "sidebar": {
     "general": "Obecné",
     "models": "Modely",
     "advanced": "Pokročilé",
-    "postProcessing": "Následné zpracování",
     "history": "Historie",
     "debug": "Ladění",
-    "about": "O aplikaci"
+    "about": "O aplikaci",
+    "escucha": "VOX"
   },
   "onboarding": {
     "subtitle": "Pro začátek vyberte model pro přepis",
@@ -46,11 +53,11 @@
         "name": "Whisper Large",
         "description": "Dobrá přesnost, ale pomalý."
       },
-      "parakeet-tdt-0.6b-v2": {
+      "parakeet-tdt-0_6b-v2": {
         "name": "Parakeet V2",
         "description": "Pouze angličtina. Nejlepší model pro anglicky mluvící."
       },
-      "parakeet-tdt-0.6b-v3": {
+      "parakeet-tdt-0_6b-v3": {
         "name": "Parakeet V3",
         "description": "Rychlý a přesný"
       },
@@ -93,6 +100,21 @@
       "cohere-int8": {
         "name": "Cohere",
         "description": "Velký, pomalejší, ale velmi přesný vícejazyčný model."
+      },
+      "handy-computer_canary-180m-flash-gguf": {
+        "description": "Nejlehčí a nejrychlejší — stáhne se do minuty a běží i na starém notebooku. Výměnou u velmi krátkých vět občas nerozumí vůbec."
+      },
+      "handy-computer_whisper-large-v3-turbo-gguf": {
+        "description": "Balanced — the everyday pick: understands 100 languages and doesn't keep you waiting."
+      },
+      "handy-computer_whisper-large-v3-gguf": {
+        "description": "Widest coverage — the big Whisper, the one everyone names. Slower, but complete."
+      },
+      "handy-computer_nemotron-3_5-asr-streaming-0_6b-gguf": {
+        "description": "Live — writes as you speak, word by word. This is the one that makes the sphere dance."
+      },
+      "handy-computer_cohere-transcribe-03-2026-gguf": {
+        "description": "Nejvyšší přesnost — nejpřesnější v katalogu, ve 14 jazycích. Ten doporučujeme na začátek. Váží 1,6 GB a chce svalnatý počítač."
       }
     },
     "errors": {
@@ -117,6 +139,15 @@
         "checkFailed": "Nepodařilo se zkontrolovat oprávnění. Zkuste to prosím znovu.",
         "requestFailed": "Nepodařilo se požádat o oprávnění. Zkuste to prosím znovu."
       }
+    },
+    "emptyCatalog": "Nejsou k dispozici žádné modely. Zkontrolujte log a restartujte Abrax.",
+    "welcome": {
+      "pitch": "Mluv a text se objeví, přímo v tvém počítači.",
+      "badgeLocal": "100% lokálně",
+      "badgeNoCloud": "Bez cloudu",
+      "badgeFree": "Zdarma",
+      "whyModel": "Aby tě Abrax slyšel, musí jednou stáhnout hlasový model. Potom funguje bez internetu.",
+      "start": "Začít"
     }
   },
   "modelSelector": {
@@ -151,7 +182,18 @@
     },
     "cancel": "Zrušit",
     "cancelDownload": "Zrušit stahování",
-    "legacy": "Zastaralé"
+    "legacy": "Zastaralé",
+    "downloadFailed": "Stažení selhalo",
+    "downloadFailedHelp": "Model se nepodařilo stáhnout. Zkontroluj připojení a zkus to znovu.",
+    "checkFailed": "Stav modelu se nepodařilo ověřit",
+    "loadFailed": "Model se nepodařilo načíst",
+    "switchFailed": "Model se nepodařilo přepnout",
+    "statusTitle": "Stav modelu: {{estado}}",
+    "confirmDownload": {
+      "title": "Download model",
+      "body": "{{modelName}} — {{size}}\n\n{{description}}\n\nIt downloads once and stays on your machine. After that it works offline.",
+      "ok": "Download"
+    }
   },
   "settings": {
     "modelSettings": {
@@ -192,6 +234,10 @@
           "cancel": {
             "name": "Zkratka zrušení",
             "description": "Klávesová zkratka pro zrušení aktuálního nahrávání."
+          },
+          "leer_seleccion": {
+            "name": "Přečíst výběr nahlas",
+            "description": "Přečte nahlas text, který máte označený v jakékoli aplikaci. Dalším stisknutím přečtení zastavíte."
           },
           "transcribe_with_post_process": {
             "name": "Klávesa pro následné zpracování",
@@ -245,7 +291,10 @@
         "output": "Výstup",
         "transcription": "Přepis",
         "history": "Historie",
-        "experimental": "Experimentální"
+        "experimental": "Experimentální",
+        "dictionary": "Živý slovník",
+        "correccion": "Místní korekce",
+        "memoria": "Paměť"
       },
       "experimentalToggle": {
         "label": "Experimentální funkce",
@@ -278,7 +327,7 @@
       },
       "showTrayIcon": {
         "label": "Zobrazit ikonu v systémové liště",
-        "description": "Zobrazit ikonu Abrax v systémové liště."
+        "description": "Zobrazit ikonu Abrax v systémové liště. Bez ní zavření okna Abrax úplně ukončí (v macOS zůstane v Docku)."
       },
       "overlay": {
         "style": {
@@ -287,7 +336,8 @@
           "options": {
             "none": "Žádné",
             "minimal": "Minimal",
-            "live": "Live"
+            "live": "Live",
+            "esfera": "Esfera"
           }
         },
         "position": {
@@ -296,6 +346,14 @@
           "options": {
             "bottom": "Dole",
             "top": "Nahoře"
+          }
+        },
+        "esferaModo": {
+          "title": "Režim Esfera",
+          "description": "Jak se koule Esfera chová. Zvuk: koule reaguje na váš hlas. Slova: nadiktovaná slova letí do koule, na okamžik se přečtou a rozplynou se v její membráně (nejlépe s modelem se streamováním, kde slova přicházejí živě, jak mluvíte).",
+          "options": {
+            "audio": "Reagující na zvuk",
+            "palabras": "Živá slova"
           }
         }
       },
@@ -322,6 +380,7 @@
       "clipboardHandling": {
         "title": "Práce se schránkou",
         "description": "'Neměnit schránku' zachová po přepisu aktuální obsah schránky. 'Kopírovat do schránky' ponechá po vložení výsledek přepisu ve schránce.",
+        "lockedByPasteMethod": "Locked by the paste method: pasting through the clipboard already leaves the transcription there. Choose Direct or None if you want your clipboard left untouched.",
         "options": {
           "dontModify": "Neměnit schránku",
           "copyToClipboard": "Kopírovat do schránky"
@@ -380,63 +439,85 @@
         "resetDefaults": "Obnovit výchozí seznam",
         "disable": "Vypnout filtr"
       },
-      "voiceActivityDetection": {
-        "title": "Voice Activity Detection",
-        "description": "Filter silence from recordings. Streaming-capable models use a longer VAD tail; disabling VAD records raw audio."
-      }
-    },
-    "postProcessing": {
-      "hotkey": {
-        "title": "Klávesová zkratka"
-      },
-      "api": {
-        "title": "API (kompatibilní s OpenAI)",
-        "provider": {
-          "title": "Poskytovatel",
-          "description": "Vyberte poskytovatele kompatibilního s OpenAI."
-        },
-        "appleIntelligence": {
-          "unavailable": "Apple Intelligence není na tomto zařízení k dispozici. Vyžaduje Mac s Apple Silicon a macOS Tahoe (26.0) nebo novější a povolené Apple Intelligence v Nastavení systému."
-        },
-        "baseUrl": {
-          "title": "Základní URL",
-          "description": "Základní URL API pro vybraného poskytovatele. Upravitelné je pouze u vlastního poskytovatele.",
-          "placeholder": "https://api.openai.com/v1"
-        },
-        "apiKey": {
-          "title": "API klíč",
-          "description": "API klíč pro vybraného poskytovatele.",
-          "placeholder": "sk-..."
-        },
-        "model": {
-          "title": "Model",
-          "descriptionCustom": "Zadejte identifikátor modelu očekávaný vaším vlastním endpointem.",
-          "descriptionDefault": "Vyberte model dostupný u vybraného poskytovatele.",
-          "placeholderWithOptions": "Vyhledejte nebo vyberte model",
-          "placeholderNoOptions": "Zadejte název modelu",
-          "refreshModels": "Obnovit modely"
+      "autocorreccion": {
+        "title": "Mluvená autokorekce",
+        "description": "Když se při diktování nahlas opravíte – „ne, promiň“, „chtěl jsem říct“ –, text vyjde už opravený. Podle pravidel, okamžitě a offline: bez modelu AI. Nahradí jen to, co jste opravili, nikdy nic nemaže sám od sebe a při pochybnostech se ničeho nedotkne. Ve výchozím stavu zapnuto.",
+        "ejemplo": "Příklad: „Naplánuj schůzku na úterý… ne, promiň, na středu“ se změní na „Naplánuj schůzku na středu.“",
+        "sustitucionTitle": "Signály opravy",
+        "sustitucionDescription": "Co řekneš, aby se nahradilo něco řečeného před chvílí (např. „ne, promiň“, „vlastně“). Nahradí to jen tehdy, když před signálem najde odpovídající úsek – stejný den v týdnu, měsíc, čas, číslo nebo jméno. Když žádný nenajde, nic nemění.",
+        "placeholder": "Přidat signál",
+        "add": "Přidat",
+        "remove": "Odebrat {{senal}}",
+        "duplicate": "„{{senal}}“ už existuje",
+        "showDefaults": "Použít výchozí",
+        "resetDefaults": "Zpět na výchozí",
+        "disable": "Vypnout úroveň",
+        "mode": {
+          "defaults": "Tovární",
+          "custom": "Moje"
         }
       },
-      "prompts": {
-        "title": "Prompt",
-        "selectedPrompt": {
-          "title": "Vybraný prompt",
-          "description": "Vyberte šablonu pro zpřesnění přepisu nebo vytvořte novou. V textu promptu použijte ${output} pro vložení zachyceného přepisu."
-        },
-        "noPrompts": "Nejsou k dispozici žádné prompty",
-        "selectPrompt": "Vyberte prompt",
-        "createNew": "Vytvořit nový prompt",
-        "promptLabel": "Název promptu",
-        "promptLabelPlaceholder": "Zadejte název promptu",
-        "promptInstructions": "Instrukce promptu",
-        "promptInstructionsPlaceholder": "Napište instrukce, které se mají spustit po přepisu. Příklad: Zlepšete gramatiku a srozumitelnost následujícího textu: ${output}",
-        "promptTip": "Tip: Použijte <code>${output}</code> pro vložení přepsaného textu do promptu.",
-        "updatePrompt": "Aktualizovat prompt",
-        "deletePrompt": "Smazat prompt",
-        "createPrompt": "Vytvořit prompt",
-        "cancel": "Zrušit",
-        "selectToEdit": "Vyberte výše prompt, abyste zobrazili a upravili jeho podrobnosti.",
-        "createFirst": "Klikněte nahoře na 'Vytvořit nový prompt' a vytvořte svůj první prompt pro následné zpracování."
+      "emojiDictado": {
+        "title": "Diktovaná emoji",
+        "description": "Řekněte slovo „emoji“ a hned za ním jeho název a emoji se vloží. Podle tabulky, okamžitě a bez připojení: nezapojuje se žádný model AI. Bez toho slova se nic nemění, a pokud název nerozpozná, nechá text přesně tak, jak jste ho nadiktovali.",
+        "ejemplo": "Příklad: „pošli mu emoji palec nahoru“ se změní na „pošli mu 👍“. Funguje i „emoji oheň“ → 🔥.",
+        "verDiccionario": "Zobrazit názvy",
+        "copiado": "{{emoji}} zkopírováno",
+        "noCopiado": "Nepodařilo se zkopírovat",
+        "diccionario": {
+          "titulo": "Názvy emodži",
+          "ayuda": "Řekni název s „emoji“ před ním. Klepnutím ho zkopíruješ.",
+          "buscar": "Hledat název",
+          "copiar": "Kopírovat",
+          "cargando": "Načítá se…",
+          "error": "Seznam se nepodařilo načíst.",
+          "sinResultados": "Žádný název neodpovídá.",
+          "total": "Názvů: {{total}}",
+          "recorte": "Zobrazeno {{mostrados}} z {{total}}. Zpřesni hledání."
+        }
+      },
+      "voiceActivityDetection": {
+        "title": "Detekce řeči",
+        "description": "Filter silence from recordings. Streaming-capable models use a longer VAD tail; disabling VAD records raw audio."
+      },
+      "dictionary": {
+        "title": "Slovník projektu",
+        "description": "Hlasové modely neznají žargon vašeho kódu. Abrax se ho učí indexováním aktivního projektu: identifikátory, větve gitu a názvy souborů opravují diktát.",
+        "pickProject": "Vybrat projekt",
+        "changeProject": "Změnit projekt",
+        "pickTitle": "Vyberte složku projektu",
+        "reindex": "Přeindexovat",
+        "enable": "Učit se z tohoto projektu",
+        "enableDescription": "Když je zapnuto, indexované termíny opravují diktát. Vypnutím pozastavíte bez ztráty indexu.",
+        "termCount": "{{count}} indexovaných termínů",
+        "noIndex": "Zatím neindexováno",
+        "lastIndexed": "indexováno {{date}}",
+        "indexed": "Projekt indexován: {{count}} termínů",
+        "indexError": "Indexování selhalo: {{error}}",
+        "privacy": "Index je na vašem disku. Nic z vašeho kódu neopouští tento počítač.",
+        "source": {
+          "code": "z repozitáře",
+          "branch": "větev git",
+          "path": "název souboru"
+        }
+      },
+      "customReplacements": {
+        "title": "Přesné náhrady",
+        "description": "Když model slovo vždy slyší špatně, opravte ho deterministicky: přesná shoda tokenu, rozlišuje velikost písmen.",
+        "fromPlaceholder": "Slyšeno",
+        "toPlaceholder": "Nahradit za",
+        "add": "Přidat",
+        "remove": "Odebrat {{word}}",
+        "duplicate": "Náhrada pro \"{{word}}\" již existuje"
+      },
+      "memoria": {
+        "title": "Paměť oprav",
+        "description": "ABRAX se učí, když opravíte přepis v Historii: smažte slovo, napište správné a příště bude napsáno správně. Vše lokálně.",
+        "empty": "Zatím žádné naučené opravy. Upravte přepis v Historii (ikona tužky) a ABRAX se z vašich změn naučí.",
+        "forget": "Zapomenout tuto opravu",
+        "clearAll": "Zapomenout vše",
+        "enSitioTitle": "Učit se tam, kde diktuješ",
+        "enSitioDescription": "Při zahájení diktátu ABRAX znovu přečte pole, do kterého píšeš (přes zpřístupnění, 100% lokálně), a učí se z oprav, které jsi tam u předchozího diktátu udělal. Nic z pole se neukládá ani neopouští zařízení."
       }
     },
     "history": {
@@ -452,7 +533,17 @@
       "retranscribe": "Přepsat znovu",
       "retranscribeError": "Opětovný přepis se nezdařil. Zkuste to prosím znovu.",
       "transcribing": "Přepisuji...",
-      "transcriptionFailed": "Přepis selhal. Můžete zkusit přepis znovu pomocí ikony opakování."
+      "transcriptionFailed": "Přepis selhal. Můžete zkusit přepis znovu pomocí ikony opakování.",
+      "loadError": "Historii se nepodařilo načíst. Vaše diktáty jsou stále na disku.",
+      "edit": {
+        "action": "Upravit přepis",
+        "save": "Uložit",
+        "cancel": "Zrušit",
+        "hint": "Při uložení se Paměť naučí vaše opravy.",
+        "saved": "Přepis aktualizován.",
+        "learned": "Paměť: naučeno {{pares}}",
+        "error": "Úpravu se nepodařilo uložit."
+      }
     },
     "debug": {
       "title": "Ladění",
@@ -510,10 +601,6 @@
         "title": "Mikrofon při zavřeném víku",
         "description": "Mikrofon, který se použije při zavřeném víku notebooku"
       },
-      "postProcessingToggle": {
-        "label": "Následné zpracování",
-        "description": "Povolit AI vylepšení textu po přepisu"
-      },
       "muteWhileRecording": {
         "label": "Ztlumit při nahrávání",
         "description": "Ztlumit systémový zvuk během nahrávání"
@@ -568,9 +655,9 @@
         "button": "Zobrazit na GitHubu"
       },
       "supportDevelopment": {
-        "title": "Podpořte vývoj",
-        "description": "Pomozte nám pokračovat ve vývoji Abrax",
-        "button": "Přispět"
+        "title": "Podpořte Handy (původní projekt)",
+        "description": "Dary jdou CJ Paisovi, tvůrci projektu Handy — projektu, z něhož je ABRAX fork.",
+        "button": "Podpořit Handy"
       },
       "acknowledgments": {
         "title": "Poděkování",
@@ -583,11 +670,21 @@
           "title": "ggml",
           "description": "Vysoce výkonné inferenční zpracování modelu automatického rozpoznávání řeči Whisper od OpenAI",
           "details": "Abrax používá ggml pro rychlé lokální zpracování řeči na text. Díky skvělé práci Georgiho Gerganova a přispěvatelů."
+        },
+        "modelos": {
+          "title": "Modely rozpoznávání řeči",
+          "description": "Modely se stahují na vyžádání a nejsou součástí instalátoru. Každý si ponechává vlastní licenci; modely pod CC-BY vyžadují uvedení autorství, které je zde uvedeno. Úplné znění v souboru LICENSES-THIRD-PARTY.md."
         }
       },
       "whatsNewUpdates": {
         "label": "Zobrazovat novinky",
         "description": "Zobrazovat poznámky k vydání po aktualizacích Abrax"
+      }
+    },
+    "streaming": {
+      "systemAudio": {
+        "label": "Zachytit zvuk systému",
+        "description": "Přepisuje to, co hraje v počítači —výuku, video, schůzku— místo mikrofonu. Vyžaduje model vhodný pro zvuk systému; pokud aktivní není, Abrax přepne na vhodný."
       }
     }
   },
@@ -611,7 +708,14 @@
     "open": "Otevřít",
     "copy": "Kopírovat",
     "clear": "Vymazat",
-    "noOptionsFound": "Nenalezeny žádné možnosti"
+    "noOptionsFound": "Nenalezeny žádné možnosti",
+    "retry": "Zkusit znovu",
+    "play": "Přehrát",
+    "pause": "Pozastavit",
+    "seek": "Pozice přehrávání",
+    "moreInfo": "Více informací",
+    "selectOption": "Vyberte možnost…",
+    "systemDefault": "Výchozí"
   },
   "accessibility": {
     "permissionsDescription": "Abrax potřebuje oprávnění usnadnění přístupu, aby mohlo psát přepsaný text.",
@@ -627,13 +731,37 @@
       "linux": "Povolte přístup k mikrofonu v nastavení zvuku nebo soukromí vašeho systému."
     },
     "noInputDeviceTitle": "Mikrofon nebyl nalezen",
+    "recordingNoAudioTitle": "No audio detected",
     "noInputDevice": "Nebylo detekováno žádné zvukové vstupní zařízení. Připojte mikrofon nebo sluchátka a zkuste to znovu.",
     "recordingFailed": "Nepodařilo se spustit nahrávání: {{error}}",
     "modelLoadFailed": "Nepodařilo se načíst model: {{model}}",
     "modelLoadFailedUnknown": "neznámý model",
     "pasteFailedTitle": "Vložení textu se nezdařilo",
     "pasteFailed": "Text nebylo možné vložit do aktivní aplikace.",
-    "transcriptionFailedTitle": "Přepis selhal"
+    "transcriptionFailedTitle": "Přepis selhal",
+    "recordingFailedTitle": "Nahrávání selhalo",
+    "modelLoadFailedTitle": "Model se nepodařilo načíst",
+    "modelDownloadFailedTitle": "Stažení modelu selhalo",
+    "center": {
+      "title": "Poslední upozornění ({{count}})",
+      "dismiss": "Zavřít",
+      "toggle": "Zobrazit všechna upozornění"
+    },
+    "recordingTooShortTitle": "Skoro nic se nenahrálo",
+    "recordingTooShort": "Nahrávka trvala méně než sekundu. Pokud používáš zkratku, drž {{atajo}}, dokud mluvíš.",
+    "recordingTooShortNoBinding": "Nahrávka trvala méně než sekundu. Chvíli mluv, než ji zastavíš.",
+    "transcriptionEmptyTitle": "Nic nebylo rozpoznáno",
+    "transcriptionEmpty": "Nebyla rozpoznána žádná slova. Zkus to znovu, mluv trochu hlasitěji nebo blíž.",
+    "sistemaSinModeloAptoTitle": "Je potřeba lepší model",
+    "sistemaSinModeloApto": "Systémový zvuk se zachytil, ale aktuální model nerozpozná řeč z porad ani z videí. V sekci Modely si stáhněte Nemotron Streaming 3.5 (716 MB) nebo Whisper Large v3 Turbo (845 MB) a Abrax na něj přejde sám.",
+    "sistemaSinModeloAptoDescargar": "Stáhnout ({{mb}} MB)",
+    "shortcutRegistrationTitle": "Zkratku se nepodařilo aktivovat",
+    "shortcutRegistration": "Abrax nedokázal zaregistrovat klávesovou zkratku. Restartuj ho; pokud potíže trvají, nastav jinou v Nastavení → Obecné.",
+    "atajoOcupado": "Tuto zkratku už používá jiná aplikace: {{atajos}}. Změňte ji v Nastavení, aby fungovala.",
+    "atajoOcupadoCambiar": "Změnit zkratku",
+    "sistemaModeloCambiadoTitle": "Model změněn kvůli zvuku systému",
+    "sistemaModeloCambiado": "Abrax přepnul na {{modelo}}, který zvuku systému rozumí. Tento model nezobrazuje text během mluvení ani slova za minutu – vše se objeví po uvolnění. Pro živý text stáhni Nemotron Streaming 3.5 (716 MB) v Modelech.",
+    "descargaIniciada": "Stahuji model. Uvidíš v Modelech."
   },
   "appLanguage": {
     "title": "Jazyk aplikace",
@@ -648,14 +776,352 @@
       "dark": "Tmavý"
     }
   },
+  "palette": {
+    "title": "Paleta",
+    "description": "Zvolte barevnou paletu Abraxu. Imperial je tmavá už z návrhu: dokud je aktivní, vynucuje tmavý režim.",
+    "options": {
+      "abrax": "ABRAX",
+      "imperial": "Imperial",
+      "escuderia": "Escudería"
+    }
+  },
   "overlay": {
     "transcribing": "Přepisuji...",
-    "processing": "Zpracovávám..."
+    "processing": "Zpracovávám...",
+    "leyendo": "Předčítání nahlas",
+    "preparando": "Připravuje se předčítání"
   },
   "whatsNew": {
     "title": "Novinky v Abrax v{{version}}"
   },
+  "correccion": {
+    "motor": {
+      "title": "Korekční engine",
+      "description": "Čistí diktát mezi přepisem a vložením. Vypnuto ponechá vše přesně tak, jak bylo přepsáno. Pouze pravidla aplikují okamžité deterministické opravy.",
+      "options": {
+        "solo_reglas": "Pouze pravidla",
+        "desactivado": "Vypnuto"
+      }
+    },
+    "modo": {
+      "title": "Úroveň korekce",
+      "description": "Doslovný opravuje jen mezery a velká písmena vět. Čistý navíc dělá: symboly („pět procent“ → 5 %), chybějící diakritiku, e-maily a cesty, opakování („potom potom“) a — pokud to necháte zapnuté níže — čísla číslicemi. Mluvená autokorekce na tomto nezávisí: má vlastní přepínač.",
+      "options": {
+        "literal": "Doslovný",
+        "limpio": "Čistý"
+      }
+    },
+    "numeros": {
+      "title": "Čísla číslicemi",
+      "description": "Převádí nadiktovaná čísla na číslice: „dvanáct tisíc osm set“ → 12800, „v sedmnáct třicet“ → 17:30. Převádí VŠECHNA, nejen technická: „ty dvě minuty“ bude „ty 2 minuty“. Chceš raději slovy? Vypni to — zbytek Čistého funguje dál."
+    }
+  },
+  "pruebaMic": {
+    "title": "Otestovat mikrofon",
+    "description": "Nahraje 3 sekundy přesně toho, co by slyšel model (16 kHz, bez VAD), přehraje je a vydá verdikt se skutečnými úrovněmi. Také odhalí, jaké zařízení se doopravdy skrývá za Default.",
+    "boton": "Nahrát 3 s",
+    "grabando": "Nahrávání…",
+    "niveles": "RMS {{rms}} dBFS · pico {{pico}} dBFS",
+    "nivelClip": " · clip {{clip}}%",
+    "veredicto": {
+      "sin_senal": "Žádný signál — mikrofon nedodává zvuk",
+      "muy_bajo": "Velmi nízká — na této úrovni diktování selže",
+      "bajo": "Nízká — funguje, ale přesnost trpí",
+      "sano": "Zdravá úroveň",
+      "saturado": "Přebuzení — mikrofon ořezává"
+    },
+    "dispositivo": "Mikrofon: {{nombre}} ({{contexto}})",
+    "esElDefault": "výchozí systému",
+    "esElegido": "zvolený v nastavení"
+  },
+  "shell": {
+    "title": "Tvar okna",
+    "description": "Vyberte podobu okna Abrax. Klasické je standardní okno nastavení; Quiet je minimalistický tmavý panel se sférou na úvodní obrazovce. Rámeček okna se plně aktualizuje po restartu Abrax.",
+    "options": {
+      "classic": "Klasický",
+      "retro": "Retro",
+      "quiet": "Quiet",
+      "bancada": "Karting"
+    }
+  },
+  "bancada": {
+    "local": "Procesamiento local · 0% Nube",
+    "tray": "Enviar a la bandeja",
+    "min": "Minimizar",
+    "close": "Cerrar",
+    "nav": {
+      "tablero": "TABLERO",
+      "bitacora": "BITÁCORA",
+      "setup": "SETUP"
+    },
+    "pitRadio": "PIT RADIO",
+    "lcdReady": "En boxes · listo",
+    "lcdListening": "Escuchando…",
+    "launch": "TU LARGADA · {{atajo}}",
+    "start": "Arrancar dictado",
+    "stop": "Detener dictado",
+    "dictate": "Dictar",
+    "stopping": "Detener",
+    "ignitionStart": "START",
+    "ignitionStop": "STOP",
+    "appearance": "APARIENCIA",
+    "speakers": "Hablantes",
+    "systemAudio": "System audio",
+    "speakersAuto": "Auto",
+    "speakersN": "{{n}}",
+    "mergeInto": "Actually is…",
+    "resetSpeakers": "Reset",
+    "wpmUnit": "PAL/MIN",
+    "copied": "Copiado al portapapeles",
+    "on": "ON",
+    "off": "OFF",
+    "btn": {
+      "cancel": "Cancelar",
+      "copy": "Copiar",
+      "clear": "Limpiar",
+      "translate": "Traducir → EN",
+      "fillers": "Muletillas",
+      "log": "Bitácora"
+    },
+    "dial": {
+      "vad": "VAD",
+      "palette": "Paleta"
+    },
+    "lamp": {
+      "idle": "RALENTÍ",
+      "rec": "REC",
+      "transcribing": "TRANSCRIBIENDO",
+      "polishing": "PULIENDO",
+      "error": "FALLA"
+    },
+    "estado": {
+      "idle": "Ralentí",
+      "rec": "Grabando",
+      "transcribing": "Transcribiendo",
+      "polishing": "Puliendo",
+      "error": "Falla"
+    },
+    "speakerLabel": "Mluvčí {{n}}"
+  },
+  "retro": {
+    "menu": "Nabídka Abrax",
+    "titleMain": "ABRAX · RETRO REŽIM",
+    "titleSettings": "ABRAX · RYCHLÉ NASTAVENÍ",
+    "titleHistory": "ABRAX · HISTORIE",
+    "fold": "Složit",
+    "close": "Zavřít",
+    "marquee": "ABRAX ··· ŘEKNI SLOVO ··· RETRO REŽIM ··· 100% LOKÁLNÍ ··· ŠPANĚLŠTINA NA PRVNÍM MÍSTĚ ···",
+    "lamp": {
+      "model": "Model",
+      "local": "LOKÁLNÍ",
+      "filler": "VÝPLNĚ",
+      "dict": "SLOVNÍK",
+      "ptt": "PTT",
+      "vad": "VAD",
+      "translate": "PŘEKLAD",
+      "sphere": "KOULE"
+    },
+    "dictate": "Diktovat",
+    "stop": "Zastavit",
+    "settings": "Rychlé nastavení",
+    "history": "Historie",
+    "compiler": "Kompilátor promptů",
+    "sections": "SEKCE ▾",
+    "slider": {
+      "buffer": "BUFFER",
+      "volume": "HLAS.",
+      "threshold": "PRÁH"
+    },
+    "emptyHistory": "Zatím žádné diktáty — podržte zkratku a mluvte.",
+    "copyHint": "Dvojklikem zkopírujete",
+    "copy": "KOPÍROVAT",
+    "save": "★ ULOŽIT",
+    "delete": "SMAZAT",
+    "compile": "✦ KOMPILOVAT",
+    "count": "{{n}} diktátů · LOKÁLNÍ",
+    "copied": "Zkopírováno do schránky",
+    "menuSections": "SEKCE",
+    "menuWindows": "OKNA",
+    "toClassic": "Zpět na Klasický",
+    "theme": "Motiv",
+    "footer": "RETRO REŽIM — skin ABRAX · stejné průhledné okno",
+    "tray": "Send to tray",
+    "minimize": "Minimize",
+    "localBadge": "Místní zpracování · 0 % cloudu",
+    "infoPalette": "Paleta",
+    "infoLanguage": "Jazyk",
+    "infoFillers": "Vycpávková slova",
+    "infoTranslate": "Přeložit",
+    "infoAutoVoice": "Automatický hlas",
+    "infoVisual": "Vzhled",
+    "words": "Slov: {{n}}",
+    "actCopy": "Kopírovat",
+    "actClear": "Vymazat",
+    "emptyTranscriptions": "Zatím žádné přepisy.",
+    "activeModel": "AKTIVNÍ MODEL",
+    "localFull": "100% místní zpracování · Bez cloudu",
+    "backToClassic": "ZPĚT NA KLASICKÝ VZHLED"
+  },
   "logo": {
     "tagline": "« Di la <accent>palabra</accent>. »"
+  },
+  "escucha": {
+    "title": "VOX",
+    "openFile": "Otevřít soubor…",
+    "readClipboard": "Přečíst schránku",
+    "play": "Číst",
+    "pause": "Pauza",
+    "pauseHint": "Pauza na konci aktuální věty",
+    "resume": "Pokračovat",
+    "stop": "Zastavit",
+    "speed": "Rychlost",
+    "voiceProse": "Hlas prózy",
+    "voiceCode": "Hlas kódu",
+    "noVoices": "Nebyly nalezeny žádné systémové hlasy",
+    "empty": "Otevřete soubor nebo přečtěte schránku a začněte.",
+    "engineUnavailable": "Systémový hlasový modul není k dispozici.",
+    "errorRead": "Obsah se nepodařilo přečíst.",
+    "errorSpeak": "Čtení se nepodařilo přehrát.",
+    "escHint": "Esc zastaví čtení.",
+    "clipboard": "Schránka",
+    "clipboardEmpty": "Schránka neobsahuje text.",
+    "fileFilter": "Text, Markdown nebo kód",
+    "sentences": "{{total}} vět",
+    "verbosity": "Symboly",
+    "verbosityNatural": "Přirozeně (méně šumu)",
+    "verbosityLiteral": "Doslovně (všechny symboly)"
+  },
+  "tts": {
+    "voiceLangEs": "Španělština",
+    "voiceLangEn": "Angličtina",
+    "voiceSettings": "Nastavení hlasu",
+    "speed": "Rychlost",
+    "pitch": "Výška",
+    "pitchLow": "Nízká",
+    "pitchNormal": "Normální",
+    "pitchHigh": "Vysoká",
+    "pitchHint": "Výška se vztahuje pouze na online hlas.",
+    "vram": "({{gb}} GB VRAM)",
+    "descOnline": "Neuronové hlasy Microsoftu (Azure). Není lokální: posílá text přes internet.",
+    "onlineWarning": "vyžaduje internet · text opustí zařízení",
+    "preparingVoice": "Připravuje se {{engine}}… poprvé to trvá pár sekund.",
+    "engineSystem": "Systémové hlasy",
+    "title": "Hlasový modul",
+    "localBadge": "100% lokální",
+    "detecting": "Rozpoznáváme tvůj hardware…",
+    "detected": "Rozpoznali jsme tvůj hardware:",
+    "recommendation": "Doporučujeme {{engine}} pro nejlepší hlas — lokálně a offline.",
+    "activeEngine": "Aktivní modul: {{engine}}",
+    "detectFailed": "Hardware se nepodařilo rozpoznat; použijí se systémové hlasy.",
+    "useRecommended": "Použít doporučený",
+    "chooseOther": "Zvolit jiný modul",
+    "redetect": "Rozpoznat znovu",
+    "testVoice": "Vyzkoušet hlas",
+    "sampleTextEs": "Hola, soy la voz de Abrax. Di la palabra y yo la leo por ti.",
+    "sampleTextEn": "Hi, I'm the voice of Abrax. Say the word and I'll read it for you.",
+    "voice": "Hlas",
+    "noGpu": "bez dedikované GPU",
+    "available": "Dostupné",
+    "unavailable": "Nedostupné",
+    "needsGpu": "vyžaduje kompatibilní GPU (NVIDIA nebo Apple Silicon)",
+    "needsDownload": "vyžaduje stažení modulu",
+    "recommended": "Doporučeno",
+    "activeShort": "Aktivní",
+    "use": "Použít",
+    "download": "Povolit",
+    "downloading": "Stahování…",
+    "installed": "Modul nainstalován",
+    "errorDownload": "Modul se nepodařilo stáhnout.",
+    "errorSetEngine": "Modul se nepodařilo změnit.",
+    "descSystem": "Hlasy operačního systému. Vždy dostupné, bez stahování.",
+    "descPiper": "Neuronální hlas v češtině, nenáročný, běží na CPU.",
+    "descKokoro": "Vysoce kvalitní neuronální hlas na CPU."
+  },
+  "carpetaModelos": {
+    "titulo": "Models folder",
+    "cambiar": "Change",
+    "discoConNombre": "{{nombre}} ({{punto}})",
+    "removible": "· removable",
+    "espacio": "{{libre}} GB free of {{total}} GB",
+    "volverPorDefecto": "Back to the original folder",
+    "avisoNoMueve": "New downloads will go to this folder. Already-downloaded models stay where they were; if they don't show up, go back to the original folder or download them again here.",
+    "moverPregunta": "Přesunout již stažené modely ({{gb}} GB) do nové složky?",
+    "moverAhora": "Přesunout nyní",
+    "soloNuevas": "Pouze nová stahování",
+    "cancelar": "Zrušit",
+    "moviendo": "Přesouvání {{archivo}}…",
+    "moverError": "Přesun se nepodařilo dokončit: {{detalle}}. Nic se neztratilo: co se nepřesunulo, zůstává v předchozí složce."
+  },
+  "quiet": {
+    "nav": {
+      "listen": "Poslech",
+      "shortcuts": "Zkratky",
+      "streaming": "Streaming",
+      "transcriptions": "Transcriptions",
+      "models": "Models",
+      "settings": "Settings",
+      "more": "Více"
+    },
+    "ready": "ABRAX is ready",
+    "holdHint": "Drž <k>{{atajo}}</k>, dokud mluvíš, a po skončení pusť.",
+    "holdHintNoBinding": "Nastav zkratku v Nastavení a drž ji, dokud mluvíš.",
+    "start": "Start transcription",
+    "stop": "Stop",
+    "recent": "Recent transcriptions",
+    "empty": "No transcriptions yet. Hold the shortcut and say the word.",
+    "local": "Local processing",
+    "noCloud": "No cloud connection",
+    "min": "Minimize",
+    "max": "Maximize",
+    "close": "Close",
+    "tray": "Send to tray",
+    "dictando": "Poslouchám… po skončení pusť",
+    "panel": {
+      "modelo": "Model",
+      "sinModelo": "Žádný model",
+      "descargar": "stáhnout",
+      "descargando": "Stahuje se {{modelo}} · {{pct}} %",
+      "voz": "Hlas",
+      "hint": {
+        "fillers": "Odstraní vycpávková slova («ehm», «no») z toho, co diktujete.",
+        "autocorreccion": "Když se opravíte nahlas («ne, pardon»), text vyjde už opravený.",
+        "emoji": "Řekněte «emoji» a jeho název a vloží se. Podle tabulky, bez AI.",
+        "systemAudio": "Přepisuje to, co hraje v počítači, místo mikrofonu. Pokud se aktivní model nehodí, Abrax přepne na vhodný."
+      },
+      "sinModeloSistema": "Stáhněte si jeden z těchto modelů, abyste mohli zachytávat zvuk systému.",
+      "elegirModelo": "Vybrat model",
+      "usaraSistema": "Nevybráno. Když zapnete zvuk systému, Abrax použije „{{modelo}}“.",
+      "descargado": "stažený"
+    },
+    "modo": {
+      "grupo": {
+        "gesto": "Jak se spouští",
+        "microfono": "Váš mikrofon",
+        "texto": "Co se stane s textem",
+        "pegado": "Kam se píše",
+        "salida": "Kde je slyšet",
+        "fuente": "Odkud jde zvuk",
+        "apariencia": "Vzhled"
+      },
+      "streaming": {
+        "que": "Přepisuje to, co hraje v počítači —výuku, video, schůzku— místo mikrofonu.",
+        "resto": "Zbytek —oprava, vycpávková slova, slovník, vkládání— je stejný jako u Poslechu: nastavíte jednou a platí pro obojí."
+      },
+      "vox": {
+        "que": "Přečte nahlas text, který máte označený, v jakékoli aplikaci.",
+        "como": "Stiskněte <k>{{atajo}}</k> a začne číst; dalším stiskem umlkne."
+      },
+      "escucha": {
+        "que": "Mluvíte a text se objeví tam, kde píšete. Vše probíhá ve vašem počítači — nic nejde na internet."
+      }
+    }
+  },
+  "soundPicker": {
+    "custom": "Vlastní",
+    "preview": "Poslechnout motiv (start a stop)"
+  },
+  "vox": {
+    "atajoHint": "Pro VOX stiskni <k>{{atajo}}</k> a přečte nahlas text, který máš označený v jakékoli aplikaci.",
+    "atajoSinBinding": "Pro VOX nastav zkratku v Nastavení a přečte nahlas označený text."
   }
 }

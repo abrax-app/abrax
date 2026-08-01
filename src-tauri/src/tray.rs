@@ -184,6 +184,8 @@ pub fn update_tray_menu(app: &AppHandle, locale: Option<&str>) {
     let version_label = version_label();
     let version_i = MenuItem::with_id(app, "version", &version_label, false, None::<&str>)
         .expect("failed to create version item");
+    let show_i = MenuItem::with_id(app, "show", &strings.show, true, None::<&str>)
+        .expect("failed to create show item");
     let settings_i = MenuItem::with_id(
         app,
         "settings",
@@ -261,6 +263,7 @@ pub fn update_tray_menu(app: &AppHandle, locale: Option<&str>) {
                 &[
                     &version_i,
                     &separator(),
+                    &show_i,
                     &cancel_i,
                     &separator(),
                     &copy_last_transcript_i,
@@ -278,6 +281,7 @@ pub fn update_tray_menu(app: &AppHandle, locale: Option<&str>) {
             &[
                 &version_i,
                 &separator(),
+                &show_i,
                 &copy_last_transcript_i,
                 &separator(),
                 &model_submenu,

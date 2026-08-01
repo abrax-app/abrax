@@ -1,16 +1,23 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { useTranslation } from "react-i18next";
-import { ask } from "@tauri-apps/plugin-dialog";
 import { ChevronDown, Globe, RefreshCw, Search } from "lucide-react";
 import type { ModelCardStatus } from "@/components/onboarding";
 import { ModelCard } from "@/components/onboarding";
+// import { CarpetaModelos } from "./CarpetaModelos"; // ver nota más abajo
 import { useModelStore } from "@/stores/modelStore";
+import { confirmarBorrado, confirmarDescarga } from "@/lib/utils/modelDialogs";
 import {
   getLanguageLabel,
   MODEL_CAPABILITY_LANGUAGES,
   supportsLanguageCode,
 } from "@/lib/constants/languages.ts";
-import type { ModelInfo } from "@/bindings";
+import { commands, type ModelInfo } from "@/bindings";
 
 // check if model supports a language based on its supported_languages list
 const modelSupportsLanguage = (model: ModelInfo, langCode: string): boolean => {
@@ -20,10 +27,32 @@ const modelSupportsLanguage = (model: ModelInfo, langCode: string): boolean => {
 // Legacy models are the blob (Url-sourced) .bin/ONNX downloads, superseded by
 // the catalog GGUFs. They stay runnable when already on disk, but we no longer
 // advertise the download.
-const isLegacyModel = (model: ModelInfo): boolean =>
+//
+// Exportado porque el panel «Atajos» ofrece el mismo catálogo en un desplegable
+// y tiene que esconder exactamente los mismos modelos: dos definiciones de «qué
+// es heredado» acaban enseñando dos listas distintas del mismo catálogo.
+export const isLegacyModel = (model: ModelInfo): boolean =>
   typeof model.source === "object" && "Url" in model.source;
 
-export const ModelsSettings: React.FC = () => {
+/**
+ * Con qué capacidad se filtra el catálogo. El shell Quiet ya no tiene una
+ * pantalla «Modelos» suelta: cada modo lleva DENTRO los modelos que sabe usar,
+ * así que «Escucha» pide los de dictado y «Streaming» los que escriben mientras
+ * hablas. `undefined` = el catálogo entero, que es lo que sigue viendo el shell
+ * Clásico y el onboarding.
+ */
+export type CapacidadModelo = "dictado" | "sistema";
+
+interface ModelsSettingsProps {
+  capacidad?: CapacidadModelo;
+  /** Oculta el título y la descripción cuando la pantalla ya los pone. */
+  sinCabecera?: boolean;
+}
+
+export const ModelsSettings: React.FC<ModelsSettingsProps> = ({
+  capacidad,
+  sinCabecera = false,
+}) => {
   const { t } = useTranslation();
   const [switchingModelId, setSwitchingModelId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
@@ -32,6 +61,26 @@ export const ModelsSettings: React.FC = () => {
   const [languageSearch, setLanguageSearch] = useState("");
   const languageDropdownRef = useRef<HTMLDivElement>(null);
   const languageSearchInputRef = useRef<HTMLInputElement>(null);
+  // Qué modelos sirven para audio del sistema. La lista la manda el backend
+  // (`aptitud_audio_sistema`), que es donde vive la regla. Se pedía antes por
+  // `supports_streaming` y esa NO es la condición: de los cinco solo Nemotron
+  // declara streaming, pero el audio del sistema lo sirven cuatro — la lista
+  // escondía tres modelos válidos.
+  const [preferidosSistema, setPreferidosSistema] = useState<string[]>([]);
+  useEffect(() => {
+    if (capacidad !== "sistema") return;
+    let vivo = true;
+    void commands.aptitudAudioSistema().then((r) => {
+      if (vivo && r.status === "ok") setPreferidosSistema(r.data.preferidos);
+    });
+    return () => {
+      vivo = false;
+    };
+  }, [capacidad]);
+  const sirveParaSistema = useCallback(
+    (m: ModelInfo) => preferidosSistema.some((p) => m.id.includes(p)),
+    [preferidosSistema],
+  );
   const {
     models,
     currentModel,
@@ -47,6 +96,7 @@ export const ModelsSettings: React.FC = () => {
     selectModel,
     deleteModel,
     rescanLocalModels,
+    downloadErrors,
   } = useModelStore();
 
   // click outside handler for language dropdown
@@ -129,30 +179,20 @@ export const ModelsSettings: React.FC = () => {
   };
 
   const handleModelDownload = async (modelId: string) => {
+    // Confirmar antes de bajar cientos de MB (misma regla que en el onboarding).
+    const model = models.find((m: ModelInfo) => m.id === modelId);
+    if (model && !(await confirmarDescarga(model, t))) return;
     await downloadModel(modelId);
   };
 
   const handleModelDelete = async (modelId: string) => {
     const model = models.find((m: ModelInfo) => m.id === modelId);
-    const modelName = model?.name || modelId;
-    const isActive = modelId === currentModel;
-
-    const confirmed = await ask(
-      isActive
-        ? t("settings.models.deleteActiveConfirm", { modelName })
-        : t("settings.models.deleteConfirm", { modelName }),
-      {
-        title: t("settings.models.deleteTitle"),
-        kind: "warning",
-      },
-    );
-
-    if (confirmed) {
-      try {
-        await deleteModel(modelId);
-      } catch (err) {
-        console.error(`Failed to delete model ${modelId}:`, err);
-      }
+    if (!model) return;
+    if (!(await confirmarBorrado(model, modelId === currentModel, t))) return;
+    try {
+      await deleteModel(modelId);
+    } catch (err) {
+      console.error(`Failed to delete model ${modelId}:`, err);
     }
   };
 
@@ -170,6 +210,11 @@ export const ModelsSettings: React.FC = () => {
     return models.filter((model: ModelInfo) => {
       // Hide deprecated legacy (.bin/ONNX) downloads unless already on disk.
       if (isLegacyModel(model) && !model.is_downloaded) return false;
+      // «Sistema» ofrece SOLO los que sirven para audio del sistema, y esa
+      // lista la manda el backend. «Dictado» no filtra nada: los cinco del
+      // catálogo transcriben un micrófono, y esconderle tres a alguien porque
+      // además saben otra cosa fue el error que ya se corrigió al revés.
+      if (capacidad === "sistema" && !sirveParaSistema(model)) return false;
       if (languageFilter !== "all") {
         if (!modelSupportsLanguage(model, languageFilter)) return false;
       }
@@ -179,7 +224,30 @@ export const ModelsSettings: React.FC = () => {
       }
       return true;
     });
-  }, [models, languageFilter, searchQuery]);
+  }, [models, languageFilter, searchQuery, capacidad, sirveParaSistema]);
+
+  // Con una lista corta el buscador y el filtro de idioma sobran: no se filtran
+  // cinco elementos, y son dos controles más en una pantalla que la medición del
+  // 26/07 describió como abrumadora. Reaparecen solos si la lista crece.
+  //
+  // Se cuenta lo que SE VE, no `models`. Antes miraba el registro entero —que en
+  // esta máquina son 22 entradas: 5 del catálogo más 17 heredadas que la lista
+  // de abajo esconde—, así que la condición nunca se cumplía y los dos controles
+  // salían siempre, sobre cinco tarjetas. La regla estaba escrita y no llegaba a
+  // aplicarse jamás.
+  //
+  // Y se cuenta ANTES de aplicar el texto buscado: si contara después, teclear
+  // reduciría la lista, la condición se volvería cierta y el buscador
+  // desaparecería con las letras dentro.
+  const catalogoCorto = useMemo(
+    () =>
+      models.filter((model: ModelInfo) => {
+        if (isLegacyModel(model) && !model.is_downloaded) return false;
+        if (capacidad === "sistema" && !sirveParaSistema(model)) return false;
+        return true;
+      }).length <= 8,
+    [models, capacidad, sirveParaSistema],
+  );
 
   // Split filtered models into downloaded (including custom) and available sections
   const { downloadedModels, availableModels } = useMemo(() => {
@@ -225,26 +293,42 @@ export const ModelsSettings: React.FC = () => {
 
   return (
     <div className="max-w-3xl w-full mx-auto space-y-4">
-      <div className="mb-4">
-        <h1 className="text-xl font-semibold mb-2">
-          {t("settings.models.title")}
-        </h1>
-        <p className="text-sm text-text/60">
-          {t("settings.models.description")}
-        </p>
-      </div>
+      {!sinCabecera && (
+        <div className="mb-4">
+          <h1 className="text-xl font-semibold mb-2">
+            {t("settings.models.title")}
+          </h1>
+          <p className="text-sm text-text/60">
+            {t("settings.models.description")}
+          </p>
+        </div>
+      )}
+
+      {/* OCULTO (28/07) — «Carpeta de modelos» promete algo que no cumple.
+          Los cinco modelos del catálogo se descargan a la caché de Hugging
+          Face (`managers/model.rs:1837`, `ApiBuilder::from_env()`), no a la
+          carpeta que el usuario elige aquí: el ajuste solo manda sobre los
+          modelos heredados. Elegir disco y ver que las
+          descargas siguen yendo a otro sitio es peor que no ofrecerlo —
+          mismo criterio que se aplicó al chip «Hablantes».
+          Vuelve cuando se haga el refactor de `models_dir` (ver IDEAS.md).
+          El componente y su comando se conservan intactos: reactivar es
+          descomentar esta línea. */}
+      {/* <CarpetaModelos /> */}
 
       {/* Search bar — filter the catalog by name or description */}
-      <div className="relative">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text/40 pointer-events-none" />
-        <input
-          type="text"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          placeholder={t("settings.models.searchPlaceholder")}
-          className="w-full pl-9 pr-3 py-2 text-sm bg-mid-gray/10 border border-mid-gray/40 rounded-lg focus:outline-none focus:ring-1 focus:ring-logo-primary placeholder:text-text/40"
-        />
-      </div>
+      {!catalogoCorto && (
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text/40 pointer-events-none" />
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder={t("settings.models.searchPlaceholder")}
+            className="w-full pl-9 pr-3 py-2 text-sm bg-mid-gray/10 border border-mid-gray/40 rounded-lg focus:outline-none focus:ring-1 focus:ring-logo-primary placeholder:text-text/40"
+          />
+        </div>
+      )}
 
       {filteredModels.length > 0 ? (
         <div className="space-y-6">
@@ -269,7 +353,10 @@ export const ModelsSettings: React.FC = () => {
                   <span>{t("settings.models.rescan.label")}</span>
                 </button>
                 {/* Language filter dropdown */}
-                <div className="relative" ref={languageDropdownRef}>
+                <div
+                  className={`relative ${catalogoCorto ? "hidden" : ""}`}
+                  ref={languageDropdownRef}
+                >
                   <button
                     type="button"
                     onClick={() =>
@@ -375,6 +462,7 @@ export const ModelsSettings: React.FC = () => {
                 onCancel={handleModelCancel}
                 downloadProgress={getDownloadProgress(model.id)}
                 downloadSpeed={getDownloadSpeed(model.id)}
+                errorMessage={downloadErrors[model.id]}
                 showRecommended={false}
               />
             ))}
@@ -397,6 +485,7 @@ export const ModelsSettings: React.FC = () => {
                   onCancel={handleModelCancel}
                   downloadProgress={getDownloadProgress(model.id)}
                   downloadSpeed={getDownloadSpeed(model.id)}
+                  errorMessage={downloadErrors[model.id]}
                   showRecommended={true}
                 />
               ))}

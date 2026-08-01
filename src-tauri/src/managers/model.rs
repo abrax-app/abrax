@@ -9,12 +9,11 @@ use hf_hub::api::tokio::{ApiBuilder, CancellationToken, Progress};
 use hf_hub::{Cache, Repo, RepoType};
 use log::{debug, info, warn};
 use serde::{Deserialize, Serialize};
-use sha2::{Digest, Sha256};
 use specta::Type;
 use std::collections::{HashMap, HashSet};
 use std::fs;
 use std::fs::File;
-use std::io::{Read, Write};
+use std::io::Write;
 use std::path::{Path, PathBuf};
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::{Arc, Mutex};
@@ -255,13 +254,21 @@ pub fn effective_language(
         return "auto".to_string();
     }
 
-    // Model can't auto-detect and the intent isn't usable: fall back to a
-    // concrete language (prefer English) so we never hand the engine "auto".
-    if let Some(en) = supported_languages
-        .iter()
-        .find(|language| base_language(language) == "en")
-    {
-        return en.clone();
+    // El modelo no sabe autodetectar y lo que pidió el usuario no le sirve: hay
+    // que darle un idioma concreto, porque al motor jamás se le pasa "auto".
+    //
+    // Se prefiere ESPAÑOL y solo después inglés. Antes era inglés a secas, y ese
+    // era el fallo: con el intent en "auto", Canary —que no detecta idioma— caía
+    // aquí y el dictado salía en inglés en una app que promete español de primera
+    // clase. Con el default de fábrica en "es" este camino ya casi no se pisa,
+    // pero sigue cubriendo a quien tenga "auto" guardado de una versión anterior.
+    for preferido in ["es", "en"] {
+        if let Some(code) = supported_languages
+            .iter()
+            .find(|language| base_language(language) == preferido)
+        {
+            return code.clone();
+        }
     }
     recognition_language(&supported_languages[0]).to_string()
 }
@@ -447,7 +454,10 @@ impl<'a> Drop for DownloadCleanup<'a> {
 
 pub struct ModelManager {
     app_handle: AppHandle,
-    models_dir: PathBuf,
+    /// Carpeta de modelos por defecto (dentro de los datos de la app). Es el
+    /// **fallback**: la carpeta efectiva la resuelve [`Self::models_dir`], que
+    /// respeta la que el usuario haya elegido en ajustes.
+    default_models_dir: PathBuf,
     available_models: Mutex<HashMap<String, ModelInfo>>,
     cancel_flags: Arc<Mutex<HashMap<String, CancellationToken>>>,
     extracting_models: Arc<Mutex<HashSet<String>>>,
@@ -1065,7 +1075,7 @@ impl ModelManager {
 
         let manager = Self {
             app_handle: app_handle.clone(),
-            models_dir,
+            default_models_dir: models_dir,
             available_models: Mutex::new(available_models),
             cancel_flags: Arc::new(Mutex::new(HashMap::new())),
             extracting_models: Arc::new(Mutex::new(HashSet::new())),
@@ -1087,6 +1097,45 @@ impl ModelManager {
         Ok(manager)
     }
 
+    /// Carpeta de modelos **efectiva**, resuelta en cada uso (no cacheada) para
+    /// que cambiarla en ajustes surta efecto sin reiniciar la app.
+    ///
+    /// Degrada a la carpeta por defecto —nunca falla— si la elegida no existe y
+    /// tampoco se puede crear: es lo que pasa cuando el usuario puso los modelos
+    /// en un disco externo y arranca sin él conectado. Preferimos seguir
+    /// funcionando (y que la UI muestre los modelos como no descargados) antes
+    /// que impedir el arranque.
+    pub fn models_dir(&self) -> PathBuf {
+        let configured = get_settings(&self.app_handle)
+            .models_dir
+            .filter(|s| !s.trim().is_empty())
+            .map(PathBuf::from);
+
+        let Some(dir) = configured else {
+            return self.default_models_dir.clone();
+        };
+        if dir.is_dir() {
+            return dir;
+        }
+        match fs::create_dir_all(&dir) {
+            Ok(()) => dir,
+            Err(e) => {
+                warn!(
+                    "Carpeta de modelos configurada inutilizable ({}): {}. Se usa la de por defecto.",
+                    dir.display(),
+                    e
+                );
+                self.default_models_dir.clone()
+            }
+        }
+    }
+
+    /// Carpeta por defecto, ignorando lo que haya en ajustes. La UI la necesita
+    /// para ofrecer "volver a la ubicación original".
+    pub fn default_models_dir(&self) -> &Path {
+        &self.default_models_dir
+    }
+
     pub fn get_available_models(&self) -> Vec<ModelInfo> {
         let mut list: Vec<ModelInfo> = {
             let models = self.available_models.lock().unwrap();
@@ -1105,6 +1154,87 @@ impl ModelManager {
                 .then_with(|| a.name.cmp(&b.name))
         });
         list
+    }
+
+    /// ¿Este modelo se queda corto para audio del sistema (reuniones, video)?
+    ///
+    /// No es una opinión: está MEDIDO el 29/07 sobre grabaciones reales de
+    /// loopback de esta app. Canary 180M devolvió **cadena vacía** en 3 de 5
+    /// capturas donde Nemotron y Turbo sí transcribieron (93/64/45 caracteres),
+    /// y coincidió con ellos en las 2 restantes. No es un fallo del audio —el
+    /// nivel era sano, −14 a −19 dBFS— es el límite de un modelo de 180M
+    /// parámetros y 4 idiomas frente a habla comprimida y mezclada.
+    ///
+    /// Se compara por REPO para que cambiar el quant no lo despiste.
+    pub fn se_queda_corto_para_sistema(model_id: &str) -> bool {
+        const CORTOS: &[&str] = &["canary-180m-flash"];
+        CORTOS.iter().any(|c| model_id.contains(c))
+    }
+
+    /// ¿Este modelo transmite el texto MIENTRAS se habla?
+    ///
+    /// De los cinco del catálogo **solo Nemotron lo hace**. Sin transmisión no
+    /// hay texto en vivo ni palabras por minuto: el dictado sigue funcionando,
+    /// pero el resultado aparece de golpe al soltar.
+    ///
+    /// Se pregunta al registro y no a una lista escrita a mano aquí: la
+    /// capacidad ya viaja en el catálogo (`supports_streaming`), y duplicarla
+    /// sería garantizar que un día digan cosas distintas.
+    pub fn modelo_transmite_en_vivo(&self, model_id: &str) -> bool {
+        self.available_models
+            .lock()
+            .unwrap()
+            .get(model_id)
+            .map(|m| m.supports_streaming)
+            .unwrap_or(false)
+    }
+
+    /// Nombre legible de un modelo, para poder NOMBRARLO en un aviso. Si no
+    /// estuviera en el registro cae al id, que es feo pero cierto.
+    pub fn nombre_visible(&self, model_id: &str) -> String {
+        self.available_models
+            .lock()
+            .unwrap()
+            .get(model_id)
+            .map(|m| m.name.clone())
+            .unwrap_or_else(|| model_id.to_string())
+    }
+
+    /// Modelo apto para audio del sistema que YA esté descargado, si hay alguno.
+    ///
+    /// Orden deliberado, no alfabético:
+    /// 1. **Nemotron** — con el audio real dio lo mismo que Turbo (96 vs 93 ·
+    ///    63 vs 64 caracteres), pesa 130 MB menos y es el ÚNICO de los cinco con
+    ///    streaming, que es justo el caso «reunión en vivo».
+    /// 2. **Whisper Turbo** — el respaldo medido.
+    /// 3. **Whisper Large v3** y **Cohere** — más lentos, pero si el usuario ya
+    ///    los tiene en disco sirven igual y no vamos a pedirle otra descarga.
+    ///
+    /// `None` = no hay ninguno bajado; el llamador debe AVISAR, no adivinar.
+    ///
+    /// La lista es `pub` porque la pantalla «Streaming» ofrece EXACTAMENTE estos
+    /// y no otros: si la copiara al frontend, el día que aquí se añada uno la
+    /// pantalla seguiría enseñando la lista vieja — el mismo error que ya se
+    /// corrigió con las señales de fábrica de la autocorrección.
+    pub const PREFERIDOS_SISTEMA: &'static [&'static str] = &[
+        "nemotron-3.5-asr-streaming-0.6b",
+        "whisper-large-v3-turbo",
+        "whisper-large-v3",
+        "cohere-transcribe-03-2026",
+    ];
+
+    pub fn modelo_para_sistema_descargado(&self) -> Option<String> {
+        const PREFERIDOS: &[&str] = ModelManager::PREFERIDOS_SISTEMA;
+        let modelos = self.available_models.lock().unwrap();
+        for pref in PREFERIDOS {
+            if let Some(m) = modelos
+                .values()
+                .find(|m| m.is_downloaded && m.id.contains(pref))
+            {
+                return Some(m.id.clone());
+            }
+        }
+        None
     }
 
     /// Seed the bundled catalog ([`crate::catalog::CATALOG`]) into the registry,
@@ -1164,7 +1294,7 @@ impl ModelManager {
         // The discover_* helpers are purely additive (they skip ids already in
         // the map), so the snapshot ends up as {current} ∪ {newly-found}.
         let mut snapshot = self.available_models.lock().unwrap().clone();
-        if let Err(e) = Self::discover_custom_transcribe_models(&self.models_dir, &mut snapshot) {
+        if let Err(e) = Self::discover_custom_transcribe_models(&self.models_dir(), &mut snapshot) {
             warn!("Rescan: failed to discover custom models: {}", e);
         }
         Self::discover_hf_cache_models(&mut snapshot);
@@ -1245,7 +1375,7 @@ impl ModelManager {
 
             if let Ok(bundled_path) = bundled_path {
                 if bundled_path.exists() {
-                    let user_path = self.models_dir.join(filename);
+                    let user_path = self.models_dir().join(filename);
 
                     // Only copy if user doesn't already have the model
                     if !user_path.exists() {
@@ -1264,8 +1394,8 @@ impl ModelManager {
     /// to the new directory format (giga-am-v3-int8/model.int8.onnx + vocab.txt).
     /// This was required by the transcribe-rs 0.3.x upgrade.
     fn migrate_gigaam_to_directory(&self) -> Result<()> {
-        let old_file = self.models_dir.join("giga-am-v3.int8.onnx");
-        let new_dir = self.models_dir.join("giga-am-v3-int8");
+        let old_file = self.models_dir().join("giga-am-v3.int8.onnx");
+        let new_dir = self.models_dir().join("giga-am-v3-int8");
 
         if !old_file.exists() || new_dir.exists() {
             return Ok(());
@@ -1295,7 +1425,7 @@ impl ModelManager {
         fs::copy(&vocab_path, new_dir.join("vocab.txt"))?;
 
         // Clean up old partial file if it exists
-        let old_partial = self.models_dir.join("giga-am-v3.int8.onnx.partial");
+        let old_partial = self.models_dir().join("giga-am-v3.int8.onnx.partial");
         if old_partial.exists() {
             let _ = fs::remove_file(&old_partial);
         }
@@ -1316,11 +1446,13 @@ impl ModelManager {
             }
             if model.is_directory {
                 // For directory-based models, check if the directory exists
-                let model_path = self.models_dir.join(&model.filename);
-                let partial_path = self.models_dir.join(format!("{}.partial", &model.filename));
+                let model_path = self.models_dir().join(&model.filename);
+                let partial_path = self
+                    .models_dir()
+                    .join(format!("{}.partial", model.filename));
                 let extracting_path = self
-                    .models_dir
-                    .join(format!("{}.extracting", &model.filename));
+                    .models_dir()
+                    .join(format!("{}.extracting", model.filename));
 
                 // Clean up any leftover .extracting directories from interrupted extractions
                 // But only if this model is NOT currently being extracted
@@ -1344,8 +1476,10 @@ impl ModelManager {
                 }
             } else {
                 // For file-based models (existing logic)
-                let model_path = self.models_dir.join(&model.filename);
-                let partial_path = self.models_dir.join(format!("{}.partial", &model.filename));
+                let model_path = self.models_dir().join(&model.filename);
+                let partial_path = self
+                    .models_dir()
+                    .join(format!("{}.partial", model.filename));
 
                 model.is_downloaded = model_path.exists();
                 model.is_downloading = false;
@@ -1723,19 +1857,9 @@ impl ModelManager {
         }
     }
 
-    /// Computes the SHA256 hex digest of a file, reading in 64KB chunks to handle large models.
+    /// Computes the SHA256 hex digest of a file (shared impl in `crate::hashing`).
     fn compute_sha256(path: &Path) -> Result<String> {
-        let mut file = File::open(path)?;
-        let mut hasher = Sha256::new();
-        let mut buffer = [0u8; 65536];
-        loop {
-            let n = file.read(&mut buffer)?;
-            if n == 0 {
-                break;
-            }
-            hasher.update(&buffer[..n]);
-        }
-        Ok(format!("{:x}", hasher.finalize()))
+        Ok(crate::hashing::sha256_file(path)?)
     }
 
     /// Download a Hugging Face-sourced model into the shared HF cache via
@@ -1845,10 +1969,10 @@ impl ModelManager {
                 return Err(anyhow::anyhow!("No download source for model"));
             }
         };
-        let model_path = self.models_dir.join(&model_info.filename);
+        let model_path = self.models_dir().join(&model_info.filename);
         let partial_path = self
-            .models_dir
-            .join(format!("{}.partial", &model_info.filename));
+            .models_dir()
+            .join(format!("{}.partial", model_info.filename));
 
         // Don't download if complete version already exists
         if model_path.exists() {
@@ -2076,9 +2200,9 @@ impl ModelManager {
 
             // Use a temporary extraction directory to ensure atomic operations
             let temp_extract_dir = self
-                .models_dir
-                .join(format!("{}.extracting", &model_info.filename));
-            let final_model_dir = self.models_dir.join(&model_info.filename);
+                .models_dir()
+                .join(format!("{}.extracting", model_info.filename));
+            let final_model_dir = self.models_dir().join(&model_info.filename);
 
             // Clean up any previous incomplete extraction
             if temp_extract_dir.exists() {
@@ -2218,10 +2342,10 @@ impl ModelManager {
             return Ok(());
         }
 
-        let model_path = self.models_dir.join(&model_info.filename);
+        let model_path = self.models_dir().join(&model_info.filename);
         let partial_path = self
-            .models_dir
-            .join(format!("{}.partial", &model_info.filename));
+            .models_dir()
+            .join(format!("{}.partial", model_info.filename));
         debug!("ModelManager: Model path: {:?}", model_path);
         debug!("ModelManager: Partial path: {:?}", partial_path);
 
@@ -2298,10 +2422,10 @@ impl ModelManager {
             });
         }
 
-        let model_path = self.models_dir.join(&model_info.filename);
+        let model_path = self.models_dir().join(&model_info.filename);
         let partial_path = self
-            .models_dir
-            .join(format!("{}.partial", &model_info.filename));
+            .models_dir()
+            .join(format!("{}.partial", model_info.filename));
 
         if model_info.is_directory {
             // For directory-based models, ensure the directory exists and is complete
@@ -2367,6 +2491,47 @@ mod tests {
     use std::io::Write;
     use tempfile::TempDir;
 
+    // ─────────── modelo apto para audio del sistema (medido el 29/07) ────────
+
+    /// Canary devolvió cadena VACÍA en 3 de 5 capturas reales de loopback donde
+    /// Nemotron y Turbo sí transcribieron. Es el único que se declara corto: los
+    /// demás del catálogo se midieron sirviendo.
+    #[test]
+    fn solo_canary_se_declara_corto_para_sistema() {
+        assert!(ModelManager::se_queda_corto_para_sistema(
+            "handy-computer/canary-180m-flash-gguf/canary-180m-flash-Q8_0.gguf"
+        ));
+        for bueno in [
+            "handy-computer/nemotron-3.5-asr-streaming-0.6b-gguf/nemotron-3.5-asr-streaming-0.6b-Q8_0.gguf",
+            "handy-computer/whisper-large-v3-turbo-gguf/whisper-large-v3-turbo-Q8_0.gguf",
+            "handy-computer/whisper-large-v3-gguf/whisper-large-v3-Q5_K_M.gguf",
+            "handy-computer/cohere-transcribe-03-2026-gguf/cohere-transcribe-03-2026-Q5_K_M.gguf",
+        ] {
+            assert!(
+                !ModelManager::se_queda_corto_para_sistema(bueno),
+                "{bueno} no debería declararse corto"
+            );
+        }
+    }
+
+    /// Se compara por REPO, así que cambiar el quant no despista la decisión.
+    #[test]
+    fn el_quant_no_cambia_el_veredicto() {
+        for quant in ["Q4_K_M", "Q5_K_M", "Q6_K", "Q8_0", "F16", "F32"] {
+            assert!(ModelManager::se_queda_corto_para_sistema(&format!(
+                "handy-computer/canary-180m-flash-gguf/canary-180m-flash-{quant}.gguf"
+            )));
+        }
+    }
+
+    /// Un id vacío (nunca se eligió modelo) no es «corto»: no hay nada que
+    /// sustituir, y tratarlo como corto haría cambiar de modelo a quien todavía
+    /// no tiene ninguno.
+    #[test]
+    fn id_vacio_no_se_declara_corto() {
+        assert!(!ModelManager::se_queda_corto_para_sistema(""));
+    }
+
     #[test]
     fn test_effective_language_accepts_chinese_script_intent_for_zh_capability() {
         let languages = vec!["zh".to_string()];
@@ -2380,6 +2545,32 @@ mod tests {
         let languages = vec!["zh-Hant".to_string()];
 
         assert_eq!(effective_language("auto", &languages, false), "zh");
+    }
+
+    #[test]
+    fn test_effective_language_prefers_spanish_over_english_when_model_cannot_detect() {
+        // Regresión del fallo medido el 26/07 en un Windows limpio: «si cambio de
+        // modelo al Canary, queda por defecto en inglés».
+        //
+        // Canary declara `lang_detect: false`, así que un intent "auto" no se puede
+        // honrar y hay que elegir un idioma concreto. El fallback estaba cableado a
+        // inglés, y en una app que promete español de primera clase eso contradice
+        // la marca. Los cuatro idiomas son los que declara canary-180m-flash.
+        let canary = vec![
+            "en".to_string(),
+            "de".to_string(),
+            "es".to_string(),
+            "fr".to_string(),
+        ];
+        assert_eq!(effective_language("auto", &canary, false), "es");
+
+        // Y si el modelo NO habla español, inglés sigue siendo el sustituto.
+        let sin_espanol = vec!["en".to_string(), "de".to_string()];
+        assert_eq!(effective_language("auto", &sin_espanol, false), "en");
+
+        // Lo que el usuario eligió a mano manda por encima de todo: si pidió
+        // francés y el modelo lo tiene, no se le cambia a español.
+        assert_eq!(effective_language("fr", &canary, false), "fr");
     }
 
     #[test]

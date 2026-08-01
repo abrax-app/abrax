@@ -5,7 +5,10 @@ export interface ModelStateEvent {
   error?: string;
 }
 
-export interface RecordingErrorEvent {
-  error_type: string;
-  detail?: string;
+/** Payload del evento `spectrum` (regla R8: solo se emite con suscriptor). */
+export interface SpectrumPayload {
+  bands: number[];
+  rms: number;
+  bass: number;
+  dominant: number;
 }

@@ -6,16 +6,23 @@
     "unloadModel": "פרוק מודל",
     "model": "מודל",
     "quit": "יציאה",
-    "cancel": "ביטול"
+    "cancel": "ביטול",
+    "errorTitle": "Abrax נתקל בבעיה",
+    "errorRecording": "לא ניתן להתחיל את ההקלטה. פתח את Abrax לפרטים.",
+    "errorTranscription": "התמלול נכשל. פתח את Abrax כדי לנסות שוב מההיסטוריה.",
+    "errorPaste": "לא ניתן להדביק את הטקסט. הוא נשמר בהיסטוריה שלך.",
+    "errorModelLoad": "טעינת מודל הדיבור נכשלה. פתח את Abrax לפרטים.",
+    "errorModelDownload": "הורדת המודל נכשלה. פתח את Abrax כדי לנסות שוב.",
+    "show": "Show Abrax"
   },
   "sidebar": {
     "general": "כללי",
     "models": "מודלים",
     "advanced": "מתקדם",
-    "postProcessing": "עיבוד משלים",
     "history": "היסטוריה",
     "debug": "ניפוי שגיאות",
-    "about": "אודות"
+    "about": "אודות",
+    "escucha": "VOX"
   },
   "onboarding": {
     "subtitle": "כדי להתחיל, בחר מודל תמלול",
@@ -46,11 +53,11 @@
         "name": "Whisper Large",
         "description": "דיוק טוב, אבל איטי."
       },
-      "parakeet-tdt-0.6b-v2": {
+      "parakeet-tdt-0_6b-v2": {
         "name": "Parakeet V2",
         "description": "אנגלית בלבד. המודל הטוב ביותר לדוברי אנגלית."
       },
-      "parakeet-tdt-0.6b-v3": {
+      "parakeet-tdt-0_6b-v3": {
         "name": "Parakeet V3",
         "description": "מהיר ומדויק"
       },
@@ -93,6 +100,21 @@
       "cohere-int8": {
         "name": "Cohere",
         "description": "מודל גדול, איטי יותר, אך מדויק מאוד ורב-לשוני."
+      },
+      "handy-computer_canary-180m-flash-gguf": {
+        "description": "הקל והמהיר ביותר — יורד בפחות מדקה ורץ אפילו על מחשב נייד ישן. בתמורה, במשפטים קצרים מאוד הוא לפעמים לא קולט כלום."
+      },
+      "handy-computer_whisper-large-v3-turbo-gguf": {
+        "description": "Balanced — the everyday pick: understands 100 languages and doesn't keep you waiting."
+      },
+      "handy-computer_whisper-large-v3-gguf": {
+        "description": "Widest coverage — the big Whisper, the one everyone names. Slower, but complete."
+      },
+      "handy-computer_nemotron-3_5-asr-streaming-0_6b-gguf": {
+        "description": "Live — writes as you speak, word by word. This is the one that makes the sphere dance."
+      },
+      "handy-computer_cohere-transcribe-03-2026-gguf": {
+        "description": "הדיוק הגבוה ביותר — המדויק ביותר בקטלוג, ב‑14 שפות. זה מה שאנחנו ממליצים להתחיל איתו. שוקל 1.6 ג'יגה ודורש מחשב חזק."
       }
     },
     "errors": {
@@ -117,6 +139,15 @@
         "checkFailed": "בדיקת ההרשאות נכשלה. נסה שוב.",
         "requestFailed": "בקשת ההרשאה נכשלה. נסה שוב."
       }
+    },
+    "emptyCatalog": "אין מודלים זמינים. בדוק את היומן והפעל מחדש את Abrax.",
+    "welcome": {
+      "pitch": "דבר והטקסט מופיע, במחשב שלך.",
+      "badgeLocal": "100% מקומי",
+      "badgeNoCloud": "בלי ענן",
+      "badgeFree": "חינם",
+      "whyModel": "כדי לשמוע אותך, Abrax צריך להוריד פעם אחת מודל קולי. אחר כך הוא עובד בלי אינטרנט.",
+      "start": "להתחיל"
     }
   },
   "modelSelector": {
@@ -151,7 +182,18 @@
       "translate": "תרגם לאנגלית",
       "streaming": "מציג תמלול חי תוך כדי דיבור"
     },
-    "legacy": "מדור קודם"
+    "legacy": "מדור קודם",
+    "downloadFailed": "ההורדה נכשלה",
+    "downloadFailedHelp": "לא ניתן היה להוריד את המודל. בדוק את החיבור ונסה שוב.",
+    "checkFailed": "לא ניתן היה לבדוק את מצב המודל",
+    "loadFailed": "לא ניתן היה לטעון את המודל",
+    "switchFailed": "לא ניתן היה להחליף מודל",
+    "statusTitle": "מצב המודל: {{estado}}",
+    "confirmDownload": {
+      "title": "Download model",
+      "body": "{{modelName}} — {{size}}\n\n{{description}}\n\nIt downloads once and stays on your machine. After that it works offline.",
+      "ok": "Download"
+    }
   },
   "settings": {
     "modelSettings": {
@@ -174,6 +216,10 @@
           "cancel": {
             "name": "קיצור מקשים לביטול",
             "description": "קיצור המקלדת לביטול ההקלטה הנוכחית."
+          },
+          "leer_seleccion": {
+            "name": "קריאת הבחירה בקול",
+            "description": "קורא בקול את הטקסט שסימנת בכל יישום. לחץ שוב כדי לעצור."
           },
           "transcribe_with_post_process": {
             "name": "קיצור לעיבוד משלים",
@@ -245,7 +291,10 @@
         "output": "פלט",
         "transcription": "תמלול",
         "history": "היסטוריה",
-        "experimental": "ניסיוני"
+        "experimental": "ניסיוני",
+        "dictionary": "מילון חי",
+        "correccion": "תיקון מקומי",
+        "memoria": "זיכרון"
       },
       "experimentalToggle": {
         "label": "תכונות ניסיוניות",
@@ -278,7 +327,7 @@
       },
       "showTrayIcon": {
         "label": "הצג אייקון במגש",
-        "description": "הצג את האייקון של Abrax במגש המערכת."
+        "description": "הצג את האייקון של Abrax במגש המערכת. בלעדיו, סגירת החלון סוגרת את Abrax לגמרי (ב-macOS הוא נשאר ב-Dock)."
       },
       "overlay": {
         "style": {
@@ -287,7 +336,8 @@
           "options": {
             "none": "ללא",
             "minimal": "Minimal",
-            "live": "Live"
+            "live": "Live",
+            "esfera": "Esfera"
           }
         },
         "position": {
@@ -296,6 +346,14 @@
           "options": {
             "bottom": "למטה",
             "top": "למעלה"
+          }
+        },
+        "esferaModo": {
+          "title": "מצב Esfera",
+          "description": "כיצד מתנהג כדור ה-Esfera. שמע: הכדור מגיב לקולך. מילים: המילים שאתה מכתיב עפות אל הכדור, נקראות לרגע ונמסות בקרום שלו (מיטבי עם מודל סטרימינג, שבו המילים מגיעות בשידור חי בזמן שאתה מדבר).",
+          "options": {
+            "audio": "מגיב לשמע",
+            "palabras": "מילים חיות"
           }
         }
       },
@@ -322,6 +380,7 @@
       "clipboardHandling": {
         "title": "התנהגות הלוח",
         "description": "אל תשנה את הלוח ישמור על תוכן הלוח הנוכחי שלך אחרי התמלול. העתק ללוח ישאיר את תוצאת התמלול בלוח אחרי ההדבקה.",
+        "lockedByPasteMethod": "Locked by the paste method: pasting through the clipboard already leaves the transcription there. Choose Direct or None if you want your clipboard left untouched.",
         "options": {
           "dontModify": "אל תשנה את הלוח",
           "copyToClipboard": "העתק ללוח"
@@ -380,63 +439,85 @@
         "resetDefaults": "שחזר את רשימת ברירת המחדל",
         "disable": "כבה את המסנן"
       },
-      "voiceActivityDetection": {
-        "title": "Voice Activity Detection",
-        "description": "Filter silence from recordings. Streaming-capable models use a longer VAD tail; disabling VAD records raw audio."
-      }
-    },
-    "postProcessing": {
-      "hotkey": {
-        "title": "קיצור מקשים"
-      },
-      "api": {
-        "title": "API (תואם OpenAI)",
-        "provider": {
-          "title": "ספק",
-          "description": "בחר ספק שתואם ל-OpenAI."
-        },
-        "appleIntelligence": {
-          "unavailable": "Apple Intelligence לא זמין במכשיר הזה. נדרש Mac עם Apple Silicon שמריץ macOS Tahoe (26.0) ומעלה, עם Apple Intelligence מופעל בהגדרות המערכת."
-        },
-        "baseUrl": {
-          "title": "כתובת URL בסיסית",
-          "description": "כתובת ה-API הבסיסית עבור הספק הנבחר. רק ספק מותאם אישית ניתן לעריכה.",
-          "placeholder": "https://api.openai.com/v1"
-        },
-        "apiKey": {
-          "title": "מפתח API",
-          "description": "מפתח API עבור הספק הנבחר.",
-          "placeholder": "sk-..."
-        },
-        "model": {
-          "title": "מודל",
-          "descriptionCustom": "ספק את מזהה המודל שה-endpoint המותאם שלך מצפה לו.",
-          "descriptionDefault": "בחר מודל שהספק הנבחר חושף.",
-          "placeholderWithOptions": "חפש או בחר מודל",
-          "placeholderNoOptions": "הקלד שם מודל",
-          "refreshModels": "רענן מודלים"
+      "autocorreccion": {
+        "title": "תיקון עצמי בדיבור",
+        "description": "אם אתם מתקנים את עצמכם בקול בזמן ההכתבה — ״לא, סליחה״, ״התכוונתי״ — הטקסט יוצא כבר מתוקן. לפי כללים, מיידית וללא חיבור: בלי שום מודל בינה מלאכותית. הוא רק מחליף את מה שתיקנתם, לעולם לא מוחק מיוזמתו, ובמקרה של ספק לא נוגע בכלום. פעיל כברירת מחדל.",
+        "ejemplo": "דוגמה: “קבע את הפגישה ליום שלישי… לא, סליחה, ליום רביעי” הופך ל“קבע את הפגישה ליום רביעי.”",
+        "sustitucionTitle": "ביטויי תיקון",
+        "sustitucionDescription": "מה שאתם אומרים כדי להחליף משהו שהרגע אמרתם (למשל “לא, סליחה”, “כלומר”). ההחלפה מתבצעת רק אם נמצא לפני הביטוי קטע מקביל — אותו יום, חודש, שעה, מספר או שם. אם לא נמצא, שום דבר לא משתנה.",
+        "placeholder": "הוספת ביטוי",
+        "add": "הוספה",
+        "remove": "מחיקת {{senal}}",
+        "duplicate": "“{{senal}}” כבר קיים",
+        "showDefaults": "שימוש במובנים",
+        "resetDefaults": "חזרה למובנים",
+        "disable": "השבתת הרמה",
+        "mode": {
+          "defaults": "של היצרן",
+          "custom": "שלי"
         }
       },
-      "prompts": {
-        "title": "פרומפט",
-        "selectedPrompt": {
-          "title": "פרומפט נבחר",
-          "description": "בחר תבנית לשיפור התמלול או צור חדשה. השתמש ב-${output} בתוך טקסט הפרומפט כדי להפנות לתמלול שנקלט."
-        },
-        "noPrompts": "אין פרומפטים זמינים",
-        "selectPrompt": "בחר פרומפט",
-        "createNew": "צור פרומפט חדש",
-        "promptLabel": "שם הפרומפט",
-        "promptLabelPlaceholder": "הזן שם לפרומפט",
-        "promptInstructions": "הוראות לפרומפט",
-        "promptInstructionsPlaceholder": "כתוב את ההוראות שירוצו אחרי התמלול. לדוגמה: שפר דקדוק ובהירות עבור הטקסט הבא: ${output}",
-        "promptTip": "טיפ: השתמש ב-<code>${output}</code> כדי להכניס את הטקסט המתומלל לפרומפט שלך.",
-        "updatePrompt": "עדכן פרומפט",
-        "deletePrompt": "מחק פרומפט",
-        "createPrompt": "צור פרומפט",
-        "cancel": "ביטול",
-        "selectToEdit": "בחר פרומפט למעלה כדי לצפות בפרטים שלו ולערוך אותם.",
-        "createFirst": "לחץ על 'צור פרומפט חדש' למעלה כדי ליצור את פרומפט העיבוד הראשון שלך."
+      "emojiDictado": {
+        "title": "אימוג'י בהכתבה",
+        "description": "אמרו את המילה \"אימוג'י\" ואחריה את שמו, והאימוג'י יוכנס. מבוסס טבלה, מיידי וללא חיבור לאינטרנט: אין כאן שום מודל בינה מלאכותית. בלי המילה הזאת שום דבר לא משתנה, ואם השם לא מזוהה הטקסט נשאר בדיוק כפי שהכתבתם.",
+        "ejemplo": "דוגמה: \"תשלחו לו אימוג'י לייק\" הופך ל\"תשלחו לו 👍\". עובד גם עם \"אימוג'י של אש\" → 🔥.",
+        "verDiccionario": "הצגת השמות",
+        "copiado": "‏{{emoji}} הועתק",
+        "noCopiado": "ההעתקה נכשלה",
+        "diccionario": {
+          "titulo": "שמות אימוג'י",
+          "ayuda": "אמרו את השם אחרי המילה „emoji”. הקישו כדי להעתיק.",
+          "buscar": "חיפוש שם",
+          "copiar": "העתקה",
+          "cargando": "טוען…",
+          "error": "טעינת הרשימה נכשלה.",
+          "sinResultados": "אין שם תואם.",
+          "total": "{{total}} שמות",
+          "recorte": "מוצגים {{mostrados}} מתוך {{total}}. צמצמו את החיפוש."
+        }
+      },
+      "voiceActivityDetection": {
+        "title": "זיהוי דיבור",
+        "description": "Filter silence from recordings. Streaming-capable models use a longer VAD tail; disabling VAD records raw audio."
+      },
+      "dictionary": {
+        "title": "מילון הפרויקט",
+        "description": "מודלי דיבור לא מכירים את הז'רגון של הקוד שלך. Abrax לומד אותו על ידי אינדוקס הפרויקט הפעיל: מזהים, ענפי git ושמות קבצים מתקנים את ההכתבה.",
+        "pickProject": "בחר פרויקט",
+        "changeProject": "החלף פרויקט",
+        "pickTitle": "בחר את תיקיית הפרויקט",
+        "reindex": "אינדוקס מחדש",
+        "enable": "למד מהפרויקט הזה",
+        "enableDescription": "כשמופעל, מונחים מאונדקסים מתקנים את ההכתבה. כבה כדי להשהות מבלי לאבד את האינדקס.",
+        "termCount": "{{count}} מונחים מאונדקסים",
+        "noIndex": "טרם אונדקס",
+        "lastIndexed": "אונדקס ב-{{date}}",
+        "indexed": "הפרויקט אונדקס: {{count}} מונחים",
+        "indexError": "האינדוקס נכשל: {{error}}",
+        "privacy": "האינדקס נשמר בדיסק שלך. שום דבר מהקוד שלך לא עוזב את המחשב הזה.",
+        "source": {
+          "code": "מהריפו",
+          "branch": "ענף git",
+          "path": "שם קובץ"
+        }
+      },
+      "customReplacements": {
+        "title": "החלפות מדויקות",
+        "description": "כשהמודל תמיד שומע מילה לא נכון, תקן אותה דטרמיניסטית: התאמת אסימון מדויקת ורגישה לרישיות.",
+        "fromPlaceholder": "נשמע",
+        "toPlaceholder": "החלף ב",
+        "add": "הוסף",
+        "remove": "הסר את {{word}}",
+        "duplicate": "כבר קיימת החלפה עבור \"{{word}}\""
+      },
+      "memoria": {
+        "title": "זיכרון תיקונים",
+        "description": "ABRAX לומד כשאתם מתקנים תמלול בהיסטוריה: מחקו מילה, הקלידו את הנכונה, ובפעם הבאה היא תיכתב נכון. הכול מקומי.",
+        "empty": "אין עדיין תיקונים שנלמדו. ערכו תמלול בהיסטוריה (סמל עיפרון) ו-ABRAX ילמד מהשינויים שלכם.",
+        "forget": "לשכוח תיקון זה",
+        "clearAll": "לשכוח הכול",
+        "enSitioTitle": "ללמוד היכן שאתם מכתיבים",
+        "enSitioDescription": "בתחילת הכתבה, ABRAX קורא מחדש את השדה שבו אתם כותבים (דרך נגישות, 100% מקומי) ולומד מהתיקונים שעשיתם שם להכתבה הקודמת. דבר מהשדה לא נשמר ולא עוזב את המכשיר."
       }
     },
     "history": {
@@ -452,7 +533,17 @@
       "retranscribe": "תמלל מחדש",
       "retranscribeError": "תמלול מחדש נכשל. נסה שוב.",
       "transcribing": "מתמלל...",
-      "transcriptionFailed": "התמלול נכשל. אפשר לתמלל מחדש באמצעות אייקון הניסיון החוזר."
+      "transcriptionFailed": "התמלול נכשל. אפשר לתמלל מחדש באמצעות אייקון הניסיון החוזר.",
+      "loadError": "לא ניתן לטעון את ההיסטוריה. ההכתבות שלך עדיין בדיסק.",
+      "edit": {
+        "action": "עריכת תמלול",
+        "save": "שמירה",
+        "cancel": "ביטול",
+        "hint": "בשמירה, הזיכרון לומד את התיקונים שלכם.",
+        "saved": "התמלול עודכן.",
+        "learned": "זיכרון: נלמד {{pares}}",
+        "error": "לא ניתן היה לשמור את העריכה."
+      }
     },
     "debug": {
       "title": "ניפוי שגיאות",
@@ -510,10 +601,6 @@
         "title": "מיקרופון במצב clamshell",
         "description": "המיקרופון שישמש כשהמחשב הנייד סגור"
       },
-      "postProcessingToggle": {
-        "label": "עיבוד משלים",
-        "description": "הפעל שיפור טקסט מבוסס AI אחרי התמלול"
-      },
       "muteWhileRecording": {
         "label": "השתק בזמן הקלטה",
         "description": "השתק את שמע המערכת בזמן הקלטה"
@@ -568,9 +655,9 @@
         "button": "צפה ב-GitHub"
       },
       "supportDevelopment": {
-        "title": "תמיכה בפיתוח",
-        "description": "עזור לנו להמשיך לבנות את Abrax",
-        "button": "תרומה"
+        "title": "תמכו ב-Handy (הפרויקט המקורי)",
+        "description": "התרומות מגיעות ל-CJ Pais, יוצר Handy — הפרויקט שממנו ABRAX פוצל.",
+        "button": "תמכו ב-Handy"
       },
       "acknowledgments": {
         "title": "תודות",
@@ -583,11 +670,21 @@
           "title": "ggml",
           "description": "הסקה מהירה לביצועים גבוהים עבור מודל זיהוי הדיבור Whisper של OpenAI",
           "details": "Abrax משתמש ב-ggml לתמלול מהיר ומקומי. תודה לעבודה המדהימה של Georgi Gerganov וכל התורמים."
+        },
+        "modelos": {
+          "title": "מודלים לזיהוי דיבור",
+          "description": "המודלים מורדים לפי דרישה ואינם חלק מקובץ ההתקנה. כל מודל שומר על הרישיון שלו; אלה שברישיון CC-BY מחייבים ייחוס, והוא ניתן כאן. הנוסח המלא בקובץ LICENSES-THIRD-PARTY.md."
         }
       },
       "whatsNewUpdates": {
         "label": "הצג מה חדש",
         "description": "הצג הערות גרסה לאחר עדכוני Abrax"
+      }
+    },
+    "streaming": {
+      "systemAudio": {
+        "label": "הקלטת שמע המערכת",
+        "description": "מתמלל את מה שמתנגן במחשב —שיעור, סרטון, פגישה— במקום המיקרופון. דרוש מודל שמתאים לאודיו של המערכת; אם הפעיל אינו מתאים, Abrax עובר לאחד שכן."
       }
     }
   },
@@ -611,7 +708,14 @@
     "open": "פתח",
     "copy": "העתק",
     "clear": "נקה",
-    "noOptionsFound": "לא נמצאו אפשרויות"
+    "noOptionsFound": "לא נמצאו אפשרויות",
+    "retry": "נסה שוב",
+    "play": "נגן",
+    "pause": "השהה",
+    "seek": "מיקום הניגון",
+    "moreInfo": "מידע נוסף",
+    "selectOption": "בחרו אפשרות…",
+    "systemDefault": "ברירת מחדל"
   },
   "accessibility": {
     "permissionsDescription": "Abrax צריך הרשאות נגישות כדי להקליד את הטקסט המתומלל.",
@@ -627,13 +731,37 @@
       "linux": "תן גישה למיקרופון דרך הגדרות השמע או הפרטיות במערכת שלך."
     },
     "noInputDeviceTitle": "לא נמצא מיקרופון",
+    "recordingNoAudioTitle": "No audio detected",
     "noInputDevice": "לא זוהה התקן קלט שמע. חבר מיקרופון או אוזנייה ונסה שוב.",
     "recordingFailed": "הפעלת ההקלטה נכשלה: {{error}}",
     "modelLoadFailed": "טעינת המודל נכשלה: {{model}}",
     "modelLoadFailedUnknown": "מודל לא ידוע",
     "pasteFailedTitle": "ההדבקה נכשלה",
     "pasteFailed": "לא ניתן היה להדביק את הטקסט ביישום הפעיל.",
-    "transcriptionFailedTitle": "התמלול נכשל"
+    "transcriptionFailedTitle": "התמלול נכשל",
+    "recordingFailedTitle": "ההקלטה נכשלה",
+    "modelLoadFailedTitle": "טעינת המודל נכשלה",
+    "modelDownloadFailedTitle": "הורדת המודל נכשלה",
+    "center": {
+      "title": "הודעות אחרונות ({{count}})",
+      "dismiss": "סגור",
+      "toggle": "הצגת כל ההודעות"
+    },
+    "recordingTooShortTitle": "כמעט שום דבר לא הוקלט",
+    "recordingTooShort": "ההקלטה נמשכה פחות משנייה. אם אתה משתמש בקיצור, החזק את {{atajo}} לחוץ בזמן שאתה מדבר.",
+    "recordingTooShortNoBinding": "ההקלטה נמשכה פחות משנייה. דבר רגע לפני שאתה עוצר אותה.",
+    "transcriptionEmptyTitle": "לא הובן דבר",
+    "transcriptionEmpty": "לא זוהו מילים. נסה שוב, בקול קצת יותר חזק או קרוב יותר.",
+    "sistemaSinModeloAptoTitle": "נדרש מודל טוב יותר",
+    "sistemaSinModeloApto": "אודיו המערכת נקלט, אך המודל הנוכחי אינו מזהה דיבור בפגישות או בסרטונים. הורד את Nemotron Streaming 3.5 (716 MB) או את Whisper Large v3 Turbo (845 MB) בקטע מודלים, ו-Abrax יעבור להשתמש בו באופן אוטומטי.",
+    "sistemaSinModeloAptoDescargar": "הורד ({{mb}} MB)",
+    "shortcutRegistrationTitle": "לא ניתן היה להפעיל את קיצור הדרך",
+    "shortcutRegistration": "Abrax לא הצליח לרשום את קיצור המקלדת. הפעל אותו מחדש; אם זה נמשך, הגדר קיצור אחר בהגדרות ← כללי.",
+    "atajoOcupado": "יישום אחר כבר משתמש בקיצור הזה: {{atajos}}. שנה אותו בהגדרות כדי שיעבוד.",
+    "atajoOcupadoCambiar": "שינוי הקיצור",
+    "sistemaModeloCambiadoTitle": "המודל הוחלף עבור שמע המערכת",
+    "sistemaModeloCambiado": "‏Abrax עבר אל {{modelo}}, שמבין את שמע המערכת. המודל הזה לא מציג טקסט תוך כדי דיבור ולא מילים לדקה — הכול מופיע בשחרור. לטקסט חי, הורידו את Nemotron Streaming 3.5 ‏(716 MB) במסך המודלים.",
+    "descargaIniciada": "המודל בהורדה. אפשר לראות במסך המודלים."
   },
   "appLanguage": {
     "title": "שפת האפליקציה",
@@ -648,14 +776,352 @@
       "dark": "כהה"
     }
   },
+  "palette": {
+    "title": "ערכת צבעים",
+    "description": "בחרו את ערכת הצבעים של Abrax. הערכה Imperial כהה מעצם עיצובה: כל עוד היא פעילה, היא כופה מצב כהה.",
+    "options": {
+      "abrax": "ABRAX",
+      "imperial": "Imperial",
+      "escuderia": "Escudería"
+    }
+  },
   "overlay": {
     "transcribing": "מתמלל...",
-    "processing": "מעבד..."
+    "processing": "מעבד...",
+    "leyendo": "מקריא בקול",
+    "preparando": "מכין את ההקראה"
   },
   "whatsNew": {
     "title": "חדש ב-Abrax v{{version}}"
   },
+  "correccion": {
+    "motor": {
+      "title": "מנוע התיקון",
+      "description": "מנקה את ההכתבה בין התמלול להדבקה. כבוי משאיר הכול בדיוק כפי שתומלל. כללים בלבד מחיל תיקונים דטרמיניסטיים מיידיים.",
+      "options": {
+        "solo_reglas": "כללים בלבד",
+        "desactivado": "כבוי"
+      }
+    },
+    "modo": {
+      "title": "רמת התיקון",
+      "description": "מילולי מתקן רק רווחים ואותיות ראשיות במשפט. נקי עושה גם: סמלים (״חמישה אחוז״ → 5%), סימנים שההכתבה מפספסת, כתובות דוא״ל ונתיבים, כפילויות (״אחר כך אחר כך״) ו—אם תשאירו מופעל למטה—מספרים בספרות. התיקון העצמי בדיבור אינו תלוי בזה: יש לו מתג משלו.",
+      "options": {
+        "literal": "מילולי",
+        "limpio": "נקי"
+      }
+    },
+    "numeros": {
+      "title": "מספרים בספרות",
+      "description": "ממיר מספרים שהוכתבו לספרות: «שנים עשר אלף ושמונה מאות» ← 12800. ממיר את כולם, לא רק טכניים, ולכן «שתי הדקות» יהפוך ל־«2 הדקות». מעדיפים במילים? כבו — שאר «נקי» ממשיך לפעול."
+    }
+  },
+  "pruebaMic": {
+    "title": "בדיקת מיקרופון",
+    "description": "מקליט 3 שניות של בדיוק מה שהמודל היה שומע (16 קילו־הרץ, ללא VAD), מנגן אותן ונותן פסק דין עם רמות אמיתיות. גם חושף איזה התקן באמת עומד מאחורי Default.",
+    "boton": "הקלט 3 שנ׳",
+    "grabando": "מקליט…",
+    "niveles": "RMS {{rms}} dBFS · pico {{pico}} dBFS",
+    "nivelClip": " · clip {{clip}}%",
+    "veredicto": {
+      "sin_senal": "אין אות — המיקרופון לא מספק שמע",
+      "muy_bajo": "נמוך מאוד — ברמה הזו ההכתבה תיכשל",
+      "bajo": "נמוך — עובד, אבל הדיוק נפגע",
+      "sano": "רמה תקינה",
+      "saturado": "גזירה — המיקרופון רווי"
+    },
+    "dispositivo": "מיקרופון: {{nombre}} ({{contexto}})",
+    "esElDefault": "ברירת המחדל של המערכת",
+    "esElegido": "נבחר בהגדרות"
+  },
+  "shell": {
+    "title": "צורת החלון",
+    "description": "בחר את צורת חלון Abrax. קלאסי הוא חלון ההגדרות הרגיל; Quiet הוא פאנל כהה ומינימליסטי עם הכדור במסך הבית. עדכון מסגרת החלון יושלם עם הפעלתו מחדש של Abrax.",
+    "options": {
+      "classic": "קלאסי",
+      "retro": "Retro",
+      "quiet": "Quiet",
+      "bancada": "Karting"
+    }
+  },
+  "bancada": {
+    "local": "Procesamiento local · 0% Nube",
+    "tray": "Enviar a la bandeja",
+    "min": "Minimizar",
+    "close": "Cerrar",
+    "nav": {
+      "tablero": "TABLERO",
+      "bitacora": "BITÁCORA",
+      "setup": "SETUP"
+    },
+    "pitRadio": "PIT RADIO",
+    "lcdReady": "En boxes · listo",
+    "lcdListening": "Escuchando…",
+    "launch": "TU LARGADA · {{atajo}}",
+    "start": "Arrancar dictado",
+    "stop": "Detener dictado",
+    "dictate": "Dictar",
+    "stopping": "Detener",
+    "ignitionStart": "START",
+    "ignitionStop": "STOP",
+    "appearance": "APARIENCIA",
+    "speakers": "Hablantes",
+    "systemAudio": "System audio",
+    "speakersAuto": "Auto",
+    "speakersN": "{{n}}",
+    "mergeInto": "Actually is…",
+    "resetSpeakers": "Reset",
+    "wpmUnit": "PAL/MIN",
+    "copied": "Copiado al portapapeles",
+    "on": "ON",
+    "off": "OFF",
+    "btn": {
+      "cancel": "Cancelar",
+      "copy": "Copiar",
+      "clear": "Limpiar",
+      "translate": "Traducir → EN",
+      "fillers": "Muletillas",
+      "log": "Bitácora"
+    },
+    "dial": {
+      "vad": "VAD",
+      "palette": "Paleta"
+    },
+    "lamp": {
+      "idle": "RALENTÍ",
+      "rec": "REC",
+      "transcribing": "TRANSCRIBIENDO",
+      "polishing": "PULIENDO",
+      "error": "FALLA"
+    },
+    "estado": {
+      "idle": "Ralentí",
+      "rec": "Grabando",
+      "transcribing": "Transcribiendo",
+      "polishing": "Puliendo",
+      "error": "Falla"
+    },
+    "speakerLabel": "דובר {{n}}"
+  },
+  "retro": {
+    "menu": "תפריט Abrax",
+    "titleMain": "ABRAX · מצב רטרו",
+    "titleSettings": "ABRAX · הגדרות מהירות",
+    "titleHistory": "ABRAX · היסטוריה",
+    "fold": "קפל",
+    "close": "סגור",
+    "marquee": "ABRAX ··· אמור את המילה ··· מצב רטרו ··· 100% מקומי ··· ספרדית תחילה ···",
+    "lamp": {
+      "model": "דגם",
+      "local": "מקומי",
+      "filler": "מילוי",
+      "dict": "מילון",
+      "ptt": "PTT",
+      "vad": "VAD",
+      "translate": "תרגום",
+      "sphere": "ספרה"
+    },
+    "dictate": "הכתב",
+    "stop": "עצור",
+    "settings": "הגדרות מהירות",
+    "history": "היסטוריה",
+    "compiler": "מהדר פרומפטים",
+    "sections": "מקטעים ▾",
+    "slider": {
+      "buffer": "חוצץ",
+      "volume": "עוצמה",
+      "threshold": "סף"
+    },
+    "emptyHistory": "עדיין אין הכתבות — החזק את קיצור הדרך ודבר.",
+    "copyHint": "לחיצה כפולה להעתקה",
+    "copy": "העתק",
+    "save": "★ שמור",
+    "delete": "מחק",
+    "compile": "✦ הדר",
+    "count": "{{n}} הכתבות · מקומי",
+    "copied": "הועתק ללוח",
+    "menuSections": "מקטעים",
+    "menuWindows": "חלונות",
+    "toClassic": "חזרה לקלאסי",
+    "theme": "ערכת נושא",
+    "footer": "מצב רטרו — סקין של ABRAX · אותו חלון שקוף",
+    "tray": "Send to tray",
+    "minimize": "Minimize",
+    "localBadge": "עיבוד מקומי · 0% ענן",
+    "infoPalette": "פלטה",
+    "infoLanguage": "שפה",
+    "infoFillers": "מילות מילוי",
+    "infoTranslate": "תרגום",
+    "infoAutoVoice": "קול אוטומטי",
+    "infoVisual": "חזותי",
+    "words": "{{n}} מילים",
+    "actCopy": "העתקה",
+    "actClear": "ניקוי",
+    "emptyTranscriptions": "אין עדיין תמלולים.",
+    "activeModel": "דגם פעיל",
+    "localFull": "עיבוד מקומי ב-100% · ללא ענן",
+    "backToClassic": "חזרה לעיצוב הקלאסי"
+  },
   "logo": {
     "tagline": "« Di la <accent>palabra</accent>. »"
+  },
+  "escucha": {
+    "title": "VOX",
+    "openFile": "פתיחת קובץ…",
+    "readClipboard": "הקראת הלוח",
+    "play": "הקראה",
+    "pause": "השהיה",
+    "pauseHint": "השהיה בסוף המשפט הנוכחי",
+    "resume": "המשך",
+    "stop": "עצירה",
+    "speed": "מהירות",
+    "voiceProse": "קול פרוזה",
+    "voiceCode": "קול קוד",
+    "noVoices": "לא נמצאו קולות מערכת",
+    "empty": "פתחו קובץ או הקריאו את הלוח כדי להתחיל.",
+    "engineUnavailable": "מנוע הדיבור של המערכת אינו זמין.",
+    "errorRead": "לא ניתן לקרוא את התוכן.",
+    "errorSpeak": "לא ניתן להפעיל את ההקראה.",
+    "escHint": "Esc עוצר את ההקראה.",
+    "clipboard": "לוח",
+    "clipboardEmpty": "אין טקסט בלוח.",
+    "fileFilter": "טקסט, Markdown או קוד",
+    "sentences": "{{total}} משפטים",
+    "verbosity": "סמלים",
+    "verbosityNatural": "טבעי (פחות רעש)",
+    "verbosityLiteral": "מילולי (כל הסמלים)"
+  },
+  "tts": {
+    "voiceLangEs": "ספרדית",
+    "voiceLangEn": "אנגלית",
+    "voiceSettings": "הגדרות קול",
+    "speed": "מהירות",
+    "pitch": "גובה הצליל",
+    "pitchLow": "נמוך",
+    "pitchNormal": "רגיל",
+    "pitchHigh": "גבוה",
+    "pitchHint": "גובה הצליל חל על הקול המקוון בלבד.",
+    "vram": "({{gb}} GB VRAM)",
+    "descOnline": "קולות נוירוניים של Microsoft (Azure). לא מקומי: שולח את הטקסט דרך האינטרנט.",
+    "onlineWarning": "דורש אינטרנט · הטקסט יוצא מהמכשיר",
+    "preparingVoice": "מכין את {{engine}}… בפעם הראשונה זה לוקח כמה שניות.",
+    "engineSystem": "קולות המערכת",
+    "title": "מנוע קול",
+    "localBadge": "‏100% מקומי",
+    "detecting": "מזהה את המחשב שלך…",
+    "detected": "זיהינו את המחשב שלך:",
+    "recommendation": "אנחנו ממליצים על {{engine}} לקול הטוב ביותר — מקומי וללא חיבור לאינטרנט.",
+    "activeEngine": "מנוע פעיל: {{engine}}",
+    "detectFailed": "לא ניתן היה לזהות את החומרה; ייעשה שימוש בקולות המערכת.",
+    "useRecommended": "השתמש במומלץ",
+    "chooseOther": "בחר מנוע אחר",
+    "redetect": "זהה מחדש",
+    "testVoice": "בדוק קול",
+    "sampleTextEs": "Hola, soy la voz de Abrax. Di la palabra y yo la leo por ti.",
+    "sampleTextEn": "Hi, I'm the voice of Abrax. Say the word and I'll read it for you.",
+    "voice": "קול",
+    "noGpu": "ללא GPU ייעודי",
+    "available": "זמין",
+    "unavailable": "לא זמין",
+    "needsGpu": "דורש GPU תואם (NVIDIA או Apple Silicon)",
+    "needsDownload": "דורש הורדת המנוע",
+    "recommended": "מומלץ",
+    "activeShort": "פעיל",
+    "use": "השתמש",
+    "download": "הפעלה",
+    "downloading": "מוריד…",
+    "installed": "המנוע הותקן",
+    "errorDownload": "לא ניתן היה להוריד את המנוע.",
+    "errorSetEngine": "לא ניתן היה להחליף את המנוע.",
+    "descSystem": "קולות מערכת ההפעלה. תמיד זמין, ללא הורדות.",
+    "descPiper": "קול נוירוני בעברית, קליל, רץ על CPU.",
+    "descKokoro": "קול נוירוני באיכות גבוהה על CPU."
+  },
+  "carpetaModelos": {
+    "titulo": "Models folder",
+    "cambiar": "Change",
+    "discoConNombre": "{{nombre}} ({{punto}})",
+    "removible": "· removable",
+    "espacio": "{{libre}} GB free of {{total}} GB",
+    "volverPorDefecto": "Back to the original folder",
+    "avisoNoMueve": "New downloads will go to this folder. Already-downloaded models stay where they were; if they don't show up, go back to the original folder or download them again here.",
+    "moverPregunta": "להעביר את המודלים שכבר הורדו ({{gb}} GB) לתיקייה החדשה?",
+    "moverAhora": "העבר עכשיו",
+    "soloNuevas": "הורדות חדשות בלבד",
+    "cancelar": "ביטול",
+    "moviendo": "מעביר את {{archivo}}…",
+    "moverError": "לא ניתן היה להשלים את ההעברה: {{detalle}}. שום דבר לא אבד: מה שלא הועבר נשאר בתיקייה הקודמת."
+  },
+  "quiet": {
+    "nav": {
+      "listen": "האזנה",
+      "shortcuts": "קיצורי מקלדת",
+      "streaming": "סטרימינג",
+      "transcriptions": "Transcriptions",
+      "models": "Models",
+      "settings": "Settings",
+      "more": "עוד"
+    },
+    "ready": "ABRAX is ready",
+    "holdHint": "החזק את <k>{{atajo}}</k> לחוץ בזמן שאתה מדבר, ושחרר בסיום.",
+    "holdHintNoBinding": "הגדר קיצור דרך בהגדרות והחזק אותו לחוץ בזמן שאתה מדבר.",
+    "start": "Start transcription",
+    "stop": "Stop",
+    "recent": "Recent transcriptions",
+    "empty": "No transcriptions yet. Hold the shortcut and say the word.",
+    "local": "Local processing",
+    "noCloud": "No cloud connection",
+    "min": "Minimize",
+    "max": "Maximize",
+    "close": "Close",
+    "tray": "Send to tray",
+    "dictando": "אני מקשיב… שחרר בסיום",
+    "panel": {
+      "modelo": "מודל",
+      "sinModelo": "אין מודל",
+      "descargar": "הורדה",
+      "descargando": "מוריד את {{modelo}} · {{pct}}%",
+      "voz": "קול",
+      "hint": {
+        "fillers": "מסיר מילות מילוי («אה», «כאילו») ממה שאתה מכתיב.",
+        "autocorreccion": "אם תתקן את עצמך בקול («לא, סליחה»), הטקסט ייצא כבר מתוקן.",
+        "emoji": "אמור «אימוג'י» ואת שמו, והוא יוכנס. לפי טבלה, בלי בינה מלאכותית.",
+        "systemAudio": "מתמלל את מה שמתנגן במחשב במקום המיקרופון. אם המודל הפעיל אינו מתאים, Abrax עובר לאחד שכן."
+      },
+      "sinModeloSistema": "הורד אחד מהמודלים האלה כדי ללכוד את האודיו של המערכת.",
+      "elegirModelo": "בחר מודל",
+      "usaraSistema": "לא נבחר. אם תפעיל את אודיו המערכת, Abrax ישתמש ב‑«{{modelo}}».",
+      "descargado": "הורד"
+    },
+    "modo": {
+      "grupo": {
+        "gesto": "איך זה מופעל",
+        "microfono": "המיקרופון שלך",
+        "texto": "מה קורה לטקסט",
+        "pegado": "איפה זה נכתב",
+        "salida": "מאיפה זה נשמע",
+        "fuente": "מאיפה מגיע האודיו",
+        "apariencia": "מראה"
+      },
+      "streaming": {
+        "que": "מתמלל את מה שמתנגן במחשב —שיעור, סרטון, פגישה— במקום המיקרופון.",
+        "resto": "כל השאר —תיקון, מילות מילוי, מילון, הדבקה— זהה למצב ההאזנה: מגדירים פעם אחת ותקף לשניהם."
+      },
+      "vox": {
+        "que": "מקריא בקול את הטקסט שסימנת, בכל אפליקציה.",
+        "como": "לחץ <k>{{atajo}}</k> וזה מתחיל להקריא; לחץ שוב כדי להשתיק."
+      },
+      "escucha": {
+        "que": "אתה מדבר והטקסט מופיע במקום שבו הקלדת. הכול קורה במחשב שלך — שום דבר לא יוצא לאינטרנט."
+      }
+    }
+  },
+  "soundPicker": {
+    "custom": "מותאם אישית",
+    "preview": "האזנה לערכת הצליל (התחלה וסיום)"
+  },
+  "vox": {
+    "atajoHint": "עבור VOX, לחצו <k>{{atajo}}</k> והוא יקריא את הטקסט שסימנתם בכל אפליקציה.",
+    "atajoSinBinding": "עבור VOX, הגדירו קיצור מקשים בהגדרות והוא יקריא את הטקסט שסימנתם."
   }
 }

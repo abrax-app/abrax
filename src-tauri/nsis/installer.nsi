@@ -170,7 +170,22 @@ VIAddVersionKey "ProductVersion" "${VERSION}"
 ; --- PORTABLE MODE --- 4. Install type selection page (Normal vs Portable)
 Var InstallTypeRadioNormal
 Var InstallTypeRadioPortable
-Page custom PageInstallType PageLeaveInstallType
+
+; PÁGINA RETIRADA DEL FLUJO NORMAL (28/07). El modo portátil sigue existiendo,
+; pero ya no se pregunta en la instalación interactiva:
+;
+;   - Llegaba justo DESPUÉS del aviso de SmartScreen (el binario no está
+;     firmado). Tras ese susto, «carpeta independiente, sin tocar el registro»
+;     es la opción que suena prudente… y es la peor: deja al usuario sin acceso
+;     directo en el menú Inicio, sin desinstalador y sin actualizaciones.
+;   - Pedía una decisión técnica («registro», «portátil») antes de haber visto
+;     la app, y para casi todo el mundo solo hay una respuesta correcta.
+;
+; Sigue disponible por línea de comandos: `Abrax_..._x64-setup.exe /PORTABLE`,
+; que `.onInit` procesa y que ya fija el directorio de destino por su cuenta.
+; Las dos funciones se conservan: volver a mostrar la página es descomentar
+; esta línea.
+;Page custom PageInstallType PageLeaveInstallType
 
 Function PageInstallType
   ; Skip for passive/silent/update modes — portable flag is handled via /PORTABLE
@@ -180,7 +195,10 @@ Function PageInstallType
     Abort
   ${EndIf}
 
-  !insertmacro MUI_HEADER_TEXT "Choose Install Type" "Select how you want to install ${PRODUCTNAME}."
+  ; Las cadenas van por $(...) igual que las de Tauri: esta página es NUESTRA y
+  ; con el texto a mano se quedaba en inglés dentro de un instalador que por lo
+  ; demás ya salía traducido. Las tablas están al final, junto a los idiomas.
+  !insertmacro MUI_HEADER_TEXT "$(installTypeTitle)" "$(installTypeSubtitle)"
 
   nsDialogs::Create 1018
   Pop $0
@@ -188,19 +206,19 @@ Function PageInstallType
     Abort
   ${EndIf}
 
-  ${NSD_CreateLabel} 0 0 100% 24u "Choose whether to perform a normal installation or a portable installation."
+  ${NSD_CreateLabel} 0 0 100% 24u "$(installTypeIntro)"
   Pop $0
 
-  ${NSD_CreateRadioButton} 30u 35u -30u 12u "Normal Installation (recommended)"
+  ${NSD_CreateRadioButton} 30u 35u -30u 12u "$(installTypeNormal)"
   Pop $InstallTypeRadioNormal
 
-  ${NSD_CreateLabel} 44u 49u -44u 20u "Installs to your system with Start Menu shortcuts, uninstaller, and auto-update support."
+  ${NSD_CreateLabel} 44u 49u -44u 20u "$(installTypeNormalDesc)"
   Pop $0
 
-  ${NSD_CreateRadioButton} 30u 75u -30u 12u "Portable Installation"
+  ${NSD_CreateRadioButton} 30u 75u -30u 12u "$(installTypePortable)"
   Pop $InstallTypeRadioPortable
 
-  ${NSD_CreateLabel} 44u 89u -44u 20u "Self-contained folder with no registry changes, shortcuts, or uninstaller. Data stored next to the app."
+  ${NSD_CreateLabel} 44u 89u -44u 20u "$(installTypePortableDesc)"
   Pop $0
 
   ; Pre-select based on current state
@@ -481,7 +499,78 @@ FunctionEnd
 ; 1. Confirm uninstall page
 Var DeleteAppDataCheckbox
 Var DeleteAppDataCheckboxState
+; --- MODELOS --- Caché de Hugging Face y peso real de lo que se borraría.
+Var HfHubDir
+Var TamanoDatos
 !define /ifndef WS_EX_LAYOUTRTL         0x00400000
+
+; Dónde viven de verdad los pesos: transcribe-cpp los descarga a la caché
+; estándar de Hugging Face, NO al datadir de la app. Respeta HF_HOME si está.
+Function un.RutaCacheHF
+  ReadEnvStr $HfHubDir "HF_HOME"
+  ${If} $HfHubDir == ""
+    StrCpy $HfHubDir "$PROFILE\.cache\huggingface\hub"
+  ${Else}
+    StrCpy $HfHubDir "$HfHubDir\hub"
+  ${EndIf}
+FunctionEnd
+
+; Peso REAL de lo que se borraría, medido aquí y ahora. Un número fijo mentiría:
+; quien solo bajó el modelo de arranque tiene ~200 MB y quien bajó los cinco,
+; varios GB. Si algo falla, `$TamanoDatos` queda vacío y la casilla se muestra
+; sin cifra — nunca con una inventada.
+Function un.MedirDatos
+  StrCpy $TamanoDatos ""
+  StrCpy $R0 0
+  ; ¿La medida es fiable? `GetSize` usa enteros de 32 bits con signo y devuelve
+  ; CADENA VACÍA en cuanto una carpeta pasa de 2 GB (verificado: 1,5 GB mide
+  ; bien, 2,5 GB devuelve vacío, y cambiar a /S=0M no lo salva). Sumar ese vacío
+  ; daría un total confiadamente equivocado, que es peor que no dar ninguno: a
+  ; la primera medida imposible se abandona la cifra y la casilla sale sin ella.
+  StrCpy $R6 1
+  ${If} ${FileExists} "$APPDATA\${BUNDLEID}\*.*"
+    ${un.GetSize} "$APPDATA\${BUNDLEID}" "/S=0K" $R1 $R2 $R3
+    ${If} $R1 == ""
+      StrCpy $R6 0
+    ${Else}
+      IntOp $R0 $R0 + $R1
+    ${EndIf}
+  ${EndIf}
+  ${If} ${FileExists} "$LOCALAPPDATA\${BUNDLEID}\*.*"
+    ${un.GetSize} "$LOCALAPPDATA\${BUNDLEID}" "/S=0K" $R1 $R2 $R3
+    ${If} $R1 == ""
+      StrCpy $R6 0
+    ${Else}
+      IntOp $R0 $R0 + $R1
+    ${EndIf}
+  ${EndIf}
+  Call un.RutaCacheHF
+  ${If} ${FileExists} "$HfHubDir\*.*"
+    FindFirst $R4 $R5 "$HfHubDir\models--handy-computer--*"
+    ${DoWhile} $R5 != ""
+      ${un.GetSize} "$HfHubDir\$R5" "/S=0K" $R1 $R2 $R3
+      ${If} $R1 == ""
+        StrCpy $R6 0
+      ${Else}
+        IntOp $R0 $R0 + $R1
+      ${EndIf}
+      FindNext $R4 $R5
+    ${Loop}
+    FindClose $R4
+  ${EndIf}
+  ${If} $R6 = 0
+    StrCpy $TamanoDatos ""
+  ${ElseIf} $R0 > 1048576
+    IntOp $R1 $R0 / 1048576
+    IntOp $R2 $R0 % 1048576
+    IntOp $R2 $R2 * 10
+    IntOp $R2 $R2 / 1048576
+    StrCpy $TamanoDatos "$R1$(separadorDecimal)$R2 GB"
+  ${ElseIf} $R0 > 1024
+    IntOp $R1 $R0 / 1024
+    StrCpy $TamanoDatos "$R1 MB"
+  ${EndIf}
+FunctionEnd
 !define MUI_PAGE_CUSTOMFUNCTION_SHOW un.ConfirmShow
 Function un.ConfirmShow ; Add add a `Delete app data` check box
   ; $1 inner dialog HWND
@@ -507,7 +596,15 @@ Function un.ConfirmShow ; Add add a `Delete app data` check box
   IntOp $5 $5 / 96
   IntOp $6 $6 / 96
   IntOp $7 $7 / 96
-  System::Call 'user32::CreateWindowEx(i r3, w "${__NSD_CheckBox_CLASS}", w "$(deleteAppData)", i ${__NSD_CheckBox_STYLE}, i r4, i r5, i r6, i r7, p r1, i0, i0, i0) i .s'
+  ; La casilla nombra AMBAS cosas —datos y modelos— y su peso real. Antes decía
+  ; solo «datos de la aplicación» y dejaba los pesos, que son lo que ocupa.
+  ; Va SIN marcar (no hay BM_SETCHECK): borrar es decisión del usuario.
+  Call un.MedirDatos
+  StrCpy $9 "$(deleteAppDataAndModels)"
+  ${If} $TamanoDatos != ""
+    StrCpy $9 "$9 ($(aproximadamente) $TamanoDatos)"
+  ${EndIf}
+  System::Call 'user32::CreateWindowEx(i r3, w "${__NSD_CheckBox_CLASS}", w "$9", i ${__NSD_CheckBox_STYLE}, i r4, i r5, i r6, i r7, p r1, i0, i0, i0) i .s'
   Pop $DeleteAppDataCheckbox
   SendMessage $HWNDPARENT ${WM_GETFONT} 0 0 $1
   SendMessage $DeleteAppDataCheckbox ${WM_SETFONT} $1 1
@@ -530,6 +627,60 @@ FunctionEnd
 {{#each language_files}}
   !include "{{this}}"
 {{/each}}
+
+; ─── Cadenas propias de la página «Tipo de instalación» ──────────────────────
+; Esa página la añadimos nosotros (Normal vs Portable) y llevaba el texto
+; escrito a mano en inglés: el instalador salía en español —título, Atrás,
+; Siguiente, Cancelar— y esa única pantalla, no.
+;
+; Van DESPUÉS de los `MUI_LANGUAGE` porque `${LANG_*}` solo existe una vez que
+; el idioma se ha insertado. NSIS exige la cadena en TODAS las tablas
+; compiladas: si algún día se añade un idioma a `bundle.windows.nsis.languages`
+; en `tauri.conf.json`, el build FALLA hasta que se traduzca aquí. Es
+; deliberado — un idioma a medias es peor que un fallo ruidoso.
+!ifdef LANG_SPANISH
+  LangString installTypeTitle       ${LANG_SPANISH} "Tipo de instalación"
+  LangString installTypeSubtitle    ${LANG_SPANISH} "Elige cómo quieres instalar ${PRODUCTNAME}."
+  LangString installTypeIntro       ${LANG_SPANISH} "Elige entre una instalación normal o una instalación portátil."
+  LangString installTypeNormal      ${LANG_SPANISH} "Instalación normal (recomendada)"
+  LangString installTypeNormalDesc  ${LANG_SPANISH} "Se instala en el equipo, con acceso directo en el menú Inicio, desinstalador y actualizaciones automáticas."
+  LangString installTypePortable    ${LANG_SPANISH} "Instalación portátil"
+  LangString installTypePortableDesc ${LANG_SPANISH} "Una carpeta independiente, sin tocar el registro ni crear accesos directos ni desinstalador. Tus datos se guardan junto a la app."
+  LangString installTypePortableDone ${LANG_SPANISH} "Modo portátil: se crearon el archivo marcador y la carpeta Data."
+  LangString deleteAppDataAndModels ${LANG_SPANISH} "Eliminar también mis datos y los modelos descargados"
+  LangString aproximadamente        ${LANG_SPANISH} "aprox."
+  LangString separadorDecimal       ${LANG_SPANISH} ","
+  LangString deleteModelsDone       ${LANG_SPANISH} "Modelos descargados eliminados de la caché."
+  ; ─── Se REDEFINEN cadenas de Tauri: gana la última, verificado con makensis
+  ; (avisa «set multiple times» y usa esta). El texto original decía solo
+  ; «Pulse Aceptar para cerrarlo» y CALLABA qué hace Cancelar, que aborta la
+  ; instalación o la desinstalación entera sin decir nada. Y como ABRAX se va a
+  ; la BANDEJA al pulsar la X, el usuario está convencido de haberla cerrado:
+  ; pasó el 29/07 y costó una desinstalación que «no funcionaba». Se nombra la
+  ; bandeja y se explican los DOS botones.
+  LangString appRunningOkKill ${LANG_SPANISH} "{{product_name}} sigue abierto.$\n$\nRecuerda que al cerrar la ventana queda en la bandeja, junto al reloj.$\n$\nAceptar: lo cierra y continúa.$\nCancelar: no cambia nada y esto se detiene."
+  LangString appRunning       ${LANG_SPANISH} "{{product_name}} sigue abierto y hay que cerrarlo para continuar. Si cerraste la ventana, míralo en la bandeja junto al reloj: clic derecho en su icono y «Salir». Después vuelve a intentarlo."
+  LangString failedToKillApp  ${LANG_SPANISH} "No se pudo cerrar {{product_name}}. Ciérralo desde la bandeja —clic derecho en su icono junto al reloj y «Salir»— y vuelve a intentarlo."
+!endif
+
+!ifdef LANG_ENGLISH
+  LangString installTypeTitle       ${LANG_ENGLISH} "Choose Install Type"
+  LangString installTypeSubtitle    ${LANG_ENGLISH} "Select how you want to install ${PRODUCTNAME}."
+  LangString installTypeIntro       ${LANG_ENGLISH} "Choose whether to perform a normal installation or a portable installation."
+  LangString installTypeNormal      ${LANG_ENGLISH} "Normal Installation (recommended)"
+  LangString installTypeNormalDesc  ${LANG_ENGLISH} "Installs to your system with Start Menu shortcuts, uninstaller, and auto-update support."
+  LangString installTypePortable    ${LANG_ENGLISH} "Portable Installation"
+  LangString installTypePortableDesc ${LANG_ENGLISH} "Self-contained folder with no registry changes, shortcuts, or uninstaller. Data stored next to the app."
+  LangString installTypePortableDone ${LANG_ENGLISH} "Portable mode: created marker file and Data directory."
+  LangString deleteAppDataAndModels ${LANG_ENGLISH} "Also delete my data and the downloaded models"
+  LangString aproximadamente        ${LANG_ENGLISH} "approx."
+  LangString separadorDecimal       ${LANG_ENGLISH} "."
+  LangString deleteModelsDone       ${LANG_ENGLISH} "Downloaded models removed from the cache."
+  ; Ver la nota de la tabla en español: se redefinen a propósito.
+  LangString appRunningOkKill ${LANG_ENGLISH} "{{product_name}} is still running.$\n$\nNote that closing its window leaves it in the tray, next to the clock.$\n$\nOK: closes it and continues.$\nCancel: changes nothing and stops here."
+  LangString appRunning       ${LANG_ENGLISH} "{{product_name}} is still running and must be closed to continue. If you closed its window, look for it in the tray next to the clock: right-click its icon and choose Quit. Then try again."
+  LangString failedToKillApp  ${LANG_ENGLISH} "{{product_name}} could not be closed. Close it from the tray — right-click its icon next to the clock and choose Quit — then try again."
+!endif
 
 Function .onInit
   ${GetOptions} $CMDLINE "/P" $PassiveMode
@@ -597,7 +748,7 @@ Function .onInit
     FileOpen $1 "$INSTDIR\portable" r
     FileRead $1 $2
     FileClose $1
-    ${If} $2 == "Handy Portable Mode"
+    ${If} $2 == "Abrax Portable Mode"
       StrCpy $PortableMode 1
     ${OrIf} $2 == ""
     ${AndIf} ${FileExists} "$INSTDIR\Data"
@@ -768,10 +919,10 @@ Section Install
   ; --- PORTABLE MODE --- Create portable marker and Data directory
   ${If} $PortableMode = 1
     FileOpen $0 "$INSTDIR\portable" w
-    FileWrite $0 "Handy Portable Mode"
+    FileWrite $0 "Abrax Portable Mode"
     FileClose $0
     CreateDirectory "$INSTDIR\Data"
-    DetailPrint "Portable mode: created marker file and Data directory."
+    DetailPrint "$(installTypePortableDone)"
   ${EndIf}
 
   ; --- PORTABLE MODE --- Skip uninstaller, registry, and shortcuts for portable installs
@@ -967,6 +1118,30 @@ Section Uninstall
     DeleteRegValue HKCU "Software\Microsoft\Windows\CurrentVersion\Run" "${PRODUCTNAME}"
   ${EndIf}
 
+  ; --- RUNTIME DE VOZ --- Se borra SIEMPRE, marque o no el usuario «eliminar mis
+  ; datos». No es un dato suyo: es un entorno de Python que instalo Abrax dentro
+  ; de su datadir, ~100 MB que el no puso ahi y que no le sirven de nada sin la
+  ; app. Dejarlo seria basura escondida en AppData tras desinstalar.
+  ;
+  ; Lo que si es dato del usuario —ajustes, historial, diccionario— sigue
+  ; dependiendo de la casilla, que es de lo que habla la casilla.
+  ${If} $UpdateMode <> 1
+    SetShellVarContext current
+    ; Igual que abajo: matar primero lo que corra DESDE esa carpeta, o el borrado
+    ; se lleva lo que puede y deja un venv a medias. Filtrado por RUTA.
+    nsExec::ExecToLog 'powershell -NoProfile -NonInteractive -ExecutionPolicy Bypass -Command "Get-CimInstance Win32_Process | Where-Object { $$_.ExecutablePath -and $$_.ExecutablePath -like $\'$APPDATA\${BUNDLEID}\tts\*$\' } | ForEach-Object { try { Stop-Process -Id $$_.ProcessId -Force -ErrorAction Stop } catch {} }"'
+    Pop $R9
+    Sleep 400
+    RmDir /r "$APPDATA\${BUNDLEID}\tts"
+    ${If} ${FileExists} "$APPDATA\${BUNDLEID}\tts\*.*"
+      Sleep 800
+      RmDir /r "$APPDATA\${BUNDLEID}\tts"
+      ${If} ${FileExists} "$APPDATA\${BUNDLEID}\tts\*.*"
+        DetailPrint "Aviso: quedaron archivos del motor de voz en uso."
+      ${EndIf}
+    ${EndIf}
+  ${EndIf}
+
   ; Delete app data if the checkbox is selected
   ; and if not updating
   ${If} $DeleteAppDataCheckboxState = 1
@@ -981,8 +1156,74 @@ Section Uninstall
     DeleteRegKey /ifempty HKCU "${MANUKEY}"
 
     SetShellVarContext current
+
+    ; --- PROCESOS HIJO --- Antes de borrar hay que matar lo que corra DESDE el
+    ; datadir. El motor de voz arranca un `python.exe` que vive dentro de
+    ; `<datadir>\tts\runtime\*\.venv\Scripts\`, y si sigue vivo el `RmDir /r` de
+    ; abajo NO puede borrar su carpeta: se lleva lo que puede y deja el resto.
+    ;
+    ; Eso es exactamente lo que se encontro el 30/07 en un equipo real: tras
+    ; desinstalar quedaron los dos venv a medias —con `python.exe` pero sin
+    ; `pyvenv.cfg` ni paquetes—, y como la app los daba por instalados, el motor
+    ; no arrancaba nunca y tampoco ofrecia reinstalarlo. `CheckIfAppIsRunning`
+    ; cubre el ejecutable principal, pero no a sus hijos.
+    ;
+    ; Se filtra por RUTA, no por nombre: matar todos los `python.exe` del sistema
+    ; se llevaria por delante el trabajo del usuario. Solo mueren los que se
+    ; ejecutan desde nuestra carpeta.
+    DetailPrint "Cerrando procesos del motor de voz..."
+    ; OJO CON EL ESCAPADO: NSIS no admite '' para una comilla simple dentro de una
+    ; cadena delimitada por comillas simples — hay que usar $\' o la cadena se
+    ; corta a mitad. Y $$ produce un $ literal, que es lo que PowerShell necesita
+    ; para $_ .
+    nsExec::ExecToLog 'powershell -NoProfile -NonInteractive -ExecutionPolicy Bypass -Command "Get-CimInstance Win32_Process | Where-Object { $$_.ExecutablePath -and $$_.ExecutablePath -like $\'$APPDATA\${BUNDLEID}\*$\' } | ForEach-Object { try { Stop-Process -Id $$_.ProcessId -Force -ErrorAction Stop } catch {} }"'
+    Pop $R9
+    Sleep 400
+
     RmDir /r "$APPDATA\${BUNDLEID}"
     RmDir /r "$LOCALAPPDATA\${BUNDLEID}"
+
+    ; Segunda pasada: `RmDir /r` NO informa de errores, asi que la unica forma de
+    ; saber si funciono es MIRAR si la carpeta sigue ahi. Si quedo algo se
+    ; reintenta tras un respiro —un archivo recien liberado suele borrarse a la
+    ; segunda— y si aun asi resiste, se deja dicho en el log en vez de fingir que
+    ; la desinstalacion fue limpia.
+    ${If} ${FileExists} "$APPDATA\${BUNDLEID}\*.*"
+      Sleep 800
+      RmDir /r "$APPDATA\${BUNDLEID}"
+      ${If} ${FileExists} "$APPDATA\${BUNDLEID}\*.*"
+        DetailPrint "Aviso: quedaron archivos en $APPDATA\${BUNDLEID} (en uso)."
+      ${EndIf}
+    ${EndIf}
+
+    ; --- MODELOS --- Los pesos NO están en el datadir: transcribe-cpp los baja
+    ; a la caché de Hugging Face. Sin esto, «eliminar mis datos» dejaba varios
+    ; GB escondidos en una carpeta que el usuario jamás encontraría.
+    ;
+    ; Se borran SOLO los repos de NUESTRA organización (`models--handy-computer--*`).
+    ; Esa caché es COMPARTIDA: cualquier otra app o script del usuario guarda
+    ; ahí lo suyo, y borrarla entera destruiría datos ajenos.
+    Call un.RutaCacheHF
+    ${If} ${FileExists} "$HfHubDir\*.*"
+      FindFirst $R0 $R1 "$HfHubDir\models--handy-computer--*"
+      ${DoWhile} $R1 != ""
+        RMDir /r "$HfHubDir\$R1"
+        FindNext $R0 $R1
+      ${Loop}
+      FindClose $R0
+      ; Y los cerrojos de esos mismos repos, que van en su propia carpeta.
+      FindFirst $R0 $R1 "$HfHubDir\.locks\models--handy-computer--*"
+      ${DoWhile} $R1 != ""
+        RMDir /r "$HfHubDir\.locks\$R1"
+        FindNext $R0 $R1
+      ${Loop}
+      FindClose $R0
+      ; Sin /r: solo desaparecen si quedaron VACÍAS. Si el usuario tiene
+      ; modelos de otras herramientas, su caché sigue intacta.
+      RMDir "$HfHubDir\.locks"
+      RMDir "$HfHubDir"
+      DetailPrint "$(deleteModelsDone)"
+    ${EndIf}
   ${EndIf}
 
   !ifmacrodef NSIS_HOOK_POSTUNINSTALL

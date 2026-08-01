@@ -19,7 +19,7 @@ on:
       asset-prefix:
         required: false
         type: string
-        default: "handy"
+        default: "abrax"
       asset-name-pattern:
         required: false
         type: string
@@ -115,7 +115,7 @@ jobs:
         if: contains(inputs.platform, 'ubuntu-24.04') && !contains(inputs.platform, 'arm')
         run: |
           sudo apt-get update
-          sudo apt-get install -y libappindicator3-dev librsvg2-dev patchelf libasound2-dev libopenblas-dev libx11-dev libxtst-dev libxrandr-dev libgtk-layer-shell0 libgtk-layer-shell-dev \
+          sudo apt-get install -y libappindicator3-dev librsvg2-dev patchelf libasound2-dev libopenblas-dev libx11-dev libxtst-dev libxrandr-dev libgtk-layer-shell0 libgtk-layer-shell-dev libspeechd-dev \
             libwebkit2gtk-4.1-0=2.44.0-2 \
             libwebkit2gtk-4.1-dev=2.44.0-2 \
             libjavascriptcoregtk-4.1-0=2.44.0-2 \
@@ -127,13 +127,13 @@ jobs:
         if: contains(inputs.platform, 'ubuntu-24.04-arm')
         run: |
           sudo apt-get update
-          sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf libasound2-dev libopenblas-dev libx11-dev libxtst-dev libxrandr-dev libgtk-layer-shell0 libgtk-layer-shell-dev xdg-utils
+          sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf libasound2-dev libopenblas-dev libx11-dev libxtst-dev libxrandr-dev libgtk-layer-shell0 libgtk-layer-shell-dev libspeechd-dev xdg-utils
 
       - name: install dependencies (ubuntu 22.04)
         if: contains(inputs.platform, 'ubuntu-22.04') && !contains(inputs.platform, 'arm')
         run: |
           sudo apt-get update
-          sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf libasound2-dev libopenblas-dev libx11-dev libxtst-dev libxrandr-dev libgtk-layer-shell0 libgtk-layer-shell-dev
+          sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf libasound2-dev libopenblas-dev libx11-dev libxtst-dev libxrandr-dev libgtk-layer-shell0 libgtk-layer-shell-dev libspeechd-dev
 
       - name: Verify gtk-layer-shell runtime dependency (Ubuntu)
         if: contains(inputs.platform, 'ubuntu')
@@ -228,11 +228,12 @@ jobs:
           security find-identity -v -p codesigning build.keychain
 
       - name: verify certificate
+        id: verify-certificate
         if: contains(inputs.platform, 'macos') && inputs.sign-binaries
         run: |
           CERT_INFO=$(security find-identity -v -p codesigning build.keychain | grep "Developer ID Application")
           CERT_ID=$(echo "$CERT_INFO" | awk -F'"' '{print $2}')
-          echo "CERT_ID=$CERT_ID" >> $GITHUB_ENV
+          echo "cert_id=$CERT_ID" >> $GITHUB_OUTPUT
           echo "Certificate imported."
 
       - name: Patch asset name pattern
@@ -303,7 +304,7 @@ jobs:
           #     statically linking libomp.
           echo "TRANSCRIBE_CMAKE_ARGS=-DGGML_NATIVE=OFF -DGGML_OPENMP=OFF" >> $env:GITHUB_ENV
 
-      # Bundle the VC++ runtime app-local so Handy starts on machines without a
+      # Bundle the VC++ runtime app-local so Abrax starts on machines without a
       # current Microsoft redistributable. build.rs stages DLLs from these dirs
       # into transcribe-libs/, using the same VS install that compiled the code.
       # x64 also needs vcomp140.dll for ggml OpenMP; ARM64 disables OpenMP.
@@ -362,6 +363,9 @@ jobs:
           Write-Host "TAURI_WINDOWS_SIGNTOOL_PATH=$($signtool.FullName)"
           Add-Content -Path $env:GITHUB_ENV -Value "TAURI_WINDOWS_SIGNTOOL_PATH=$($signtool.FullName)"
 
+      # macOS Intel: Microsoft dejó de publicar binarios osx-x86_64 (v1.24.2 solo
+      # trae arm64), así que este es un mirror de terceros del build Intel. Migrar
+      # a hosting propio cuando exista (pendiente en docs/RELEASING.md).
       - name: Install ONNX Runtime (x86_64 macOS)
         if: inputs.target == 'x86_64-apple-darwin'
         shell: bash
@@ -382,9 +386,9 @@ jobs:
         shell: bash
         run: |
           ORT_VERSION="1.24.2"
-          curl -L -o ort.tgz "https://blob.handy.computer/onnxruntime-linux-x86_64-${ORT_VERSION}.tgz"
+          curl -L -o ort.tgz "https://github.com/microsoft/onnxruntime/releases/download/v${ORT_VERSION}/onnxruntime-linux-x64-${ORT_VERSION}.tgz"
           tar xzf ort.tgz
-          ORT_DIR="$(pwd)/onnxruntime-linux-x86_64-${ORT_VERSION}"
+          ORT_DIR="$(pwd)/onnxruntime-linux-x64-${ORT_VERSION}"
           echo "ORT_LIB_LOCATION=$ORT_DIR/lib" >> $GITHUB_ENV
           echo "ORT_PREFER_DYNAMIC_LINK=1" >> $GITHUB_ENV
           # Resolve symlinks so the deb bundler gets real files (not broken symlinks)
@@ -409,10 +413,8 @@ jobs:
       # MLAS runtime CPU dispatch, so it runs everywhere and dispatches to AVX2/AVX-512
       # kernels when present (perf parity on capable CPUs). build.rs stages
       # onnxruntime.dll into transcribe-libs/, which tauri.windows.conf.json bundles
-      # beside Handy.exe. ARM64 is excluded (all modern CPUs; keeps its static
+      # beside Abrax.exe. ARM64 is excluded (all modern CPUs; keeps its static
       # ORT posture).
-      # NOTE: sourced from Microsoft's GitHub release; can be re-hosted on
-      # blob.handy.computer to match the macOS/Linux steps.
       - name: Install ONNX Runtime (Windows x64)
         if: contains(inputs.platform, 'windows') && !contains(inputs.target, 'aarch64')
         shell: pwsh
@@ -454,7 +456,7 @@ jobs:
       # transcribe-cpp-sys's CMake install during the cargo build, but nothing
       # ships them. Pre-build the app so that install dir exists, then expose it
       # via LD_LIBRARY_PATH so the AppImage's linuxdeploy can resolve
-      # libtranscribe.so (a NEEDED of `handy`) while bundling. tauri-action
+      # libtranscribe.so (a NEEDED of `abrax`) while bundling. tauri-action
       # reuses this compile incrementally. TRANSCRIBE_LIBDIR is consumed by the
       # AppImage post-processing step to co-locate the dlopen'd ggml modules.
       - name: Pre-build and locate transcribe-cpp backend libs (Linux)
@@ -484,7 +486,7 @@ jobs:
           ls -la "$LIBDIR"
           echo "TRANSCRIBE_LIBDIR=$LIBDIR" >> "$GITHUB_ENV"
           echo "LD_LIBRARY_PATH=$LIBDIR${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}" >> "$GITHUB_ENV"
-          # linuxdeploy resolves `handy`'s NEEDED libs via `ldd` and HARD-FAILS
+          # linuxdeploy resolves `abrax`'s NEEDED libs via `ldd` and HARD-FAILS
           # on an unresolved one (it does not warn-and-skip). libtranscribe.so
           # lives only in the cargo build tree, so also publish it (and the ggml
           # libs it pulls in) to the system linker cache — belt-and-suspenders
@@ -494,28 +496,47 @@ jobs:
           sudo cp -vL "$LIBDIR"/libtranscribe.so* "$LIBDIR"/libggml*.so* /usr/local/lib/ 2>/dev/null || true
           sudo ldconfig
 
-      - name: Build with Tauri
+      # Dos variantes del build: la firmada define las vars de firma; la de
+      # prueba NO las define en absoluto — una env var presente-pero-vacía
+      # (APPLE_CERTIFICATE: '') hace que tauri intente importar el certificado
+      # igual ("failed to import keychain certificate", run 29763035396) y que
+      # el bundler exija la clave del updater. La de prueba además desactiva
+      # los artefactos de updater vía tauri.noupdater.conf.json.
+      - name: Build with Tauri (signed)
+        if: inputs.sign-binaries
         uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          APPLE_ID: ${{ inputs.sign-binaries && secrets.APPLE_ID || '' }}
-          APPLE_ID_PASSWORD: ${{ inputs.sign-binaries && secrets.APPLE_ID_PASSWORD || '' }}
-          APPLE_PASSWORD: ${{ inputs.sign-binaries && secrets.APPLE_PASSWORD || '' }}
-          APPLE_TEAM_ID: ${{ inputs.sign-binaries && secrets.APPLE_TEAM_ID || '' }}
-          APPLE_CERTIFICATE: ${{ inputs.sign-binaries && secrets.APPLE_CERTIFICATE || '' }}
-          APPLE_CERTIFICATE_PASSWORD: ${{ inputs.sign-binaries && secrets.APPLE_CERTIFICATE_PASSWORD || '' }}
-          APPLE_SIGNING_IDENTITY: ${{ inputs.sign-binaries && env.CERT_ID || '' }}
-          AZURE_CLIENT_ID: ${{ inputs.sign-binaries && secrets.AZURE_CLIENT_ID || '' }}
-          AZURE_CLIENT_SECRET: ${{ inputs.sign-binaries && secrets.AZURE_CLIENT_SECRET || '' }}
-          AZURE_TENANT_ID: ${{ inputs.sign-binaries && secrets.AZURE_TENANT_ID || '' }}
-          TAURI_SIGNING_PRIVATE_KEY: ${{ inputs.sign-binaries && secrets.TAURI_SIGNING_PRIVATE_KEY || '' }}
-          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ inputs.sign-binaries && secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD || '' }}
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_ID_PASSWORD: ${{ secrets.APPLE_ID_PASSWORD }}
+          APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
+          APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+          APPLE_SIGNING_IDENTITY: ${{ steps.verify-certificate.outputs.cert_id }}
+          AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+          AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+          AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
         with:
           tagName: ${{ inputs.release-id && format('v{0}', steps.get-version.outputs.version) || '' }}
           releaseName: ${{ inputs.release-id && format('v{0}', steps.get-version.outputs.version) || '' }}
           releaseId: ${{ inputs.release-id }}
           assetNamePattern: ${{ steps.patch-release-name.outputs.platform }}
           args: ${{ inputs.build-args }}
+
+      - name: Build with Tauri (unsigned test build)
+        if: ${{ !inputs.sign-binaries }}
+        uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tagName: ${{ inputs.release-id && format('v{0}', steps.get-version.outputs.version) || '' }}
+          releaseName: ${{ inputs.release-id && format('v{0}', steps.get-version.outputs.version) || '' }}
+          releaseId: ${{ inputs.release-id }}
+          assetNamePattern: ${{ steps.patch-release-name.outputs.platform }}
+          args: ${{ format('{0} --config src-tauri/tauri.noupdater.conf.json', inputs.build-args) }}
 
       - name: Verify macOS dylib bundling
         if: inputs.target == 'x86_64-apple-darwin'
@@ -525,10 +546,10 @@ jobs:
           echo "=== Frameworks contents ==="
           ls -la "$APP/Contents/Frameworks/" | grep onnx || true
           echo "=== Binary linked libs ==="
-          otool -L "$APP/Contents/MacOS/handy" | grep onnx || true
+          otool -L "$APP/Contents/MacOS/abrax" | grep onnx || true
           echo "=== Checking all @rpath deps are satisfied ==="
           # Extract every @rpath lib the binary needs
-          otool -L "$APP/Contents/MacOS/handy" | grep '@rpath/' | awk '{print $1}' | while read dep; do
+          otool -L "$APP/Contents/MacOS/abrax" | grep '@rpath/' | awk '{print $1}' | while read dep; do
             libname=$(basename "$dep")
             if [ ! -f "$APP/Contents/Frameworks/$libname" ]; then
               echo "MISSING: $libname not found in Frameworks/"
@@ -625,7 +646,7 @@ jobs:
         run: |
           set -euo pipefail
 
-          # The runtime smoke test launches the packaged handy binary, which links
+          # The runtime smoke test launches the packaged abrax binary, which links
           # GTK (via tao) even for the headless --list-devices path and therefore
           # needs a display to start. CI runners are headless, so provide a virtual
           # X server via xvfb-run.
@@ -661,11 +682,11 @@ jobs:
           smoke_binary() {
             local root="$1"
             local label="$2"
-            # Run under a virtual X server: handy initializes GTK on startup even
+            # Run under a virtual X server: abrax initializes GTK on startup even
             # on the headless --list-devices path, which fails without a display.
             HANDY_NO_GTK_LAYER_SHELL=1 \
             LD_LIBRARY_PATH="${root}/usr/lib${LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}}" \
-              xvfb-run -a "${root}/usr/bin/handy" --list-devices >/tmp/handy-package-smoke.log
+              xvfb-run -a "${root}/usr/bin/abrax" --list-devices >/tmp/abrax-package-smoke.log
             echo "${label} --list-devices smoke passed"
           }
 
@@ -674,7 +695,7 @@ jobs:
               echo "Auditing deb package: ${deb}"
               listing="$(mktemp)"
               dpkg-deb -c "$deb" > "$listing"
-              require_pattern "$listing" 'usr/bin/handy$' "handy binary"
+              require_pattern "$listing" 'usr/bin/abrax$' "abrax binary"
               require_pattern "$listing" 'usr/lib/libtranscribe\.so' "transcribe runtime library"
               require_pattern "$listing" 'usr/lib/libggml-cpu.*\.so' "ggml CPU backend module"
               if [[ "${{ inputs.platform }}" == *"ubuntu-22.04"* && "${{ inputs.target }}" == "x86_64-unknown-linux-gnu" ]]; then
@@ -696,7 +717,7 @@ jobs:
               echo "Auditing rpm package: ${rpm_pkg}"
               listing="$(mktemp)"
               rpm -qpl "$rpm_pkg" > "$listing"
-              require_pattern "$listing" '/usr/bin/handy$' "handy binary"
+              require_pattern "$listing" '/usr/bin/abrax$' "abrax binary"
               require_pattern "$listing" '/usr/lib/libtranscribe\.so' "transcribe runtime library"
               require_pattern "$listing" '/usr/lib/libggml-cpu.*\.so' "ggml CPU backend module"
               rm -f "$listing"
@@ -707,12 +728,12 @@ jobs:
             for appimage in "${BUNDLE_DIR}"/appimage/*.AppImage; do
               echo "Auditing AppImage package: ${appimage}"
               workdir="$(mktemp -d)"
-              cp "$appimage" "${workdir}/Handy.AppImage"
-              chmod +x "${workdir}/Handy.AppImage"
+              cp "$appimage" "${workdir}/Abrax.AppImage"
+              chmod +x "${workdir}/Abrax.AppImage"
               (
                 cd "$workdir"
-                ./Handy.AppImage --appimage-extract >/dev/null
-                require_path "squashfs-root/usr/bin/handy" "AppImage handy binary"
+                ./Abrax.AppImage --appimage-extract >/dev/null
+                require_path "squashfs-root/usr/bin/abrax" "AppImage abrax binary"
                 require_path "squashfs-root/usr/lib/libtranscribe.so" "AppImage transcribe runtime library"
                 if ! find "squashfs-root/usr/lib" -name 'libggml-cpu*.so*' | grep -q .; then
                   echo "ERROR: missing AppImage ggml CPU backend module" >&2
@@ -785,9 +806,9 @@ jobs:
           function Assert-PackageContents {
             param([string]$Root, [string]$Label)
 
-            $handy = Get-ChildItem $Root -Filter "handy.exe" -Recurse -ErrorAction SilentlyContinue | Select-Object -First 1
-            if (-not $handy) {
-              throw "$Label package is missing handy.exe"
+            $abrax = Get-ChildItem $Root -Filter "abrax.exe" -Recurse -ErrorAction SilentlyContinue | Select-Object -First 1
+            if (-not $abrax) {
+              throw "$Label package is missing abrax.exe"
             }
             foreach ($dll in $stagedDlls) {
               if (-not (Get-ChildItem $Root -Filter $dll.Name -Recurse -ErrorAction SilentlyContinue)) {
@@ -795,9 +816,9 @@ jobs:
               }
             }
 
-            & $handy.FullName --list-devices | Out-Host
+            & $abrax.FullName --list-devices | Out-Host
             if ($LASTEXITCODE -ne 0) {
-              throw "$Label handy.exe --list-devices failed"
+              throw "$Label abrax.exe --list-devices failed"
             }
           }
 

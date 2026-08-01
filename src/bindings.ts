@@ -61,6 +61,166 @@ async changeThemeSetting(theme: string) : Promise<Result<null, string>> {
     else return { status: "error", error: e  as any };
 }
 },
+async changeUiThemeSetting(uiTheme: string) : Promise<Result<null, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("change_ui_theme_setting", { uiTheme }) };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+/**
+ * Persists the window shell (`classic`/`retro`/`quiet`). Unlike the palette,
+ * the shell only takes full effect on the next launch, because the
+ * frameless/transparent chrome is decided when the window is built; this
+ * command just records the choice so the next boot builds the right window.
+ */
+async changeUiShellSetting(uiShell: string) : Promise<Result<null, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("change_ui_shell_setting", { uiShell }) };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+/**
+ * Persists the Esfera overlay behaviour (`audio`/`palabras`). Takes effect on
+ * the next dictation: the overlay reads it when it becomes visible and the
+ * backend reads it when a transcription starts, so no live re-wiring is needed.
+ */
+async changeEsferaModoSetting(esferaModo: string) : Promise<Result<null, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("change_esfera_modo_setting", { esferaModo }) };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+async changeCorreccionModoSetting(modo: string) : Promise<Result<null, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("change_correccion_modo_setting", { modo }) };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+async changeCorreccionMotorSetting(motor: string) : Promise<Result<null, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("change_correccion_motor_setting", { motor }) };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+/**
+ * Los 1 531 nombres que reconoce el emoji dictado, para consultarlos en la app.
+ * 
+ * La tabla esta compilada dentro del binario, asi que esto no toca disco ni
+ * red: es leer un `&'static str` y partirlo. Se manda entera de una vez (unos
+ * 50 KB) porque filtrar en el frontend es instantaneo y evita un viaje de IPC
+ * por cada letra tecleada en el buscador.
+ */
+async listarEmojis() : Promise<EntradaEmoji[]> {
+    return await TAURI_INVOKE("listar_emojis");
+},
+/**
+ * Lista los discos con su espacio libre, deduplicados por punto de montaje y
+ * ordenados. Best-effort: si el SO no expone discos, devuelve lista vacía.
+ */
+async listarDiscos() : Promise<DiscoInfo[]> {
+    return await TAURI_INVOKE("listar_discos");
+},
+/**
+ * Devuelve la carpeta de modelos efectiva y la de por defecto.
+ */
+async obtenerCarpetaModelos() : Promise<CarpetaModelos> {
+    return await TAURI_INVOKE("obtener_carpeta_modelos");
+},
+/**
+ * Cambia la carpeta de modelos y, si `mover`, muda lo ya descargado a la
+ * nueva. La mudanza corre en un hilo aparte y reporta por `modelos-mudanza`;
+ * el comando vuelve apenas queda lanzada. `destino: None` vuelve a la carpeta
+ * por defecto.
+ */
+async cambiarCarpetaModelos(destino: string | null, mover: boolean) : Promise<Result<null, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("cambiar_carpeta_modelos", { destino, mover }) };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+/**
+ * Guarda el texto editado de una entrada del Historial y, si la Memoria está
+ * activa, aprende de la diferencia (pares `de → a` que pasan las puertas de
+ * seguridad). Devuelve los pares aprendidos/actualizados en esta edición para
+ * que la UI los muestre. La entrada se actualiza aunque no se aprenda nada.
+ */
+async editarTranscripcion(id: number, texto: string) : Promise<Result<ParMemoria[], string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("editar_transcripcion", { id, texto }) };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+/**
+ * Activa o desactiva la Memoria de correcciones.
+ */
+async cambiarMemoriaActiva(activa: boolean) : Promise<Result<null, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("cambiar_memoria_activa", { activa }) };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+/**
+ * Reemplaza la lista de pares aprendidos (olvidar individual o total desde
+ * la UI de Ajustes).
+ */
+async actualizarMemoriaCorrecciones(pares: ParMemoria[]) : Promise<Result<null, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("actualizar_memoria_correcciones", { pares }) };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+/**
+ * Activa o desactiva el aprendizaje en el sitio (releer el campo enfocado al
+ * empezar un dictado).
+ */
+async cambiarMemoriaEnSitio(activa: boolean) : Promise<Result<null, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("cambiar_memoria_en_sitio", { activa }) };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+/**
+ * Graba unos segundos con el micrófono configurado (o el default del sistema),
+ * SIN VAD y sin tocar el pipeline de dictado, y devuelve nivel + veredicto +
+ * el WAV para reproducir. Es la respuesta a "¿qué está escuchando ABRAX de
+ * verdad?": la misma señal 16 kHz mono que recibiría el modelo.
+ */
+async probarMicrofono(duracionMs: number) : Promise<Result<PruebaMicrofono, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("probar_microfono", { duracionMs }) };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+/**
+ * Toggle dictation from the UI (e.g. a retro transport button). Mirrors
+ * the global-shortcut / CLI `--toggle-transcription` path by reusing the shared
+ * coordinator entry point, so it adds no new recording pipeline.
+ */
+async triggerTranscription() : Promise<void> {
+    await TAURI_INVOKE("trigger_transcription");
+},
 async changeStartHiddenSetting(enabled: boolean) : Promise<Result<null, string>> {
     try {
     return { status: "ok", data: await TAURI_INVOKE("change_start_hidden_setting", { enabled }) };
@@ -80,6 +240,46 @@ async changeAutostartSetting(enabled: boolean) : Promise<Result<null, string>> {
 async changeTranslateToEnglishSetting(enabled: boolean) : Promise<Result<null, string>> {
     try {
     return { status: "ok", data: await TAURI_INVOKE("change_translate_to_english_setting", { enabled }) };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+async changeDiarizationEnabledSetting(enabled: boolean) : Promise<Result<null, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("change_diarization_enabled_setting", { enabled }) };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+async changeDiarizationNumSpeakersSetting(num: number) : Promise<Result<null, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("change_diarization_num_speakers_setting", { num }) };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+/**
+ * Conmuta «Audio del sistema» y, si hace falta, CAMBIA EL MODELO.
+ * 
+ * Canary es el recomendado porque arranca en un minuto y responde en 2 s, y
+ * para dictado corto eso ES el producto. Pero con audio de sistema se queda
+ * corto: medido el 29/07 sobre grabaciones reales de loopback, devolvió cadena
+ * vacía en 3 de 5 capturas donde Nemotron y Turbo sí transcribieron. El usuario
+ * no tiene por qué saber eso, así que la app elige por él.
+ * 
+ * Se cambia AL CONMUTAR, no en cada captura: usa el mismo camino que cuando el
+ * usuario elige un modelo a mano (`selected_model` + `reload_model_on_next_use`),
+ * que está exercitado a diario. Cambiar el motor dentro del flujo de grabación
+ * metería la orquestación de carga/descarga en la ruta crítica del dictado.
+ * 
+ * Si no hay ningún modelo apto descargado, NO se adivina: se avisa.
+ */
+async changeCaptureSystemAudioSetting(enabled: boolean) : Promise<Result<null, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("change_capture_system_audio_setting", { enabled }) };
 } catch (e) {
     if(e instanceof Error) throw e;
     else return { status: "error", error: e  as any };
@@ -200,89 +400,9 @@ async changeAutoSubmitKeySetting(key: string) : Promise<Result<null, string>> {
     else return { status: "error", error: e  as any };
 }
 },
-async changePostProcessEnabledSetting(enabled: boolean) : Promise<Result<null, string>> {
-    try {
-    return { status: "ok", data: await TAURI_INVOKE("change_post_process_enabled_setting", { enabled }) };
-} catch (e) {
-    if(e instanceof Error) throw e;
-    else return { status: "error", error: e  as any };
-}
-},
 async changeExperimentalEnabledSetting(enabled: boolean) : Promise<Result<null, string>> {
     try {
     return { status: "ok", data: await TAURI_INVOKE("change_experimental_enabled_setting", { enabled }) };
-} catch (e) {
-    if(e instanceof Error) throw e;
-    else return { status: "error", error: e  as any };
-}
-},
-async changePostProcessBaseUrlSetting(providerId: string, baseUrl: string) : Promise<Result<null, string>> {
-    try {
-    return { status: "ok", data: await TAURI_INVOKE("change_post_process_base_url_setting", { providerId, baseUrl }) };
-} catch (e) {
-    if(e instanceof Error) throw e;
-    else return { status: "error", error: e  as any };
-}
-},
-async changePostProcessApiKeySetting(providerId: string, apiKey: string) : Promise<Result<null, string>> {
-    try {
-    return { status: "ok", data: await TAURI_INVOKE("change_post_process_api_key_setting", { providerId, apiKey }) };
-} catch (e) {
-    if(e instanceof Error) throw e;
-    else return { status: "error", error: e  as any };
-}
-},
-async changePostProcessModelSetting(providerId: string, model: string) : Promise<Result<null, string>> {
-    try {
-    return { status: "ok", data: await TAURI_INVOKE("change_post_process_model_setting", { providerId, model }) };
-} catch (e) {
-    if(e instanceof Error) throw e;
-    else return { status: "error", error: e  as any };
-}
-},
-async setPostProcessProvider(providerId: string) : Promise<Result<null, string>> {
-    try {
-    return { status: "ok", data: await TAURI_INVOKE("set_post_process_provider", { providerId }) };
-} catch (e) {
-    if(e instanceof Error) throw e;
-    else return { status: "error", error: e  as any };
-}
-},
-async fetchPostProcessModels(providerId: string) : Promise<Result<string[], string>> {
-    try {
-    return { status: "ok", data: await TAURI_INVOKE("fetch_post_process_models", { providerId }) };
-} catch (e) {
-    if(e instanceof Error) throw e;
-    else return { status: "error", error: e  as any };
-}
-},
-async addPostProcessPrompt(name: string, prompt: string) : Promise<Result<LLMPrompt, string>> {
-    try {
-    return { status: "ok", data: await TAURI_INVOKE("add_post_process_prompt", { name, prompt }) };
-} catch (e) {
-    if(e instanceof Error) throw e;
-    else return { status: "error", error: e  as any };
-}
-},
-async updatePostProcessPrompt(id: string, name: string, prompt: string) : Promise<Result<null, string>> {
-    try {
-    return { status: "ok", data: await TAURI_INVOKE("update_post_process_prompt", { id, name, prompt }) };
-} catch (e) {
-    if(e instanceof Error) throw e;
-    else return { status: "error", error: e  as any };
-}
-},
-async deletePostProcessPrompt(id: string) : Promise<Result<null, string>> {
-    try {
-    return { status: "ok", data: await TAURI_INVOKE("delete_post_process_prompt", { id }) };
-} catch (e) {
-    if(e instanceof Error) throw e;
-    else return { status: "error", error: e  as any };
-}
-},
-async setPostProcessSelectedPrompt(id: string) : Promise<Result<null, string>> {
-    try {
-    return { status: "ok", data: await TAURI_INVOKE("set_post_process_selected_prompt", { id }) };
 } catch (e) {
     if(e instanceof Error) throw e;
     else return { status: "error", error: e  as any };
@@ -354,6 +474,65 @@ async changeLazyStreamCloseSetting(enabled: boolean) : Promise<Result<null, stri
 async changeVadEnabledSetting(enabled: boolean) : Promise<Result<null, string>> {
     try {
     return { status: "ok", data: await TAURI_INVOKE("change_vad_enabled_setting", { enabled }) };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+async changeCorreccionNumerosSetting(activo: boolean) : Promise<Result<null, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("change_correccion_numeros_setting", { activo }) };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+async listarSenalesDeFabrica() : Promise<SenalesDeFabrica> {
+    return await TAURI_INVOKE("listar_senales_de_fabrica");
+},
+/**
+ * Los cuatro ajustes de abajo NO TENIAN COMANDO, y por eso sus interruptores
+ * eran un placebo: el valor cambiaba en pantalla, `settingsStore` no encontraba
+ * manejador, escribia un `console.warn` en una consola que nadie mira, y a Rust
+ * no llegaba nunca. Al reabrir Ajustes el interruptor volvia a su sitio.
+ * 
+ * Nada mas engañoso que un control que se deja pulsar y no hace nada. Cazado
+ * el 30/07 auditando el trabajo heredado.
+ * 
+ * Recuerda la lista PROPIA aunque el usuario este usando las de fabrica, para
+ * que ir y volver entre las dos no le borre su trabajo.
+ */
+async changeAutocorreccionPropiasSustitucionSetting(senales: string[]) : Promise<Result<null, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("change_autocorreccion_propias_sustitucion_setting", { senales }) };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+async changeAutocorreccionActivaSetting(activa: boolean) : Promise<Result<null, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("change_autocorreccion_activa_setting", { activa }) };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+async changeEmojiDictadoSetting(activo: boolean) : Promise<Result<null, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("change_emoji_dictado_setting", { activo }) };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+/**
+ * `None` = las senales de fabrica, `Some(vec![])` = nivel apagado, lista propia
+ * = reemplaza a las de fabrica. Mismo contrato que las muletillas.
+ */
+async changeAutocorreccionSenalesSustitucionSetting(senales: string[] | null) : Promise<Result<null, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("change_autocorreccion_senales_sustitucion_setting", { senales }) };
 } catch (e) {
     if(e instanceof Error) throw e;
     else return { status: "error", error: e  as any };
@@ -549,13 +728,6 @@ async openAppDataDir() : Promise<Result<null, string>> {
 }
 },
 /**
- * Check if Apple Intelligence is available on this device.
- * Called by the frontend when the user selects Apple Intelligence provider.
- */
-async checkAppleIntelligenceAvailable() : Promise<boolean> {
-    return await TAURI_INVOKE("check_apple_intelligence_available");
-},
-/**
  * Try to initialize Enigo (keyboard/mouse simulation).
  * On macOS, this will return an error if accessibility permissions are not granted.
  */
@@ -607,6 +779,14 @@ async deleteModel(modelId: string) : Promise<Result<null, string>> {
 async cancelDownload(modelId: string) : Promise<Result<null, string>> {
     try {
     return { status: "ok", data: await TAURI_INVOKE("cancel_download", { modelId }) };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+async aptitudAudioSistema() : Promise<Result<AptitudAudioSistema, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("aptitud_audio_sistema") };
 } catch (e) {
     if(e instanceof Error) throw e;
     else return { status: "error", error: e  as any };
@@ -716,6 +896,20 @@ async setClamshellMicrophone(deviceName: string) : Promise<Result<null, string>>
 async isRecording() : Promise<boolean> {
     return await TAURI_INVOKE("is_recording");
 },
+/**
+ * Subscribe the calling window to spectrum frames (R8 subscription model).
+ * Idempotent per window label; frames flow only while ≥1 subscriber exists.
+ */
+async startSpectrum() : Promise<void> {
+    await TAURI_INVOKE("start_spectrum");
+},
+/**
+ * Unsubscribe the calling window from spectrum frames. When the last
+ * subscriber leaves, spectrum analysis and emission stop entirely.
+ */
+async stopSpectrum() : Promise<void> {
+    await TAURI_INVOKE("stop_spectrum");
+},
 async setModelUnloadTimeout(timeout: ModelUnloadTimeout) : Promise<void> {
     await TAURI_INVOKE("set_model_unload_timeout", { timeout });
 },
@@ -786,6 +980,272 @@ async isLaptop() : Promise<Result<boolean, string>> {
     if(e instanceof Error) throw e;
     else return { status: "error", error: e  as any };
 }
+},
+/**
+ * Errores recientes (más nuevo primero) para poblar el centro de errores al
+ * abrir la ventana — cubre los fallos ocurridos antes de montar el listener.
+ */
+async getRecentAlerts() : Promise<UserAlertEvent[]> {
+    return await TAURI_INVOKE("get_recent_alerts");
+},
+/**
+ * Descartar el centro de errores.
+ */
+async clearRecentAlerts() : Promise<void> {
+    await TAURI_INVOKE("clear_recent_alerts");
+},
+/**
+ * Indexa (o re-indexa) el proyecto y lo deja como diccionario activo.
+ */
+async indexProject(path: string) : Promise<Result<DictionaryStats, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("index_project", { path }) };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+/**
+ * Estadísticas del índice activo para la UI (contador + muestra de chips).
+ */
+async getDictionaryStats() : Promise<DictionaryStats | null> {
+    return await TAURI_INVOKE("get_dictionary_stats");
+},
+/**
+ * Enciende/apaga «aprender de este proyecto» sin perder el índice.
+ */
+async setDictionaryEnabled(enabled: boolean) : Promise<Result<null, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("set_dictionary_enabled", { enabled }) };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+/**
+ * Actualiza la lista de reemplazos exactos (espejo de update_custom_words).
+ */
+async updateCustomReplacements(replacements: CustomReplacement[]) : Promise<Result<null, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("update_custom_replacements", { replacements }) };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+async escuchaListVoices() : Promise<Result<VozEscucha[], string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("escucha_list_voices") };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+/**
+ * `rate` es un multiplicador de velocidad (1.0 = normal). Cada motor lo mapea a
+ * su rango (el del sistema vía `escucha::map_rate`; Piper vía `length_scale`;
+ * online/Kokoro vía el servidor). `pitch` es el tono en Hz — SOLO lo aplica el
+ * motor online (edge-tts); los demás lo ignoran.
+ * 
+ * **Async + `spawn_blocking`**: la síntesis neuronal puede tardar segundos la
+ * 1.ª vez (arranca el servidor y carga el modelo). Si corriera en el hilo
+ * principal, congelaría la UI y bloquearía toda otra IPC (incluido `Detener`).
+ * Al ejecutarla en el pool bloqueante, el hilo principal queda libre y los
+ * comandos de parada/estado responden al instante.
+ */
+async escuchaSpeak(texto: string, vozId: string | null, rate: number | null, pitch: number | null) : Promise<Result<null, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("escucha_speak", { texto, vozId, rate, pitch }) };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+async escuchaStop() : Promise<Result<null, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("escucha_stop") };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+async escuchaStatus() : Promise<Result<EstadoEscucha, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("escucha_status") };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+/**
+ * Preprocesa contenido (markdown/código/auto) en la cola de oraciones que el
+ * panel Escucha lee y resalta. Puro: no toca el motor TTS.
+ */
+async escuchaPreprocess(contenido: string, modo: ModoLectura, verbosidad: VerbosidadSimbolos) : Promise<Result<OracionHablable[], string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("escucha_preprocess", { contenido, modo, verbosidad }) };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+/**
+ * Lee el archivo de texto que el usuario eligió en el diálogo del panel.
+ * Vive en Rust en vez de plugin-fs para no ampliar el scope compartido de
+ * capabilities; el límite de tamaño evita tragar binarios gigantes.
+ */
+async escuchaReadFile(ruta: string) : Promise<Result<string, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("escucha_read_file", { ruta }) };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+/**
+ * "Leer portapapeles": el texto copiado, leído desde Rust para no añadir el
+ * permiso clipboard read al capabilities compartido. No se registra en logs.
+ */
+async escuchaReadClipboard() : Promise<Result<string, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("escucha_read_clipboard") };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+/**
+ * Persiste la configuración de Escucha de una vez. Comando propio (en vez de
+ * un change_* por campo en shortcut/mod.rs) para mantener acotada la
+ * superficie de ese archivo compartido.
+ */
+async escuchaUpdateSettings(vozProsa: string | null, vozCodigo: string | null, verbosidad: VerbosidadSimbolos) : Promise<Result<null, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("escucha_update_settings", { vozProsa, vozCodigo, verbosidad }) };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+/**
+ * Persiste los "Ajustes de voz" del motor: velocidad de lectura (multiplicador,
+ * todos los motores) y tono en Hz (solo online). Se aplican a "Probar voz" y a
+ * la lectura del panel Escucha.
+ */
+async updateTtsAjustes(velocidad: number, tono: number) : Promise<Result<null, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("update_tts_ajustes", { velocidad, tono }) };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+async detectHardware() : Promise<Result<HardwareInfo, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("detect_hardware") };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+/**
+ * Fuerza una nueva detección de hardware y recomputa el motor activo.
+ */
+async redetectHardware() : Promise<Result<HardwareInfo, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("redetect_hardware") };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+async listEngines() : Promise<Result<EngineStatus[], string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("list_engines") };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+async getRecommendedEngine() : Promise<Result<EngineId, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("get_recommended_engine") };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+async getActiveEngine() : Promise<Result<EngineId, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("get_active_engine") };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+async setEngine(engine: EngineId) : Promise<Result<null, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("set_engine", { engine }) };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+/**
+ * Catálogo de voces Piper con su estado de instalación (para el selector de voz).
+ * Sin `advanced-tts` devuelve una lista vacía (la UI no muestra Piper).
+ */
+async listPiperVoices() : Promise<Result<PiperVoiceInfo[], string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("list_piper_voices") };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+/**
+ * Descarga+extrae el runtime Piper (GPL, proceso separado) en el primer uso.
+ */
+async installPiperRuntime() : Promise<Result<null, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("install_piper_runtime") };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+/**
+ * Descarga una voz Piper (`.onnx` + `.onnx.json`) con verificación sha256.
+ */
+async installPiperVoice(voiceId: string) : Promise<Result<null, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("install_piper_voice", { voiceId }) };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+/**
+ * Aprovisiona el runtime Kokoro (venv + kokoro-onnx + pesos con checksum).
+ */
+async installKokoroRuntime() : Promise<Result<null, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("install_kokoro_runtime") };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+/**
+ * Aprovisiona el runtime de la voz ONLINE (venv + edge-tts). ⚠️ Motor de nube.
+ */
+async installOnlineRuntime() : Promise<Result<null, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("install_online_runtime") };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
 }
 }
 
@@ -794,12 +1254,20 @@ async isLaptop() : Promise<Result<boolean, string>> {
 
 export const events = __makeEvents__<{
 historyUpdatePayload: HistoryUpdatePayload,
+memoriaAprendida: MemoriaAprendida,
+mudanzaProgreso: MudanzaProgreso,
 streamPhaseEvent: StreamPhaseEvent,
-streamTextEvent: StreamTextEvent
+streamTextEvent: StreamTextEvent,
+transcriptWordsEvent: TranscriptWordsEvent,
+userAlertEvent: UserAlertEvent
 }>({
 historyUpdatePayload: "history-update-payload",
+memoriaAprendida: "memoria-aprendida",
+mudanzaProgreso: "mudanza-progreso",
 streamPhaseEvent: "stream-phase-event",
-streamTextEvent: "stream-text-event"
+streamTextEvent: "stream-text-event",
+transcriptWordsEvent: "transcript-words-event",
+userAlertEvent: "user-alert-event"
 })
 
 /** user-defined constants **/
@@ -808,6 +1276,65 @@ streamTextEvent: "stream-text-event"
 
 /** user-defined types **/
 
+export type AlertKind = "recording_permission_denied" | "recording_no_device" | 
+/**
+ * La grabación no capturó audio (0 muestras): mic mudo/desconectado, o
+ * «Audio del sistema» activo pero sin nada sonando.
+ */
+"recording_no_audio" | 
+/**
+ * El usuario soltó la tecla antes de alcanzar a hablar. NO es un problema
+ * del micrófono: culpar al micrófono aquí manda a revisar el hardware
+ * equivocado, que es exactamente lo que pasó en la medición del 26/07.
+ */
+"recording_too_short" | 
+/**
+ * Se capturó audio y el motor terminó bien, pero no reconoció ni una
+ * palabra. Antes esta rama ocultaba el overlay sin decir nada: el usuario
+ * veía «no pasó nada» y no tenía forma de saber por qué.
+ */
+"transcription_empty" | 
+/**
+ * «Audio del sistema» se activó, pero el modelo puesto se queda corto para
+ * eso y NO hay ninguno apto descargado. Sin este aviso el modo queda
+ * encendido y devolviendo vacío sin explicar por qué — que es exactamente
+ * lo que pasó el 29/07: audio capturado a −14 dBFS, transcripción vacía, y
+ * el usuario convencido de que la captura no funcionaba.
+ */
+"sistema_sin_modelo_apto" | 
+/**
+ * «Audio del sistema» se activó, el modelo puesto se quedaba corto, y Abrax
+ * cambió SOLO a otro que sí sirve — pero ese otro NO transmite en vivo.
+ * 
+ * El cambio en sí es correcto y deliberado. Lo que no puede quedar en
+ * silencio es lo que se pierde con el cambio: sin transmisión en vivo no
+ * hay texto mientras hablas ni palabras por minuto, y de los cinco modelos
+ * del catálogo **solo Nemotron transmite**. Encontrado el 30/07 en pruebas
+ * reales: la app cambió a Cohere sin decir nada y el tacómetro se quedó en
+ * cero, sin que nada en pantalla explicara por qué.
+ * 
+ * No es un error: es informativo. Por eso NO manda notificación del
+ * sistema (ver [`alert`]), que solo sabe hablar en tono de fallo.
+ */
+"sistema_modelo_cambiado_sin_vivo" | 
+/**
+ * No se pudo registrar ningún atajo global. Sin esto la app queda abierta y
+ * aparentemente sana, pero el atajo no existe y nada lo dice.
+ */
+"shortcut_registration" | 
+/**
+ * Un atajo CONCRETO no se pudo registrar, normalmente porque otra aplicación
+ * ya se quedó con esa combinación.
+ * 
+ * `ShortcutRegistration` no cubre este caso: solo salta cuando NINGUNO se
+ * registró. Si el dictado entra y el de lectura choca, el contador no es cero
+ * y no avisaba nadie — el usuario pulsa y no pasa nada, sin explicación.
+ * Encontrado el 30/07: `ctrl+shift+l` lo ocupaba Loom con un hook global.
+ * 
+ * `detail` lleva los ids que fallaron, para que el aviso diga CUÁL y el
+ * usuario sepa qué reasignar en Ajustes.
+ */
+"atajo_ocupado" | "recording" | "transcription" | "paste" | "model_load" | "model_download"
 /**
  * The container-level `serde(default)` (backed by the `Default` impl below)
  * guarantees every field — including ones added in the future — falls back to
@@ -826,26 +1353,323 @@ settings_schema_version?: number;
  * Defaults to empty on partial stores; the load path merges in the
  * default bindings for any missing keys before the settings are used.
  */
-bindings?: Partial<{ [key in string]: ShortcutBinding }>; push_to_talk?: boolean; audio_feedback?: boolean; audio_feedback_volume?: number; sound_theme?: SoundTheme; start_hidden?: boolean; autostart_enabled?: boolean; update_checks_enabled?: boolean; show_whats_new_on_update?: boolean; 
+bindings?: Partial<{ [key in string]: ShortcutBinding }>; push_to_talk?: boolean; audio_feedback?: boolean; audio_feedback_volume?: number; sound_theme?: SoundTheme; 
+/**
+ * Carpeta donde se descargan los modelos. `None` = la carpeta de datos de
+ * la app (comportamiento histórico). Se expone para que el usuario elija
+ * **en qué disco** viven los modelos, que pesan varios GB.
+ * 
+ * Se guarda como ruta absoluta. Si al arrancar apunta a algo que ya no
+ * existe (disco externo desconectado, carpeta borrada), quien la resuelve
+ * degrada a la carpeta por defecto en vez de fallar.
+ */
+models_dir?: string | null; start_hidden?: boolean; autostart_enabled?: boolean; update_checks_enabled?: boolean; show_whats_new_on_update?: boolean; 
 /**
  * The app version whose What's New the user has already seen. Fresh installs
  * default to the current version (nothing is "new" to them). Existing users
  * upgrading from before this key existed are blanked by the migration so they
  * see the current release's notes — see `apply_settings_migrations`.
  */
-whats_new_last_seen_version?: string; selected_model?: string; onboarding_completed?: boolean; always_on_microphone?: boolean; selected_microphone?: string | null; clamshell_microphone?: string | null; selected_output_device?: string | null; translate_to_english?: boolean; selected_language?: string; overlay_position?: OverlayPosition; debug_mode?: boolean; log_level?: LogLevel; custom_words?: string[]; model_unload_timeout?: ModelUnloadTimeout; word_correction_threshold?: number; history_limit?: number; recording_retention_period?: RecordingRetentionPeriod; paste_method?: PasteMethod; clipboard_handling?: ClipboardHandling; auto_submit?: boolean; auto_submit_key?: AutoSubmitKey; post_process_enabled?: boolean; post_process_provider_id?: string; post_process_providers?: PostProcessProvider[]; post_process_api_keys?: SecretMap; post_process_models?: Partial<{ [key in string]: string }>; post_process_prompts?: LLMPrompt[]; post_process_selected_prompt_id?: string | null; mute_while_recording?: boolean; append_trailing_space?: boolean; app_language?: string; theme?: Theme; experimental_enabled?: boolean; lazy_stream_close?: boolean; keyboard_implementation?: KeyboardImplementation; show_tray_icon?: boolean; paste_delay_ms?: number; paste_delay_after_ms?: number; typing_tool?: TypingTool; external_script_path?: string | null; custom_filler_words?: string[] | null; transcribe_accelerator?: TranscribeAcceleratorSetting; ort_accelerator?: OrtAcceleratorSetting; transcribe_gpu_device?: number; extra_recording_buffer_ms?: number; vad_enabled?: boolean; 
+whats_new_last_seen_version?: string; selected_model?: string; onboarding_completed?: boolean; always_on_microphone?: boolean; selected_microphone?: string | null; clamshell_microphone?: string | null; selected_output_device?: string | null; translate_to_english?: boolean; selected_language?: string; overlay_position?: OverlayPosition; debug_mode?: boolean; log_level?: LogLevel; custom_words?: string[]; 
+/**
+ * Reemplazos exactos por token (F5.1): "Ruth"→"rut" solo dispara con el
+ * token exacto "Ruth" (case-sensitive) — colisión con "ruta" imposible
+ * por diseño. Es la vía inmune del Diccionario Vivo.
+ */
+custom_replacements?: CustomReplacement[]; 
+/**
+ * Memoria de correcciones: pares `de → a` aprendidos de las ediciones
+ * del usuario en el Historial. Se aplican como reemplazo exacto por
+ * frase en el post-proceso. Todo local.
+ */
+memoria_activa?: boolean; 
+/**
+ * Aprender también EN EL SITIO: al empezar un dictado se relee el campo
+ * enfocado (accesibilidad, local) y se aprende de las correcciones que el
+ * usuario hizo ahí sobre el dictado anterior.
+ */
+memoria_en_sitio?: boolean; memoria_correcciones?: ParMemoria[]; 
+/**
+ * Proyecto activo del Diccionario Vivo (F5.3): ABRAX aprende la jerga
+ * del código indexándolo localmente. El índice vive en el datadir;
+ * nada sale del equipo.
+ */
+dictionary_project?: DictionaryProject | null; model_unload_timeout?: ModelUnloadTimeout; word_correction_threshold?: number; history_limit?: number; recording_retention_period?: RecordingRetentionPeriod; paste_method?: PasteMethod; clipboard_handling?: ClipboardHandling; auto_submit?: boolean; auto_submit_key?: AutoSubmitKey; mute_while_recording?: boolean; append_trailing_space?: boolean; app_language?: string; theme?: Theme; ui_theme?: UiTheme; ui_shell?: UiShell; correccion_modo?: CorreccionModo; correccion_motor?: CorreccionMotor; 
+/**
+ * ¿Convertir los numerales hablados a cifras? Vive APARTE del modo
+ * «Limpio» aunque corra dentro de el.
+ * 
+ * Es la unica capa de todo el paquete que cambia el ESTILO del texto y no
+ * solo su forma: convierte TODO numeral, no solo los tecnicos, asi que
+ * «el video no puede superar los dos minutos» sale «los 2 minutos». Eso no
+ * es un fallo —hace exactamente lo que promete— pero es una decision de
+ * redaccion que no todo el mundo quiere, y meterla en el mismo interruptor
+ * que las tildes y los simbolos obligaba a tragarsela entera o renunciar a
+ * todo. Con su propia llave, se puede tener lo demas sin esto.
+ */
+correccion_numeros?: boolean; experimental_enabled?: boolean; lazy_stream_close?: boolean; keyboard_implementation?: KeyboardImplementation; show_tray_icon?: boolean; paste_delay_ms?: number; paste_delay_after_ms?: number; typing_tool?: TypingTool; external_script_path?: string | null; custom_filler_words?: string[] | null; 
+/**
+ * Autocorrección hablada: si quien dicta se corrige a sí mismo en voz alta
+ * («…el martes, no, perdón, el miércoles»), el texto sale ya corregido.
+ * Por REGLAS y 100% local — no usa Post Proceso/BYOK ni ningún modelo.
+ * **Apagada por defecto**: borra texto, y eso se activa a conciencia.
+ * Emoji dictado: «emoji cara feliz» → 🙂. Por tabla, sin ningún modelo.
+ * 
+ * **Encendido de fábrica**, al contrario que la autocorrección hablada, y a
+ * propósito: esto no puede dañar texto. Solo actúa detrás de la palabra
+ * «emoji» —que no aparece por casualidad dictando prosa— y si no reconoce
+ * el nombre no toca nada. La autocorrección va apagada porque BORRA; esto
+ * solo añade, y solo cuando se lo piden.
+ */
+emoji_dictado?: boolean; 
+/**
+ * Modelo que estaba seleccionado ANTES de que la app lo cambiara sola al
+ * activar «Audio del sistema», para poder devolverlo al apagarlo.
+ * 
+ * `None` = la app no lo tocó. Si el usuario elige otro modelo a mano
+ * mientras el modo está activo, esto se limpia y ya no se restaura nada:
+ * una elección explícita del usuario nunca se pisa.
+ */
+modelo_antes_de_sistema?: string | null; autocorreccion_activa?: boolean; 
+/**
+ * Las señales PROPIAS del usuario, recordadas aunque esté usando las de
+ * fábrica.
+ * 
+ * Sin esto, volver a las de fábrica borraba la lista propia para siempre:
+ * el ajuste activo tiene dos estados (`None` = fábrica, lista = propias) y
+ * al elegir fábrica la lista propia desaparecía. Quien armara la suya no
+ * podía ir y volver.
+ */
+autocorreccion_propias_sustitucion?: string[]; 
+/**
+ * `None` = las de fábrica · lista = las del usuario.
+ */
+autocorreccion_senales_sustitucion?: string[] | null; transcribe_accelerator?: TranscribeAcceleratorSetting; ort_accelerator?: OrtAcceleratorSetting; transcribe_gpu_device?: number; extra_recording_buffer_ms?: number; vad_enabled?: boolean; 
+/**
+ * Diarización de hablantes (offline): etiqueta la transcripción con
+ * `[Hablante N]` cuando hay varias voces. Opt-in (cuesta CPU y requiere los
+ * modelos ONNX de diarización). Por defecto apagada.
+ */
+diarization_enabled?: boolean; 
+/**
+ * Pista de número de hablantes para la diarización. `0` = auto (detecta solo,
+ * menos fiable same-mic); `N>=1` = fuerza EXACTAMENTE N hablantes (la vía más
+ * fiable cuando el usuario sabe cuántas voces hay).
+ */
+diarization_num_speakers?: number; 
+/**
+ * Captura el AUDIO DEL SISTEMA (loopback del dispositivo de salida) en vez del
+ * micrófono — para transcribir reuniones online (Teams/Zoom/Meet) donde las
+ * voces salen por los parlantes, no entran por el mic. Off = micrófono normal.
+ */
+capture_system_audio?: boolean; 
 /**
  * Which recording overlay to show: None / Minimal / Live. Streaming mode is
  * not gated on this — that follows model capability. Migrated from the old
  * `overlay_position` (position `none` → style `None`).
  */
-overlay_style?: OverlayStyle }
+overlay_style?: OverlayStyle; 
+/**
+ * Behaviour of the `Esfera` overlay: audio-reactive only, or also receiving
+ * the dictated words as they are transcribed (see [`EsferaModo`]).
+ */
+esfera_modo?: EsferaModo; 
+/**
+ * Id de la voz del sistema para la prosa (None = la app elige la primera es-*).
+ */
+escucha_voz_prosa?: string | null; 
+/**
+ * Id de la voz del sistema para el código.
+ */
+escucha_voz_codigo?: string | null; 
+/**
+ * Cuánto símbolo se pronuncia al leer código (Natural calla los cierres).
+ */
+escucha_verbosidad_simbolos?: VerbosidadSimbolos; 
+/**
+ * Motor TTS elegido; None = decidir por `tts_auto_detect` (recomendación por hardware).
+ */
+tts_selected_engine?: EngineId | null; 
+/**
+ * Autodetectar el mejor motor LOCAL disponible cuando no hay elección explícita.
+ */
+tts_auto_detect?: boolean; 
+/**
+ * Id de la voz del motor activo (None = la app elige la primera disponible).
+ */
+tts_voice?: string | null; 
+/**
+ * Velocidad de lectura como multiplicador (1.0 = normal). 3 niveles en la UI
+ * (Normal 1.0 / Rápida 1.3 / Muy rápida 1.6); aplica a TODOS los motores.
+ */
+tts_velocidad?: number; 
+/**
+ * Tono (pitch) en Hz para el motor ONLINE (edge-tts `pitch`). 0 = normal.
+ * Los demás motores lo ignoran (no exponen control de tono). 3 niveles en la
+ * UI (Grave −40 / Normal 0 / Agudo +40).
+ */
+tts_tono?: number }
+/**
+ * Qué modelos sirven para «Audio del sistema», y si ahora mismo se puede
+ * encender.
+ * 
+ * Existe para que la pantalla no tenga que ADIVINARLO. Antes ofrecía los que
+ * declaran `supports_streaming` —que de los cinco es solo Nemotron— y esa no es
+ * la condición: el audio del sistema lo sirven cuatro, y el que se queda corto
+ * es Canary. Con la lista mal, la pantalla escondía tres modelos válidos y
+ * enseñaba un aviso que no aplicaba.
+ * 
+ * `disponible` responde EXACTAMENTE lo mismo que decide
+ * `change_capture_system_audio_setting`: o el modelo activo ya sirve, o hay
+ * alguno apto en el disco. Así el interruptor solo se deja pulsar cuando la
+ * respuesta va a ser que sí, en vez de encenderse y rebotar.
+ */
+export type AptitudAudioSistema = { 
+/**
+ * Fragmentos de id de los modelos que sirven, en orden de preferencia.
+ */
+preferidos: string[]; 
+/**
+ * ¿Se puede encender «Audio del sistema» en este momento?
+ */
+disponible: boolean }
 export type AudioDevice = { index: string; name: string; is_default: boolean }
 export type AutoSubmitKey = "enter" | "ctrl_enter" | "cmd_enter"
 export type AvailableAccelerators = { transcribe: string[]; ort: string[]; gpu_devices: GpuDeviceOption[] }
 export type BindingResponse = { success: boolean; binding: ShortcutBinding | null; error: string | null }
+/**
+ * Carpeta de descarga de modelos: la efectiva y la de por defecto (para que la
+ * UI muestre dónde están y ofrezca "volver a la original").
+ */
+export type CarpetaModelos = { 
+/**
+ * Carpeta efectiva actual (respeta la elegida en ajustes).
+ */
+actual: string; 
+/**
+ * Carpeta por defecto (dentro de los datos de la app).
+ */
+por_defecto: string; 
+/**
+ * `true` si el usuario eligió una carpeta distinta a la de por defecto.
+ */
+personalizada: boolean }
 export type ClipboardHandling = "dont_modify" | "copy_to_clipboard"
+/**
+ * Cuánto transforma el módulo de corrección local (`correccion`) el dictado
+ * antes de insertarlo. `Literal` solo ortotipografía (espacios, mayúsculas);
+ * `Limpio` añade autocorrecciones habladas («el martes, perdón, el miércoles»),
+ * tildes seguras y verbalización (numerales, identificadores, símbolos).
+ */
+export type CorreccionModo = "literal" | 
+/**
+ * El alias `pulido` NO es decorativo: existió un tercer modo que reservaba
+ * la reestructuración a un LLM local, retirado el 29/07. Quien lo tuviera
+ * guardado trae `"pulido"` en su `settings_store.json`, y sin este alias el
+ * fichero ENTERO dejaría de parsear — perderían todos sus ajustes, no solo
+ * este campo. `#[serde(default)]` no salva de esto: cubre claves ausentes,
+ * no valores inválidos. Al siguiente guardado se reescribe como `limpio`.
+ */
+"limpio"
+/**
+ * Qué motor ejecuta la corrección. `Desactivado` (default) = passthrough
+ * exacto, el pipeline queda como si el módulo no existiera. `SoloReglas` aplica
+ * la capa determinista.
+ * 
+ * Tuvo `Auto` y `Modelo`, que pedían el LLM local del «Pulido con IA»
+ * (retirado el 29/07). Ambos entran ahora por alias en `SoloReglas`, que es
+ * exactamente lo que hacían en la práctica siempre que no hubiera un modelo
+ * disponible. Ver el comentario de [`CorreccionModo::Limpio`] para por qué los
+ * alias son obligatorios y no un detalle.
+ */
+export type CorreccionMotor = "solo_reglas" | "desactivado"
+/**
+ * Un reemplazo exacto del Diccionario Vivo: token transcrito → texto final.
+ */
+export type CustomReplacement = { from: string; to: string }
 export type CustomSounds = { start: boolean; stop: boolean }
+export type DictTerm = { term: string; source: TermSource; count: number }
+/**
+ * Proyecto activo del Diccionario Vivo (un solo proyecto en el MVP).
+ */
+export type DictionaryProject = { path: string; enabled: boolean; 
+/**
+ * Última indexación, epoch en milisegundos.
+ */
+last_indexed_ms: number | null }
+export type DictionaryStats = { project_path: string; term_count: number; indexed_at_ms: number; sample: DictTerm[] }
+/**
+ * Un disco/volumen montado con su espacio.
+ */
+export type DiscoInfo = { 
+/**
+ * Punto de montaje: en Windows la unidad (`C:\`), en Unix la ruta de montaje.
+ */
+punto_montaje: string; 
+/**
+ * Nombre/etiqueta del volumen (puede venir vacío).
+ */
+nombre: string; total_bytes: number; libre_bytes: number; 
+/**
+ * `true` si es extraíble (USB, tarjeta…): útil para avisar antes de poner
+ * ahí modelos que la app espera encontrar luego.
+ */
+removible: boolean }
+/**
+ * Identidad de un motor TTS. Se persiste en settings (`tts_selected_engine`).
+ * **Ninguna variante es de nube** — invariante del producto.
+ */
+export type EngineId = 
+/**
+ * Voces del SO (SAPI / AVSpeech / speech-dispatcher). Fallback universal.
+ */
+"system" | 
+/**
+ * Piper (VITS ONNX). Estándar neuronal liviano en CPU.
+ */
+"piper" | 
+/**
+ * Kokoro-82M (ONNX). Premium en CPU.
+ */
+"kokoro" | 
+/**
+ * Voces online de Microsoft (edge-tts). ⚠️ **NO local**: envía el texto a
+ * la nube. Opción etiquetada, nunca recomendada ni usada como fallback.
+ */
+"online"
+/**
+ * Requisitos de un motor para orientar la UI y la recomendación.
+ */
+export type EngineRequirements = { 
+/**
+ * Necesita GPU compatible (CUDA NVIDIA o Metal Apple).
+ */
+needs_gpu: boolean; 
+/**
+ * Necesita descargar modelo/runtime en el primer uso.
+ */
+needs_download: boolean; 
+/**
+ * ⚠️ Requiere conexión a internet — el texto sale del equipo (solo `Online`).
+ */
+needs_internet: boolean }
+/**
+ * Estado de un motor para el selector "Elegir otro motor".
+ */
+export type EngineStatus = { id: EngineId; display_name: string; 
+/**
+ * ¿Utilizable AHORA en este equipo? (hardware compatible + runtime/modelo presente).
+ */
+available: boolean; 
+/**
+ * Motivo de NO disponibilidad, ya localizado para la UI
+ * (p.ej. "requiere GPU NVIDIA" o "requiere descargar la voz (60 MB)").
+ */
+reason: string | null; 
+/**
+ * ¿Es el recomendado para este hardware?
+ */
+recommended: boolean; requirements: EngineRequirements }
 export type EngineType = 
 /**
  * Any GGML/GGUF model loaded through transcribe-cpp (Whisper, Parakeet,
@@ -853,7 +1677,57 @@ export type EngineType =
  * the file, so this one variant covers the whole transcribe-cpp family.
  */
 "TranscribeCpp" | "Parakeet" | "Moonshine" | "MoonshineStreaming" | "SenseVoice" | "GigaAM" | "Canary" | "Cohere"
+/**
+ * Un nombre dictable y el pictograma que produce.
+ */
+export type EntradaEmoji = { 
+/**
+ * Cómo se dice, tal cual va escrito en la tabla («cara feliz»).
+ */
+nombre: string; 
+/**
+ * El pictograma resultante.
+ */
+emoji: string }
+/**
+ * Behaviour of the `Esfera` overlay. `Audio` is the original audio-reactive
+ * sphere (unchanged). `Palabras` keeps that pulse but also receives the words
+ * as they are transcribed: each dictated word flies to the membrane, is read
+ * for an instant and dissolves into points that push outward. Only meaningful
+ * while `overlay_style` is `Esfera`; the backend gates word emission on it.
+ */
+export type EsferaModo = "audio" | "palabras"
+export type EstadoEscucha = { hablando: boolean; 
+/**
+ * `false` si el motor del SO no pudo inicializarse (sin TTS instalado,
+ * speech-dispatcher ausente en Linux, etc.).
+ */
+motor_disponible: boolean }
 export type GpuDeviceOption = { id: number; name: string; total_vram_mb: number }
+export type GpuType = "discrete" | "integrated" | "virtual" | "cpu" | "unknown"
+export type GpuVendor = "nvidia" | "apple" | "amd" | "intel" | "unknown" | 
+/**
+ * No se detectó ninguna GPU (ni integrada).
+ */
+"none"
+/**
+ * Instantánea del equipo, best-effort. Nota: `has_internet` NO forma parte de
+ * esto — la elección de motor es 100% local; internet solo se consulta aparte
+ * para saber si se PUEDE descargar un modelo, nunca para elegir motor.
+ */
+export type HardwareInfo = { os: OsKind; gpu_vendor: GpuVendor; gpu_name: string; gpu_type: GpuType; 
+/**
+ * VRAM dedicada en MB. `None` = no se pudo leer (best-effort), nunca inventada.
+ */
+vram_mb: number | null; 
+/**
+ * Hilos de CPU disponibles al proceso. `None` si el SO no lo expone.
+ */
+cpu_threads: number | null; 
+/**
+ * RAM física total en MB. `None` = no se pudo leer, nunca inventada.
+ */
+ram_mb: number | null }
 export type HistoryEntry = { id: number; file_name: string; timestamp: number; saved: boolean; title: string; transcription_text: string; post_processed_text: string | null; post_process_prompt: string | null; post_process_requested: boolean }
 export type HistoryUpdatePayload = { action: "added"; entry: HistoryEntry } | { action: "updated"; entry: HistoryEntry } | { action: "deleted"; id: number } | { action: "toggled"; id: number }
 /**
@@ -865,8 +1739,12 @@ export type ImplementationChangeResult = { success: boolean;
  */
 reset_bindings: string[] }
 export type KeyboardImplementation = "tauri" | "handy_keys"
-export type LLMPrompt = { id: string; name: string; prompt: string }
 export type LogLevel = "trace" | "debug" | "info" | "warn" | "error"
+/**
+ * Evento hacia la UI cuando el aprendizaje en el sitio suma pares (para el
+ * toast «ABRAX aprendió …»).
+ */
+export type MemoriaAprendida = { pares: ParMemoria[] }
 export type ModelInfo = { id: string; name: string; description: string; filename: string; source: ModelSource; size_mb: number; is_downloaded: boolean; is_downloading: boolean; partial_size: number; is_directory: boolean; engine_type: EngineType; accuracy_score: number; speed_score: number; supports_translation: boolean; is_recommended: boolean; supported_languages: string[]; supports_language_selection: boolean; is_custom: boolean; supports_streaming: boolean; supports_language_detection: boolean }
 /**
  * Where a model comes from and how Abrax obtains it — the routing discriminant
@@ -895,23 +1773,92 @@ sha256: string | null } } |
  */
 "Local"
 export type ModelUnloadTimeout = "never" | "immediately" | "min_2" | "min_5" | "min_10" | "min_15" | "hour_1" | "sec_15"
+/**
+ * Cómo interpretar el contenido a leer.
+ */
+export type ModoLectura = 
+/**
+ * Segmentación markdown: prosa/encabezados con voz natural, bloques de
+ * código con voz técnica.
+ */
+"markdown" | 
+/**
+ * Todo el contenido es código: se lee línea a línea verbalizado.
+ */
+"codigo" | 
+/**
+ * Heurística: si el texto "parece código" se lee como código; si no,
+ * como markdown (que degrada bien a prosa plana).
+ */
+"auto"
+/**
+ * Progreso de la mudanza de modelos (evento `mudanza-progreso`).
+ * `estado` es `"progreso"`, `"listo"` o `"error"` (con `detalle`).
+ */
+export type MudanzaProgreso = { estado: string; archivo: string; hechos_bytes: number; total_bytes: number; detalle: string }
+/**
+ * Una unidad de lectura: el panel habla `texto_hablable` con la voz `voz` y
+ * resalta las líneas `linea_inicio..=linea_fin` (1-based) del documento.
+ */
+export type OracionHablable = { texto_hablable: string; voz: VozTrozo; linea_inicio: number; linea_fin: number }
 export type OrtAcceleratorSetting = "auto" | "cpu" | "cuda" | "directml" | "rocm"
+export type OsKind = "windows" | "mac_os" | "linux" | "other"
 export type OverlayPosition = "top" | "bottom"
 /**
  * Which recording overlay to display. `Minimal` and `Live` share one base
  * (the pill); `Live` grows into the panel that shows live transcription text.
- * `None` hides the overlay entirely. Decoupled from whether the model runs in
- * streaming mode (that is driven purely by model capability).
+ * `Esfera` renders the audio-reactive sphere on a square stage. `None` hides
+ * the overlay entirely. Decoupled from whether the model runs in streaming
+ * mode (that is driven purely by model capability).
  */
-export type OverlayStyle = "none" | "minimal" | "live"
+export type OverlayStyle = "none" | "minimal" | "live" | "esfera"
 export type PaginatedHistory = { entries: HistoryEntry[]; has_more: boolean }
+/**
+ * Un par aprendido: cuando el dictado produzca `de`, escribir `a`.
+ */
+export type ParMemoria = { de: string; a: string; 
+/**
+ * Veces que el usuario confirmó esta corrección (re-aprendizajes).
+ */
+veces?: number }
 export type PasteMethod = "ctrl_v" | "direct" | "none" | "shift_insert" | "ctrl_shift_v" | "external_script"
 export type PermissionAccess = "allowed" | "denied" | "unknown"
-export type PostProcessProvider = { id: string; label: string; base_url: string; allow_base_url_edit?: boolean; models_endpoint?: string | null; supports_structured_output?: boolean }
+/**
+ * Info de una voz Piper para la UI (catálogo + estado de descarga). Vive aquí
+ * (módulo siempre compilado) y no en `piper` para que la firma del comando
+ * `list_piper_voices` sea estable con y sin la feature `advanced-tts` (bindings
+ * idénticos). Con la feature OFF, el comando devuelve una lista vacía.
+ */
+export type PiperVoiceInfo = { id: string; display: string; lang: string; size_mb: number; 
+/**
+ * Voz pensada para leer código (cadencia neutra) vs. prosa.
+ */
+for_code: boolean; installed: boolean }
+export type PruebaMicrofono = { 
+/**
+ * Nombre real del dispositivo usado — revela qué hay detrás de "Default".
+ */
+dispositivo: string; 
+/**
+ * `true` si se usó el default del sistema (no había micrófono elegido).
+ */
+es_default: boolean; duracion_s: number; rms_db: number; pico_db: number; clip_pct: number; veredicto: VeredictoMicrofono; 
+/**
+ * Ruta absoluta del WAV grabado, para reproducirlo en la UI.
+ */
+wav: string }
 export type RecordingRetentionPeriod = "never" | "preserve_limit" | "days_3" | "weeks_2" | "months_3"
-export type SecretMap = Partial<{ [key in string]: string }>
+/**
+ * Las senales de fabrica de la autocorreccion hablada.
+ * 
+ * Existe para que la pantalla no tenga que llevar su propia copia. La llevaba,
+ * y eso es una divergencia esperando: el dia que alguien anada una senal en
+ * Rust, la pantalla seguiria ensenando la lista vieja y el usuario leeria algo
+ * que no es. Aqui hay una sola fuente y la otra la consulta.
+ */
+export type SenalesDeFabrica = { sustitucion: string[] }
 export type ShortcutBinding = { id: string; name: string; description: string; default_binding: string; current_binding: string }
-export type SoundTheme = "marimba" | "pop" | "custom"
+export type SoundTheme = "abrax" | "marimba" | "pop" | "custom"
 /**
  * Phase of the streaming overlay card, emitted to drive its UI state.
  */
@@ -944,13 +1891,96 @@ export type StreamTextEvent = { committed: string; tentative: string }
  * Semantic kind of "working" phase, used to localize the spinner label.
  */
 export type StreamWorkKind = "transcribing" | "polishing"
+export type TermSource = "code" | "branch" | "path"
 /**
  * UI appearance mode. `System` follows the OS `prefers-color-scheme`; `Light`
  * and `Dark` force one of the two palettes Abrax already ships.
  */
 export type Theme = "system" | "light" | "dark"
 export type TranscribeAcceleratorSetting = "auto" | "cpu" | "gpu"
+/**
+ * Words that have just been finalized in the transcription, for the Esfera
+ * overlay's "palabras" mode: each one flies to the sphere, is read and dissolves
+ * into the membrane. Emitted only while the user has the words mode active
+ * (`overlay_style == Esfera && esfera_modo == Palabras`), so the sphere never
+ * receives text it will not use. Carries a batch so a segment's words arrive in
+ * one event; the frontend paces their arrival.
+ */
+export type TranscriptWordsEvent = { words: string[] }
 export type TypingTool = "auto" | "wtype" | "kwtype" | "dotool" | "ydotool" | "xdotool"
+/**
+ * Shape of the main window, orthogonal to [`UiTheme`] (palette) and [`Theme`]
+ * (light/dark). `Classic` is the default decorated settings window and the
+ * permanent fallback. `Retro` is a frameless/transparent shell: the app
+ * becomes a stack of retro-player windows. It consumes the palette tokens, so a
+ * shell never hardcodes color. The frameless/transparent chrome is decided at
+ * window build time, so switching shells takes full effect on the next launch.
+ */
+export type UiShell = "classic" | "retro" | "quiet" | "bancada"
+/**
+ * Color palette for the whole UI, orthogonal to [`Theme`] (light/dark).
+ * `Abrax` is the brand palette (cyan/violet/magenta); `Imperial` is a
+ * gold/amber/red palette and `Escuderia` a racing red/black/white palette,
+ * both dark by design, so they force dark mode while active (the stored
+ * [`Theme`] is preserved and applies again on switching back).
+ */
+export type UiTheme = "abrax" | "imperial" | "escuderia"
+export type UserAlertEvent = { kind: AlertKind; 
+/**
+ * Mensaje técnico (error de motor/red/dispositivo); nunca texto dictado.
+ */
+detail: string | null; 
+/**
+ * Momento del fallo, epoch en milisegundos.
+ */
+ts_ms: number }
+/**
+ * Cuánto símbolo se pronuncia al leer código. `Natural` calla los cierres de
+ * paréntesis/llaves/corchetes (menos ruido al oído); `Literal` pronuncia
+ * "abre"/"cierra" en cada uno (fidelidad total, útil para dictar de vuelta).
+ */
+export type VerbosidadSimbolos = "natural" | "literal"
+/**
+ * Veredicto de la prueba de micrófono, calculado sobre la señal REAL que
+ * recibiría el modelo (16 kHz mono, post-captura, sin VAD).
+ */
+export type VeredictoMicrofono = 
+/**
+ * Pico < -40 dBFS: el micrófono no está entregando señal.
+ */
+"sin_senal" | 
+/**
+ * RMS < -34 dBFS: demasiado bajo — el dictado va a fallar.
+ */
+"muy_bajo" | 
+/**
+ * RMS entre -34 y -28 dBFS: funciona, pero con errores de precisión.
+ */
+"bajo" | 
+/**
+ * RMS ≥ -28 dBFS sin saturación: zona sana.
+ */
+"sano" | 
+/**
+ * Más del 1% de muestras al tope: el micrófono está saturando.
+ */
+"saturado"
+/**
+ * Una voz instalada en el sistema operativo.
+ */
+export type VozEscucha = { id: string; nombre: string; 
+/**
+ * Etiqueta BCP-47 reportada por el SO (p. ej. "es-MX", "en-US").
+ */
+idioma: string; 
+/**
+ * `true` si el idioma empieza con "es" — el selector las lista primero.
+ */
+es_espanol: boolean }
+/**
+ * Con qué voz debe leerse un trozo: la de prosa (natural) o la técnica.
+ */
+export type VozTrozo = "prosa" | "codigo"
 export type WindowsMicrophonePermissionStatus = { supported: boolean; overall_access: PermissionAccess; device_access: PermissionAccess; app_access: PermissionAccess; desktop_app_access: PermissionAccess }
 
 /** tauri-specta globals **/

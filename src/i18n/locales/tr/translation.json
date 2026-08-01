@@ -6,16 +6,23 @@
     "unloadModel": "Modeli boşalt",
     "model": "Model",
     "quit": "Çıkış",
-    "cancel": "İptal"
+    "cancel": "İptal",
+    "errorTitle": "Abrax bir sorunla karşılaştı",
+    "errorRecording": "Kayıt başlatılamadı. Nedenini görmek için Abrax'ı aç.",
+    "errorTranscription": "Yazıya dökme başarısız. Geçmişten yeniden denemek için Abrax'ı aç.",
+    "errorPaste": "Metin yapıştırılamadı. Geçmişinde kayıtlı.",
+    "errorModelLoad": "Konuşma modeli yüklenemedi. Nedenini görmek için Abrax'ı aç.",
+    "errorModelDownload": "Model indirme başarısız oldu. Yeniden denemek için Abrax'ı aç.",
+    "show": "Show Abrax"
   },
   "sidebar": {
     "general": "Genel",
     "models": "Modeller",
     "advanced": "Gelişmiş",
-    "postProcessing": "Son İşlem",
     "history": "Geçmiş",
     "debug": "Hata Ayıklama",
-    "about": "Hakkında"
+    "about": "Hakkında",
+    "escucha": "VOX"
   },
   "onboarding": {
     "subtitle": "Başlamak için bir transkripsiyon modeli seçin",
@@ -46,11 +53,11 @@
         "name": "Whisper Large",
         "description": "İyi doğruluk, ancak yavaş."
       },
-      "parakeet-tdt-0.6b-v2": {
+      "parakeet-tdt-0_6b-v2": {
         "name": "Parakeet V2",
         "description": "Yalnızca İngilizce. İngilizce konuşanlar için en iyi model."
       },
-      "parakeet-tdt-0.6b-v3": {
+      "parakeet-tdt-0_6b-v3": {
         "name": "Parakeet V3",
         "description": "Hızlı ve doğru."
       },
@@ -93,6 +100,21 @@
       "cohere-int8": {
         "name": "Cohere",
         "description": "Büyük, daha yavaş, ancak çok doğru çok dilli bir model."
+      },
+      "handy-computer_canary-180m-flash-gguf": {
+        "description": "En hafif ve en hızlı — bir dakikadan kısa sürede iner ve eski bir dizüstünde bile çalışır. Karşılığında çok kısa cümlelerde bazen hiçbir şey anlamaz."
+      },
+      "handy-computer_whisper-large-v3-turbo-gguf": {
+        "description": "Balanced — the everyday pick: understands 100 languages and doesn't keep you waiting."
+      },
+      "handy-computer_whisper-large-v3-gguf": {
+        "description": "Widest coverage — the big Whisper, the one everyone names. Slower, but complete."
+      },
+      "handy-computer_nemotron-3_5-asr-streaming-0_6b-gguf": {
+        "description": "Live — writes as you speak, word by word. This is the one that makes the sphere dance."
+      },
+      "handy-computer_cohere-transcribe-03-2026-gguf": {
+        "description": "En yüksek doğruluk — kataloğun en kesini, 14 dilde. Başlamak için bunu öneriyoruz. 1,6 GB ağırlığında ve güçlü bir makine ister."
       }
     },
     "errors": {
@@ -117,6 +139,15 @@
         "checkFailed": "İzinler kontrol edilemedi. Lütfen tekrar deneyin.",
         "requestFailed": "İzin isteği başarısız oldu. Lütfen tekrar deneyin."
       }
+    },
+    "emptyCatalog": "Kullanılabilir model yok. Günlüğü kontrol edip Abrax'ı yeniden başlatın.",
+    "welcome": {
+      "pitch": "Konuş, metin kendi bilgisayarında belirsin.",
+      "badgeLocal": "%100 yerel",
+      "badgeNoCloud": "Bulut yok",
+      "badgeFree": "Ücretsiz",
+      "whyModel": "Seni duyabilmek için Abrax bir kez ses modeli indirir. Sonrasında internetsiz çalışır.",
+      "start": "Başla"
     }
   },
   "modelSelector": {
@@ -151,7 +182,18 @@
     },
     "cancel": "İptal",
     "cancelDownload": "İndirmeyi iptal et",
-    "legacy": "Eski"
+    "legacy": "Eski",
+    "downloadFailed": "İndirme başarısız",
+    "downloadFailedHelp": "Model indirilemedi. Bağlantını kontrol edip yeniden dene.",
+    "checkFailed": "Model durumu kontrol edilemedi",
+    "loadFailed": "Model yüklenemedi",
+    "switchFailed": "Model değiştirilemedi",
+    "statusTitle": "Model durumu: {{estado}}",
+    "confirmDownload": {
+      "title": "Download model",
+      "body": "{{modelName}} — {{size}}\n\n{{description}}\n\nIt downloads once and stays on your machine. After that it works offline.",
+      "ok": "Download"
+    }
   },
   "settings": {
     "modelSettings": {
@@ -192,6 +234,10 @@
           "cancel": {
             "name": "İptal Kısayolu",
             "description": "Mevcut kaydı iptal etmek için klavye kısayolu."
+          },
+          "leer_seleccion": {
+            "name": "Seçimi sesli oku",
+            "description": "Herhangi bir uygulamada seçtiğiniz metni sesli okur. Durdurmak için tekrar basın."
           },
           "transcribe_with_post_process": {
             "name": "Son İşlem Kısayolu",
@@ -245,7 +291,10 @@
         "output": "Çıktı",
         "transcription": "Transkripsiyon",
         "history": "Geçmiş",
-        "experimental": "Deneysel"
+        "experimental": "Deneysel",
+        "dictionary": "Canlı sözlük",
+        "correccion": "Yerel düzeltme",
+        "memoria": "Bellek"
       },
       "experimentalToggle": {
         "label": "Deneysel Özellikler",
@@ -278,7 +327,7 @@
       },
       "showTrayIcon": {
         "label": "Tepsi simgesini göster",
-        "description": "Abrax simgesini sistem tepsisinde göster."
+        "description": "Abrax simgesini sistem tepsisinde göster. Simge olmadan pencereyi kapatmak Abrax'ı tamamen kapatır (macOS'ta Dock'ta kalır)."
       },
       "overlay": {
         "style": {
@@ -287,7 +336,8 @@
           "options": {
             "none": "Yok",
             "minimal": "Minimal",
-            "live": "Live"
+            "live": "Live",
+            "esfera": "Esfera"
           }
         },
         "position": {
@@ -296,6 +346,14 @@
           "options": {
             "bottom": "Alt",
             "top": "Üst"
+          }
+        },
+        "esferaModo": {
+          "title": "Esfera Modu",
+          "description": "Esfera küresinin nasıl davrandığı. Ses: küre sesinize tepki verir. Kelimeler: dikte ettiğiniz kelimeler küreye uçar, bir an okunur ve zarında erir (kelimelerin siz konuşurken canlı geldiği bir akış modeliyle en iyisidir).",
+          "options": {
+            "audio": "Sese tepkili",
+            "palabras": "Yaşayan kelimeler"
           }
         }
       },
@@ -322,6 +380,7 @@
       "clipboardHandling": {
         "title": "Pano Yönetimi",
         "description": "Panoyu Değiştirme, transkripsiyon sonrası mevcut pano içeriğini korur. Panoya Kopyala ise yapıştırma işleminden sonra transkripsiyon sonucunu panoda bırakır.",
+        "lockedByPasteMethod": "Locked by the paste method: pasting through the clipboard already leaves the transcription there. Choose Direct or None if you want your clipboard left untouched.",
         "options": {
           "dontModify": "Panoyu Değiştirme",
           "copyToClipboard": "Panoya Kopyala"
@@ -380,63 +439,85 @@
         "resetDefaults": "Varsayılan listeye dön",
         "disable": "Filtreyi kapat"
       },
-      "voiceActivityDetection": {
-        "title": "Voice Activity Detection",
-        "description": "Filter silence from recordings. Streaming-capable models use a longer VAD tail; disabling VAD records raw audio."
-      }
-    },
-    "postProcessing": {
-      "hotkey": {
-        "title": "Kısayol Tuşu"
+      "autocorreccion": {
+        "title": "Sesli kendini düzeltme",
+        "description": "Dikte ederken kendinizi sesli düzeltirseniz — “hayır, pardon”, “demek istedim” — metin düzeltilmiş olarak çıkar. Kurallara dayalı, anında ve çevrimdışı: hiçbir yapay zekâ modeli kullanmaz. Yalnızca düzelttiğinizi değiştirir, kendiliğinden asla silmez ve şüphe durumunda hiçbir şeye dokunmaz. Varsayılan olarak açık.",
+        "ejemplo": "Örnek: “Toplantıyı salıya ayarla… yok, pardon, çarşambaya” → “Toplantıyı çarşambaya ayarla.”",
+        "sustitucionTitle": "Düzeltme ifadeleri",
+        "sustitucionDescription": "Az önce söylediğiniz bir şeyi değiştirmek için söyledikleriniz (ör. “yok, pardon”, “yani”). Yalnızca ifadeden önce eşdeğer bir bölüm bulursa değiştirir — aynı gün, ay, saat, sayı veya isim. Bulamazsa hiçbir şeye dokunmaz.",
+        "placeholder": "İfade ekle",
+        "add": "Ekle",
+        "remove": "{{senal}} ifadesini kaldır",
+        "duplicate": "“{{senal}}” zaten var",
+        "mode": {
+          "defaults": "Fabrika olanlar",
+          "custom": "Benimkiler"
+        },
+        "showDefaults": "Hazır olanları kullan",
+        "resetDefaults": "Hazır olanlara dön",
+        "disable": "Seviyeyi kapat"
       },
-      "api": {
-        "title": "API (OpenAI Uyumlu)",
-        "provider": {
-          "title": "Sağlayıcı",
-          "description": "OpenAI uyumlu bir sağlayıcı seçin."
-        },
-        "appleIntelligence": {
-          "unavailable": "Apple Intelligence bu cihazda kullanılamıyor. macOS Tahoe (26.0) veya üzeri ve Sistem Ayarları'nda Apple Intelligence etkin olan bir Apple Silicon Mac gerektirir."
-        },
-        "baseUrl": {
-          "title": "Temel URL",
-          "description": "Seçili sağlayıcı için API temel URL'si. Yalnızca özel sağlayıcı düzenlenebilir.",
-          "placeholder": "https://api.openai.com/v1"
-        },
-        "apiKey": {
-          "title": "API Anahtarı",
-          "description": "Seçili sağlayıcı için API anahtarı.",
-          "placeholder": "sk-..."
-        },
-        "model": {
-          "title": "Model",
-          "descriptionCustom": "Özel uç noktanızın beklediği model tanımlayıcısını girin.",
-          "descriptionDefault": "Seçili sağlayıcının sunduğu bir modeli seçin.",
-          "placeholderWithOptions": "Model ara veya seç",
-          "placeholderNoOptions": "Model adı yazın",
-          "refreshModels": "Modelleri Yenile"
+      "emojiDictado": {
+        "title": "Dikte edilen emoji",
+        "description": "“emoji” sözcüğünü söyleyip ardından emojinin adını söyleyin; emoji metne eklenir. Tablo tabanlı, anında ve çevrimdışı: hiçbir yapay zekâ modeli devreye girmez. Bu sözcük olmadan hiçbir şey değişmez; ad tanınmazsa metin tam olarak dikte ettiğiniz gibi kalır.",
+        "ejemplo": "Örnek: “ona bir emoji başparmak yukarı gönder” → “ona bir 👍 gönder”. “emoji ateş” de çalışır → 🔥.",
+        "verDiccionario": "Adlara bak",
+        "copiado": "{{emoji}} kopyalandı",
+        "noCopiado": "Kopyalanamadı",
+        "diccionario": {
+          "titulo": "Emoji adları",
+          "ayuda": "Adın önüne “emoji” ekleyerek söyle. Kopyalamak için birine dokun.",
+          "buscar": "Bir ad ara",
+          "copiar": "Kopyala",
+          "cargando": "Yükleniyor…",
+          "error": "Liste yüklenemedi.",
+          "sinResultados": "Eşleşen ad yok.",
+          "total": "{{total}} ad",
+          "recorte": "{{total}} sonuçtan {{mostrados}} tanesi gösteriliyor. Aramayı daralt."
         }
       },
-      "prompts": {
-        "title": "Prompt",
-        "selectedPrompt": {
-          "title": "Seçili Prompt",
-          "description": "Transkripsiyonları iyileştirmek için bir şablon seçin veya yeni bir tane oluşturun. Yakalanan transkripte referans vermek için prompt metni içinde ${output} kullanın."
-        },
-        "noPrompts": "Kullanılabilir prompt yok",
-        "selectPrompt": "Prompt Seç",
-        "createNew": "Yeni Prompt Oluştur",
-        "promptLabel": "Prompt Etiketi",
-        "promptLabelPlaceholder": "Prompt adı girin",
-        "promptInstructions": "Prompt Talimatları",
-        "promptInstructionsPlaceholder": "Transkripsiyondan sonra çalıştırılacak talimatları yazın. Örnek: Aşağıdaki metnin dilbilgisini ve açıklığını iyileştir: ${output}",
-        "promptTip": "İpucu: Transkribe edilen metni promptunuza eklemek için <code>${output}</code> kullanın.",
-        "updatePrompt": "Promptu Güncelle",
-        "deletePrompt": "Promptu Sil",
-        "createPrompt": "Prompt Oluştur",
-        "cancel": "İptal",
-        "selectToEdit": "Ayrıntılarını görüntülemek ve düzenlemek için yukarıdan bir prompt seçin.",
-        "createFirst": "İlk son işlem prompt'unuzu oluşturmak için yukarıdaki “Yeni Prompt Oluştur” seçeneğine tıklayın."
+      "voiceActivityDetection": {
+        "title": "Ses etkinliği algılama",
+        "description": "Filter silence from recordings. Streaming-capable models use a longer VAD tail; disabling VAD records raw audio."
+      },
+      "dictionary": {
+        "title": "Proje sözlüğü",
+        "description": "Konuşma modelleri kodunun jargonunu bilmez. Abrax bunu etkin projeni dizinleyerek öğrenir: tanımlayıcılar, git dalları ve dosya adları dikteni düzeltir.",
+        "pickProject": "Proje seç",
+        "changeProject": "Projeyi değiştir",
+        "pickTitle": "Proje klasörünü seç",
+        "reindex": "Yeniden dizinle",
+        "enable": "Bu projeden öğren",
+        "enableDescription": "Açıkken dizinlenen terimler dikteni düzeltir. Dizini kaybetmeden duraklatmak için kapat.",
+        "termCount": "{{count}} dizinlenmiş terim",
+        "noIndex": "Henüz dizinlenmedi",
+        "lastIndexed": "{{date}} tarihinde dizinlendi",
+        "indexed": "Proje dizinlendi: {{count}} terim",
+        "indexError": "Dizinleme başarısız: {{error}}",
+        "privacy": "Dizin diskinde durur. Kodundan hiçbir şey bu bilgisayardan çıkmaz.",
+        "source": {
+          "code": "depodan",
+          "branch": "git dalı",
+          "path": "dosya adı"
+        }
+      },
+      "customReplacements": {
+        "title": "Tam değiştirmeler",
+        "description": "Model bir kelimeyi hep yanlış duyuyorsa deterministik olarak düzelt: büyük/küçük harfe duyarlı tam eşleşme.",
+        "fromPlaceholder": "Duyulan",
+        "toPlaceholder": "Şununla değiştir",
+        "add": "Ekle",
+        "remove": "{{word}} kaldır",
+        "duplicate": "\"{{word}}\" için zaten bir değiştirme var"
+      },
+      "memoria": {
+        "title": "Düzeltme belleği",
+        "description": "ABRAX, Geçmiş'te bir transkripsiyonu düzelttiğinizde öğrenir: bir kelimeyi silin, doğrusunu yazın; bir dahaki sefere doğru yazılır. Tamamen yerel.",
+        "empty": "Henüz öğrenilmiş düzeltme yok. Geçmiş'te bir transkripsiyonu düzenleyin (kalem simgesi), ABRAX değişikliklerinizden öğrensin.",
+        "forget": "Bu düzeltmeyi unut",
+        "clearAll": "Hepsini unut",
+        "enSitioTitle": "Dikte ettiğin yerde öğren",
+        "enSitioDescription": "Dikteye başladığında ABRAX yazdığın alanı yeniden okur (erişilebilirlik üzerinden, %100 yerel) ve önceki diktede orada yaptığın düzeltmelerden öğrenir. Alandaki hiçbir şey saklanmaz ve cihazından çıkmaz."
       }
     },
     "history": {
@@ -452,7 +533,17 @@
       "retranscribe": "Yeniden yazıya dök",
       "retranscribeError": "Yeniden yazıya dökme başarısız oldu. Lütfen tekrar deneyin.",
       "transcribing": "Yazıya döküyor...",
-      "transcriptionFailed": "Transkripsiyon başarısız oldu. Yeniden deneme simgesini kullanarak tekrar yazıya dökebilirsiniz."
+      "transcriptionFailed": "Transkripsiyon başarısız oldu. Yeniden deneme simgesini kullanarak tekrar yazıya dökebilirsiniz.",
+      "loadError": "Geçmiş yüklenemedi. Diktelerin hâlâ diskte.",
+      "edit": {
+        "action": "Transkripsiyonu düzenle",
+        "save": "Kaydet",
+        "cancel": "İptal",
+        "hint": "Kaydettiğinizde Bellek düzeltmelerinizi öğrenir.",
+        "saved": "Transkripsiyon güncellendi.",
+        "learned": "Bellek: öğrenildi {{pares}}",
+        "error": "Düzenleme kaydedilemedi."
+      }
     },
     "debug": {
       "title": "Hata Ayıklama",
@@ -510,10 +601,6 @@
         "title": "Kapalı Kapak Mikrofonu",
         "description": "Dizüstü bilgisayar kapağı kapalıyken kullanılacak mikrofon"
       },
-      "postProcessingToggle": {
-        "label": "Son İşlem",
-        "description": "Transkripsiyon sonrası yapay zekâ destekli metin iyileştirmeyi etkinleştirir"
-      },
       "muteWhileRecording": {
         "label": "Kayıt Sırasında Sessize Al",
         "description": "Kayıt sırasında sistem sesini kapatır"
@@ -568,9 +655,9 @@
         "button": "GitHub'da Görüntüle"
       },
       "supportDevelopment": {
-        "title": "Geliştirmeyi Destekle",
-        "description": "Abrax'yi geliştirmeye devam etmemize yardımcı olun",
-        "button": "Bağış Yap"
+        "title": "Handy'yi destekleyin (özgün proje)",
+        "description": "Bağışlar, ABRAX'ın çatallandığı proje olan Handy'nin yaratıcısı CJ Pais'e gider.",
+        "button": "Handy'yi destekle"
       },
       "acknowledgments": {
         "title": "Teşekkürler",
@@ -583,11 +670,21 @@
           "title": "ggml",
           "description": "OpenAI'nin Whisper otomatik konuşma tanıma modelinin yüksek performanslı çıkarımı",
           "details": "Abrax, hızlı ve yerel konuşmadan metne dönüştürme için ggml kullanır. Georgi Gerganov ve katkıda bulunanların harika çalışmaları için teşekkür ederiz."
+        },
+        "modelos": {
+          "title": "Konuşma tanıma modelleri",
+          "description": "Modeller istek üzerine indirilir ve yükleyicinin bir parçası değildir. Her biri kendi lisansını korur; CC-BY olanlar atıf gerektirir ve bu atıf burada verilmiştir. Tam metin LICENSES-THIRD-PARTY.md dosyasındadır."
         }
       },
       "whatsNewUpdates": {
         "label": "Yenilikleri Göster",
         "description": "Abrax güncellemelerinden sonra sürüm notlarını göster"
+      }
+    },
+    "streaming": {
+      "systemAudio": {
+        "label": "Sistem sesini yakala",
+        "description": "Mikrofon yerine bilgisayarda çalanı —bir ders, bir video, bir toplantı— yazıya döker. Sistem sesine uygun bir model gerekir; etkin model uygun değilse Abrax uygun olana geçer."
       }
     }
   },
@@ -611,7 +708,14 @@
     "open": "Aç",
     "copy": "Kopyala",
     "clear": "Temizle",
-    "noOptionsFound": "Seçenek bulunamadı"
+    "noOptionsFound": "Seçenek bulunamadı",
+    "retry": "Yeniden dene",
+    "play": "Oynat",
+    "pause": "Duraklat",
+    "seek": "Oynatma konumu",
+    "moreInfo": "Daha fazla bilgi",
+    "selectOption": "Bir seçenek seçin…",
+    "systemDefault": "Varsayılan"
   },
   "accessibility": {
     "permissionsDescription": "Abrax, transkribe edilen metni yazabilmek için erişilebilirlik izinlerine ihtiyaç duyar.",
@@ -627,13 +731,37 @@
       "linux": "Sisteminizin ses veya gizlilik ayarlarından mikrofon erişimini verin."
     },
     "noInputDeviceTitle": "Mikrofon bulunamadı",
+    "recordingNoAudioTitle": "No audio detected",
     "noInputDevice": "Ses giriş aygıtı algılanamadı. Lütfen bir mikrofon veya kulaklık bağlayın ve tekrar deneyin.",
     "recordingFailed": "Kayıt başlatılamadı: {{error}}",
     "modelLoadFailed": "Model yüklenemedi: {{model}}",
     "modelLoadFailedUnknown": "bilinmeyen model",
     "pasteFailedTitle": "Metin yapıştırılamadı",
     "pasteFailed": "Metin etkin uygulamaya yapıştırılamadı.",
-    "transcriptionFailedTitle": "Transkripsiyon başarısız oldu"
+    "transcriptionFailedTitle": "Transkripsiyon başarısız oldu",
+    "recordingFailedTitle": "Kayıt başarısız",
+    "modelLoadFailedTitle": "Model yüklenemedi",
+    "modelDownloadFailedTitle": "Model indirme başarısız",
+    "center": {
+      "title": "Son bildirimler ({{count}})",
+      "dismiss": "Kapat",
+      "toggle": "Tüm bildirimleri göster"
+    },
+    "recordingTooShortTitle": "Neredeyse hiçbir şey kaydedilmedi",
+    "recordingTooShort": "Kayıt bir saniyeden kısa sürdü. Kısayolu kullanıyorsan konuşurken {{atajo}} tuşunu basılı tut.",
+    "recordingTooShortNoBinding": "Kayıt bir saniyeden kısa sürdü. Durdurmadan önce biraz konuş.",
+    "transcriptionEmptyTitle": "Hiçbir şey anlaşılmadı",
+    "transcriptionEmpty": "Hiçbir kelime tanınmadı. Biraz daha yüksek sesle veya daha yakından tekrar dene.",
+    "sistemaSinModeloAptoTitle": "Daha iyi bir model gerekiyor",
+    "sistemaSinModeloApto": "Sistem sesi yakalandı, ancak geçerli model toplantılardaki veya videolardaki konuşmayı tanımıyor. Modeller bölümünden Nemotron Streaming 3.5 (716 MB) veya Whisper Large v3 Turbo (845 MB) modelini indirin; Abrax kendiliğinden ona geçecek.",
+    "sistemaSinModeloAptoDescargar": "İndir ({{mb}} MB)",
+    "shortcutRegistrationTitle": "Kısayol etkinleştirilemedi",
+    "shortcutRegistration": "Abrax klavye kısayolunu kaydedemedi. Yeniden başlat; sürerse Ayarlar → Genel’den başka bir kısayol belirle.",
+    "atajoOcupado": "Başka bir uygulama bu kısayolu kullanıyor: {{atajos}}. Çalışması için Ayarlar'dan değiştirin.",
+    "atajoOcupadoCambiar": "Kısayolu değiştir",
+    "sistemaModeloCambiadoTitle": "Sistem sesi için model değiştirildi",
+    "sistemaModeloCambiado": "Abrax, sistem sesini anlayan {{modelo}} modeline geçti. Bu model konuşurken metni ve dakikadaki kelimeyi göstermez; her şey bıraktığında görünür. Canlı metin istiyorsan Modeller’den Nemotron Streaming 3.5 (716 MB) indir.",
+    "descargaIniciada": "Model indiriliyor. Modeller’den izleyebilirsin."
   },
   "appLanguage": {
     "title": "Uygulama Dili",
@@ -648,14 +776,352 @@
       "dark": "Koyu"
     }
   },
+  "palette": {
+    "title": "Palet",
+    "description": "Abrax'ın renk paletini seçin. Imperial tasarımı gereği koyudur: etkin olduğu sürece koyu modu zorlar.",
+    "options": {
+      "abrax": "ABRAX",
+      "imperial": "Imperial",
+      "escuderia": "Escudería"
+    }
+  },
   "overlay": {
     "transcribing": "Transkribe ediliyor...",
-    "processing": "İşleniyor..."
+    "processing": "İşleniyor...",
+    "leyendo": "Sesli okunuyor",
+    "preparando": "Okuma hazırlanıyor"
   },
   "whatsNew": {
     "title": "Abrax v{{version}} yenilikleri"
   },
+  "correccion": {
+    "motor": {
+      "title": "Düzeltme motoru",
+      "description": "Diktenizi transkripsiyon ile yapıştırma arasında temizler. Kapalı her şeyi tam transkribe edildiği gibi bırakır. Yalnızca kurallar anında deterministik düzeltmeler uygular.",
+      "options": {
+        "solo_reglas": "Yalnızca kurallar",
+        "desactivado": "Kapalı"
+      }
+    },
+    "modo": {
+      "title": "Düzeltme düzeyi",
+      "description": "Birebir yalnızca boşlukları ve cümle başı harflerini düzeltir. Temiz ayrıca şunları yapar: simgeler (“yüzde beş” → %5), dikte edilirken düşen işaretler, e-postalar ve yollar, tekrarlar (“sonra sonra”) ve — aşağıda açık bırakırsan — sayıları rakamla. Sesli otomatik düzeltme buna bağlı değildir: kendi anahtarı vardır.",
+      "options": {
+        "literal": "Birebir",
+        "limpio": "Temiz"
+      }
+    },
+    "numeros": {
+      "title": "Sayılar rakamla",
+      "description": "Söylediğin sayıları rakama çevirir: “on iki bin sekiz yüz” → 12800, “on yedi otuzda” → 17:30. HEPSİNİ çevirir, sadece teknik olanları değil: “iki dakika” → “2 dakika”. Yazıyla mı istersin? Kapat — Temiz’in geri kalanı çalışmaya devam eder."
+    }
+  },
+  "pruebaMic": {
+    "title": "Mikrofonu test et",
+    "description": "Modelin duyacağı sesin aynısından 3 saniye kaydeder (16 kHz, VAD'sız), oynatır ve gerçek seviyelerle bir karar verir. Ayrıca Default'un arkasında gerçekte hangi aygıtın olduğunu gösterir.",
+    "boton": "3 sn kaydet",
+    "grabando": "Kaydediliyor…",
+    "niveles": "RMS {{rms}} dBFS · pico {{pico}} dBFS",
+    "nivelClip": " · clip {{clip}}%",
+    "veredicto": {
+      "sin_senal": "Sinyal yok — mikrofon ses iletmiyor",
+      "muy_bajo": "Çok düşük — bu seviyede dikte başarısız olur",
+      "bajo": "Düşük — çalışıyor ama doğruluk düşüyor",
+      "sano": "Sağlıklı seviye",
+      "saturado": "Kırpılma — mikrofon doyuma ulaşıyor"
+    },
+    "dispositivo": "Mikrofon: {{nombre}} ({{contexto}})",
+    "esElDefault": "sistem varsayılanı",
+    "esElegido": "ayarlarda seçilen"
+  },
+  "shell": {
+    "title": "Pencere biçimi",
+    "description": "Abrax penceresinin biçimini seç. Klasik, standart ayarlar penceresidir; Quiet ise ana ekranında küre bulunan minimalist koyu bir paneldir. Pencere çerçevesi Abrax'ı yeniden başlattığında tamamen güncellenir.",
+    "options": {
+      "classic": "Klasik",
+      "retro": "Retro",
+      "quiet": "Quiet",
+      "bancada": "Karting"
+    }
+  },
+  "bancada": {
+    "local": "Procesamiento local · 0% Nube",
+    "tray": "Enviar a la bandeja",
+    "min": "Minimizar",
+    "close": "Cerrar",
+    "nav": {
+      "tablero": "TABLERO",
+      "bitacora": "BITÁCORA",
+      "setup": "SETUP"
+    },
+    "pitRadio": "PIT RADIO",
+    "lcdReady": "En boxes · listo",
+    "lcdListening": "Escuchando…",
+    "launch": "TU LARGADA · {{atajo}}",
+    "start": "Arrancar dictado",
+    "stop": "Detener dictado",
+    "dictate": "Dictar",
+    "stopping": "Detener",
+    "ignitionStart": "START",
+    "ignitionStop": "STOP",
+    "appearance": "APARIENCIA",
+    "speakers": "Hablantes",
+    "systemAudio": "System audio",
+    "speakersAuto": "Auto",
+    "speakersN": "{{n}}",
+    "mergeInto": "Actually is…",
+    "resetSpeakers": "Reset",
+    "wpmUnit": "PAL/MIN",
+    "copied": "Copiado al portapapeles",
+    "on": "ON",
+    "off": "OFF",
+    "btn": {
+      "cancel": "Cancelar",
+      "copy": "Copiar",
+      "clear": "Limpiar",
+      "translate": "Traducir → EN",
+      "fillers": "Muletillas",
+      "log": "Bitácora"
+    },
+    "dial": {
+      "vad": "VAD",
+      "palette": "Paleta"
+    },
+    "lamp": {
+      "idle": "RALENTÍ",
+      "rec": "REC",
+      "transcribing": "TRANSCRIBIENDO",
+      "polishing": "PULIENDO",
+      "error": "FALLA"
+    },
+    "estado": {
+      "idle": "Ralentí",
+      "rec": "Grabando",
+      "transcribing": "Transcribiendo",
+      "polishing": "Puliendo",
+      "error": "Falla"
+    },
+    "speakerLabel": "Konuşmacı {{n}}"
+  },
+  "retro": {
+    "menu": "Abrax menüsü",
+    "titleMain": "ABRAX · RETRO MOD",
+    "titleSettings": "ABRAX · HIZLI AYARLAR",
+    "titleHistory": "ABRAX · GEÇMİŞ",
+    "fold": "Katla",
+    "close": "Kapat",
+    "marquee": "ABRAX ··· SÖYLE YETER ··· RETRO MOD ··· 100% YEREL ··· ÖNCE İSPANYOLCA ···",
+    "lamp": {
+      "model": "Model",
+      "local": "YEREL",
+      "filler": "DOLGU",
+      "dict": "SÖZLÜK",
+      "ptt": "PTT",
+      "vad": "VAD",
+      "translate": "ÇEVİR",
+      "sphere": "KÜRE"
+    },
+    "dictate": "Dikte",
+    "stop": "Durdur",
+    "settings": "Hızlı ayarlar",
+    "history": "Geçmiş",
+    "compiler": "İstem derleyici",
+    "sections": "BÖLÜMLER ▾",
+    "slider": {
+      "buffer": "BUFFER",
+      "volume": "SES",
+      "threshold": "EŞİK"
+    },
+    "emptyHistory": "Henüz dikte yok — kısayolu basılı tut ve konuş.",
+    "copyHint": "Kopyalamak için çift tıkla",
+    "copy": "KOPYALA",
+    "save": "★ KAYDET",
+    "delete": "SİL",
+    "compile": "✦ DERLE",
+    "count": "{{n}} dikte · YEREL",
+    "copied": "Panoya kopyalandı",
+    "menuSections": "BÖLÜMLER",
+    "menuWindows": "PENCERELER",
+    "toClassic": "Klasik'e dön",
+    "theme": "Tema",
+    "footer": "RETRO MOD — bir ABRAX kaplaması · aynı şeffaf pencere",
+    "tray": "Send to tray",
+    "minimize": "Minimize",
+    "localBadge": "Yerel işleme · %0 bulut",
+    "infoPalette": "Palet",
+    "infoLanguage": "Dil",
+    "infoFillers": "Dolgu sözcükleri",
+    "infoTranslate": "Çevir",
+    "infoAutoVoice": "Otomatik ses",
+    "infoVisual": "Görsel",
+    "words": "{{n}} kelime",
+    "actCopy": "Kopyala",
+    "actClear": "Temizle",
+    "emptyTranscriptions": "Henüz döküm yok.",
+    "activeModel": "ETKİN MODEL",
+    "localFull": "%100 yerel işleme · Bulut yok",
+    "backToClassic": "KLASİK GÖRÜNÜME DÖN"
+  },
   "logo": {
     "tagline": "« Di la <accent>palabra</accent>. »"
+  },
+  "escucha": {
+    "title": "VOX",
+    "openFile": "Dosya aç…",
+    "readClipboard": "Panoyu oku",
+    "play": "Oku",
+    "pause": "Duraklat",
+    "pauseHint": "Geçerli cümlenin sonunda duraklatır",
+    "resume": "Devam et",
+    "stop": "Durdur",
+    "speed": "Hız",
+    "voiceProse": "Düzyazı sesi",
+    "voiceCode": "Kod sesi",
+    "noVoices": "Sistem sesi bulunamadı",
+    "empty": "Başlamak için bir dosya açın veya panoyu okuyun.",
+    "engineUnavailable": "Sistemin konuşma motoru kullanılamıyor.",
+    "errorRead": "İçerik okunamadı.",
+    "errorSpeak": "Okuma oynatılamadı.",
+    "escHint": "Esc okumayı durdurur.",
+    "clipboard": "Pano",
+    "clipboardEmpty": "Panoda metin yok.",
+    "fileFilter": "Metin, Markdown veya kod",
+    "sentences": "{{total}} cümle",
+    "verbosity": "Semboller",
+    "verbosityNatural": "Doğal (daha az gürültü)",
+    "verbosityLiteral": "Birebir (tüm semboller)"
+  },
+  "tts": {
+    "voiceLangEs": "İspanyolca",
+    "voiceLangEn": "İngilizce",
+    "voiceSettings": "Ses ayarları",
+    "speed": "Hız",
+    "pitch": "Perde",
+    "pitchLow": "Düşük",
+    "pitchNormal": "Normal",
+    "pitchHigh": "Yüksek",
+    "pitchHint": "Perde yalnızca çevrimiçi ses için geçerlidir.",
+    "vram": "({{gb}} GB VRAM)",
+    "descOnline": "Microsoft nöral sesleri (Azure). Yerel değil: metni internet üzerinden gönderir.",
+    "onlineWarning": "internet gerektirir · metin cihazdan ayrılır",
+    "preparingVoice": "{{engine}} hazırlanıyor… ilk seferde birkaç saniye sürer.",
+    "engineSystem": "Sistem sesleri",
+    "title": "Ses motoru",
+    "localBadge": "%100 yerel",
+    "detecting": "Cihazınız algılanıyor…",
+    "detected": "Cihazınızı algıladık:",
+    "recommendation": "En iyi ses için {{engine}} öneriyoruz — yerel ve çevrimdışı.",
+    "activeEngine": "Etkin motor: {{engine}}",
+    "detectFailed": "Donanım algılanamadı; sistem sesleri kullanılacak.",
+    "useRecommended": "Önerileni kullan",
+    "chooseOther": "Başka bir motor seç",
+    "redetect": "Yeniden algıla",
+    "testVoice": "Sesi dene",
+    "sampleTextEs": "Hola, soy la voz de Abrax. Di la palabra y yo la leo por ti.",
+    "sampleTextEn": "Hi, I'm the voice of Abrax. Say the word and I'll read it for you.",
+    "voice": "Ses",
+    "noGpu": "özel GPU yok",
+    "available": "Kullanılabilir",
+    "unavailable": "Kullanılamıyor",
+    "needsGpu": "uyumlu GPU gerektirir (NVIDIA veya Apple Silicon)",
+    "needsDownload": "motoru indirmeyi gerektirir",
+    "recommended": "Önerilen",
+    "activeShort": "Etkin",
+    "use": "Kullan",
+    "download": "Etkinleştir",
+    "downloading": "İndiriliyor…",
+    "installed": "Motor yüklendi",
+    "errorDownload": "Motor indirilemedi.",
+    "errorSetEngine": "Motor değiştirilemedi.",
+    "descSystem": "İşletim sisteminin sesleri. Her zaman kullanılabilir, indirme gerekmez.",
+    "descPiper": "Türkçe nöral ses, hafif, CPU'da çalışır.",
+    "descKokoro": "CPU'da yüksek kaliteli nöral ses."
+  },
+  "carpetaModelos": {
+    "titulo": "Models folder",
+    "cambiar": "Change",
+    "discoConNombre": "{{nombre}} ({{punto}})",
+    "removible": "· removable",
+    "espacio": "{{libre}} GB free of {{total}} GB",
+    "volverPorDefecto": "Back to the original folder",
+    "avisoNoMueve": "New downloads will go to this folder. Already-downloaded models stay where they were; if they don't show up, go back to the original folder or download them again here.",
+    "moverPregunta": "İndirilmiş modeller ({{gb}} GB) yeni klasöre taşınsın mı?",
+    "moverAhora": "Şimdi taşı",
+    "soloNuevas": "Yalnızca yeni indirmeler",
+    "cancelar": "İptal",
+    "moviendo": "{{archivo}} taşınıyor…",
+    "moverError": "Taşıma tamamlanamadı: {{detalle}}. Hiçbir şey kaybolmadı: taşınamayanlar önceki klasörde duruyor."
+  },
+  "quiet": {
+    "nav": {
+      "listen": "Dinleme",
+      "shortcuts": "Kısayollar",
+      "streaming": "Akış",
+      "transcriptions": "Transcriptions",
+      "models": "Models",
+      "settings": "Settings",
+      "more": "Daha fazla"
+    },
+    "ready": "ABRAX is ready",
+    "holdHint": "Konuşurken <k>{{atajo}}</k> tuşunu basılı tut, bitince bırak.",
+    "holdHintNoBinding": "Ayarlar'dan bir kısayol belirle ve konuşurken basılı tut.",
+    "start": "Start transcription",
+    "stop": "Stop",
+    "recent": "Recent transcriptions",
+    "empty": "No transcriptions yet. Hold the shortcut and say the word.",
+    "local": "Local processing",
+    "noCloud": "No cloud connection",
+    "min": "Minimize",
+    "max": "Maximize",
+    "close": "Close",
+    "tray": "Send to tray",
+    "dictando": "Seni dinliyorum… bitince bırak",
+    "panel": {
+      "modelo": "Model",
+      "sinModelo": "Model yok",
+      "descargar": "indir",
+      "descargando": "{{modelo}} indiriliyor · %{{pct}}",
+      "voz": "Ses",
+      "hint": {
+        "fillers": "Dikte ettiklerinden dolgu sözcüklerini («ıı», «şey») çıkarır.",
+        "autocorreccion": "Sesli olarak kendini düzeltirsen («hayır, pardon»), metin düzeltilmiş çıkar.",
+        "emoji": "«Emoji» de ve adını söyle, eklenir. Tabloyla, yapay zekâsız.",
+        "systemAudio": "Mikrofon yerine bilgisayarda çalanı yazıya döker. Etkin model uygun değilse Abrax uygun olana geçer."
+      },
+      "sinModeloSistema": "Sistem sesini yakalayabilmek için bu modellerden birini indirin.",
+      "elegirModelo": "Model seç",
+      "usaraSistema": "Seçilmedi. Sistem sesini açarsanız Abrax «{{modelo}}» kullanacak.",
+      "descargado": "indirildi"
+    },
+    "modo": {
+      "grupo": {
+        "gesto": "Nasıl başlar",
+        "microfono": "Mikrofonunuz",
+        "texto": "Metne ne olur",
+        "pegado": "Nereye yazılır",
+        "salida": "Nereden duyulur",
+        "fuente": "Ses nereden gelir",
+        "apariencia": "Görünüm"
+      },
+      "streaming": {
+        "que": "Mikrofon yerine bilgisayarda çalanı —bir ders, bir video, bir toplantı— yazıya döker.",
+        "resto": "Gerisi —otomatik düzeltme, dolgu sözcükleri, sözlük, yapıştırma— Dinle’dekiyle aynı: bir kez ayarlanır, ikisi için de geçerli."
+      },
+      "vox": {
+        "que": "Seçtiğiniz metni yüksek sesle okur, herhangi bir uygulamada.",
+        "como": "<k>{{atajo}}</k> tuşlarına basın, okumaya başlar; susturmak için tekrar basın."
+      },
+      "escucha": {
+        "que": "Konuşursunuz ve metin yazdığınız yerde belirir. Her şey bilgisayarınızda olur — hiçbir şey internete çıkmaz."
+      }
+    }
+  },
+  "soundPicker": {
+    "custom": "Özel",
+    "preview": "Temayı dinle (başlangıç ve bitiş)"
+  },
+  "vox": {
+    "atajoHint": "VOX için <k>{{atajo}}</k> tuşuna bas; herhangi bir uygulamada seçtiğin metni sesli okur.",
+    "atajoSinBinding": "VOX için Ayarlar’dan bir kısayol belirle; seçtiğin metni sesli okur."
   }
 }

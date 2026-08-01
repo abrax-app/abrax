@@ -39,9 +39,19 @@ pub async fn download_model(
         .map_err(|e| e.to_string());
 
     if let Err(ref error) = result {
+        // El fallo solo vivia en la pantalla: si le ocurria a un usuario, no
+        // quedaba ni una linea con que reconstruirlo. La descarga en si SI se
+        // registra al empezar ("Downloading HF model ..."), asi que sin esto el
+        // log dice que empezo y nunca dice como acabo.
+        log::error!("Fallo la descarga del modelo {}: {}", model_id, error);
         let _ = app_handle.emit(
             "model-download-failed",
             serde_json::json!({ "model_id": &model_id, "error": error }),
+        );
+        crate::user_alerts::alert(
+            &app_handle,
+            crate::user_alerts::AlertKind::ModelDownload,
+            Some(error.clone()),
         );
     }
 
@@ -109,6 +119,10 @@ pub fn switch_active_model(app: &AppHandle, model_id: &str) -> Result<(), String
     let mut settings = settings;
     settings.selected_model = model_id.to_string();
     settings.onboarding_completed = true;
+    // Elección EXPLÍCITA del usuario: se olvida el modelo que «Audio del
+    // sistema» había guardado para restaurar. Si no se limpiara, apagar el modo
+    // le pisaría la elección que acaba de hacer a mano.
+    settings.modelo_antes_de_sistema = None;
 
     write_settings(app, settings);
 
@@ -180,4 +194,42 @@ pub async fn cancel_download(
     model_manager
         .cancel_download(&model_id)
         .map_err(|e| e.to_string())
+}
+
+/// Qué modelos sirven para «Audio del sistema», y si ahora mismo se puede
+/// encender.
+///
+/// Existe para que la pantalla no tenga que ADIVINARLO. Antes ofrecía los que
+/// declaran `supports_streaming` —que de los cinco es solo Nemotron— y esa no es
+/// la condición: el audio del sistema lo sirven cuatro, y el que se queda corto
+/// es Canary. Con la lista mal, la pantalla escondía tres modelos válidos y
+/// enseñaba un aviso que no aplicaba.
+///
+/// `disponible` responde EXACTAMENTE lo mismo que decide
+/// `change_capture_system_audio_setting`: o el modelo activo ya sirve, o hay
+/// alguno apto en el disco. Así el interruptor solo se deja pulsar cuando la
+/// respuesta va a ser que sí, en vez de encenderse y rebotar.
+#[derive(serde::Serialize, specta::Type)]
+pub struct AptitudAudioSistema {
+    /// Fragmentos de id de los modelos que sirven, en orden de preferencia.
+    pub preferidos: Vec<String>,
+    /// ¿Se puede encender «Audio del sistema» en este momento?
+    pub disponible: bool,
+}
+
+#[tauri::command]
+#[specta::specta]
+pub async fn aptitud_audio_sistema(
+    app_handle: AppHandle,
+    model_manager: State<'_, Arc<ModelManager>>,
+) -> Result<AptitudAudioSistema, String> {
+    let settings = get_settings(&app_handle);
+    let activo_sirve = !ModelManager::se_queda_corto_para_sistema(&settings.selected_model);
+    Ok(AptitudAudioSistema {
+        preferidos: ModelManager::PREFERIDOS_SISTEMA
+            .iter()
+            .map(|s| s.to_string())
+            .collect(),
+        disponible: activo_sirve || model_manager.modelo_para_sistema_descargado().is_some(),
+    })
 }

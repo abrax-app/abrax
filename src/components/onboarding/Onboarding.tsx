@@ -7,13 +7,25 @@ import type { ModelCardStatus } from "./ModelCard";
 import ModelCard, { isLegacySource } from "./ModelCard";
 import AbraxLogo from "../icons/AbraxLogo";
 import { useModelStore } from "../../stores/modelStore";
+import {
+  confirmarBorrado,
+  confirmarDescarga,
+} from "../../lib/utils/modelDialogs";
+
+/**
+ * A partir de aquí el catálogo se considera «corto»: caben todas las tarjetas
+ * sin scroll y plegarlas tras «Ver los N modelos» solo agrega un clic. Con el
+ * catálogo curado (5 modelos) siempre se muestran todas; el plegado se conserva
+ * para el caso de un usuario con muchos modelos heredados en disco.
+ */
+const CATALOGO_CORTO = 8;
 
 interface OnboardingProps {
   onModelSelected: () => void;
 }
 
 const Onboarding: React.FC<OnboardingProps> = ({ onModelSelected }) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const {
     models,
     downloadModel,
@@ -23,7 +35,10 @@ const Onboarding: React.FC<OnboardingProps> = ({ onModelSelected }) => {
     extractingModels,
     downloadProgress,
     downloadStats,
+    downloadErrors,
     cancelDownload,
+    deleteModel,
+    currentModel,
   } = useModelStore();
   const [selectedModelId, setSelectedModelId] = useState<string | null>(null);
   const [showAll, setShowAll] = useState(false);
@@ -31,32 +46,51 @@ const Onboarding: React.FC<OnboardingProps> = ({ onModelSelected }) => {
 
   const isBusy = selectedModelId !== null;
 
+  // The UI locale's base code ("es-CL" → "es") is the best signal available at
+  // onboarding for what the user will dictate: the dictation language setting
+  // doesn't exist yet at this step.
+  const uiLanguage = (i18n.resolvedLanguage ?? i18n.language ?? "en").split(
+    "-",
+  )[0];
+
   // Curate the download list: legacy (.bin/ONNX) downloads are deprecated and
   // never shown here (they still appear in the compatible section if already on
-  // disk). The catalog arrives rank-sorted, so the first two recommended models
-  // are the featured picks — currently Parakeet Unified (English) and Nemotron
-  // Streaming (multilingual). Everything else hides behind "Show all".
+  // disk). The catalog arrives rank-sorted, but models that can't transcribe
+  // the user's language must not lead: without this, a Spanish-speaking new
+  // user gets English-only Parakeet as pick #1. Within each group the catalog
+  // order is preserved. Everything else hides behind "Show all".
   const { downloadable, topPicks, otherRecommended, rest } = useMemo(() => {
+    const speaksUiLanguage = (m: ModelInfo) =>
+      m.supported_languages.includes(uiLanguage);
+    const uiLanguageFirst = (list: ModelInfo[]) => [
+      ...list.filter(speaksUiLanguage),
+      ...list.filter((m) => !speaksUiLanguage(m)),
+    ];
     const downloadable = models.filter(
       (m: ModelInfo) => !m.is_downloaded && !isLegacySource(m),
     );
-    const recommended = downloadable.filter((m: ModelInfo) => m.is_recommended);
+    const recommended = uiLanguageFirst(
+      downloadable.filter((m: ModelInfo) => m.is_recommended),
+    );
     // `models` arrives in editorial rank order (the backend sorts by rank_of,
     // then accuracy), so keep that order here: ranked-but-not-recommended models
     // surface first, then the unranked tail by accuracy.
-    const rest = downloadable.filter((m: ModelInfo) => !m.is_recommended);
+    const rest = uiLanguageFirst(
+      downloadable.filter((m: ModelInfo) => !m.is_recommended),
+    );
     return {
       downloadable,
       topPicks: recommended.slice(0, 2),
       otherRecommended: recommended.slice(2),
       rest,
     };
-  }, [models]);
+  }, [models, uiLanguage]);
 
   const hasRecommended = topPicks.length > 0 || otherRecommended.length > 0;
+  const listaCorta = downloadable.length <= CATALOGO_CORTO;
   // When nothing recommended remains to download (e.g. all already on disk),
   // there is no curated subset to collapse, so just show the full list.
-  const showRest = showAll || !hasRecommended;
+  const showRest = showAll || !hasRecommended || listaCorta;
 
   // Watch for the selected model to finish downloading + verifying + extracting
   useEffect(() => {
@@ -102,6 +136,11 @@ const Onboarding: React.FC<OnboardingProps> = ({ onModelSelected }) => {
   ]);
 
   const handleDownloadModel = async (modelId: string) => {
+    // Preguntar ANTES de bajar: son cientos de MB y hasta ahora bastaba un clic
+    // en la tarjeta. El diálogo es también el «ver qué es antes de bajarlo».
+    const model = models.find((m: ModelInfo) => m.id === modelId);
+    if (model && !(await confirmarDescarga(model, t))) return;
+
     setSelectedModelId(modelId);
 
     // Error toast is handled centrally by the model-download-failed event listener
@@ -109,6 +148,17 @@ const Onboarding: React.FC<OnboardingProps> = ({ onModelSelected }) => {
     const success = await downloadModel(modelId);
     if (!success) {
       setSelectedModelId(null);
+    }
+  };
+
+  const handleDeleteModel = async (modelId: string) => {
+    const model = models.find((m: ModelInfo) => m.id === modelId);
+    if (!model) return;
+    if (!(await confirmarBorrado(model, modelId === currentModel, t))) return;
+    try {
+      await deleteModel(modelId);
+    } catch (err) {
+      console.error(`Failed to delete model ${modelId}:`, err);
     }
   };
 
@@ -154,6 +204,13 @@ const Onboarding: React.FC<OnboardingProps> = ({ onModelSelected }) => {
 
       <div className="max-w-[600px] w-full mx-auto text-center flex-1 flex flex-col min-h-0">
         <div className="space-y-6 pb-6">
+          {/* F4: el catálogo también tiene estados — cargando y vacío/fallo,
+              en vez de una pantalla en blanco. */}
+          {models.length === 0 && (
+            <p className="text-sm text-text/60 py-8">
+              {t("onboarding.emptyCatalog")}
+            </p>
+          )}
           {models.some((m: ModelInfo) => m.is_downloaded) && (
             <div className="space-y-3">
               <div className="text-left">
@@ -170,6 +227,7 @@ const Onboarding: React.FC<OnboardingProps> = ({ onModelSelected }) => {
                     status={getExistingModelStatus(model.id)}
                     disabled={isBusy}
                     onSelect={handleSelectExistingModel}
+                    onDelete={handleDeleteModel}
                     showRecommended={false}
                   />
                 ))}
@@ -196,7 +254,8 @@ const Onboarding: React.FC<OnboardingProps> = ({ onModelSelected }) => {
                   onCancel={handleCancelDownload}
                   downloadProgress={getModelDownloadProgress(model.id)}
                   downloadSpeed={getModelDownloadSpeed(model.id)}
-                  showRecommended={false}
+                  errorMessage={downloadErrors[model.id]}
+                  showRecommended
                 />
               ))}
 
@@ -211,11 +270,12 @@ const Onboarding: React.FC<OnboardingProps> = ({ onModelSelected }) => {
                   onCancel={handleCancelDownload}
                   downloadProgress={getModelDownloadProgress(model.id)}
                   downloadSpeed={getModelDownloadSpeed(model.id)}
-                  showRecommended={false}
+                  errorMessage={downloadErrors[model.id]}
+                  showRecommended
                 />
               ))}
 
-              {hasRecommended && rest.length > 0 && (
+              {hasRecommended && rest.length > 0 && !listaCorta && (
                 <button
                   type="button"
                   onClick={() => setShowAll((v) => !v)}
@@ -246,7 +306,8 @@ const Onboarding: React.FC<OnboardingProps> = ({ onModelSelected }) => {
                     onCancel={handleCancelDownload}
                     downloadProgress={getModelDownloadProgress(model.id)}
                     downloadSpeed={getModelDownloadSpeed(model.id)}
-                    showRecommended={false}
+                    errorMessage={downloadErrors[model.id]}
+                    showRecommended
                   />
                 ))}
             </div>

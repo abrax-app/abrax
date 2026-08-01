@@ -26,10 +26,7 @@ dist-ssr
 *.sln
 *.sw?
 
-# .claude/ SE VERSIONA en el fork (des-ignorado por decisión del 2026-07-11):
-# skills/agentes técnicos (audio-reactive-sphere, futuristic-product-ui,
-# codebase-audit) se publican como flex; revisar sanidad competitiva antes
-# de hacer público el repo. Los locales siguen ignorados (ver abajo).
+# .claude/ del proyecto se versiona; la configuración local no (ver abajo).
 
 /target/
 recording_*
@@ -39,6 +36,12 @@ recording_*
 playwright-report/
 test-results/
 blob-report/
+
+# Salida del instalador si alguien lo apunta por error a la raíz del repo.
+/abrax.exe
+/uninstall.exe
+/*.dll
+/resources/
 
 .direnv
 .envrc
@@ -50,29 +53,29 @@ result
 project-ops/local/
 *.rebrand-kit.tmp
 
-# ─────────────────────────────────────────────────────────────
-# DOCUMENTOS DE ESTRATEGIA E INTERNOS — JAMÁS al historial público.
-# Contienen análisis de competidores, calendario de hackathon, triage y
-# bitácora de trabajo. El repo público debe nacer limpio de todos ellos.
-# (Su copia maestra vive fuera del worktree, en ../../kit/.)
-# ─────────────────────────────────────────────────────────────
+# Documentos de trabajo internos — no forman parte del producto.
 CLAUDE.md
 ESTADO.md
 PLAN_MAESTRO.md
-INFORME_SYNC*.md
+INFORME_*.md
+IDEAS.md
 PROJECT_BRIEF.md
 CLAUDE_REBRAND.md
-PLAN_HACKATHON.md
-RESPUESTA_AUDITORIA_G1.md
-BONUS_FEATURES.md
-PROMPT_MAESTRO*.md
-PROMPT_SYNC.md
-LEEME_KIT.md
 project-ops/
 docs/CODE_AUDIT.md
-estrategia/
 *.privado.md
 
-# Clave privada del updater — ignorada SIEMPRE (vive en ../../.secrets-abrax/,
-# fuera de este repo; esta entrada blinda cualquier copia accidental).
+# Material de firma — jamás al repo.
 .secrets-abrax/
+
+# Skills de terceros (se instalan por máquina con `npx skills add ...`)
+# y sus empaquetados para claude.ai — no forman parte del producto.
+.agents/
+docs/skills-claude/
+skills-lock.json
+
+# Bytecode de Python. Los servidores de voz viven en src-tauri/resources/tts/,
+# que el bundle empaqueta entero (`resources/**/*`): sin esto, los .pyc del
+# intérprete local viajan dentro del instalador.
+__pycache__/
+*.pyc

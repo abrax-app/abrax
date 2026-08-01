@@ -1,0 +1,1308 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ABRAX — « Di la palabra. »</title>
+    <meta
+      name="description"
+      content="Puesto de voz local para programar en español: presionas un atajo, dictas, y el texto se inserta en la app activa. Gratis, open source, local por defecto."
+    />
+    <meta property="og:title" content="ABRAX — « Di la palabra. »" />
+    <meta
+      property="og:description"
+      content="Puesto de voz local para programar en español. Gratis, open source, local por defecto."
+    />
+    <meta property="og:type" content="website" />
+    <!-- Los scrapers de OG (WhatsApp, Slack, X, LinkedIn) exigen URL ABSOLUTA:
+         con una ruta relativa la tarjeta social sale sin imagen. Si el dominio
+         final cambia, hay que cambiar estas tres líneas a la vez. -->
+    <link rel="canonical" href="https://abrax.krafify.com/" />
+    <meta property="og:url" content="https://abrax.krafify.com/" />
+    <meta
+      property="og:image"
+      content="https://abrax.krafify.com/assets/og.jpg"
+    />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:site_name" content="ABRAX" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="theme-color" content="#05060F" />
+    <link rel="icon" type="image/svg+xml" href="assets/abrax-favicon.svg" />
+    <link rel="stylesheet" href="css/estilos.css" />
+    <noscript>
+      <style>
+        #cortina,
+        #revelado,
+        .demo-mic,
+        .dictado {
+          /* sin JS no hay esfera ni dictado: fuera los controles muertos */
+          display: none;
+        }
+      </style>
+    </noscript>
+  </head>
+  <body>
+    <!-- Acto I: la intro cinemática corre aislada en un iframe; al terminar
+         (o al saltarla) los cuadraditos transforman la página hacia el hero -->
+    <div id="cortina"></div>
+    <canvas id="revelado" aria-hidden="true"></canvas>
+
+    <a href="#contenido" class="skip">Saltar al contenido</a>
+    <div class="fondo" aria-hidden="true"></div>
+    <div class="grano" aria-hidden="true"></div>
+    <div class="cursor-halo" id="cursorHalo" aria-hidden="true"></div>
+
+    <!-- ═══════════ HERO · la esfera es la protagonista ═══════════ -->
+    <section class="hero" aria-label="Portada">
+      <canvas
+        id="esfera"
+        role="img"
+        aria-label="Esfera de partículas que reacciona a la voz; las palabras dictadas vuelan hacia ella"
+      ></canvas>
+      <div class="vineta" aria-hidden="true"></div>
+
+      <header class="hero-cabecera">
+        <a href="#" aria-label="ABRAX — inicio">
+          <img
+            src="assets/abrax-lockup.svg"
+            alt="ABRAX"
+            width="112"
+            height="30"
+          />
+        </a>
+        <nav class="nav-principal" aria-label="Principal">
+          <a href="#funciones">Funciones</a>
+          <a href="#privacidad">Privacidad</a>
+          <a href="#faq">FAQ</a>
+          <a
+            class="nav-codigo"
+            href="https://github.com/abrax-app/abrax"
+            target="_blank"
+            rel="noopener"
+            >Código ↗</a
+          >
+        </nav>
+      </header>
+
+      <div class="hero-cuerpo" id="contenido">
+        <p class="eyebrow hero-eyebrow">
+          Puesto de voz local · para los que le hablan a la IA todo el día
+        </p>
+        <h1 class="hero-h1">
+          <img
+            class="hero-wordmark"
+            src="assets/abrax-wordmark.svg"
+            alt="ABRAX"
+            width="340"
+            height="74"
+          />
+        </h1>
+        <p class="lema">« DI LA <em>PALABRA</em>. »</p>
+        <p class="hero-prop">
+          Presionas un atajo, hablas en tu español, y el texto —código o prosa—
+          aparece en la app activa.
+        </p>
+        <div class="hero-ctas">
+          <a class="btn btn--hero" href="#descarga">Descargar ABRAX</a>
+          <a
+            class="btn btn--ghost"
+            href="https://github.com/abrax-app/abrax"
+            target="_blank"
+            rel="noopener"
+            >Ver el código ↗</a
+          >
+        </div>
+        <div class="hero-chips">
+          <span class="chip chip--on">macOS</span>
+          <span class="chip chip--on">Windows</span>
+          <span class="chip">Gratuito · open source · MIT</span>
+        </div>
+        <p class="hero-priv">
+          Local por defecto: tu audio nunca sale del equipo. Lo online es opt-in
+          y viene apagado.
+        </p>
+      </div>
+    </section>
+
+    <!-- ═══════════ MARQUESINA ═══════════ -->
+    <div class="marquesina" aria-hidden="true">
+      <div class="marquesina-pista">
+        <span>« DI LA <em>PALABRA</em>. »</span><i>◈</i>
+        <span>Local por defecto</span><i>◈</i>
+        <span>Transcribe hasta lo que suena en tu equipo</span><i>◈</i>
+        <span>es-419 de primera clase</span><i>◈</i>
+        <span style="text-transform: none"
+          >«use auth store» → <em>useAuthStore</em></span
+        ><i>◈</i> <span>El audio nunca sale de tu equipo</span><i>◈</i>
+        <span>Gratis · open source · MIT</span><i>◈</i>
+        <span>« DI LA <em>PALABRA</em>. »</span><i>◈</i>
+        <span>Local por defecto</span><i>◈</i>
+        <span>Transcribe hasta lo que suena en tu equipo</span><i>◈</i>
+        <span>es-419 de primera clase</span><i>◈</i>
+        <span style="text-transform: none"
+          >«use auth store» → <em>useAuthStore</em></span
+        ><i>◈</i> <span>El audio nunca sale de tu equipo</span><i>◈</i>
+        <span>Gratis · open source · MIT</span><i>◈</i>
+      </div>
+    </div>
+
+    <!-- ═══════════ DEMO · lo primero tras el hero: la esfera sigue a la
+         vista y probarla es el gancho de entrada ═══════════ -->
+    <section class="seccion seccion--demo" aria-labelledby="t-demo">
+      <h2 id="t-demo">Escúchalo y pruébalo</h2>
+      <p class="display">La esfera <em>te escucha.</em></p>
+      <p class="sub-seccion">
+        La esfera ya está viva: con tu micrófono respira contigo.
+      </p>
+      <div class="demo-mic">
+        <button type="button" class="btn btn--sec" id="btnMicDemo" disabled>
+          Probar con mi micrófono
+        </button>
+        <span class="demo-estado" id="estadoEsfera" role="status"
+          >modo demo · respiración sintética</span
+        >
+        <p class="demo-nota">
+          El permiso se pide solo al presionar el botón; el audio se queda en tu
+          navegador, sin tocar ningún servidor.
+        </p>
+        <form class="demo-palabra" id="formPalabra">
+          <label class="visually-hidden" for="inputPalabra"
+            >Tu palabra para la esfera</label
+          >
+          <input
+            id="inputPalabra"
+            type="text"
+            maxlength="24"
+            placeholder="o escribe una palabra…"
+            autocomplete="off"
+          />
+          <button type="submit" class="btn btn--sec">
+            Lánzala a la esfera
+          </button>
+        </form>
+      </div>
+    </section>
+
+    <!-- ═══════════ FLUJO ═══════════ -->
+    <section class="seccion" aria-labelledby="t-flujo">
+      <h2 id="t-flujo">El flujo</h2>
+      <p class="display">Presiona. Habla. <em>Aparece.</em></p>
+      <p class="sub-seccion">Cuatro pasos, sin ventanas de por medio.</p>
+      <div class="dictado" aria-hidden="true">
+        <span class="dictado-prompt">❯ dictas</span
+        ><span id="dictadoTexto"></span
+        ><span id="dictadoRes" class="dictado-res"></span
+        ><span class="dictado-caret"></span>
+      </div>
+      <div class="cards">
+        <div class="card card--paso" data-num="01">
+          <div class="num">01</div>
+          <div class="titulo">Presiona</div>
+          <p>Un atajo global, en cualquier app.</p>
+        </div>
+        <div class="card card--paso" data-num="02">
+          <div class="num">02</div>
+          <div class="titulo">Habla</div>
+          <p>En tu español. Las muletillas se filtran solas.</p>
+        </div>
+        <div class="card card--paso" data-num="03">
+          <div class="num">03</div>
+          <div class="titulo">Transcribe</div>
+          <p>En tu equipo. El audio no sale de ahí.</p>
+        </div>
+        <div class="card card--paso" data-num="04">
+          <div class="num">04</div>
+          <div class="titulo">Compila — o pega</div>
+          <p>El texto aparece donde estaba el cursor.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════ FUNCIONES ═══════════ -->
+    <section class="seccion" id="funciones" aria-labelledby="t-funciones">
+      <h2 id="t-funciones">Funciones</h2>
+      <p class="display">Hecho para <em>tu voz.</em></p>
+      <p class="sub-seccion">Lo que hace hoy. Ni más ni menos.</p>
+      <div class="fila-funcion">
+        <div class="texto">
+          <div class="kicker">Diccionario Vivo</div>
+          <h3 class="titulo-fn">Tu repo corrige tu dictado</h3>
+          <p class="desc">
+            Indexa tu proyecto y corrige el dictado con tu propio vocabulario.
+          </p>
+          <div class="ejemplo">
+            <div>
+              «use auth store» <span class="flecha">→</span>
+              <span class="res">useAuthStore</span>
+            </div>
+            <div>
+              «rama fix slash audio» <span class="flecha">→</span>
+              <span class="res">fix/audio</span>
+            </div>
+          </div>
+        </div>
+        <div class="visual">
+          <figure class="ventana">
+            <div class="ventana-barra">
+              <i style="background: var(--cian)"></i
+              ><i style="background: var(--violeta)"></i
+              ><i style="background: var(--magenta)"></i>
+              <span>ABRAX · Diccionario Vivo · captura real</span>
+            </div>
+            <img
+              src="assets/capturas/diccionario-vivo.webp"
+              alt="Captura real del Diccionario Vivo en la forma Quiet: 750 términos indexados, reemplazos exactos, corrección local y memoria de correcciones"
+              width="1006"
+              height="881"
+              loading="lazy"
+            />
+          </figure>
+        </div>
+      </div>
+
+      <div class="fila-funcion fila-funcion--invertida">
+        <div class="texto">
+          <div class="kicker">Streaming</div>
+          <h3 class="titulo-fn">Transcribe lo que suena en tu equipo</h3>
+          <p class="desc">
+            Una clase, un video, una reunión: el audio del sistema pasa a texto,
+            local igual que el dictado. ABRAX elige solo un modelo apto y al
+            apagarlo restaura el tuyo.
+          </p>
+        </div>
+        <div class="visual">
+          <figure class="ventana">
+            <div class="ventana-barra">
+              <i style="background: var(--cian)"></i
+              ><i style="background: var(--violeta)"></i
+              ><i style="background: var(--magenta)"></i>
+              <span>ABRAX · Streaming · captura real</span>
+            </div>
+            <img
+              src="assets/capturas/streaming.webp"
+              alt="Captura real de Streaming: interruptor de capturar el audio del sistema y el catálogo de modelos con Cohere activo"
+              width="1006"
+              height="881"
+              loading="lazy"
+            />
+          </figure>
+        </div>
+      </div>
+
+      <div class="fila-funcion">
+        <div class="texto">
+          <div class="kicker">VOX</div>
+          <h3 class="titulo-fn">Te lee de vuelta</h3>
+          <p class="desc">
+            VOX lee lo que tengas seleccionado, en cualquier app: voz de prosa,
+            voz de código, símbolos en natural o literal. Voces locales.
+          </p>
+        </div>
+        <div class="visual">
+          <figure class="ventana">
+            <div class="ventana-barra">
+              <i style="background: var(--cian)"></i
+              ><i style="background: var(--violeta)"></i
+              ><i style="background: var(--magenta)"></i>
+              <span>ABRAX · VOX · captura real</span>
+            </div>
+            <img
+              src="assets/capturas/vox.webp"
+              alt="Captura real de VOX en la forma Quiet: atajo, motor de voz 100% local con Piper recomendado, voz de prosa, voz de código y modo de símbolos"
+              width="1006"
+              height="881"
+              loading="lazy"
+            />
+          </figure>
+        </div>
+      </div>
+
+      <div class="modos">
+        <div class="kicker">Formas de ventana</div>
+        <h3 class="titulo-fn">Quiet y Retro</h3>
+        <p class="sub-seccion">El principal y el vintage.</p>
+        <div class="modos-grid">
+          <figure>
+            <img
+              src="assets/capturas/shell-quiet.webp"
+              alt="Forma Quiet: atajos, Streaming y VOX en una columna silenciosa"
+              width="1006"
+              height="881"
+              loading="lazy"
+            />
+            <figcaption>Quiet — el principal</figcaption>
+          </figure>
+          <figure>
+            <img
+              src="assets/capturas/shell-retro.webp"
+              alt="Forma Retro: reproductor compacto con la esfera y el reloj de dictado"
+              width="498"
+              height="653"
+              loading="lazy"
+            />
+            <figcaption>Retro — el vintage</figcaption>
+          </figure>
+        </div>
+      </div>
+
+      <div class="cards">
+        <div class="card">
+          <div class="titulo">Autocorrección hablada</div>
+          <p>
+            Te corriges al hablar y sale ya corregido. Viene encendida de
+            fábrica.
+          </p>
+          <div class="ejemplo">
+            <div>
+              «el martes, perdón, el miércoles»
+              <span class="flecha">→</span>
+              <span class="res">el miércoles</span>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="titulo">Emoji dictado</div>
+          <p>1 531 nombres, por tabla. Solo actúa tras la palabra «emoji».</p>
+          <div class="ejemplo">
+            <div>
+              «emoji fuego» <span class="flecha">→</span>
+              <span class="res">🔥</span>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="titulo">Corrección local</div>
+          <p>
+            Números en cifras, símbolos y correos — por reglas, sin IA. Se
+            enciende en Ajustes; si corriges un dictado, aprende.
+          </p>
+          <div class="ejemplo">
+            <div>
+              «a las diecisiete treinta» <span class="flecha">→</span>
+              <span class="res">a las 17:30</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <p class="tabla-nota">
+        Y además: overlay en 4 estilos, bandeja, historial con retención y 22
+        idiomas.
+      </p>
+    </section>
+
+    <!-- ═══════════ PRIVACIDAD ═══════════ -->
+    <section class="seccion" id="privacidad" aria-labelledby="t-privacidad">
+      <h2 id="t-privacidad">Privacidad</h2>
+      <p class="display">Tu audio <em>no sale</em> de aquí.</p>
+      <p class="sub-seccion">Sin letra chica: esto pasa con tus datos.</p>
+      <div class="callout">
+        <b>«Local por defecto» significa:</b> el audio del micrófono nunca sale
+        de tu equipo.
+      </div>
+      <div class="cards">
+        <div class="card">
+          <div class="titulo-priv" style="color: var(--cian)">
+            Siempre local
+          </div>
+          <ul class="lista">
+            <li>Captura y transcripción de audio</li>
+            <li>Diccionario Vivo e índice de tu repo</li>
+            <li>Corrección del texto y memoria de correcciones</li>
+            <li>Historial de dictados — con límite y retención que tú fijas</li>
+          </ul>
+        </div>
+        <div class="card">
+          <div class="titulo-priv" style="color: var(--violeta)">
+            Online · opt-in
+          </div>
+          <p style="font-size: 11.5px; color: var(--suave); margin-bottom: 8px">
+            Vienen desactivadas; se activan una por una.
+          </p>
+          <ul class="lista">
+            <li>Descarga de modelos desde Hugging Face</li>
+            <li>Descarga de voces (verificadas con checksum)</li>
+          </ul>
+        </div>
+        <div class="card">
+          <div class="titulo-priv" style="color: var(--magenta)">
+            No se recopila
+          </div>
+          <ul class="lista lista--x">
+            <li>Audio ni transcripciones</li>
+            <li>Telemetría de contenido</li>
+            <li>Identificadores ni huellas</li>
+            <li>Analítica de esta página: desactivada</li>
+          </ul>
+        </div>
+        <div class="card">
+          <div class="titulo-priv" style="color: #fff">Cómo borrar todo</div>
+          <p>Tus dictados, ajustes y diccionario viven en una carpeta local:</p>
+          <div class="ejemplo" style="margin: 10px 0">
+            <div><span class="res">%APPDATA%\cl.abrax.app</span></div>
+            <div>
+              <span class="res"
+                >~/Library/Application Support/cl.abrax.app</span
+              >
+            </div>
+          </div>
+          <p>
+            La borras y no queda nada tuyo; no hay cuenta que cerrar. Los
+            modelos viven aparte, en
+            <span class="res">~/.cache/huggingface</span>: bórrala para
+            recuperar ese espacio.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════ COMPATIBILIDAD ═══════════ -->
+    <section class="seccion" aria-labelledby="t-compat">
+      <h2 id="t-compat">Compatibilidad</h2>
+      <p class="sub-seccion">
+        Lo que funciona y lo que todavía no, con la misma letra.
+      </p>
+      <div class="cards">
+        <div class="card card--compat">
+          <span class="chip chip--on" style="margin-bottom: 12px"
+            >macOS 13+</span
+          >
+          <ul class="lista">
+            <li>Apple Silicon (M1 o posterior)</li>
+            <li>Atajo e inserción globales</li>
+          </ul>
+          <div class="limite-titulo">Límites honestos</div>
+          <p>
+            macOS la bloquea la primera vez (no está firmada): se abre desde
+            Ajustes → Privacidad y seguridad. El instalador es solo Apple
+            Silicon; en Intel se compila desde el código.
+          </p>
+        </div>
+        <div class="card card--compat">
+          <span class="chip chip--on" style="margin-bottom: 12px"
+            >Windows 10 · 11</span
+          >
+          <ul class="lista">
+            <li>Instalador .exe</li>
+            <li>GPU opcional para acelerar</li>
+          </ul>
+          <div class="limite-titulo">Límites honestos</div>
+          <p>
+            Windows muestra dos avisos (instalador sin firmar): Más información
+            → Ejecutar de todas formas.
+          </p>
+        </div>
+        <!-- Linux queda FUERA de esta entrega: el codigo compila y hay
+             artefactos en CI, pero no se ha probado lo suficiente para
+             ofrecerlo. Anunciar una plataforma que no se ha verificado es la
+             clase de promesa que esta pagina ya no hace. -->
+        <div class="card card--compat">
+          <span class="chip" style="margin-bottom: 12px">Linux</span>
+          <ul class="lista lista--x">
+            <li>Todavía no</li>
+          </ul>
+          <div class="limite-titulo">Por qué no</div>
+          <p>
+            El código compila en Linux, pero no lo hemos probado lo suficiente
+            como para ofrecerlo. Preferimos no dar una descarga que no podemos
+            sostener. Si compilas desde el código, funciona.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════ COMPARACIÓN ═══════════ -->
+    <section class="seccion" aria-labelledby="t-comparacion">
+      <h2 id="t-comparacion">Comparación</h2>
+      <p class="sub-seccion">
+        Cada opción tiene su lugar. Esta es la diferencia, sin caricaturas.
+      </p>
+      <div class="tabla-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th scope="col"></th>
+              <th scope="col" class="abrax">ABRAX</th>
+              <th scope="col">Dictado del sistema</th>
+              <th scope="col">Dictado en la nube</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th scope="row">Precio</th>
+              <td class="abrax">Gratis (MIT)</td>
+              <td>Incluido en el SO</td>
+              <td>Suscripción o pago por uso</td>
+            </tr>
+            <tr>
+              <th scope="row">El audio se procesa</th>
+              <td class="abrax">En tu equipo</td>
+              <td>Según el SO, a veces en la nube</td>
+              <td>En servidores de terceros</td>
+            </tr>
+            <tr>
+              <th scope="row">Español es-419</th>
+              <td class="abrax">Primera clase — muletillas, voz de código</td>
+              <td>Variable</td>
+              <td>Generalmente bueno</td>
+            </tr>
+            <tr>
+              <th scope="row">Vocabulario de tu repo</th>
+              <td class="abrax">Sí — Diccionario Vivo</td>
+              <td>No</td>
+              <td>No</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="tabla-nota">
+        Honesto: con mucho ruido de fondo, un servicio en la nube grande todavía
+        puede transcribir mejor que un modelo local chico.
+      </p>
+    </section>
+
+    <!-- ═══════════ FAQ ═══════════ -->
+    <section class="seccion" id="faq" aria-labelledby="t-faq">
+      <h2 id="t-faq">Preguntas</h2>
+      <p class="sub-seccion">Las que nos harías antes de instalar.</p>
+      <div class="faq">
+        <details>
+          <summary>¿Necesito internet para dictar?</summary>
+          <div class="resp">
+            No. La primera vez descargas un modelo: eso sí es online, con
+            checksum. Después, todo corre sin conexión.
+          </div>
+        </details>
+        <details>
+          <summary>¿Funciona en cualquier aplicación?</summary>
+          <div class="resp">
+            En cualquiera donde puedas escribir texto. Los campos protegidos,
+            como contraseñas, quedan fuera a propósito.
+          </div>
+        </details>
+        <details>
+          <summary>¿Puede transcribir una reunión o un video?</summary>
+          <div class="resp">
+            Sí: Streaming transcribe el audio del sistema — una clase, un video,
+            una llamada — todo local. Al apagarlo vuelve tu modelo de siempre.
+          </div>
+        </details>
+        <details>
+          <summary>¿Qué pasa con mi audio?</summary>
+          <div class="resp">
+            Se transcribe y se descarta. No se guarda, no se envía, no entrena
+            nada.
+          </div>
+        </details>
+        <details>
+          <summary>¿Por qué es gratis?</summary>
+          <div class="resp">
+            Porque no cuesta por uso: no hay servidores. Es open source bajo
+            licencia MIT; el código está a la vista.
+          </div>
+        </details>
+        <details>
+          <summary>¿Qué relación tiene con Handy?</summary>
+          <div class="resp">
+            ABRAX se construye sobre Handy, un proyecto open source MIT. No
+            implica afiliación ni respaldo.
+          </div>
+        </details>
+      </div>
+    </section>
+
+    <!-- ═══════════ CTA FINAL ═══════════ -->
+    <section
+      class="seccion cta-final"
+      id="descarga"
+      aria-labelledby="t-descarga"
+    >
+      <span class="cta-guille cta-guille--izq" aria-hidden="true">«</span>
+      <span class="cta-guille cta-guille--der" aria-hidden="true">»</span>
+      <img
+        class="iso"
+        src="assets/abrax-isotipo.svg"
+        alt=""
+        aria-hidden="true"
+        width="72"
+        height="72"
+      />
+      <p class="cta-mantra" id="t-descarga">
+        Gratis. Open source. Local. <em>Para siempre.</em>
+      </p>
+      <!-- ══ ESTADO: PUBLICADO (release v1.0.0, 31/07/2026) ══
+           URL DIRECTA al artefacto, no a la pagina de releases: un boton que
+           promete descarga y entrega un listado es la misma mentira, mas suave.
+           Verificado ANONIMAMENTE (sin token) que los dos devuelven 200.
+
+           Para subir de version: cambiar el numero en las dos URL y en la linea
+           de formatos. -->
+      <div class="cta-botones">
+        <a
+          class="btn btn--prim"
+          href="https://github.com/abrax-app/abrax/releases/download/v1.0.0/Abrax_1.0.0_aarch64.dmg"
+          >Descargar para macOS</a
+        >
+        <a
+          class="btn btn--prim"
+          href="https://github.com/abrax-app/abrax/releases/download/v1.0.0/Abrax_1.0.0_x64-setup.exe"
+          >Descargar para Windows</a
+        >
+        <a
+          class="btn btn--ghost"
+          href="https://github.com/abrax-app/abrax"
+          target="_blank"
+          rel="noopener"
+          >Ver el código ↗</a
+        >
+      </div>
+      <div class="cta-formatos">
+        <span>.dmg · Apple Silicon (M1 o posterior)</span><span>·</span
+        ><span>.exe · Windows 10 y 11 (64 bits)</span>
+      </div>
+      <div class="checksum">
+        <div>
+          <span class="dolar">$</span> git clone
+          https://github.com/abrax-app/abrax
+        </div>
+        <p>La garantía: el código entero, para poder mirar.</p>
+      </div>
+    </section>
+
+    <!-- ═══════════ FOOTER ═══════════ -->
+    <footer class="pie">
+      <div class="pie-fila">
+        <div class="pie-marca">
+          <img
+            src="assets/abrax-isotipo.svg"
+            alt=""
+            aria-hidden="true"
+            width="22"
+            height="22"
+          />
+          <span>ABRAX — un producto de Krafify</span>
+        </div>
+        <nav class="pie-nav" aria-label="Pie">
+          <a
+            href="https://github.com/abrax-app/abrax"
+            target="_blank"
+            rel="noopener"
+            >Código ↗</a
+          >
+          <a
+            href="https://github.com/abrax-app/abrax/releases"
+            target="_blank"
+            rel="noopener"
+            >Releases ↗</a
+          >
+          <a
+            href="https://github.com/abrax-app/abrax/blob/rebrand/product/LICENSE"
+            target="_blank"
+            rel="noopener"
+            >Licencia MIT</a
+          >
+          <a
+            href="https://github.com/abrax-app/abrax/blob/rebrand/product/LICENSES-THIRD-PARTY.md"
+            target="_blank"
+            rel="noopener"
+            >Licencias de terceros</a
+          >
+          <a
+            href="https://github.com/abrax-app/abrax/issues"
+            target="_blank"
+            rel="noopener"
+            >Reportar un problema</a
+          >
+        </nav>
+      </div>
+      <p class="pie-legal">
+        © 2026 Krafify · Licencia MIT. Construido sobre Handy — no implica
+        afiliación ni respaldo. Analítica: desactivada.
+      </p>
+      <!--
+        Atribución CC-BY-4.0. Va como TEXTO y no solo como enlace: la licencia
+        exige que el crédito acompañe a la obra, y un enlace puede caerse.
+        Desde 8774dcd el recomendado de arranque es Cohere (Apache-2.0);
+        Canary sigue en el catálogo y su CC-BY exige este crédito visible.
+      -->
+      <p class="pie-legal">
+        Los modelos de voz se descargan aparte y conservan su licencia.
+        <strong>Canary 180M Flash</strong> © NVIDIA Corporation, usado bajo
+        <a
+          href="https://creativecommons.org/licenses/by/4.0/"
+          target="_blank"
+          rel="noopener"
+          >CC-BY-4.0</a
+        >
+        (se descarga cuantizado a GGUF, sin modificar el entrenamiento). Whisper
+        Large v3 y v3 Turbo © OpenAI, Apache-2.0. Cohere Transcribe © Cohere
+        Labs, Apache-2.0. Nemotron Streaming 3.5 © NVIDIA Corporation,
+        <a href="https://openmdw.ai/license/1-1/" target="_blank" rel="noopener"
+          >OpenMDW-1.1</a
+        >. ABRAX no está afiliado a NVIDIA, OpenAI ni Cohere, ni cuenta con su
+        respaldo.
+      </p>
+    </footer>
+
+    <!-- three.js y el motor de la esfera se cargan en diferido desde el
+         guion inline: el primer pintado no espera 600 KB de WebGL -->
+    <script src="js/cuadraditos.js"></script>
+    <script>
+      (function () {
+        "use strict";
+        const reduced = window.matchMedia(
+          "(prefers-reduced-motion: reduce)",
+        ).matches;
+        const estadoEl = document.getElementById("estadoEsfera");
+        const cortina = document.getElementById("cortina");
+        const revelado = document.getElementById("revelado");
+        let esferaOk = false; /* true cuando el motor diferido esté listo */
+        let quiereFeed = false; /* el revelado terminó antes que el motor */
+
+        /* 1) Acto I: la intro cinemática corre aislada en un iframe (1×/sesión).
+           Al terminar o al saltarla, los cuadraditos transforman la página
+           hacia el hero. Con reduced-motion, sesión repetida o QA, se entra
+           directo al hero sin intro. */
+        function arrancarFeed() {
+          /* con prefers-reduced-motion el feed no arranca a propósito:
+             palabras volando es justo el movimiento que se pidió reducir */
+          if (reduced) return;
+          if (!esferaOk) {
+            quiereFeed = true; /* el motor aún carga: arrancará al estar listo */
+            return;
+          }
+          try {
+            ESFERA.iniciarFeed(1200);
+          } catch (e) {}
+        }
+        /* mientras el Acto I está activo, el resto de la página queda inert
+           (sin foco de teclado ni lectura) y el scroll bloqueado: la cortina
+           es una compuerta de verdad, no solo una capa opaca */
+        function ponerInert(v) {
+          Array.prototype.forEach.call(document.body.children, function (el) {
+            if (el === cortina || el === revelado || el.tagName === "SCRIPT")
+              return;
+            if (el.id === "cursorHalo" || el.classList.contains("grano"))
+              return;
+            if (v) el.setAttribute("inert", "");
+            else el.removeAttribute("inert");
+          });
+          document.body.style.overflow = v ? "hidden" : "";
+        }
+        /* coreografía del hero: tras el revelado, la marca entra en cascada */
+        const heroCuerpo = document.querySelector(".hero-cuerpo");
+        function coreoHero() {
+          if (!heroCuerpo || !heroCuerpo.classList.contains("prep")) return;
+          requestAnimationFrame(function () {
+            heroCuerpo.classList.add("entra");
+            setTimeout(function () {
+              heroCuerpo.classList.remove("prep", "entra");
+            }, 2600);
+          });
+        }
+        /* el hero queda a la vista: se retira el inert, arranca la esfera
+           (que estuvo precargando sin renderizar) y la marca entra en cascada */
+        function revelarHero() {
+          ponerInert(false);
+          heroVisible = true;
+          quiereFeed = !reduced;
+          talVezArrancarEsfera();
+          coreoHero();
+        }
+        function transformar() {
+          /* en táctiles y equipos de pocos núcleos la retícula se arrastra:
+             ahí la entrada es un fundido simple, no una animación fea */
+          const equipoJusto =
+            window.matchMedia("(pointer: coarse)").matches ||
+            (navigator.hardwareConcurrency || 8) <= 4;
+          if (reduced || equipoJusto || typeof CUADRADITOS === "undefined") {
+            cortina.style.transition = "opacity 450ms ease";
+            cortina.style.opacity = "0";
+            cortina.style.pointerEvents = "none";
+            setTimeout(function () {
+              cortina.remove();
+              revelado.remove();
+              revelarHero();
+            }, 470);
+            return;
+          }
+          try {
+            CUADRADITOS.revelar({
+              canvas: revelado,
+              cortina: cortina, // contiene el iframe de la intro: se retira aquí
+              focoY: 0.42,
+              alFinal: revelarHero,
+            });
+          } catch (e) {
+            cortina.remove();
+            revelado.remove();
+            revelarHero();
+          }
+        }
+
+        const sinActo = /[?&]sin-acto\b/.test(location.search);
+        /* Recargar (F5) vuelve a dar la entrada: pedir la página de nuevo es
+           querer verla de nuevo. La marca de sesión solo salta la intro en la
+           navegación interna (anclas, atrás/adelante) — y siempre se puede
+           saltar a mano. */
+        var esRecarga = false;
+        try {
+          var nav = performance.getEntriesByType("navigation");
+          esRecarga = !!(nav && nav[0] && nav[0].type === "reload");
+        } catch (e) {}
+        var introVista = false;
+        try {
+          introVista =
+            !esRecarga && sessionStorage.getItem("abrax_intro") === "1";
+        } catch (e) {}
+        var saltarIntro =
+          sinActo ||
+          introVista ||
+          reduced ||
+          typeof CUADRADITOS === "undefined";
+
+        if (saltarIntro) {
+          /* sin intro: al hero directo (QA, reduced-motion o ya vista) */
+          cortina.remove();
+          revelado.remove();
+          revelarHero();
+        } else {
+          /* intro cinemática en iframe, una vez por sesión */
+          ponerInert(true);
+          if (heroCuerpo) heroCuerpo.classList.add("prep");
+          try {
+            sessionStorage.setItem("abrax_intro", "1");
+          } catch (e) {}
+          var marco = document.createElement("iframe");
+          marco.id = "introFrame";
+          marco.src = "intro.html";
+          marco.title = "Intro de ABRAX";
+          marco.setAttribute("scrolling", "no");
+          cortina.appendChild(marco);
+          var entrado = false;
+          function entrarDesdeIntro() {
+            if (entrado) return;
+            entrado = true;
+            transformar();
+          }
+          window.addEventListener("message", function (e) {
+            if (e.data === "abrax-intro-fin") entrarDesdeIntro();
+          });
+          /* red de seguridad: si la intro no avisa (iframe bloqueado o error),
+             se entra igual a los 16 s — nunca se atrapa al visitante */
+          setTimeout(entrarDesdeIntro, 16000);
+        }
+
+        /* 2) Esfera en el hero — CARGA DIFERIDA y ARRANQUE DIFERIDO: three.js
+           (600 KB) y el motor se PRECARGAN en idle mientras corre la intro,
+           pero la esfera solo ARRANCA cuando el hero queda a la vista, para no
+           renderizar en vano detrás de la cortina. */
+        var motorListo = false,
+          heroVisible = false,
+          esferaArrancada = false;
+        function talVezArrancarEsfera() {
+          if (motorListo && heroVisible && !esferaArrancada) {
+            esferaArrancada = true;
+            iniciarEsfera();
+          }
+        }
+        function iniciarEsfera() {
+          try {
+            esferaOk = !!ESFERA.init({
+              canvas: document.getElementById("esfera"),
+              contenedor: document.querySelector(".hero"),
+              /* distancia 4.1 → la esfera ocupa ~63% del alto del hero
+                 (más lejos = más chica); desplazarY 0.25 deja su centro en el
+                 42% de la altura, el mismo foco donde convergen los
+                 cuadraditos (a esta distancia, cada 0.1 la mueve ~3%) */
+              distancia: 4.1,
+              desplazarY: 0.25,
+              onEstado: function (txt) {
+                if (estadoEl) estadoEl.textContent = txt;
+              },
+            });
+          } catch (e) {
+            console.warn("Esfera no disponible:", e);
+          }
+          if (!esferaOk) return motorFallo();
+          /* receta oficial de la esfera — "Firma ABRAX sin anillos" */
+          ESFERA.tune({
+            nucleo: 0.55,
+            halo: 0.55,
+            interior: 1,
+            anillo: 0,
+            cruzados: 0,
+            blanco: 0.4,
+            organico: 0.15,
+            ruido: 0.1,
+            ruidoEscala: 2,
+            ruidoVel: 0.55,
+            venas: 0,
+            venaEscala: 3,
+            giro: 0.7,
+          });
+          conectarMic();
+          if (sinActo || quiereFeed) arrancarFeed();
+        }
+        function motorFallo() {
+          if (estadoEl)
+            estadoEl.textContent =
+              "la esfera no está disponible en este navegador (WebGL)";
+          const b = document.getElementById("btnMicDemo");
+          if (b) b.disabled = true;
+          const fp = document.getElementById("formPalabra");
+          if (fp) fp.style.display = "none";
+        }
+        function cargarMotor() {
+          if (estadoEl) estadoEl.textContent = "despertando la esfera…";
+          const s1 = document.createElement("script");
+          s1.src = "vendor/three.min.js";
+          s1.onerror = motorFallo;
+          s1.onload = function () {
+            const s2 = document.createElement("script");
+            s2.src = "js/esfera.js";
+            s2.onerror = motorFallo;
+            s2.onload = function () {
+              motorListo = true;
+              talVezArrancarEsfera(); // arranca solo si el hero ya está a la vista
+            };
+            document.body.appendChild(s2);
+          };
+          document.body.appendChild(s1);
+        }
+        if ("requestIdleCallback" in window)
+          requestIdleCallback(cargarMotor, { timeout: 1500 });
+        else setTimeout(cargarMotor, 250);
+        /* 3) Micrófono: permiso solo con el gesto del usuario. Se conecta
+           cuando el motor diferido queda listo (iniciarEsfera → conectarMic) */
+        function conectarMic() {
+          const btnMic = document.getElementById("btnMicDemo");
+          if (!btnMic) return;
+          btnMic.disabled = false; /* recién ahora el clic tiene motor detrás */
+          btnMic.addEventListener("click", async function () {
+            const activo = await ESFERA.toggleMic();
+            btnMic.textContent = activo
+              ? "Detener micrófono"
+              : "Probar con mi micrófono";
+            btnMic.classList.toggle("activo", activo);
+            if (activo)
+              document
+                .getElementById("esfera")
+                .scrollIntoView({ behavior: reduced ? "auto" : "smooth" });
+          });
+        }
+
+        /* 4) Sensación de vida: header vidrio, revelados, foco en cards,
+           dictado vivo y tu palabra hacia la esfera */
+        const cab = document.querySelector(".hero-cabecera");
+        if (cab) {
+          const alScroll = function () {
+            cab.classList.toggle(
+              "scrolled",
+              window.scrollY > window.innerHeight * 0.55,
+            );
+          };
+          window.addEventListener("scroll", alScroll, { passive: true });
+          alScroll();
+        }
+
+        /* revelado al scrollear — con reduced-motion ni se etiqueta */
+        if (!reduced && "IntersectionObserver" in window) {
+          const els = document.querySelectorAll(
+            ".seccion h2, .seccion .display, .seccion .sub-seccion, .fila-funcion, .card, .callout, .dictado, .demo-mic, .tabla-wrap, .tabla-nota, .faq details, .cta-final .iso, .cta-mantra, .cta-botones, .cta-formatos, .checksum, .marquesina",
+          );
+          els.forEach(function (el) {
+            el.classList.add("rvl");
+          });
+          document.querySelectorAll(".cards").forEach(function (grupo) {
+            Array.prototype.forEach.call(grupo.children, function (el, i) {
+              el.style.transitionDelay = i * 70 + "ms";
+            });
+          });
+          const io = new IntersectionObserver(
+            function (entradas) {
+              entradas.forEach(function (en) {
+                if (!en.isIntersecting) return;
+                const el = en.target;
+                el.classList.add("vis");
+                io.unobserve(el);
+                /* al terminar el revelado, fuera clases y delay: que no
+                   interfieran con las transiciones de hover de la card */
+                setTimeout(function () {
+                  el.classList.remove("rvl", "vis");
+                  el.style.transitionDelay = "";
+                }, 2000);
+              });
+            },
+            { threshold: 0.12, rootMargin: "0px 0px -40px 0px" },
+          );
+          els.forEach(function (el) {
+            io.observe(el);
+          });
+        }
+
+        /* foco que sigue al cursor en las cards */
+        document.addEventListener("pointermove", function (e) {
+          const c = e.target.closest ? e.target.closest(".card") : null;
+          if (!c) return;
+          const r = c.getBoundingClientRect();
+          c.style.setProperty("--mx", e.clientX - r.left + "px");
+          c.style.setProperty("--my", e.clientY - r.top + "px");
+        });
+
+        /* dictado vivo */
+        (function () {
+          const elT = document.getElementById("dictadoTexto");
+          const elR = document.getElementById("dictadoRes");
+          if (!elT || !elR) return;
+          const PARES = [
+            [
+              "el deploy va el martes, no, perdón, el miércoles",
+              "el miércoles",
+            ],
+            ["cámbiate a la rama fix slash audio", "fix/audio"],
+            ["cierra con emoji fuego", "cierra con 🔥"],
+            ["la reunión es a las diecisiete treinta", "a las 17:30"],
+            ["etiquétalo con numeral abrax", "etiquétalo con #ABRAX"],
+            ["este… o sea… quita las muletillas", "quita las muletillas"],
+            ["crea un use auth store que persista el token", "useAuthStore"],
+          ];
+          if (reduced) {
+            elT.textContent = PARES[0][0];
+            elR.textContent = " → " + PARES[0][1];
+            return;
+          }
+          let p = 0;
+          function escribir(i) {
+            const frase = PARES[p][0];
+            if (i <= frase.length) {
+              elT.textContent = frase.slice(0, i);
+              setTimeout(
+                function () {
+                  escribir(i + 1);
+                },
+                34 + Math.random() * 40,
+              );
+            } else {
+              elR.textContent = " → " + PARES[p][1];
+              setTimeout(borrar, 1900);
+            }
+          }
+          function borrar() {
+            elR.textContent = "";
+            const frase = elT.textContent;
+            (function paso(i) {
+              if (i >= 0) {
+                elT.textContent = frase.slice(0, i);
+                setTimeout(function () {
+                  paso(i - 2);
+                }, 14);
+              } else {
+                p = (p + 1) % PARES.length;
+                setTimeout(function () {
+                  escribir(0);
+                }, 380);
+              }
+            })(frase.length);
+          }
+          escribir(0);
+        })();
+
+        /* lanzar tu palabra a la esfera */
+        const formPal = document.getElementById("formPalabra");
+        if (formPal) {
+          formPal.addEventListener("submit", function (e) {
+            e.preventDefault();
+            const inp = document.getElementById("inputPalabra");
+            const palabra = (inp.value || "").trim().slice(0, 24);
+            if (!palabra || !esferaOk) return;
+            inp.value = "";
+            document
+              .getElementById("esfera")
+              .scrollIntoView({ behavior: reduced ? "auto" : "smooth" });
+            setTimeout(
+              function () {
+                try {
+                  ESFERA.agregarPalabra(palabra);
+                } catch (err) {}
+              },
+              reduced ? 0 : 550,
+            );
+          });
+        }
+
+        /* 5) cursor con halo (solo puntero fino), parallax de la esfera y
+           el clip de Escucha que corre solo cuando está a la vista */
+        const halo = document.getElementById("cursorHalo");
+        if (halo && !reduced && window.matchMedia("(pointer: fine)").matches) {
+          let hx = -100,
+            hy = -100,
+            tx = -100,
+            ty = -100,
+            hEscala = 1,
+            hEscalaObj = 1;
+          document.addEventListener("pointermove", function (e) {
+            tx = e.clientX;
+            ty = e.clientY;
+            halo.classList.add("visible");
+          });
+          document.addEventListener("pointerover", function (e) {
+            const sobre =
+              e.target.closest &&
+              e.target.closest("a, button, input, summary, .card, #esfera");
+            halo.classList.toggle("activo", !!sobre);
+            hEscalaObj = sobre ? 1.7 : 1;
+          });
+          document.documentElement.addEventListener("mouseleave", function () {
+            halo.classList.remove("visible");
+          });
+          (function seguirCursor() {
+            hx += (tx - hx) * 0.16;
+            hy += (ty - hy) * 0.16;
+            hEscala += (hEscalaObj - hEscala) * 0.18;
+            halo.style.transform =
+              "translate3d(" +
+              hx +
+              "px," +
+              hy +
+              "px,0) scale(" +
+              hEscala.toFixed(3) +
+              ")";
+            requestAnimationFrame(seguirCursor);
+          })();
+        }
+
+        if (!reduced) {
+          const esferaCv = document.getElementById("esfera");
+          const heroEl = document.querySelector(".hero");
+          let pRaf = null;
+          function parallax() {
+            pRaf = null;
+            if (!esferaCv || !heroEl) return;
+            const y = window.scrollY;
+            const h = heroEl.offsetHeight || window.innerHeight;
+            if (y <= h) {
+              const k = y / h;
+              esferaCv.style.transform =
+                "translateY(" +
+                (y * 0.35).toFixed(1) +
+                "px) scale(" +
+                (1 - k * 0.08).toFixed(4) +
+                ")";
+            }
+          }
+          window.addEventListener(
+            "scroll",
+            function () {
+              if (!pRaf) pRaf = requestAnimationFrame(parallax);
+            },
+            { passive: true },
+          );
+        }
+
+        /* 6) scroll con inercia — la rueda desliza, no salta. Solo rueda y
+           escritorio: teclado, touch y reduced-motion siguen nativos.
+           CLAVE: se desactiva el scroll-behavior:smooth del CSS — si no,
+           cada paso del lerp dispara OTRA animación del navegador y los dos
+           sistemas pelean frame a frame (eso era la trabazón). Las anclas
+           del menú pasan por la misma inercia. */
+        if (!reduced && window.matchMedia("(pointer: fine)").matches) {
+          document.documentElement.style.scrollBehavior = "auto";
+          let objetivo = window.scrollY;
+          let deslizando = false;
+          let ultimaY = -1; // última posición que escribió la inercia
+          function maxScroll() {
+            return Math.max(
+              0,
+              document.documentElement.scrollHeight - window.innerHeight,
+            );
+          }
+          /* animación de duración fija: cada recorrido tarda DURACION ms en
+             asentarse — arranque inmediato, frenada larga (como Lenis) */
+          const DURACION = 700;
+          let desde = 0,
+            inicioAnim = 0;
+          function suavizado(t) {
+            return 1 - Math.pow(1 - t, 4); // easeOutQuart: responde al tiro, frena largo
+          }
+          function deslizar(ahora) {
+            const y = window.scrollY;
+            /* si alguien más movió el scroll (barra lateral, teclado,
+               arrastre), la inercia SUELTA el control — jamás pelear
+               contra el usuario */
+            if (ultimaY >= 0 && Math.abs(y - ultimaY) > 2) {
+              deslizando = false;
+              ultimaY = -1;
+              objetivo = y;
+              return;
+            }
+            const t = Math.min(1, (ahora - inicioAnim) / DURACION);
+            const pos = desde + (objetivo - desde) * suavizado(t);
+            ultimaY = pos;
+            window.scrollTo(0, pos);
+            if (t < 1) {
+              requestAnimationFrame(deslizar);
+            } else {
+              deslizando = false;
+              ultimaY = -1;
+            }
+          }
+          function irA(top) {
+            objetivo = Math.max(0, Math.min(maxScroll(), top));
+            desde = window.scrollY;
+            inicioAnim = performance.now();
+            if (!deslizando) {
+              deslizando = true;
+              requestAnimationFrame(deslizar);
+            }
+          }
+          window.addEventListener(
+            "wheel",
+            function (e) {
+              if (e.ctrlKey) return; // zoom del navegador, no scroll
+              /* scroll horizontal (shift+rueda, trackpad) pasa nativo:
+                 lo necesita la tabla comparativa en ventanas angostas */
+              if (e.shiftKey || Math.abs(e.deltaX) > Math.abs(e.deltaY)) return;
+              e.preventDefault();
+              let paso = e.deltaMode === 1 ? e.deltaY * 16 : e.deltaY;
+              /* tope por tic: ruedas con pasos gigantes (o Windows en
+                 "una pantalla por vez") no catapultan la página */
+              paso = Math.max(-150, Math.min(150, paso));
+              /* y el objetivo nunca se adelanta más de ~una pantalla:
+                 girar rápido acelera suave, no teletransporta */
+              const lim = window.innerHeight * 1.15;
+              const aqui = window.scrollY;
+              irA(Math.max(aqui - lim, Math.min(aqui + lim, objetivo + paso)));
+            },
+            { passive: false },
+          );
+          document.querySelectorAll('a[href^="#"]').forEach(function (a) {
+            const destino = a.getAttribute("href");
+            if (!destino || destino.length < 2) return;
+            /* el skip link conserva el salto nativo (mueve el foco solo) */
+            if (a.classList.contains("skip")) return;
+            a.addEventListener("click", function (e) {
+              const el = document.querySelector(destino);
+              if (!el) return;
+              e.preventDefault();
+              irA(el.getBoundingClientRect().top + window.scrollY - 72);
+              history.pushState(null, "", destino);
+              /* la navegación por teclado también mueve el foco al destino */
+              el.setAttribute("tabindex", "-1");
+              el.focus({ preventScroll: true });
+            });
+          });
+          /* si el scroll viene por otra vía (teclado, barra),
+             el objetivo se resincroniza para no pelear */
+          window.addEventListener(
+            "scroll",
+            function () {
+              if (!deslizando) objetivo = window.scrollY;
+            },
+            { passive: true },
+          );
+        }
+      })();
+    </script>
+  </body>
+</html>

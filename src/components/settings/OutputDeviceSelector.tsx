@@ -39,9 +39,11 @@ export const OutputDeviceSelector: React.FC<OutputDeviceSelectorProps> =
         await resetSetting("selected_output_device");
       };
 
+      // Ver MicrophoneSelector: "Default" es valor de backend, no texto de UI.
       const outputDeviceOptions = outputDevices.map((device: AudioDevice) => ({
         value: device.name,
-        label: device.name,
+        label:
+          device.name === "Default" ? t("common.systemDefault") : device.name,
       }));
 
       return (

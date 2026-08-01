@@ -1,16 +1,18 @@
 mod actions;
-#[cfg(all(target_os = "macos", target_arch = "aarch64"))]
-mod apple_intelligence;
 mod audio_feedback;
 pub mod audio_toolkit;
 mod catalog;
 pub mod cli;
 mod clipboard;
 mod commands;
+mod correccion;
+mod dictionary;
+mod hashing;
 mod helpers;
 mod input;
-mod llm_client;
 mod managers;
+mod memoria;
+mod memoria_en_sitio;
 mod overlay;
 pub mod portable;
 mod settings;
@@ -19,6 +21,7 @@ mod signal_handle;
 mod transcription_coordinator;
 mod tray;
 mod tray_i18n;
+mod user_alerts;
 mod utils;
 
 pub use cli::CliArgs;
@@ -56,7 +59,7 @@ pub static FILE_LOG_LEVEL: AtomicU8 = AtomicU8::new(log::LevelFilter::Debug as u
 /// mode — the live log viewer is its only consumer and only exists in debug
 /// mode — so normal runs never broadcast log records (which can include file
 /// paths or transcribed text) onto the frontend event bus. Synced at startup
-/// and whenever debug mode is toggled (see `shortcut::change_debug_mode_setting`).
+/// and whenever debug mode is toggled (see `commands::settings::change_debug_mode_setting`).
 pub static WEBVIEW_LOG_STREAMING: AtomicBool = AtomicBool::new(false);
 
 fn level_filter_from_u8(value: u8) -> log::LevelFilter {
@@ -181,6 +184,17 @@ fn initialize_core_logic(app_handle: &AppHandle) {
     app_handle.manage(transcription_manager.clone());
     app_handle.manage(history_manager.clone());
     app_handle.manage(tray::CurrentTrayIconState::new());
+    // [ESCUCHA] El motor TTS del sistema vive en su propio hilo y se inicializa
+    // perezosamente en el primer uso, así que crearlo aquí no cuesta nada.
+    let escucha_manager = Arc::new(managers::escucha::EscuchaManager::new());
+    app_handle.manage(escucha_manager.clone());
+    // [TTS] Motor de voz adaptativo: envuelve Escucha (sistema) + motores
+    // neuronales (Piper/…, construidos perezosamente). Detecta el hardware al
+    // crearse y resuelve el motor activo desde settings.
+    app_handle.manage(Arc::new(managers::tts::manager::TtsManager::new(
+        app_handle.clone(),
+        escucha_manager,
+    )));
 
     // Note: Shortcuts are NOT initialized here.
     // The frontend is responsible for calling the `initialize_shortcuts` command
@@ -219,9 +233,24 @@ fn initialize_core_logic(app_handle: &AppHandle) {
             .unwrap(),
         )
         .tooltip(tray::tray_tooltip())
-        .show_menu_on_left_click(true)
+        .show_menu_on_left_click(false)
         .icon_as_template(true)
+        .on_tray_icon_event(|tray, event| {
+            // Clic izquierdo en el icono = reabrir la app (el menú sale con clic
+            // derecho, y además está el ítem "Mostrar Abrax").
+            if let tauri::tray::TrayIconEvent::Click {
+                button: tauri::tray::MouseButton::Left,
+                button_state: tauri::tray::MouseButtonState::Up,
+                ..
+            } = event
+            {
+                show_main_window(tray.app_handle());
+            }
+        })
         .on_menu_event(|app, event| match event.id.as_ref() {
+            "show" => {
+                show_main_window(app);
+            }
             "settings" => {
                 show_main_window(app);
             }
@@ -281,7 +310,7 @@ fn initialize_core_logic(app_handle: &AppHandle) {
     app_handle.manage(tray);
 
     // Initialize tray menu with idle state
-    utils::update_tray_menu(app_handle, None);
+    tray::update_tray_menu(app_handle, None);
 
     // Apply show_tray_icon setting
     let settings = settings::get_settings(app_handle);
@@ -301,14 +330,18 @@ fn initialize_core_logic(app_handle: &AppHandle) {
 
     if settings.autostart_enabled {
         // Enable autostart if user has opted in
-        let _ = autostart_manager.enable();
+        if let Err(e) = autostart_manager.enable() {
+            log::warn!("No se pudo habilitar el autostart al arrancar: {e}");
+        }
     } else {
         // Disable autostart if user has opted out
-        let _ = autostart_manager.disable();
+        if let Err(e) = autostart_manager.disable() {
+            log::warn!("No se pudo deshabilitar el autostart al arrancar: {e}");
+        }
     }
 
     // Create the recording overlay window (hidden by default)
-    utils::create_recording_overlay(app_handle);
+    overlay::create_recording_overlay(app_handle);
 }
 
 #[tauri::command]
@@ -472,6 +505,27 @@ fn run_headless_transcription(app: &AppHandle, args: &CliArgs) -> i32 {
         }
         times_ms.push(t.elapsed().as_millis() as u64);
     }
+
+    // Diarización opt-in (env ABRAX_DIARIZE): prueba el pipeline completo desde el
+    // binario reusando la MISMA función del flujo de dictado (actions.rs).
+    if std::env::var("ABRAX_DIARIZE").is_ok() {
+        let words = tm.take_last_words().unwrap_or_default();
+        eprintln!(
+            "\n=== DIARIZACIÓN ({} palabras con tiempo) ===",
+            words.len()
+        );
+        let mdir = std::env::var("ABRAX_DIARIZE_MODELS").unwrap_or_else(|_| "C:\\dp".to_string());
+        let num_speakers = std::env::var("ABRAX_DIARIZE_SPEAKERS")
+            .ok()
+            .and_then(|v| v.trim().parse::<usize>().ok())
+            .filter(|&n| n >= 1);
+        let meeting = std::env::var("ABRAX_DIARIZE_MEETING").is_ok();
+        match crate::actions::diarize_and_label(&samples, &words, std::path::Path::new(&mdir), num_speakers, meeting) {
+            Some(labeled) => println!("\n{}", labeled),
+            None => eprintln!("(sin resultado — ¿modelo no-whisper sin tiempos, o modelos de diarización ausentes?)"),
+        }
+    }
+
     let best_ms = times_ms.iter().copied().min().unwrap_or(0);
     let rtf = if best_ms > 0 {
         audio_secs / (best_ms as f64 / 1000.0)
@@ -523,58 +577,72 @@ pub fn run(cli_args: CliArgs) {
         .commands(collect_commands![
             shortcut::change_binding,
             shortcut::reset_binding,
-            shortcut::change_ptt_setting,
-            shortcut::change_audio_feedback_setting,
-            shortcut::change_audio_feedback_volume_setting,
-            shortcut::change_sound_theme_setting,
-            shortcut::change_theme_setting,
-            shortcut::change_start_hidden_setting,
-            shortcut::change_autostart_setting,
-            shortcut::change_translate_to_english_setting,
-            shortcut::change_selected_language_setting,
-            shortcut::change_overlay_position_setting,
-            shortcut::change_overlay_style_setting,
-            shortcut::change_debug_mode_setting,
-            shortcut::change_word_correction_threshold_setting,
-            shortcut::change_extra_recording_buffer_setting,
-            shortcut::change_paste_delay_ms_setting,
-            shortcut::change_paste_delay_after_ms_setting,
-            shortcut::change_paste_method_setting,
-            shortcut::get_available_typing_tools,
-            shortcut::change_typing_tool_setting,
-            shortcut::change_external_script_path_setting,
-            shortcut::change_clipboard_handling_setting,
-            shortcut::change_auto_submit_setting,
-            shortcut::change_auto_submit_key_setting,
-            shortcut::change_post_process_enabled_setting,
-            shortcut::change_experimental_enabled_setting,
-            shortcut::change_post_process_base_url_setting,
-            shortcut::change_post_process_api_key_setting,
-            shortcut::change_post_process_model_setting,
-            shortcut::set_post_process_provider,
-            shortcut::fetch_post_process_models,
-            shortcut::add_post_process_prompt,
-            shortcut::update_post_process_prompt,
-            shortcut::delete_post_process_prompt,
-            shortcut::set_post_process_selected_prompt,
-            shortcut::update_custom_words,
-            shortcut::update_custom_filler_words,
+            commands::settings::change_ptt_setting,
+            commands::settings::change_audio_feedback_setting,
+            commands::settings::change_audio_feedback_volume_setting,
+            commands::settings::change_sound_theme_setting,
+            commands::settings::change_theme_setting,
+            commands::settings::change_ui_theme_setting,
+            commands::settings::change_ui_shell_setting,
+            commands::settings::change_esfera_modo_setting,
+            commands::settings::change_correccion_modo_setting,
+            commands::settings::change_correccion_motor_setting,
+            commands::settings::listar_emojis,
+            commands::discos::listar_discos,
+            commands::discos::obtener_carpeta_modelos,
+            commands::discos::cambiar_carpeta_modelos,
+            commands::memoria::editar_transcripcion,
+            commands::memoria::cambiar_memoria_activa,
+            commands::memoria::actualizar_memoria_correcciones,
+            commands::memoria::cambiar_memoria_en_sitio,
+            commands::audio::probar_microfono,
+            signal_handle::trigger_transcription,
+            commands::settings::change_start_hidden_setting,
+            commands::settings::change_autostart_setting,
+            commands::settings::change_translate_to_english_setting,
+            commands::settings::change_diarization_enabled_setting,
+            commands::settings::change_diarization_num_speakers_setting,
+            commands::settings::change_capture_system_audio_setting,
+            commands::settings::change_selected_language_setting,
+            commands::settings::change_overlay_position_setting,
+            commands::settings::change_overlay_style_setting,
+            commands::settings::change_debug_mode_setting,
+            commands::settings::change_word_correction_threshold_setting,
+            commands::settings::change_extra_recording_buffer_setting,
+            commands::settings::change_paste_delay_ms_setting,
+            commands::settings::change_paste_delay_after_ms_setting,
+            commands::settings::change_paste_method_setting,
+            commands::settings::get_available_typing_tools,
+            commands::settings::change_typing_tool_setting,
+            commands::settings::change_external_script_path_setting,
+            commands::settings::change_clipboard_handling_setting,
+            commands::settings::change_auto_submit_setting,
+            commands::settings::change_auto_submit_key_setting,
+            commands::settings::change_experimental_enabled_setting,
+            commands::settings::update_custom_words,
+            commands::settings::update_custom_filler_words,
             shortcut::suspend_binding,
             shortcut::resume_binding,
-            shortcut::change_mute_while_recording_setting,
-            shortcut::change_append_trailing_space_setting,
-            shortcut::change_lazy_stream_close_setting,
-            shortcut::change_vad_enabled_setting,
-            shortcut::change_app_language_setting,
-            shortcut::change_update_checks_setting,
-            shortcut::change_show_whats_new_on_update_setting,
-            shortcut::change_whats_new_last_seen_version_setting,
+            commands::settings::change_mute_while_recording_setting,
+            commands::settings::change_append_trailing_space_setting,
+            commands::settings::change_lazy_stream_close_setting,
+            commands::settings::change_vad_enabled_setting,
+            commands::settings::change_correccion_numeros_setting,
+            commands::settings::listar_senales_de_fabrica,
+            commands::settings::change_autocorreccion_propias_sustitucion_setting,
+            commands::settings::change_autocorreccion_activa_setting,
+            commands::settings::change_emoji_dictado_setting,
+            commands::settings::change_autocorreccion_senales_sustitucion_setting,
+            commands::settings::change_app_language_setting,
+            commands::settings::change_update_checks_setting,
+            commands::settings::change_show_whats_new_on_update_setting,
+            commands::settings::change_whats_new_last_seen_version_setting,
             shortcut::change_keyboard_implementation_setting,
-            shortcut::change_show_tray_icon_setting,
-            shortcut::change_transcribe_accelerator_setting,
-            shortcut::change_ort_accelerator_setting,
-            shortcut::change_transcribe_gpu_device,
-            shortcut::get_available_accelerators,
+            commands::settings::change_show_tray_icon_setting,
+            commands::settings::change_transcribe_accelerator_setting,
+            commands::settings::change_ort_accelerator_setting,
+            commands::settings::change_transcribe_gpu_device,
+            commands::settings::get_available_accelerators,
             shortcut::handy_keys::start_handy_keys_recording,
             shortcut::handy_keys::stop_handy_keys_recording,
             show_main_window_command,
@@ -588,13 +656,13 @@ pub fn run(cli_args: CliArgs) {
             commands::open_recordings_folder,
             commands::open_log_dir,
             commands::open_app_data_dir,
-            commands::check_apple_intelligence_available,
             commands::initialize_enigo,
             commands::initialize_shortcuts,
             commands::models::get_available_models,
             commands::models::download_model,
             commands::models::delete_model,
             commands::models::cancel_download,
+            commands::models::aptitud_audio_sistema,
             commands::models::set_active_model,
             commands::models::get_current_model,
             commands::models::get_transcription_model_status,
@@ -610,6 +678,8 @@ pub fn run(cli_args: CliArgs) {
             commands::audio::check_custom_sounds,
             commands::audio::set_clamshell_microphone,
             commands::audio::is_recording,
+            commands::audio::start_spectrum,
+            commands::audio::stop_spectrum,
             commands::transcription::set_model_unload_timeout,
             commands::history::get_history_entries,
             commands::history::toggle_history_entry_saved,
@@ -619,11 +689,43 @@ pub fn run(cli_args: CliArgs) {
             commands::history::update_history_limit,
             commands::history::update_recording_retention_period,
             helpers::clamshell::is_laptop,
+            user_alerts::get_recent_alerts,
+            user_alerts::clear_recent_alerts,
+            dictionary::index_project,
+            dictionary::get_dictionary_stats,
+            dictionary::set_dictionary_enabled,
+            dictionary::update_custom_replacements,
+            // [ESCUCHA] Lectura en voz alta (TTS del sistema)
+            commands::escucha::escucha_list_voices,
+            commands::escucha::escucha_speak,
+            commands::escucha::escucha_stop,
+            commands::escucha::escucha_status,
+            commands::escucha::escucha_preprocess,
+            commands::escucha::escucha_read_file,
+            commands::escucha::escucha_read_clipboard,
+            commands::escucha::escucha_update_settings,
+            commands::escucha::update_tts_ajustes,
+            // [TTS] Motor de voz adaptativo (detección + motores + descarga)
+            commands::tts::detect_hardware,
+            commands::tts::redetect_hardware,
+            commands::tts::list_engines,
+            commands::tts::get_recommended_engine,
+            commands::tts::get_active_engine,
+            commands::tts::set_engine,
+            commands::tts::list_piper_voices,
+            commands::tts::install_piper_runtime,
+            commands::tts::install_piper_voice,
+            commands::tts::install_kokoro_runtime,
+            commands::tts::install_online_runtime,
         ])
         .events(collect_events![
             managers::history::HistoryUpdatePayload,
             managers::transcription::StreamTextEvent,
             managers::transcription::StreamPhaseEvent,
+            managers::transcription::TranscriptWordsEvent,
+            user_alerts::UserAlertEvent,
+            commands::discos::MudanzaProgreso,
+            memoria_en_sitio::MemoriaAprendida,
         ]);
 
     #[cfg(debug_assertions)] // <- Only export on non-release builds
@@ -705,10 +807,13 @@ pub fn run(cli_args: CliArgs) {
     // instance instead.
     if !headless_mode {
         builder = builder.plugin(tauri_plugin_single_instance::init(|app, args, _cwd| {
+            // `--toggle-post-process` existía aquí y se retiró con la función
+            // «Post Proceso» (29/07). La rama entera se va, no solo su cuerpo:
+            // dejarla vacía haría que el flag se tragara en silencio sin ni
+            // abrir la ventana. Ahora cae en el `else`, que es lo que ya hacía
+            // cualquier argumento no reconocido.
             if args.iter().any(|a| a == "--toggle-transcription") {
                 signal_handle::send_transcription_input(app, "transcribe", "CLI");
-            } else if args.iter().any(|a| a == "--toggle-post-process") {
-                signal_handle::send_transcription_input(app, "transcribe_with_post_process", "CLI");
             } else if args.iter().any(|a| a == "--cancel") {
                 crate::utils::cancel_current_operation(app);
             } else {
@@ -722,6 +827,7 @@ pub fn run(cli_args: CliArgs) {
         .plugin(tauri_plugin_process::init())
         .plugin(tauri_plugin_updater::Builder::new().build())
         .plugin(tauri_plugin_os::init())
+        .plugin(tauri_plugin_notification::init())
         .plugin(tauri_plugin_clipboard_manager::init())
         .plugin(tauri_plugin_macos_permissions::init())
         .plugin(tauri_plugin_opener::init())
@@ -755,6 +861,9 @@ pub fn run(cli_args: CliArgs) {
                 app_handle.manage(transcription_manager);
                 managers::transcription::init_transcribe_backend();
                 managers::transcription::apply_accelerator_settings(&app_handle);
+                // El post-proceso corre en este proceso: cargar el Diccionario
+                // Vivo también aquí, o --transcribe-file lo ignoraría.
+                dictionary::refresh_active(&app_handle);
 
                 let handle = app_handle.clone();
                 let args = cli_args.clone();
@@ -777,16 +886,79 @@ pub fn run(cli_args: CliArgs) {
                 return Ok(());
             }
 
+            // Read settings BEFORE building the window: the shell (classic vs
+            // retro) decides whether the main window is a normal
+            // decorated window or a frameless/transparent one, and that chrome
+            // can only be chosen at build time.
+            let mut settings = get_settings(app.handle());
+            let frameless =
+                settings.ui_shell.wants_transparency() && utils::supports_transparency();
+
+            // Window size per shell: classic keeps the compact settings window;
+            // retro opens at the player size and resizes ITSELF to the docked
+            // panels (Winamp-style); quiet is a roomy minimalist panel.
+            let ((w, h), (min_w, min_h)) = match (frameless, settings.ui_shell) {
+                (true, settings::UiShell::Retro) => ((460.0, 200.0), (200.0, 32.0)),
+                (true, settings::UiShell::Quiet) => {
+                    // Proporcional a la pantalla: misma proporción (~35% ancho ×
+                    // 52% alto) en cualquier resolución, con topes mín/máx para
+                    // que nunca quede minúsculo ni gigante. La ventana se centra.
+                    let (sw, sh) = app
+                        .handle()
+                        .primary_monitor()
+                        .ok()
+                        .flatten()
+                        .map(|m| {
+                            let sf = m.scale_factor();
+                            (m.size().width as f64 / sf, m.size().height as f64 / sf)
+                        })
+                        .unwrap_or((1920.0, 1080.0));
+                    (
+                        (
+                            (sw * 0.35).clamp(640.0, 1180.0),
+                            (sh * 0.52).clamp(540.0, 900.0),
+                        ),
+                        (600.0, 500.0),
+                    )
+                }
+                // Bancada: consola de garaje rectangular (panel fijo, no una
+                // silueta custom): tamaño cómodo para instrumentos + pestañas.
+                (true, settings::UiShell::Bancada) => ((840.0, 600.0), (720.0, 540.0)),
+                _ => ((680.0, 570.0), (680.0, 570.0)),
+            };
+
             // Create main window programmatically so we can set data_directory
             // for portable mode (redirects WebView2 cache to portable Data dir)
             let mut win_builder =
                 tauri::WebviewWindowBuilder::new(app, "main", tauri::WebviewUrl::App("/".into()))
                     .title("Abrax")
-                    .inner_size(680.0, 570.0)
-                    .min_inner_size(680.0, 570.0)
+                    .inner_size(w, h)
+                    .min_inner_size(min_w, min_h)
                     .resizable(true)
-                    .maximizable(false)
+                    // Retro dimensiona su propia ventana (estilo Winamp) y no
+                    // ofrece maximizar; Clásico y Quiet sí trabajan a pantalla
+                    // completa. Nota: el cambio de shell en caliente ajusta esto
+                    // con setMaximizable() desde el selector.
+                    .maximizable(!matches!(settings.ui_shell, settings::UiShell::Retro))
+                    // La ventana SIEMPRE está en la barra de tareas: el botón de
+                    // "minimizar normal" necesita una entrada en la barra para
+                    // poder volver. La bandeja es una vía ADICIONAL (botón
+                    // dedicado por skin que llama a hide()); al ocultar a bandeja,
+                    // hide() la saca de la barra igualmente.
+                    .skip_taskbar(false)
                     .visible(false);
+
+            // The Retro shell owns its chrome: no OS title bar, no shadow
+            // (a shadow would betray the invisible rectangle), transparent so
+            // the windows float. Classic keeps the native frame and is
+            // the fallback when the platform can't do transparency.
+            if frameless {
+                win_builder = win_builder
+                    .decorations(false)
+                    .transparent(true)
+                    .shadow(false)
+                    .center();
+            }
 
             if let Some(data_dir) = portable::data_dir() {
                 win_builder = win_builder.data_directory(data_dir.join("webview"));
@@ -794,14 +966,15 @@ pub fn run(cli_args: CliArgs) {
 
             win_builder.build()?;
 
-            let mut settings = get_settings(app.handle());
-
             // Apply the persisted appearance theme to the Windows title bar before
             // the window is shown, so it matches the in-app palette without a flash
             // of the wrong theme. On macOS/Linux, Tauri themes are app-wide and
             // would also affect windows that intentionally keep the system theme.
             #[cfg(target_os = "windows")]
-            shortcut::apply_window_theme(app.handle(), settings.theme);
+            commands::settings::apply_window_theme(
+                app.handle(),
+                commands::settings::effective_window_theme(&settings),
+            );
 
             // CLI --debug flag overrides debug_mode and log level (runtime-only, not persisted)
             if cli_args.debug {
@@ -822,13 +995,15 @@ pub fn run(cli_args: CliArgs) {
 
             initialize_core_logic(&app_handle);
 
-            // Populate the overlay-enabled cache from initial settings so the
-            // audio path (overlay::emit_levels, called ~24 Hz during recording)
-            // can do a single atomic load instead of reading the Tauri store.
-            // Kept in sync by shortcut::change_overlay_style_setting.
-            overlay::update_overlay_enabled_cache(
-                settings.overlay_style != settings::OverlayStyle::None,
-            );
+            // Diccionario Vivo: cargar el índice del proyecto activo (no-op
+            // si está apagado o no hay índice en el datadir).
+            dictionary::refresh_active(&app_handle);
+
+            // Voz online de Escucha: prepararla sola, en segundo plano, si no
+            // está. Antes exigía entrar a Escucha y pulsar «Habilitar», un paso
+            // que nadie descubre. No bloquea el arranque ni avisa si falla.
+            #[cfg(feature = "advanced-tts")]
+            managers::tts::online::aprovisionar_en_segundo_plano(&app_handle);
 
             // Pre-warm GPU/accelerator enumeration on a background thread. The first
             // get_available_accelerators call enumerates ORT execution providers and
@@ -862,7 +1037,72 @@ pub fn run(cli_args: CliArgs) {
         .on_window_event(|window, event| match event {
             tauri::WindowEvent::CloseRequested { api, .. } => {
                 api.prevent_close();
-                let _res = window.hide();
+
+                // `on_window_event` es GLOBAL a todas las ventanas, y el overlay de
+                // grabación es una ventana más. Solo la PRINCIPAL decide el destino
+                // de la app: el overlay conserva exactamente lo de siempre
+                // (ocultarse), para que un cierre llegado del gestor de ventanas no
+                // pueda apagar Abrax por la puerta de atrás. Hoy nada en el repo le
+                // pide cerrarse, así que esto es una guarda preventiva.
+                if window.label() != "main" {
+                    let _ = window.hide();
+                    return;
+                }
+
+                // Sin bandeja, ocultar la ventana deja a Abrax vivo y SIN NINGUNA
+                // superficie: no hay icono, `hide()` saca también la entrada de la barra
+                // de tareas, y el único `app.exit(0)` de toda la app cuelga del menú
+                // de la bandeja. Es decir: ni se vuelve ni se sale. En ese caso la X
+                // cierra Abrax, que es lo coherente — sin bandeja no hay dónde
+                // esconderse. Es el mismo invariante que el arranque ya aplica más
+                // arriba ("Without a tray icon, the dock is the only way back in").
+                //
+                // Se conserva `prevent_close()` y se sale por `app.exit(0)` A
+                // PROPÓSITO: dejar que la ventana se destruya NO garantiza que el
+                // proceso muera, porque `recording_overlay` se crea siempre y nunca
+                // se destruye. Con "main" destruida y el proceso vivo,
+                // `show_main_window` quedaría roto para siempre y se perderían las
+                // dos vías de rescate (bandeja y single-instance) — justo el estado
+                // que este arreglo evita. Salir por `exit(0)` además corre el
+                // teardown de RunEvent::Exit (descarga del modelo, stop del sidecar).
+                //
+                // macOS queda FUERA: allí cerrar con la bandeja apagada conserva el
+                // icono del Dock y `RunEvent::Reopen` devuelve la ventana (ver el
+                // bloque de abajo), así que ya hay vuelta y el comportamiento actual
+                // es el idiomático del sistema.
+                #[cfg(not(target_os = "macos"))]
+                {
+                    let settings = get_settings(window.app_handle());
+                    let tray_available =
+                        settings.show_tray_icon && !window.app_handle().state::<CliArgs>().no_tray;
+                    if !tray_available {
+                        log::info!("Cierre sin bandeja disponible: se sale de Abrax");
+                        // Quitar el silencio de «silenciar al grabar», que es del
+                        // SISTEMA y no se deshace solo. La red de verdad está en
+                        // `RunEvent::Exit` (cubre TODAS las salidas, incluido el
+                        // «Salir» de la bandeja); esta llamada se queda a
+                        // propósito por ser idempotente y gratuita: si por lo que
+                        // fuera el teardown no llegara a correr, el equipo del
+                        // usuario no se queda mudo. Duplicación deliberada — no
+                        // la quites por parecer redundante.
+                        window
+                            .app_handle()
+                            .state::<Arc<AudioRecordingManager>>()
+                            .remove_mute();
+                        // Ocultar ANTES de salir: `exit(0)` no es inmediato — encola
+                        // la salida y el teardown (descarga del modelo, stop del
+                        // sidecar) corre después, con el bucle de eventos ocupado.
+                        // Sin esto la ventana se queda congelada en pantalla hasta
+                        // que el proceso muere de verdad.
+                        let _ = window.hide();
+                        window.app_handle().exit(0);
+                        return;
+                    }
+                }
+
+                if let Err(e) = window.hide() {
+                    log::error!("Failed to hide main window on close: {}", e);
+                }
 
                 #[cfg(target_os = "macos")]
                 {
@@ -881,10 +1121,14 @@ pub fn run(cli_args: CliArgs) {
                     // No tray: keep the dock icon visible so the user can reopen
                 }
             }
+            // Minimizar es AHORA minimizar normal (a la barra de tareas). El envío
+            // a la bandeja se hace con el botón dedicado de cada skin (llama a
+            // hide()), no interceptando el minimizado — por eso ya no hay arm de
+            // Resized que redirija a la bandeja.
             tauri::WindowEvent::ThemeChanged(theme) => {
                 log::info!("Theme changed to: {:?}", theme);
                 // Re-apply the current tray state with the new theme's icon set
-                utils::refresh_tray_icon(window.app_handle());
+                tray::refresh_tray_icon(window.app_handle());
             }
             _ => {}
         })
@@ -898,6 +1142,43 @@ pub fn run(cli_args: CliArgs) {
             }
             // Teardown transcribe.cpp before exit
             tauri::RunEvent::Exit => {
+                // Marca de SALIDA ORDENADA. Es la unica linea que distingue «la
+                // app se cerro sola» de «a la app la mataron», y esa diferencia
+                // decide si un cierre inesperado hay que investigarlo o no.
+                //
+                // Investigando un `exit code: 1` del 30/07 hubo que deducirlo por
+                // ausencia, mirando si aparecian las lineas de descarga del
+                // modelo — un marcador prestado, que dejaria de valer el dia que
+                // ese codigo cambie. Este no depende de nadie.
+                //
+                // Si un cierre no deja esta linea, el proceso murio desde fuera:
+                // ninguna ruta interna sale sin pasar por aqui.
+                log::info!("[salida] cierre ordenado de Abrax");
+
+                // El silencio de «silenciar al grabar» es del SISTEMA, no de
+                // Abrax: si el proceso muere con él puesto, NO se deshace solo
+                // —ni reiniciando Abrax— y el usuario se queda sin sonido en
+                // todo el equipo sin manera de relacionarlo con nosotros.
+                //
+                // Va AQUÍ, que es el único punto por el que pasan TODAS las
+                // salidas. Ponerlo solo en el manejador de cierre (más arriba)
+                // dejaba fuera el «Salir» del menú de la bandeja, que llama a
+                // `app.exit(0)` directo: cerrar por ahí mientras se dictaba
+                // apagaba Abrax dejando el equipo mudo.
+                //
+                // El orden importa. Cerrar el micrófono PRIMERO cierra una
+                // carrera real: el silencio se aplica desde un hilo con 100 ms
+                // de retraso más el sonido de inicio (actions.rs), así que
+                // salir justo al empezar a dictar podía volver a silenciar
+                // DESPUÉS de haberlo quitado. Sin el stream abierto ese hilo ya
+                // no silencia nada (`apply_mute` exige `is_open`). Y como
+                // `stop_microphone_stream` no toca el silencio si el stream ya
+                // estaba cerrado, después hace falta igual `remove_mute`, que
+                // es idempotente.
+                if let Some(am) = app.try_state::<Arc<AudioRecordingManager>>() {
+                    am.stop_microphone_stream();
+                    am.remove_mute();
+                }
                 if let Some(tm) = app.try_state::<Arc<TranscriptionManager>>() {
                     let _ = tm.unload_model();
                 }

@@ -6,16 +6,23 @@
     "unloadModel": "Dỡ mô hình",
     "model": "Mô hình",
     "quit": "Thoát",
-    "cancel": "Hủy"
+    "cancel": "Hủy",
+    "errorTitle": "Abrax gặp sự cố",
+    "errorRecording": "Không thể bắt đầu ghi âm. Mở Abrax để xem lý do.",
+    "errorTranscription": "Phiên âm thất bại. Mở Abrax để thử lại từ Lịch sử.",
+    "errorPaste": "Không thể dán văn bản. Nó đã được lưu trong Lịch sử.",
+    "errorModelLoad": "Không tải được mô hình giọng nói. Mở Abrax để xem nguyên nhân.",
+    "errorModelDownload": "Tải mô hình thất bại. Mở Abrax để thử lại.",
+    "show": "Show Abrax"
   },
   "sidebar": {
     "general": "Chung",
     "models": "Mô hình",
     "advanced": "Nâng cao",
-    "postProcessing": "Xử lý sau",
     "history": "Lịch sử",
     "debug": "Gỡ lỗi",
-    "about": "Giới thiệu"
+    "about": "Giới thiệu",
+    "escucha": "VOX"
   },
   "onboarding": {
     "subtitle": "Để bắt đầu, hãy chọn một mô hình chuyển đổi giọng nói",
@@ -46,11 +53,11 @@
         "name": "Whisper Large",
         "description": "Độ chính xác tốt, nhưng chậm."
       },
-      "parakeet-tdt-0.6b-v2": {
+      "parakeet-tdt-0_6b-v2": {
         "name": "Parakeet V2",
         "description": "Chỉ tiếng Anh. Mô hình tốt nhất cho người nói tiếng Anh."
       },
-      "parakeet-tdt-0.6b-v3": {
+      "parakeet-tdt-0_6b-v3": {
         "name": "Parakeet V3",
         "description": "Nhanh và chính xác"
       },
@@ -93,6 +100,21 @@
       "cohere-int8": {
         "name": "Cohere",
         "description": "Mô hình lớn, chậm hơn, nhưng rất chính xác và đa ngôn ngữ."
+      },
+      "handy-computer_canary-180m-flash-gguf": {
+        "description": "Nhẹ và nhanh nhất — tải xong trong chưa đầy một phút và chạy được cả trên laptop cũ. Đổi lại, với câu rất ngắn đôi khi nó không nghe ra gì."
+      },
+      "handy-computer_whisper-large-v3-turbo-gguf": {
+        "description": "Balanced — the everyday pick: understands 100 languages and doesn't keep you waiting."
+      },
+      "handy-computer_whisper-large-v3-gguf": {
+        "description": "Widest coverage — the big Whisper, the one everyone names. Slower, but complete."
+      },
+      "handy-computer_nemotron-3_5-asr-streaming-0_6b-gguf": {
+        "description": "Live — writes as you speak, word by word. This is the one that makes the sphere dance."
+      },
+      "handy-computer_cohere-transcribe-03-2026-gguf": {
+        "description": "Độ chính xác cao nhất — chính xác nhất trong danh mục, 14 ngôn ngữ. Đây là mô hình chúng tôi khuyên dùng để bắt đầu. Nặng 1,6 GB và cần máy khoẻ."
       }
     },
     "errors": {
@@ -117,6 +139,15 @@
         "checkFailed": "Không thể kiểm tra quyền. Vui lòng thử lại.",
         "requestFailed": "Không thể yêu cầu quyền. Vui lòng thử lại."
       }
+    },
+    "emptyCatalog": "Không có mô hình nào khả dụng. Kiểm tra nhật ký và khởi động lại Abrax.",
+    "welcome": {
+      "pitch": "Nói, và văn bản hiện ra ngay trên máy của bạn.",
+      "badgeLocal": "100% cục bộ",
+      "badgeNoCloud": "Không đám mây",
+      "badgeFree": "Miễn phí",
+      "whyModel": "Để nghe bạn, Abrax tải một mô hình giọng nói một lần. Sau đó hoạt động không cần mạng.",
+      "start": "Bắt đầu"
     }
   },
   "modelSelector": {
@@ -151,7 +182,18 @@
     },
     "cancel": "Hủy",
     "cancelDownload": "Hủy tải xuống",
-    "legacy": "Cũ"
+    "legacy": "Cũ",
+    "downloadFailed": "Tải xuống thất bại",
+    "downloadFailedHelp": "Không tải được mô hình. Hãy kiểm tra kết nối và thử lại.",
+    "checkFailed": "Không thể kiểm tra trạng thái mô hình",
+    "loadFailed": "Không thể tải mô hình",
+    "switchFailed": "Không thể đổi mô hình",
+    "statusTitle": "Trạng thái mô hình: {{estado}}",
+    "confirmDownload": {
+      "title": "Download model",
+      "body": "{{modelName}} — {{size}}\n\n{{description}}\n\nIt downloads once and stays on your machine. After that it works offline.",
+      "ok": "Download"
+    }
   },
   "settings": {
     "modelSettings": {
@@ -192,6 +234,10 @@
           "cancel": {
             "name": "Phím tắt hủy",
             "description": "Phím tắt để hủy bản ghi hiện tại."
+          },
+          "leer_seleccion": {
+            "name": "Đọc to phần đã chọn",
+            "description": "Đọc to đoạn văn bản bạn đã chọn trong bất kỳ ứng dụng nào. Nhấn lại để dừng."
           },
           "transcribe_with_post_process": {
             "name": "Phím tắt xử lý sau",
@@ -245,7 +291,10 @@
         "output": "Đầu ra",
         "transcription": "Chuyển đổi",
         "history": "Lịch sử",
-        "experimental": "Thử nghiệm"
+        "experimental": "Thử nghiệm",
+        "dictionary": "Từ điển sống",
+        "correccion": "Sửa lỗi cục bộ",
+        "memoria": "Bộ nhớ"
       },
       "experimentalToggle": {
         "label": "Tính năng thử nghiệm",
@@ -278,7 +327,7 @@
       },
       "showTrayIcon": {
         "label": "Hiển thị biểu tượng khay",
-        "description": "Hiển thị biểu tượng Abrax trong khay hệ thống."
+        "description": "Hiển thị biểu tượng Abrax trong khay hệ thống. Không có biểu tượng này, đóng cửa sổ sẽ thoát hẳn Abrax (trên macOS ứng dụng vẫn ở Dock)."
       },
       "overlay": {
         "style": {
@@ -287,7 +336,8 @@
           "options": {
             "none": "Không có",
             "minimal": "Minimal",
-            "live": "Live"
+            "live": "Live",
+            "esfera": "Esfera"
           }
         },
         "position": {
@@ -296,6 +346,14 @@
           "options": {
             "bottom": "Dưới",
             "top": "Trên"
+          }
+        },
+        "esferaModo": {
+          "title": "Chế độ Esfera",
+          "description": "Cách quả cầu Esfera hoạt động. Âm thanh: quả cầu phản ứng với giọng nói của bạn. Từ ngữ: những từ bạn đọc bay vào quả cầu, hiện lên trong giây lát rồi tan vào lớp màng của nó (tốt nhất với mô hình phát trực tiếp, nơi các từ đến theo thời gian thực khi bạn nói).",
+          "options": {
+            "audio": "Phản hồi âm thanh",
+            "palabras": "Từ ngữ sống động"
           }
         }
       },
@@ -322,6 +380,7 @@
       "clipboardHandling": {
         "title": "Xử lý Clipboard",
         "description": "Không sửa đổi Clipboard giữ nguyên nội dung clipboard hiện tại sau khi chuyển đổi. Sao chép vào Clipboard để lại kết quả chuyển đổi trong clipboard sau khi dán.",
+        "lockedByPasteMethod": "Locked by the paste method: pasting through the clipboard already leaves the transcription there. Choose Direct or None if you want your clipboard left untouched.",
         "options": {
           "dontModify": "Không sửa đổi Clipboard",
           "copyToClipboard": "Sao chép vào Clipboard"
@@ -380,63 +439,85 @@
         "resetDefaults": "Khôi phục danh sách mặc định",
         "disable": "Tắt bộ lọc"
       },
-      "voiceActivityDetection": {
-        "title": "Voice Activity Detection",
-        "description": "Filter silence from recordings. Streaming-capable models use a longer VAD tail; disabling VAD records raw audio."
-      }
-    },
-    "postProcessing": {
-      "hotkey": {
-        "title": "Phím tắt"
-      },
-      "api": {
-        "title": "API (Tương thích OpenAI)",
-        "provider": {
-          "title": "Nhà cung cấp",
-          "description": "Chọn một nhà cung cấp tương thích OpenAI."
-        },
-        "appleIntelligence": {
-          "unavailable": "Apple Intelligence không khả dụng trên thiết bị này. Yêu cầu Mac Apple Silicon chạy macOS Tahoe (26.0) trở lên với Apple Intelligence được bật trong Cài đặt Hệ thống."
-        },
-        "baseUrl": {
-          "title": "URL cơ sở",
-          "description": "URL cơ sở API cho nhà cung cấp đã chọn. Chỉ có thể chỉnh sửa nhà cung cấp tùy chỉnh.",
-          "placeholder": "https://api.openai.com/v1"
-        },
-        "apiKey": {
-          "title": "Khóa API",
-          "description": "Khóa API cho nhà cung cấp đã chọn.",
-          "placeholder": "sk-..."
-        },
-        "model": {
-          "title": "Mô hình",
-          "descriptionCustom": "Cung cấp định danh mô hình được yêu cầu bởi điểm cuối tùy chỉnh của bạn.",
-          "descriptionDefault": "Chọn một mô hình được cung cấp bởi nhà cung cấp đã chọn.",
-          "placeholderWithOptions": "Tìm kiếm hoặc chọn một mô hình",
-          "placeholderNoOptions": "Nhập tên mô hình",
-          "refreshModels": "Làm mới mô hình"
+      "autocorreccion": {
+        "title": "Tự sửa lời khi nói",
+        "description": "Nếu bạn tự sửa lời khi đang đọc chính tả — “không, xin lỗi”, “ý tôi là” — văn bản sẽ ra đã được sửa. Theo quy tắc, tức thì và ngoại tuyến: không dùng mô hình AI nào. Nó chỉ thay phần bạn đã sửa, không bao giờ tự xóa, và khi không chắc thì không đụng gì cả. Bật sẵn.",
+        "ejemplo": "Ví dụ: “Đặt lịch họp vào thứ Ba… à không, xin lỗi, thứ Tư” → “Đặt lịch họp vào thứ Tư.”",
+        "sustitucionTitle": "Cụm từ báo hiệu sửa",
+        "sustitucionDescription": "Những gì bạn nói để thay thế điều vừa nói (ví dụ “à không”, “ý tôi là”). Chỉ thay khi tìm thấy một đoạn tương đương trước cụm từ đó — cùng thứ trong tuần, tháng, giờ, con số hoặc tên. Nếu không tìm thấy, nó không đổi gì.",
+        "placeholder": "Thêm cụm từ",
+        "add": "Thêm",
+        "remove": "Xóa {{senal}}",
+        "duplicate": "“{{senal}}” đã có rồi",
+        "showDefaults": "Dùng mặc định",
+        "resetDefaults": "Về mặc định",
+        "disable": "Tắt cấp độ",
+        "mode": {
+          "defaults": "Mặc định",
+          "custom": "Của tôi"
         }
       },
-      "prompts": {
-        "title": "Prompt",
-        "selectedPrompt": {
-          "title": "Prompt đã chọn",
-          "description": "Chọn một mẫu để tinh chỉnh bản ghi hoặc tạo mới. Sử dụng ${output} trong văn bản prompt để tham chiếu bản ghi đã chụp."
-        },
-        "noPrompts": "Không có prompt nào",
-        "selectPrompt": "Chọn một prompt",
-        "createNew": "Tạo Prompt mới",
-        "promptLabel": "Nhãn Prompt",
-        "promptLabelPlaceholder": "Nhập tên prompt",
-        "promptInstructions": "Hướng dẫn Prompt",
-        "promptInstructionsPlaceholder": "Viết hướng dẫn để chạy sau khi chuyển đổi. Ví dụ: Cải thiện ngữ pháp và độ rõ ràng cho văn bản sau: ${output}",
-        "promptTip": "Mẹo: Sử dụng <code>${output}</code> để chèn văn bản đã chuyển đổi vào prompt của bạn.",
-        "updatePrompt": "Cập nhật Prompt",
-        "deletePrompt": "Xóa Prompt",
-        "createPrompt": "Tạo Prompt",
-        "cancel": "Hủy",
-        "selectToEdit": "Chọn một prompt ở trên để xem và chỉnh sửa chi tiết.",
-        "createFirst": "Nhấn 'Tạo Prompt mới' ở trên để tạo prompt xử lý sau đầu tiên của bạn."
+      "emojiDictado": {
+        "title": "Emoji bằng giọng nói",
+        "description": "Nói từ “emoji” rồi đọc tên của nó, emoji sẽ được chèn vào. Dựa trên bảng tra cứu, tức thì và ngoại tuyến: không có mô hình AI nào tham gia. Không có từ đó thì không có gì thay đổi, và nếu tên không được nhận ra thì văn bản vẫn giữ đúng như bạn đã đọc.",
+        "ejemplo": "Ví dụ: “gửi cho họ một emoji like” → “gửi cho họ một 👍”. Cũng dùng được “emoji lửa” → 🔥.",
+        "verDiccionario": "Xem tên gọi",
+        "copiado": "Đã sao chép {{emoji}}",
+        "noCopiado": "Không sao chép được",
+        "diccionario": {
+          "titulo": "Tên các emoji",
+          "ayuda": "Nói tên có kèm “emoji” phía trước. Chạm để sao chép.",
+          "buscar": "Tìm một tên gọi",
+          "copiar": "Sao chép",
+          "cargando": "Đang tải…",
+          "error": "Không tải được danh sách.",
+          "sinResultados": "Không có tên nào khớp.",
+          "total": "{{total}} tên gọi",
+          "recorte": "Đang hiện {{mostrados}} trong {{total}}. Hãy thu hẹp tìm kiếm."
+        }
+      },
+      "voiceActivityDetection": {
+        "title": "Phát hiện giọng nói",
+        "description": "Filter silence from recordings. Streaming-capable models use a longer VAD tail; disabling VAD records raw audio."
+      },
+      "dictionary": {
+        "title": "Từ điển dự án",
+        "description": "Mô hình giọng nói không biết biệt ngữ trong mã của bạn. Abrax học nó bằng cách lập chỉ mục dự án đang hoạt động: định danh, nhánh git và tên tệp sẽ sửa bản đọc chính tả.",
+        "pickProject": "Chọn dự án",
+        "changeProject": "Đổi dự án",
+        "pickTitle": "Chọn thư mục dự án",
+        "reindex": "Lập chỉ mục lại",
+        "enable": "Học từ dự án này",
+        "enableDescription": "Khi bật, các thuật ngữ đã lập chỉ mục sẽ sửa bản đọc chính tả. Tắt để tạm dừng mà không mất chỉ mục.",
+        "termCount": "{{count}} thuật ngữ đã lập chỉ mục",
+        "noIndex": "Chưa lập chỉ mục",
+        "lastIndexed": "đã lập chỉ mục {{date}}",
+        "indexed": "Đã lập chỉ mục dự án: {{count}} thuật ngữ",
+        "indexError": "Lập chỉ mục thất bại: {{error}}",
+        "privacy": "Chỉ mục nằm trên đĩa của bạn. Không có gì từ mã của bạn rời khỏi máy tính này.",
+        "source": {
+          "code": "từ kho mã",
+          "branch": "nhánh git",
+          "path": "tên tệp"
+        }
+      },
+      "customReplacements": {
+        "title": "Thay thế chính xác",
+        "description": "Khi mô hình luôn nghe nhầm một từ, hãy sửa nó một cách xác định: khớp token chính xác, phân biệt hoa thường.",
+        "fromPlaceholder": "Nghe thấy",
+        "toPlaceholder": "Thay bằng",
+        "add": "Thêm",
+        "remove": "Xóa {{word}}",
+        "duplicate": "Đã tồn tại thay thế cho \"{{word}}\""
+      },
+      "memoria": {
+        "title": "Bộ nhớ sửa lỗi",
+        "description": "ABRAX học khi bạn sửa bản ghi trong Lịch sử: xóa một từ, gõ từ đúng, và lần sau nó sẽ được viết đúng. Tất cả đều cục bộ.",
+        "empty": "Chưa có sửa lỗi nào được học. Chỉnh sửa bản ghi trong Lịch sử (biểu tượng bút chì) và ABRAX sẽ học từ thay đổi của bạn.",
+        "forget": "Quên sửa lỗi này",
+        "clearAll": "Quên tất cả",
+        "enSitioTitle": "Học ngay nơi bạn đọc chính tả",
+        "enSitioDescription": "Khi bắt đầu đọc chính tả, ABRAX đọc lại ô bạn đang viết (qua trợ năng, 100% cục bộ) và học từ những sửa đổi bạn đã làm ở đó với lần đọc trước. Không có gì trong ô được lưu hay rời khỏi thiết bị."
       }
     },
     "history": {
@@ -452,7 +533,17 @@
       "retranscribe": "Phiên âm lại",
       "retranscribeError": "Không thể phiên âm lại. Vui lòng thử lại.",
       "transcribing": "Đang phiên âm...",
-      "transcriptionFailed": "Phiên âm thất bại. Bạn có thể phiên âm lại bằng biểu tượng thử lại."
+      "transcriptionFailed": "Phiên âm thất bại. Bạn có thể phiên âm lại bằng biểu tượng thử lại.",
+      "loadError": "Không thể tải lịch sử. Các bản đọc chính tả vẫn còn trên đĩa.",
+      "edit": {
+        "action": "Chỉnh sửa bản ghi",
+        "save": "Lưu",
+        "cancel": "Hủy",
+        "hint": "Khi lưu, Bộ nhớ sẽ học các sửa lỗi của bạn.",
+        "saved": "Đã cập nhật bản ghi.",
+        "learned": "Bộ nhớ: đã học {{pares}}",
+        "error": "Không thể lưu chỉnh sửa."
+      }
     },
     "debug": {
       "title": "Gỡ lỗi",
@@ -510,10 +601,6 @@
         "title": "Micrô chế độ gập",
         "description": "Micrô sử dụng khi nắp laptop được đóng"
       },
-      "postProcessingToggle": {
-        "label": "Xử lý sau",
-        "description": "Bật tinh chỉnh văn bản bằng AI sau khi chuyển đổi"
-      },
       "muteWhileRecording": {
         "label": "Tắt tiếng khi ghi âm",
         "description": "Tắt tiếng âm thanh hệ thống trong khi ghi âm"
@@ -568,9 +655,9 @@
         "button": "Xem trên GitHub"
       },
       "supportDevelopment": {
-        "title": "Hỗ trợ phát triển",
-        "description": "Giúp chúng tôi tiếp tục xây dựng Abrax",
-        "button": "Quyên góp"
+        "title": "Ủng hộ Handy (dự án gốc)",
+        "description": "Các khoản quyên góp được gửi tới CJ Pais, tác giả của Handy — dự án mà ABRAX được fork từ đó.",
+        "button": "Ủng hộ Handy"
       },
       "acknowledgments": {
         "title": "Lời cảm ơn",
@@ -583,11 +670,21 @@
           "title": "ggml",
           "description": "Suy luận hiệu suất cao của mô hình nhận dạng giọng nói tự động Whisper của OpenAI",
           "details": "Abrax sử dụng ggml để xử lý chuyển đổi giọng nói thành văn bản nhanh, cục bộ. Cảm ơn công việc tuyệt vời của Georgi Gerganov và các cộng tác viên."
+        },
+        "modelos": {
+          "title": "Mô hình nhận dạng giọng nói",
+          "description": "Các mô hình được tải xuống theo yêu cầu và không nằm trong bộ cài đặt. Mỗi mô hình giữ giấy phép riêng; những mô hình theo CC-BY yêu cầu ghi công, và phần ghi công được nêu tại đây. Toàn văn có trong LICENSES-THIRD-PARTY.md."
         }
       },
       "whatsNewUpdates": {
         "label": "Hiển thị điểm mới",
         "description": "Hiển thị ghi chú phát hành sau khi Abrax cập nhật"
+      }
+    },
+    "streaming": {
+      "systemAudio": {
+        "label": "Thu âm thanh hệ thống",
+        "description": "Ghi lại những gì đang phát trên máy —một buổi học, một video, một cuộc họp— thay vì micrô. Cần một mô hình hợp với âm thanh hệ thống; nếu mô hình đang dùng không hợp, Abrax sẽ đổi sang mô hình phù hợp."
       }
     }
   },
@@ -611,7 +708,14 @@
     "open": "Mở",
     "copy": "Sao chép",
     "clear": "Xóa",
-    "noOptionsFound": "Không tìm thấy tùy chọn"
+    "noOptionsFound": "Không tìm thấy tùy chọn",
+    "retry": "Thử lại",
+    "play": "Phát",
+    "pause": "Tạm dừng",
+    "seek": "Vị trí phát",
+    "moreInfo": "Thông tin thêm",
+    "selectOption": "Chọn một tùy chọn…",
+    "systemDefault": "Mặc định"
   },
   "accessibility": {
     "permissionsDescription": "Abrax cần quyền truy cập để gõ văn bản đã chuyển đổi.",
@@ -627,13 +731,37 @@
       "linux": "Cấp quyền truy cập micrô trong cài đặt âm thanh hoặc quyền riêng tư của hệ thống."
     },
     "noInputDeviceTitle": "Không tìm thấy micrô",
+    "recordingNoAudioTitle": "No audio detected",
     "noInputDevice": "Không phát hiện thiết bị đầu vào âm thanh nào. Vui lòng kết nối micrô hoặc tai nghe và thử lại.",
     "recordingFailed": "Không thể bắt đầu ghi âm: {{error}}",
     "modelLoadFailed": "Không thể tải mô hình: {{model}}",
     "modelLoadFailedUnknown": "mô hình không xác định",
     "pasteFailedTitle": "Không thể dán văn bản",
     "pasteFailed": "Không thể dán văn bản vào ứng dụng đang hoạt động.",
-    "transcriptionFailedTitle": "Phiên âm thất bại"
+    "transcriptionFailedTitle": "Phiên âm thất bại",
+    "recordingFailedTitle": "Ghi âm thất bại",
+    "modelLoadFailedTitle": "Không tải được mô hình",
+    "modelDownloadFailedTitle": "Tải mô hình thất bại",
+    "center": {
+      "title": "Thông báo gần đây ({{count}})",
+      "dismiss": "Bỏ qua",
+      "toggle": "Hiện tất cả thông báo"
+    },
+    "recordingTooShortTitle": "Hầu như không ghi được gì",
+    "recordingTooShort": "Bản ghi kéo dài chưa tới một giây. Nếu bạn dùng phím tắt, hãy giữ {{atajo}} trong khi nói.",
+    "recordingTooShortNoBinding": "Bản ghi kéo dài chưa tới một giây. Hãy nói một lúc trước khi dừng.",
+    "transcriptionEmptyTitle": "Không nghe được gì",
+    "transcriptionEmpty": "Không nhận ra từ nào. Hãy thử lại, nói to hơn một chút hoặc gần hơn.",
+    "sistemaSinModeloAptoTitle": "Cần một mô hình tốt hơn",
+    "sistemaSinModeloApto": "Đã thu được âm thanh hệ thống, nhưng mô hình hiện tại không nhận ra giọng nói trong cuộc họp hay video. Hãy tải Nemotron Streaming 3.5 (716 MB) hoặc Whisper Large v3 Turbo (845 MB) trong phần Mô hình, và Abrax sẽ tự chuyển sang dùng mô hình đó.",
+    "sistemaSinModeloAptoDescargar": "Tải xuống ({{mb}} MB)",
+    "shortcutRegistrationTitle": "Không thể bật phím tắt",
+    "shortcutRegistration": "Abrax không đăng ký được phím tắt. Hãy khởi động lại; nếu vẫn vậy, đặt phím tắt khác trong Cài đặt → Chung.",
+    "atajoOcupado": "Một ứng dụng khác đang dùng phím tắt này: {{atajos}}. Hãy đổi trong Cài đặt để nó hoạt động.",
+    "atajoOcupadoCambiar": "Đổi phím tắt",
+    "sistemaModeloCambiadoTitle": "Đã đổi mô hình cho âm thanh hệ thống",
+    "sistemaModeloCambiado": "Abrax đã chuyển sang {{modelo}}, mô hình hiểu được âm thanh hệ thống. Mô hình đó không hiện chữ khi bạn đang nói, cũng không hiện số từ mỗi phút: mọi thứ xuất hiện khi bạn thả phím. Muốn chữ trực tiếp, hãy tải Nemotron Streaming 3.5 (716 MB) trong Mô hình.",
+    "descargaIniciada": "Đang tải mô hình. Xem trong Mô hình."
   },
   "appLanguage": {
     "title": "Ngôn ngữ ứng dụng",
@@ -648,14 +776,352 @@
       "dark": "Tối"
     }
   },
+  "palette": {
+    "title": "Bảng màu",
+    "description": "Chọn bảng màu của Abrax. Imperial vốn là giao diện tối: khi đang bật, chế độ tối sẽ được áp dụng bắt buộc.",
+    "options": {
+      "abrax": "ABRAX",
+      "imperial": "Imperial",
+      "escuderia": "Escudería"
+    }
+  },
   "overlay": {
     "transcribing": "Đang chuyển đổi...",
-    "processing": "Đang xử lý..."
+    "processing": "Đang xử lý...",
+    "leyendo": "Đang đọc to",
+    "preparando": "Đang chuẩn bị đọc"
   },
   "whatsNew": {
     "title": "Điểm mới trong Abrax v{{version}}"
   },
+  "correccion": {
+    "motor": {
+      "title": "Công cụ sửa lỗi",
+      "description": "Dọn dẹp nội dung đọc giữa bước phiên âm và dán. Tắt giữ nguyên mọi thứ như đã phiên âm. Chỉ quy tắc áp dụng các sửa lỗi tất định tức thì.",
+      "options": {
+        "solo_reglas": "Chỉ quy tắc",
+        "desactivado": "Tắt"
+      }
+    },
+    "modo": {
+      "title": "Mức sửa lỗi",
+      "description": "Nguyên văn chỉ sửa khoảng trắng và chữ hoa đầu câu. Sạch làm thêm: ký hiệu (“năm phần trăm” → 5%), dấu bị đọc sót, email và đường dẫn, lặp từ (“rồi rồi”) và — nếu bạn để bật bên dưới — số viết bằng chữ số. Tự sửa lời nói không phụ thuộc vào đây: nó có công tắc riêng.",
+      "options": {
+        "literal": "Nguyên văn",
+        "limpio": "Gọn gàng"
+      }
+    },
+    "numeros": {
+      "title": "Số viết bằng chữ số",
+      "description": "Đổi số bạn đọc thành chữ số: «mười hai nghìn tám trăm» → 12800, «lúc mười bảy giờ ba mươi» → 17:30. Đổi TẤT CẢ, không chỉ số kỹ thuật, nên «hai phút» thành «2 phút». Thích viết chữ? Hãy tắt — phần còn lại của «Sạch» vẫn chạy."
+    }
+  },
+  "pruebaMic": {
+    "title": "Kiểm tra micro",
+    "description": "Ghi 3 giây đúng những gì mô hình sẽ nghe (16 kHz, không VAD), phát lại và đưa ra kết luận với mức thực. Đồng thời cho biết thiết bị nào thực sự đứng sau Default.",
+    "boton": "Ghi 3 giây",
+    "grabando": "Đang ghi…",
+    "niveles": "RMS {{rms}} dBFS · pico {{pico}} dBFS",
+    "nivelClip": " · clip {{clip}}%",
+    "veredicto": {
+      "sin_senal": "Không có tín hiệu — micro không truyền âm thanh",
+      "muy_bajo": "Rất thấp — ở mức này việc đọc chính tả sẽ thất bại",
+      "bajo": "Thấp — hoạt động nhưng độ chính xác giảm",
+      "sano": "Mức khỏe mạnh",
+      "saturado": "Vỡ tiếng — micro đang bão hòa"
+    },
+    "dispositivo": "Micro: {{nombre}} ({{contexto}})",
+    "esElDefault": "mặc định hệ thống",
+    "esElegido": "được chọn trong cài đặt"
+  },
+  "shell": {
+    "title": "Kiểu cửa sổ",
+    "description": "Chọn hình dạng cửa sổ Abrax. Cổ điển là cửa sổ cài đặt tiêu chuẩn; Quiet là bảng tối tối giản với quả cầu ở màn hình chính. Khung cửa sổ sẽ cập nhật xong khi bạn khởi động lại Abrax.",
+    "options": {
+      "classic": "Cổ điển",
+      "retro": "Retro",
+      "quiet": "Quiet",
+      "bancada": "Karting"
+    }
+  },
+  "bancada": {
+    "local": "Procesamiento local · 0% Nube",
+    "tray": "Enviar a la bandeja",
+    "min": "Minimizar",
+    "close": "Cerrar",
+    "nav": {
+      "tablero": "TABLERO",
+      "bitacora": "BITÁCORA",
+      "setup": "SETUP"
+    },
+    "pitRadio": "PIT RADIO",
+    "lcdReady": "En boxes · listo",
+    "lcdListening": "Escuchando…",
+    "launch": "TU LARGADA · {{atajo}}",
+    "start": "Arrancar dictado",
+    "stop": "Detener dictado",
+    "dictate": "Dictar",
+    "stopping": "Detener",
+    "ignitionStart": "START",
+    "ignitionStop": "STOP",
+    "appearance": "APARIENCIA",
+    "speakers": "Hablantes",
+    "systemAudio": "System audio",
+    "speakersAuto": "Auto",
+    "speakersN": "{{n}}",
+    "mergeInto": "Actually is…",
+    "resetSpeakers": "Reset",
+    "wpmUnit": "PAL/MIN",
+    "copied": "Copiado al portapapeles",
+    "on": "ON",
+    "off": "OFF",
+    "btn": {
+      "cancel": "Cancelar",
+      "copy": "Copiar",
+      "clear": "Limpiar",
+      "translate": "Traducir → EN",
+      "fillers": "Muletillas",
+      "log": "Bitácora"
+    },
+    "dial": {
+      "vad": "VAD",
+      "palette": "Paleta"
+    },
+    "lamp": {
+      "idle": "RALENTÍ",
+      "rec": "REC",
+      "transcribing": "TRANSCRIBIENDO",
+      "polishing": "PULIENDO",
+      "error": "FALLA"
+    },
+    "estado": {
+      "idle": "Ralentí",
+      "rec": "Grabando",
+      "transcribing": "Transcribiendo",
+      "polishing": "Puliendo",
+      "error": "Falla"
+    },
+    "speakerLabel": "Người nói {{n}}"
+  },
+  "retro": {
+    "menu": "Menu Abrax",
+    "titleMain": "ABRAX · CHẾ ĐỘ RETRO",
+    "titleSettings": "ABRAX · CÀI ĐẶT NHANH",
+    "titleHistory": "ABRAX · LỊCH SỬ",
+    "fold": "Thu gọn",
+    "close": "Đóng",
+    "marquee": "ABRAX ··· HÃY NÓI ··· CHẾ ĐỘ RETRO ··· 100% CỤC BỘ ··· ƯU TIÊN TIẾNG TÂY BAN NHA ···",
+    "lamp": {
+      "model": "Mô hình",
+      "local": "CỤC BỘ",
+      "filler": "TỪ ĐỆM",
+      "dict": "TỪ ĐIỂN",
+      "ptt": "PTT",
+      "vad": "VAD",
+      "translate": "DỊCH",
+      "sphere": "QUẢ CẦU"
+    },
+    "dictate": "Đọc chép",
+    "stop": "Dừng",
+    "settings": "Cài đặt nhanh",
+    "history": "Lịch sử",
+    "compiler": "Trình biên dịch prompt",
+    "sections": "PHẦN ▾",
+    "slider": {
+      "buffer": "BUFFER",
+      "volume": "VOL",
+      "threshold": "NGƯỠNG"
+    },
+    "emptyHistory": "Chưa có bản đọc nào — giữ phím tắt và nói.",
+    "copyHint": "Nhấp đúp để sao chép",
+    "copy": "SAO CHÉP",
+    "save": "★ LƯU",
+    "delete": "XÓA",
+    "compile": "✦ BIÊN DỊCH",
+    "count": "{{n}} bản đọc · CỤC BỘ",
+    "copied": "Đã sao chép vào bộ nhớ tạm",
+    "menuSections": "PHẦN",
+    "menuWindows": "CỬA SỔ",
+    "toClassic": "Quay lại Cổ điển",
+    "theme": "Giao diện",
+    "footer": "CHẾ ĐỘ RETRO — một skin ABRAX · vẫn cửa sổ trong suốt",
+    "tray": "Send to tray",
+    "minimize": "Minimize",
+    "localBadge": "Xử lý cục bộ · 0% đám mây",
+    "infoPalette": "Bảng màu",
+    "infoLanguage": "Ngôn ngữ",
+    "infoFillers": "Từ đệm",
+    "infoTranslate": "Dịch",
+    "infoAutoVoice": "Giọng tự động",
+    "infoVisual": "Hiển thị",
+    "words": "{{n}} từ",
+    "actCopy": "Sao chép",
+    "actClear": "Xóa",
+    "emptyTranscriptions": "Chưa có bản ghi nào.",
+    "activeModel": "MÔ HÌNH ĐANG DÙNG",
+    "localFull": "Xử lý 100% cục bộ · Không đám mây",
+    "backToClassic": "QUAY LẠI GIAO DIỆN CỔ ĐIỂN"
+  },
   "logo": {
     "tagline": "« Di la <accent>palabra</accent>. »"
+  },
+  "escucha": {
+    "title": "VOX",
+    "openFile": "Mở tệp…",
+    "readClipboard": "Đọc clipboard",
+    "play": "Đọc",
+    "pause": "Tạm dừng",
+    "pauseHint": "Tạm dừng ở cuối câu hiện tại",
+    "resume": "Tiếp tục",
+    "stop": "Dừng",
+    "speed": "Tốc độ",
+    "voiceProse": "Giọng văn xuôi",
+    "voiceCode": "Giọng mã",
+    "noVoices": "Không tìm thấy giọng đọc hệ thống",
+    "empty": "Mở một tệp hoặc đọc clipboard để bắt đầu.",
+    "engineUnavailable": "Công cụ đọc của hệ thống không khả dụng.",
+    "errorRead": "Không thể đọc nội dung.",
+    "errorSpeak": "Không thể phát bài đọc.",
+    "escHint": "Esc dừng việc đọc.",
+    "clipboard": "Clipboard",
+    "clipboardEmpty": "Clipboard không có văn bản.",
+    "fileFilter": "Văn bản, Markdown hoặc mã",
+    "sentences": "{{total}} câu",
+    "verbosity": "Ký hiệu",
+    "verbosityNatural": "Tự nhiên (ít nhiễu)",
+    "verbosityLiteral": "Nguyên văn (mọi ký hiệu)"
+  },
+  "tts": {
+    "voiceLangEs": "Tiếng Tây Ban Nha",
+    "voiceLangEn": "Tiếng Anh",
+    "voiceSettings": "Cài đặt giọng nói",
+    "speed": "Tốc độ",
+    "pitch": "Cao độ",
+    "pitchLow": "Thấp",
+    "pitchNormal": "Bình thường",
+    "pitchHigh": "Cao",
+    "pitchHint": "Cao độ chỉ áp dụng cho giọng nói trực tuyến.",
+    "vram": "({{gb}} GB VRAM)",
+    "descOnline": "Giọng nơ-ron của Microsoft (Azure). Không cục bộ: gửi văn bản qua internet.",
+    "onlineWarning": "cần internet · văn bản rời khỏi thiết bị",
+    "preparingVoice": "Đang chuẩn bị {{engine}}… lần đầu mất vài giây.",
+    "engineSystem": "Giọng hệ thống",
+    "title": "Công cụ giọng nói",
+    "localBadge": "100% cục bộ",
+    "detecting": "Đang nhận diện thiết bị của bạn…",
+    "detected": "Đã nhận diện thiết bị của bạn:",
+    "recommendation": "Chúng tôi đề xuất {{engine}} để có giọng nói tốt nhất — cục bộ và ngoại tuyến.",
+    "activeEngine": "Công cụ đang dùng: {{engine}}",
+    "detectFailed": "Không thể nhận diện phần cứng; sẽ dùng giọng nói của hệ thống.",
+    "useRecommended": "Dùng công cụ đề xuất",
+    "chooseOther": "Chọn công cụ khác",
+    "redetect": "Nhận diện lại",
+    "testVoice": "Nghe thử giọng",
+    "sampleTextEs": "Hola, soy la voz de Abrax. Di la palabra y yo la leo por ti.",
+    "sampleTextEn": "Hi, I'm the voice of Abrax. Say the word and I'll read it for you.",
+    "voice": "Giọng nói",
+    "noGpu": "không có GPU riêng",
+    "available": "Có sẵn",
+    "unavailable": "Không khả dụng",
+    "needsGpu": "cần GPU tương thích (NVIDIA hoặc Apple Silicon)",
+    "needsDownload": "cần tải xuống công cụ",
+    "recommended": "Được đề xuất",
+    "activeShort": "Đang dùng",
+    "use": "Dùng",
+    "download": "Bật",
+    "downloading": "Đang tải xuống…",
+    "installed": "Đã cài đặt công cụ",
+    "errorDownload": "Không thể tải xuống công cụ.",
+    "errorSetEngine": "Không thể chuyển công cụ.",
+    "descSystem": "Giọng nói của hệ điều hành. Luôn có sẵn, không cần tải xuống.",
+    "descPiper": "Giọng nói nơ-ron tiếng Tây Ban Nha, nhẹ, chạy trên CPU.",
+    "descKokoro": "Giọng nói nơ-ron chất lượng cao trên CPU."
+  },
+  "carpetaModelos": {
+    "titulo": "Models folder",
+    "cambiar": "Change",
+    "discoConNombre": "{{nombre}} ({{punto}})",
+    "removible": "· removable",
+    "espacio": "{{libre}} GB free of {{total}} GB",
+    "volverPorDefecto": "Back to the original folder",
+    "avisoNoMueve": "New downloads will go to this folder. Already-downloaded models stay where they were; if they don't show up, go back to the original folder or download them again here.",
+    "moverPregunta": "Chuyển các mô hình đã tải ({{gb}} GB) sang thư mục mới?",
+    "moverAhora": "Chuyển ngay",
+    "soloNuevas": "Chỉ tải xuống mới",
+    "cancelar": "Hủy",
+    "moviendo": "Đang chuyển {{archivo}}…",
+    "moverError": "Không thể hoàn tất việc chuyển: {{detalle}}. Không mất gì cả: những gì chưa chuyển vẫn còn trong thư mục cũ."
+  },
+  "quiet": {
+    "nav": {
+      "listen": "Nghe",
+      "shortcuts": "Phím tắt",
+      "streaming": "Streaming",
+      "transcriptions": "Transcriptions",
+      "models": "Models",
+      "settings": "Settings",
+      "more": "Thêm"
+    },
+    "ready": "ABRAX is ready",
+    "holdHint": "Giữ <k>{{atajo}}</k> trong khi nói, rồi thả ra khi xong.",
+    "holdHintNoBinding": "Đặt một phím tắt trong Cài đặt và giữ nó trong khi nói.",
+    "start": "Start transcription",
+    "stop": "Stop",
+    "recent": "Recent transcriptions",
+    "empty": "No transcriptions yet. Hold the shortcut and say the word.",
+    "local": "Local processing",
+    "noCloud": "No cloud connection",
+    "min": "Minimize",
+    "max": "Maximize",
+    "close": "Close",
+    "tray": "Send to tray",
+    "dictando": "Đang nghe bạn… thả ra khi xong",
+    "panel": {
+      "modelo": "Mô hình",
+      "sinModelo": "Không có mô hình",
+      "descargar": "tải xuống",
+      "descargando": "Đang tải {{modelo}} · {{pct}}%",
+      "voz": "Giọng nói",
+      "hint": {
+        "fillers": "Bỏ các từ đệm («à», «ừm») khỏi những gì bạn đọc.",
+        "autocorreccion": "Nếu bạn tự sửa khi nói («không, xin lỗi»), văn bản ra đã được sửa.",
+        "emoji": "Nói «emoji» rồi tên của nó, và nó được chèn vào. Theo bảng, không dùng AI.",
+        "systemAudio": "Ghi lại những gì đang phát trên máy thay vì micrô. Nếu mô hình đang dùng không hợp, Abrax sẽ đổi sang mô hình phù hợp."
+      },
+      "sinModeloSistema": "Hãy tải một trong các mô hình này để thu được âm thanh hệ thống.",
+      "elegirModelo": "Chọn mô hình",
+      "usaraSistema": "Chưa chọn. Nếu bạn bật âm thanh hệ thống, Abrax sẽ dùng «{{modelo}}».",
+      "descargado": "đã tải"
+    },
+    "modo": {
+      "grupo": {
+        "gesto": "Bắt đầu thế nào",
+        "microfono": "Micrô của bạn",
+        "texto": "Điều gì xảy ra với văn bản",
+        "pegado": "Viết vào đâu",
+        "salida": "Phát ra ở đâu",
+        "fuente": "Âm thanh đến từ đâu",
+        "apariencia": "Giao diện"
+      },
+      "streaming": {
+        "que": "Ghi lại những gì đang phát trên máy —một buổi học, một video, một cuộc họp— thay vì micrô.",
+        "resto": "Phần còn lại —tự sửa, từ đệm, từ điển, nơi dán— giống hệt trong Nghe: đặt một lần là dùng cho cả hai."
+      },
+      "vox": {
+        "que": "Đọc to phần văn bản bạn đang chọn, trong bất kỳ ứng dụng nào.",
+        "como": "Nhấn <k>{{atajo}}</k> để bắt đầu đọc; nhấn lần nữa để dừng."
+      },
+      "escucha": {
+        "que": "Bạn nói và văn bản hiện ra ngay chỗ bạn đang gõ. Mọi thứ diễn ra trên máy của bạn — không có gì gửi lên mạng."
+      }
+    }
+  },
+  "soundPicker": {
+    "custom": "Tùy chỉnh",
+    "preview": "Nghe thử chủ đề âm thanh (bắt đầu và kết thúc)"
+  },
+  "vox": {
+    "atajoHint": "Với VOX, nhấn <k>{{atajo}}</k> và nó đọc to văn bản bạn đang chọn trong bất kỳ ứng dụng nào.",
+    "atajoSinBinding": "Với VOX, hãy đặt phím tắt trong Cài đặt và nó sẽ đọc to văn bản bạn chọn."
   }
 }

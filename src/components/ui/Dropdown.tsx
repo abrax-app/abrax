@@ -5,6 +5,15 @@ export interface DropdownOption {
   value: string;
   label: string;
   disabled?: boolean;
+  /**
+   * Marca a la izquierda del rótulo (p. ej. ✓ descargado / ↓ hay que
+   * descargar). Es DECORATIVA: lo que diga tiene que ir también en `estado`,
+   * porque un icono a secas no lo lee un lector de pantalla ni lo entiende
+   * quien no distinga los colores.
+   */
+  icon?: React.ReactNode;
+  /** Lo que significa el icono, en palabras: va al nombre accesible y al hint. */
+  estado?: string;
 }
 
 interface DropdownProps {
@@ -15,6 +24,12 @@ interface DropdownProps {
   placeholder?: string;
   disabled?: boolean;
   onRefresh?: () => void;
+  /**
+   * Nombre accesible cuando NO hay rótulo visible al lado. Sin esto, un
+   * desplegable suelto se anuncia solo con su valor («Nemotron Streaming 3.5»)
+   * y no dice de qué es. Mismo patrón que ya usa `Select`.
+   */
+  ariaLabel?: string;
 }
 
 export const Dropdown: React.FC<DropdownProps> = ({
@@ -22,9 +37,10 @@ export const Dropdown: React.FC<DropdownProps> = ({
   selectedValue,
   onSelect,
   className = "",
-  placeholder = "Select an option...",
+  placeholder,
   disabled = false,
   onRefresh,
+  ariaLabel,
 }) => {
   const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
@@ -69,8 +85,23 @@ export const Dropdown: React.FC<DropdownProps> = ({
         }`}
         onClick={handleToggle}
         disabled={disabled}
+        aria-label={
+          ariaLabel && selectedOption
+            ? `${ariaLabel}: ${selectedOption.label}`
+            : ariaLabel
+        }
+        title={ariaLabel}
       >
-        <span className="truncate">{selectedOption?.label || placeholder}</span>
+        {/* El hueco se ve VACÍO cuando lo está: con el mismo peso y color que
+            un valor elegido, un desplegable sin elegir se leía como elegido. */}
+        <span className="flex items-center gap-1.5 min-w-0">
+          {selectedOption?.icon}
+          <span
+            className={`truncate ${selectedOption ? "" : "font-normal text-text/45"}`}
+          >
+            {selectedOption?.label || placeholder || t("common.selectOption")}
+          </span>
+        </span>
         <svg
           className={`w-4 h-4 transition-transform duration-200 ${isOpen ? "transform rotate-180" : ""}`}
           fill="none"
@@ -103,9 +134,24 @@ export const Dropdown: React.FC<DropdownProps> = ({
                 } ${option.disabled ? "opacity-50 cursor-not-allowed" : ""}`}
                 onClick={() => handleSelect(option.value)}
                 disabled={option.disabled}
+                // Una línea por opción, como ya hacía el botón de arriba: el
+                // ajuste anterior partía «Whisper Large v3 Turbo · descargar»
+                // en dos renglones y una lista de cuatro ocupaba ocho. Lo que
+                // no quepa sigue entero en el hint, no se pierde.
+                title={
+                  option.estado
+                    ? `${option.label} · ${option.estado}`
+                    : option.label
+                }
+                aria-label={
+                  option.estado
+                    ? `${option.label} · ${option.estado}`
+                    : undefined
+                }
               >
-                <span className="whitespace-normal break-words">
-                  {option.label}
+                <span className="flex items-center gap-1.5 min-w-0">
+                  {option.icon}
+                  <span className="truncate">{option.label}</span>
                 </span>
               </button>
             ))

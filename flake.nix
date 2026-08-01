@@ -1,5 +1,7 @@
 {
-  description = "Handy - A free, open source, and extensible speech-to-text application that works completely offline";
+  # Nix packaging is community-maintained and not officially supported:
+  # the core team does not test these expressions on every release.
+  description = "Abrax - A free, open source, and extensible speech-to-text application that works completely offline";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
@@ -86,8 +88,8 @@
           };
         in
         {
-          handy = pkgs.rustPlatform.buildRustPackage {
-            pname = "handy";
+          abrax = pkgs.rustPlatform.buildRustPackage {
+            pname = "abrax";
             inherit version;
             src = self;
 
@@ -174,14 +176,14 @@
 
             meta = {
               description = "A free, open source, and extensible speech-to-text application that works completely offline";
-              homepage = "https://github.com/cjpais/Handy";
+              homepage = "https://github.com/abrax-app/abrax";
               license = lib.licenses.mit;
-              mainProgram = "handy";
+              mainProgram = "abrax";
               platforms = supportedSystems;
             };
           };
 
-          default = self.packages.${system}.handy;
+          default = self.packages.${system}.abrax;
         }
       );
 
@@ -190,7 +192,7 @@
         { lib, pkgs, ... }:
         {
           imports = [ ./nix/module.nix ];
-          programs.handy.package = lib.mkDefault self.packages.${pkgs.stdenv.hostPlatform.system}.handy;
+          programs.abrax.package = lib.mkDefault self.packages.${pkgs.stdenv.hostPlatform.system}.abrax;
         };
 
       # Home-manager module for per-user service
@@ -198,7 +200,7 @@
         { lib, pkgs, ... }:
         {
           imports = [ ./nix/hm-module.nix ];
-          services.handy.package = lib.mkDefault self.packages.${pkgs.stdenv.hostPlatform.system}.handy;
+          services.abrax.package = lib.mkDefault self.packages.${pkgs.stdenv.hostPlatform.system}.abrax;
         };
 
       # Development shell for building from source
@@ -238,7 +240,7 @@
             XDG_DATA_DIRS = "${pkgs.gsettings-desktop-schemas}/share/gsettings-schemas/${pkgs.gsettings-desktop-schemas.name}:${pkgs.gtk3}/share/gsettings-schemas/${pkgs.gtk3.name}:${pkgs.hicolor-icon-theme}/share";
 
             shellHook = ''
-              echo "Handy development environment"
+              echo "Abrax development environment"
               bun install
               echo "Run 'bun run tauri dev' to start"
             '';

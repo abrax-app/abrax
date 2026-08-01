@@ -6,16 +6,23 @@
     "unloadModel": "Décharger le modèle",
     "model": "Modèle",
     "quit": "Quitter",
-    "cancel": "Annuler"
+    "cancel": "Annuler",
+    "errorTitle": "Abrax a rencontré un problème",
+    "errorRecording": "L'enregistrement n'a pas pu démarrer. Ouvrez Abrax pour en savoir plus.",
+    "errorTranscription": "La transcription a échoué. Ouvrez Abrax pour réessayer depuis l'historique.",
+    "errorPaste": "Le texte n'a pas pu être collé. Il est enregistré dans votre historique.",
+    "errorModelLoad": "Le modèle vocal n'a pas pu être chargé. Ouvrez Abrax pour en connaître la cause.",
+    "errorModelDownload": "Le téléchargement du modèle a échoué. Ouvrez Abrax pour réessayer.",
+    "show": "Show Abrax"
   },
   "sidebar": {
     "general": "Général",
     "models": "Modèles",
     "advanced": "Avancé",
-    "postProcessing": "Post-traitement",
     "history": "Historique",
     "debug": "Débogage",
-    "about": "À propos"
+    "about": "À propos",
+    "escucha": "VOX"
   },
   "onboarding": {
     "subtitle": "Pour commencer, choisissez un modèle de transcription",
@@ -46,11 +53,11 @@
         "name": "Whisper Large",
         "description": "Bonne précision, mais lent."
       },
-      "parakeet-tdt-0.6b-v2": {
+      "parakeet-tdt-0_6b-v2": {
         "name": "Parakeet V2",
         "description": "Anglais uniquement. Le meilleur modèle pour les anglophones."
       },
-      "parakeet-tdt-0.6b-v3": {
+      "parakeet-tdt-0_6b-v3": {
         "name": "Parakeet V3",
         "description": "Rapide et précis"
       },
@@ -93,6 +100,21 @@
       "cohere-int8": {
         "name": "Cohere",
         "description": "Un modèle volumineux, plus lent, mais très précis et multilingue."
+      },
+      "handy-computer_canary-180m-flash-gguf": {
+        "description": "Le plus léger et le plus rapide — se télécharge en moins d'une minute et tourne même sur un vieux portable. En échange, sur des phrases très courtes il ne comprend parfois rien."
+      },
+      "handy-computer_whisper-large-v3-turbo-gguf": {
+        "description": "Balanced — the everyday pick: understands 100 languages and doesn't keep you waiting."
+      },
+      "handy-computer_whisper-large-v3-gguf": {
+        "description": "Widest coverage — the big Whisper, the one everyone names. Slower, but complete."
+      },
+      "handy-computer_nemotron-3_5-asr-streaming-0_6b-gguf": {
+        "description": "Live — writes as you speak, word by word. This is the one that makes the sphere dance."
+      },
+      "handy-computer_cohere-transcribe-03-2026-gguf": {
+        "description": "Précision maximale — le plus exact du catalogue, en 14 langues. C'est celui que nous conseillons pour commencer. Il pèse 1,6 Go et demande une machine costaude."
       }
     },
     "errors": {
@@ -117,6 +139,15 @@
         "checkFailed": "Échec de la vérification des autorisations. Veuillez réessayer.",
         "requestFailed": "Échec de la demande d'autorisation. Veuillez réessayer."
       }
+    },
+    "emptyCatalog": "Aucun modèle disponible. Vérifiez le journal et redémarrez Abrax.",
+    "welcome": {
+      "pitch": "Parle et le texte apparaît, sur ta machine.",
+      "badgeLocal": "100% local",
+      "badgeNoCloud": "Sans cloud",
+      "badgeFree": "Gratuit",
+      "whyModel": "Pour t’entendre, Abrax doit télécharger un modèle vocal une seule fois. Ensuite, il marche hors ligne.",
+      "start": "Commencer"
     }
   },
   "modelSelector": {
@@ -151,7 +182,18 @@
     },
     "cancel": "Annuler",
     "cancelDownload": "Annuler le téléchargement",
-    "legacy": "Hérité"
+    "legacy": "Hérité",
+    "downloadFailed": "Échec du téléchargement",
+    "downloadFailedHelp": "Impossible de télécharger le modèle. Vérifie ta connexion et réessaie.",
+    "checkFailed": "Impossible de vérifier l'état du modèle",
+    "loadFailed": "Impossible de charger le modèle",
+    "switchFailed": "Impossible de changer de modèle",
+    "statusTitle": "État du modèle : {{estado}}",
+    "confirmDownload": {
+      "title": "Download model",
+      "body": "{{modelName}} — {{size}}\n\n{{description}}\n\nIt downloads once and stays on your machine. After that it works offline.",
+      "ok": "Download"
+    }
   },
   "settings": {
     "modelSettings": {
@@ -192,6 +234,10 @@
           "cancel": {
             "name": "Raccourci d'Annulation",
             "description": "Le raccourci clavier pour annuler l'enregistrement en cours."
+          },
+          "leer_seleccion": {
+            "name": "Lire la sélection à voix haute",
+            "description": "Lit à voix haute le texte que vous avez sélectionné dans n'importe quelle application. Appuyez à nouveau pour arrêter."
           },
           "transcribe_with_post_process": {
             "name": "Raccourci de post-traitement",
@@ -245,7 +291,10 @@
         "output": "Sortie",
         "transcription": "Transcription",
         "history": "Historique",
-        "experimental": "Expérimental"
+        "experimental": "Expérimental",
+        "dictionary": "Dictionnaire vivant",
+        "correccion": "Correction locale",
+        "memoria": "Mémoire"
       },
       "experimentalToggle": {
         "label": "Fonctionnalités Expérimentales",
@@ -278,7 +327,7 @@
       },
       "showTrayIcon": {
         "label": "Afficher l'icône de la barre",
-        "description": "Afficher l'icône de Abrax dans la barre système."
+        "description": "Afficher l'icône de Abrax dans la barre système. Sans elle, fermer la fenêtre quitte complètement Abrax (sur macOS, il reste dans le Dock)."
       },
       "overlay": {
         "style": {
@@ -287,7 +336,8 @@
           "options": {
             "none": "Aucune",
             "minimal": "Minimal",
-            "live": "Live"
+            "live": "Live",
+            "esfera": "Esfera"
           }
         },
         "position": {
@@ -296,6 +346,14 @@
           "options": {
             "bottom": "Bas",
             "top": "Haut"
+          }
+        },
+        "esferaModo": {
+          "title": "Mode Esfera",
+          "description": "Comment se comporte la sphère Esfera. Audio : la sphère réagit à votre voix. Mots : les mots que vous dictez volent vers la sphère, se lisent un instant et se dissolvent dans sa membrane (idéal avec un modèle en streaming, où les mots arrivent en direct pendant que vous parlez).",
+          "options": {
+            "audio": "Réactif à l'audio",
+            "palabras": "Mots vivants"
           }
         }
       },
@@ -322,6 +380,7 @@
       "clipboardHandling": {
         "title": "Gestion du presse-papiers",
         "description": "Ne pas modifier le presse-papiers préserve le contenu actuel de votre presse-papiers après la transcription. Copier dans le presse-papiers laisse le résultat de la transcription dans votre presse-papiers après le collage.",
+        "lockedByPasteMethod": "Locked by the paste method: pasting through the clipboard already leaves the transcription there. Choose Direct or None if you want your clipboard left untouched.",
         "options": {
           "dontModify": "Ne pas modifier le presse-papiers",
           "copyToClipboard": "Copier dans le presse-papiers"
@@ -380,63 +439,85 @@
         "resetDefaults": "Rétablir la liste par défaut",
         "disable": "Désactiver le filtre"
       },
-      "voiceActivityDetection": {
-        "title": "Voice Activity Detection",
-        "description": "Filter silence from recordings. Streaming-capable models use a longer VAD tail; disabling VAD records raw audio."
-      }
-    },
-    "postProcessing": {
-      "hotkey": {
-        "title": "Raccourci clavier"
-      },
-      "api": {
-        "title": "API (Compatible OpenAI)",
-        "provider": {
-          "title": "Fournisseur",
-          "description": "Sélectionnez un fournisseur compatible OpenAI."
-        },
-        "appleIntelligence": {
-          "unavailable": "Apple Intelligence n'est pas disponible sur cet appareil. Nécessite un Mac Apple Silicon exécutant macOS Tahoe (26.0) ou une version ultérieure avec Apple Intelligence activé dans les Préférences Système."
-        },
-        "baseUrl": {
-          "title": "URL de base",
-          "description": "URL de base de l'API pour le fournisseur sélectionné. Seul le fournisseur personnalisé peut être modifié.",
-          "placeholder": "https://api.openai.com/v1"
-        },
-        "apiKey": {
-          "title": "Clé API",
-          "description": "Clé API pour le fournisseur sélectionné.",
-          "placeholder": "sk-..."
-        },
-        "model": {
-          "title": "Modèle",
-          "descriptionCustom": "Fournissez l'identifiant du modèle attendu par votre point de terminaison personnalisé.",
-          "descriptionDefault": "Choisissez un modèle exposé par le fournisseur sélectionné.",
-          "placeholderWithOptions": "Rechercher ou sélectionner un modèle",
-          "placeholderNoOptions": "Tapez un nom de modèle",
-          "refreshModels": "Actualiser les modèles"
+      "autocorreccion": {
+        "title": "Autocorrection à voix haute",
+        "description": "Si vous vous corrigez à voix haute en dictant — « non, pardon », « je voulais dire » —, le texte sort déjà corrigé. Par règles, instantané et hors ligne : aucun modèle d’IA. Il remplace seulement ce que vous avez corrigé, n’efface jamais de lui-même et, en cas de doute, ne touche à rien. Activé par défaut.",
+        "ejemplo": "Exemple : « Programme la réunion pour mardi… non, pardon, pour mercredi » → « Programme la réunion pour mercredi. »",
+        "sustitucionTitle": "Signaux de correction",
+        "sustitucionDescription": "Ce que vous dites pour remplacer ce que vous venez de dire (p. ex. « non, pardon », « enfin »). Le remplacement n'a lieu que si un segment équivalent est trouvé avant le signal : même jour, même mois, même heure, même nombre ou même nom. Sinon, rien n'est modifié.",
+        "placeholder": "Ajouter un signal",
+        "add": "Ajouter",
+        "remove": "Supprimer {{senal}}",
+        "duplicate": "« {{senal}} » existe déjà",
+        "showDefaults": "Utiliser ceux d'origine",
+        "resetDefaults": "Revenir à ceux d'origine",
+        "disable": "Désactiver le niveau",
+        "mode": {
+          "defaults": "Celles d’origine",
+          "custom": "Les miennes"
         }
       },
-      "prompts": {
-        "title": "Prompt",
-        "selectedPrompt": {
-          "title": "Prompt sélectionné",
-          "description": "Sélectionnez un modèle pour affiner les transcriptions ou créez-en un nouveau. Utilisez ${output} dans le texte du prompt pour référencer la transcription capturée."
-        },
-        "noPrompts": "Aucun prompt disponible",
-        "selectPrompt": "Sélectionner un prompt",
-        "createNew": "Créer un nouveau prompt",
-        "promptLabel": "Libellé du prompt",
-        "promptLabelPlaceholder": "Entrez le nom du prompt",
-        "promptInstructions": "Instructions du prompt",
-        "promptInstructionsPlaceholder": "Écrivez les instructions à exécuter après la transcription. Exemple : Améliorer la grammaire et la clarté du texte suivant : ${output}",
-        "promptTip": "Astuce : Utilisez <code>${output}</code> pour insérer le texte transcrit dans votre prompt.",
-        "updatePrompt": "Mettre à jour le prompt",
-        "deletePrompt": "Supprimer le prompt",
-        "createPrompt": "Créer le prompt",
-        "cancel": "Annuler",
-        "selectToEdit": "Sélectionnez un prompt ci-dessus pour voir et modifier ses détails.",
-        "createFirst": "Cliquez sur 'Créer un nouveau prompt' ci-dessus pour créer votre premier prompt de post-traitement."
+      "emojiDictado": {
+        "title": "Emoji dictés",
+        "description": "Dites le mot « emoji » puis son nom, et l'emoji est inséré. Par table, instantanément et hors ligne : aucun modèle d'IA n'intervient. Sans ce mot, rien ne change, et si le nom n'est pas reconnu, le texte reste exactement tel que vous l'avez dicté.",
+        "ejemplo": "Exemple : « envoie-lui un emoji pouce en l'air » devient « envoie-lui un 👍 ». Marche aussi avec « emoji feu » → 🔥.",
+        "verDiccionario": "Voir les noms",
+        "copiado": "{{emoji}} copié",
+        "noCopiado": "Copie impossible",
+        "diccionario": {
+          "titulo": "Noms des émojis",
+          "ayuda": "Dites le nom précédé de « emoji ». Touchez-en un pour le copier.",
+          "buscar": "Rechercher un nom",
+          "copiar": "Copier",
+          "cargando": "Chargement…",
+          "error": "Impossible de charger la liste.",
+          "sinResultados": "Aucun nom ne correspond.",
+          "total": "{{total}} noms",
+          "recorte": "Affichage de {{mostrados}} sur {{total}}. Affinez la recherche."
+        }
+      },
+      "voiceActivityDetection": {
+        "title": "Détection de la voix",
+        "description": "Filter silence from recordings. Streaming-capable models use a longer VAD tail; disabling VAD records raw audio."
+      },
+      "dictionary": {
+        "title": "Dictionnaire du projet",
+        "description": "Les modèles vocaux ne connaissent pas le jargon de votre code. Abrax l'apprend en indexant votre projet actif : identifiants, branches git et noms de fichiers corrigent votre dictée.",
+        "pickProject": "Choisir un projet",
+        "changeProject": "Changer de projet",
+        "pickTitle": "Choisissez le dossier du projet",
+        "reindex": "Réindexer",
+        "enable": "Apprendre de ce projet",
+        "enableDescription": "Activé, les termes indexés corrigent votre dictée. Désactivez pour suspendre sans perdre l'index.",
+        "termCount": "{{count}} termes indexés",
+        "noIndex": "Pas encore indexé",
+        "lastIndexed": "indexé le {{date}}",
+        "indexed": "Projet indexé : {{count}} termes",
+        "indexError": "Échec de l'indexation : {{error}}",
+        "privacy": "L'index reste sur votre disque. Rien de votre code ne quitte cet ordinateur.",
+        "source": {
+          "code": "du dépôt",
+          "branch": "branche git",
+          "path": "nom de fichier"
+        }
+      },
+      "customReplacements": {
+        "title": "Remplacements exacts",
+        "description": "Quand le modèle entend toujours mal un mot, corrigez-le de façon déterministe : correspondance exacte par jeton, sensible à la casse.",
+        "fromPlaceholder": "Entendu",
+        "toPlaceholder": "Remplacer par",
+        "add": "Ajouter",
+        "remove": "Supprimer {{word}}",
+        "duplicate": "Un remplacement pour « {{word}} » existe déjà"
+      },
+      "memoria": {
+        "title": "Mémoire de corrections",
+        "description": "ABRAX apprend quand vous corrigez une transcription dans l'Historique : supprimez un mot, tapez le bon, et la prochaine fois il sera écrit correctement. Tout en local.",
+        "empty": "Aucune correction apprise pour l'instant. Modifiez une transcription dans l'Historique (icône crayon) et ABRAX apprendra de vos changements.",
+        "forget": "Oublier cette correction",
+        "clearAll": "Tout oublier",
+        "enSitioTitle": "Apprendre là où vous dictez",
+        "enSitioDescription": "Au début d'une dictée, ABRAX relit le champ où vous écrivez (via l'accessibilité, 100 % local) et apprend des corrections que vous y avez faites à la dictée précédente. Rien du champ n'est conservé ni ne quitte votre appareil."
       }
     },
     "history": {
@@ -452,7 +533,17 @@
       "retranscribe": "Re-transcrire",
       "retranscribeError": "Impossible de re-transcrire. Veuillez réessayer.",
       "transcribing": "Transcription en cours...",
-      "transcriptionFailed": "La transcription a échoué. Vous pouvez re-transcrire en utilisant l'icône de réessai."
+      "transcriptionFailed": "La transcription a échoué. Vous pouvez re-transcrire en utilisant l'icône de réessai.",
+      "loadError": "Impossible de charger l'historique. Vos dictées sont toujours sur le disque.",
+      "edit": {
+        "action": "Modifier la transcription",
+        "save": "Enregistrer",
+        "cancel": "Annuler",
+        "hint": "À l'enregistrement, la Mémoire apprend vos corrections.",
+        "saved": "Transcription mise à jour.",
+        "learned": "Mémoire : appris {{pares}}",
+        "error": "Impossible d'enregistrer la modification."
+      }
     },
     "debug": {
       "title": "Débogage",
@@ -510,10 +601,6 @@
         "title": "Microphone en mode fermé",
         "description": "Microphone à utiliser lorsque le couvercle du portable est fermé"
       },
-      "postProcessingToggle": {
-        "label": "Post-traitement",
-        "description": "Activer l'affinage du texte par IA après la transcription"
-      },
       "muteWhileRecording": {
         "label": "Muet pendant l'enregistrement",
         "description": "Couper le son du système pendant l'enregistrement"
@@ -568,9 +655,9 @@
         "button": "Voir sur GitHub"
       },
       "supportDevelopment": {
-        "title": "Soutenir le développement",
-        "description": "Aidez-nous à continuer à construire Abrax",
-        "button": "Faire un don"
+        "title": "Soutenir Handy (le projet d'origine)",
+        "description": "Les dons vont à CJ Pais, créateur de Handy — le projet dont ABRAX est un fork.",
+        "button": "Soutenir Handy"
       },
       "acknowledgments": {
         "title": "Remerciements",
@@ -583,11 +670,21 @@
           "title": "ggml",
           "description": "Inférence haute performance du modèle de reconnaissance vocale automatique Whisper d'OpenAI",
           "details": "Abrax utilise ggml pour un traitement rapide et local de la parole en texte. Merci au travail incroyable de Georgi Gerganov et des contributeurs."
+        },
+        "modelos": {
+          "title": "Modèles de reconnaissance vocale",
+          "description": "Les modèles sont téléchargés à la demande et ne font pas partie du programme d'installation. Chacun conserve sa propre licence ; ceux sous CC-BY exigent une attribution, donnée ici. Texte intégral dans LICENSES-THIRD-PARTY.md."
         }
       },
       "whatsNewUpdates": {
         "label": "Afficher les nouveautés",
         "description": "Afficher les notes de version après les mises à jour de Abrax"
+      }
+    },
+    "streaming": {
+      "systemAudio": {
+        "label": "Capturer le son du système",
+        "description": "Transcrit ce qui joue sur l'ordinateur —un cours, une vidéo, une réunion— au lieu de votre micro. Il faut un modèle adapté à l'audio du système ; si l'actif ne l'est pas, Abrax en choisit un qui convient."
       }
     }
   },
@@ -611,7 +708,14 @@
     "open": "Ouvrir",
     "copy": "Copier",
     "clear": "Effacer",
-    "noOptionsFound": "Aucune option trouvée"
+    "noOptionsFound": "Aucune option trouvée",
+    "retry": "Réessayer",
+    "play": "Lire",
+    "pause": "Pause",
+    "seek": "Position de lecture",
+    "moreInfo": "Plus d'informations",
+    "selectOption": "Sélectionnez une option…",
+    "systemDefault": "Par défaut"
   },
   "accessibility": {
     "permissionsDescription": "Abrax a besoin des autorisations d'accessibilité pour taper le texte transcrit.",
@@ -627,13 +731,37 @@
       "linux": "Accordez l'accès au microphone dans les paramètres de son ou de confidentialité de votre système."
     },
     "noInputDeviceTitle": "Aucun microphone trouvé",
+    "recordingNoAudioTitle": "No audio detected",
     "noInputDevice": "Aucun périphérique d'entrée audio n'a été détecté. Veuillez connecter un microphone ou un casque et réessayer.",
     "recordingFailed": "Échec du démarrage de l'enregistrement : {{error}}",
     "modelLoadFailed": "Échec du chargement du modèle : {{model}}",
     "modelLoadFailedUnknown": "modèle inconnu",
     "pasteFailedTitle": "Échec du collage du texte",
     "pasteFailed": "Le texte n'a pas pu être collé dans l'application active.",
-    "transcriptionFailedTitle": "Échec de la transcription"
+    "transcriptionFailedTitle": "Échec de la transcription",
+    "recordingFailedTitle": "Échec de l'enregistrement",
+    "modelLoadFailedTitle": "Échec du chargement du modèle",
+    "modelDownloadFailedTitle": "Échec du téléchargement du modèle",
+    "center": {
+      "title": "Avis récents ({{count}})",
+      "dismiss": "Ignorer",
+      "toggle": "Afficher tous les avis"
+    },
+    "recordingTooShortTitle": "Presque rien n’a été enregistré",
+    "recordingTooShort": "L’enregistrement a duré moins d’une seconde. Si tu utilises le raccourci, maintiens {{atajo}} pendant que tu parles.",
+    "recordingTooShortNoBinding": "L’enregistrement a duré moins d’une seconde. Parle un instant avant de l’arrêter.",
+    "transcriptionEmptyTitle": "Rien n'a été compris",
+    "transcriptionEmpty": "Aucun mot n'a été reconnu. Réessaie en parlant un peu plus fort ou plus près.",
+    "sistemaSinModeloAptoTitle": "Un meilleur modèle est nécessaire",
+    "sistemaSinModeloApto": "L'audio du système a bien été capté, mais le modèle actuel ne reconnaît pas la parole des réunions ni des vidéos. Téléchargez Nemotron Streaming 3.5 (716 MB) ou Whisper Large v3 Turbo (845 MB) dans Modèles, et Abrax l'utilisera automatiquement.",
+    "sistemaSinModeloAptoDescargar": "Télécharger ({{mb}} MB)",
+    "shortcutRegistrationTitle": "Le raccourci n’a pas pu être activé",
+    "shortcutRegistration": "Abrax n’a pas pu enregistrer son raccourci clavier. Redémarre-le ; si ça persiste, définis-en un autre dans Réglages → Général.",
+    "atajoOcupado": "Une autre application utilise déjà ce raccourci : {{atajos}}. Modifiez-le dans les Réglages pour qu'il fonctionne.",
+    "atajoOcupadoCambiar": "Modifier le raccourci",
+    "sistemaModeloCambiadoTitle": "Modèle changé pour l’audio du système",
+    "sistemaModeloCambiado": "Abrax est passé à {{modelo}}, qui comprend l’audio du système. Ce modèle n’affiche ni le texte pendant que vous parlez ni les mots par minute : tout apparaît au relâchement. Pour le direct, téléchargez Nemotron Streaming 3.5 (716 Mo) dans Modèles.",
+    "descargaIniciada": "Téléchargement du modèle. À voir dans Modèles."
   },
   "appLanguage": {
     "title": "Langue de l'application",
@@ -648,14 +776,352 @@
       "dark": "Sombre"
     }
   },
+  "palette": {
+    "title": "Palette",
+    "description": "Choisissez la palette de couleurs d'Abrax. Imperial est sombre par conception : tant qu'elle est active, elle force le mode sombre.",
+    "options": {
+      "abrax": "ABRAX",
+      "imperial": "Imperial",
+      "escuderia": "Escudería"
+    }
+  },
   "overlay": {
     "transcribing": "Transcription...",
-    "processing": "Traitement..."
+    "processing": "Traitement...",
+    "leyendo": "Lecture à voix haute",
+    "preparando": "Préparation de la lecture"
   },
   "whatsNew": {
     "title": "Nouveautés de Abrax v{{version}}"
   },
+  "correccion": {
+    "motor": {
+      "title": "Moteur de correction",
+      "description": "Nettoie ta dictée entre la transcription et le collage. Désactivé garde tout exactement comme transcrit. Règles seules applique des corrections déterministes instantanées.",
+      "options": {
+        "solo_reglas": "Règles seules",
+        "desactivado": "Désactivé"
+      }
+    },
+    "modo": {
+      "title": "Niveau de correction",
+      "description": "Littéral ne corrige que les espaces et les majuscules de phrase. Propre fait en plus : symboles (« cinq pour cent » → 5 %), accents oubliés par la dictée, e-mails et chemins, répétitions (« ensuite ensuite ») et — si vous le laissez activé ci-dessous — les nombres en chiffres. L’autocorrection orale n’en dépend pas : elle a son propre interrupteur.",
+      "options": {
+        "literal": "Littéral",
+        "limpio": "Épuré"
+      }
+    },
+    "numeros": {
+      "title": "Nombres en chiffres",
+      "description": "Convertit les nombres dictés : « douze mille huit cents » → 12800, « à dix-sept heures trente » → 17:30. Il les convertit TOUS, pas seulement les techniques : « les deux minutes » devient « les 2 minutes ». Vous préférez les lettres ? Désactivez-le, le reste de Propre continue."
+    }
+  },
+  "pruebaMic": {
+    "title": "Tester le micro",
+    "description": "Enregistre 3 secondes de ce que le modèle entendrait exactement (16 kHz, sans VAD), le rejoue et rend un verdict avec les niveaux réels. Révèle aussi quel appareil se cache vraiment derrière Default.",
+    "boton": "Enregistrer 3 s",
+    "grabando": "Enregistrement…",
+    "niveles": "RMS {{rms}} dBFS · pico {{pico}} dBFS",
+    "nivelClip": " · clip {{clip}}%",
+    "veredicto": {
+      "sin_senal": "Pas de signal — le micro ne fournit aucun audio",
+      "muy_bajo": "Très faible — à ce niveau la dictée échouera",
+      "bajo": "Faible — ça fonctionne, mais la précision en souffre",
+      "sano": "Niveau sain",
+      "saturado": "Saturé — le micro écrête"
+    },
+    "dispositivo": "Micro : {{nombre}} ({{contexto}})",
+    "esElDefault": "défaut du système",
+    "esElegido": "choisi dans les réglages"
+  },
+  "shell": {
+    "title": "Forme de la fenêtre",
+    "description": "Choisis la forme de la fenêtre d'Abrax. Classique est la fenêtre de réglages habituelle ; Quiet est un panneau sombre minimaliste avec la sphère sur son écran d'accueil. Le cadre de la fenêtre finit de s'appliquer au redémarrage d'Abrax.",
+    "options": {
+      "classic": "Classique",
+      "retro": "Rétro",
+      "quiet": "Quiet",
+      "bancada": "Karting"
+    }
+  },
+  "bancada": {
+    "local": "Procesamiento local · 0% Nube",
+    "tray": "Enviar a la bandeja",
+    "min": "Minimizar",
+    "close": "Cerrar",
+    "nav": {
+      "tablero": "TABLERO",
+      "bitacora": "BITÁCORA",
+      "setup": "SETUP"
+    },
+    "pitRadio": "PIT RADIO",
+    "lcdReady": "En boxes · listo",
+    "lcdListening": "Escuchando…",
+    "launch": "TU LARGADA · {{atajo}}",
+    "start": "Arrancar dictado",
+    "stop": "Detener dictado",
+    "dictate": "Dictar",
+    "stopping": "Detener",
+    "ignitionStart": "START",
+    "ignitionStop": "STOP",
+    "appearance": "APARIENCIA",
+    "speakers": "Hablantes",
+    "systemAudio": "System audio",
+    "speakersAuto": "Auto",
+    "speakersN": "{{n}}",
+    "mergeInto": "Actually is…",
+    "resetSpeakers": "Reset",
+    "wpmUnit": "PAL/MIN",
+    "copied": "Copiado al portapapeles",
+    "on": "ON",
+    "off": "OFF",
+    "btn": {
+      "cancel": "Cancelar",
+      "copy": "Copiar",
+      "clear": "Limpiar",
+      "translate": "Traducir → EN",
+      "fillers": "Muletillas",
+      "log": "Bitácora"
+    },
+    "dial": {
+      "vad": "VAD",
+      "palette": "Paleta"
+    },
+    "lamp": {
+      "idle": "RALENTÍ",
+      "rec": "REC",
+      "transcribing": "TRANSCRIBIENDO",
+      "polishing": "PULIENDO",
+      "error": "FALLA"
+    },
+    "estado": {
+      "idle": "Ralentí",
+      "rec": "Grabando",
+      "transcribing": "Transcribiendo",
+      "polishing": "Puliendo",
+      "error": "Falla"
+    },
+    "speakerLabel": "Locuteur {{n}}"
+  },
+  "retro": {
+    "menu": "Menu Abrax",
+    "titleMain": "ABRAX · MODE RÉTRO",
+    "titleSettings": "ABRAX · RÉGLAGES RAPIDES",
+    "titleHistory": "ABRAX · HISTORIQUE",
+    "fold": "Replier",
+    "close": "Fermer",
+    "marquee": "ABRAX ··· DITES LE MOT ··· MODE RÉTRO ··· 100% LOCAL ··· L'ESPAGNOL D'ABORD ···",
+    "lamp": {
+      "model": "Modèle",
+      "local": "LOCAL",
+      "filler": "TICS",
+      "dict": "DICT",
+      "ptt": "PTT",
+      "vad": "VAD",
+      "translate": "TRADUIRE",
+      "sphere": "SPHÈRE"
+    },
+    "dictate": "Dicter",
+    "stop": "Arrêter",
+    "settings": "Réglages rapides",
+    "history": "Historique",
+    "compiler": "Compilateur de prompts",
+    "sections": "SECTIONS ▾",
+    "slider": {
+      "buffer": "BUFFER",
+      "volume": "VOL",
+      "threshold": "SEUIL"
+    },
+    "emptyHistory": "Aucune dictée pour l'instant — maintenez le raccourci et parlez.",
+    "copyHint": "Double-cliquez pour copier",
+    "copy": "COPIER",
+    "save": "★ ENREGISTRER",
+    "delete": "SUPPRIMER",
+    "compile": "✦ COMPILER",
+    "count": "{{n}} dictées · LOCAL",
+    "copied": "Copié dans le presse-papiers",
+    "menuSections": "SECTIONS",
+    "menuWindows": "FENÊTRES",
+    "toClassic": "Retour au Classique",
+    "theme": "Thème",
+    "footer": "MODE RÉTRO — un skin ABRAX · même fenêtre transparente",
+    "tray": "Send to tray",
+    "minimize": "Minimize",
+    "localBadge": "Traitement local · 0 % cloud",
+    "infoPalette": "Palette",
+    "infoLanguage": "Langue",
+    "infoFillers": "Mots de remplissage",
+    "infoTranslate": "Traduire",
+    "infoAutoVoice": "Voix auto",
+    "infoVisual": "Visuel",
+    "words": "{{n}} mots",
+    "actCopy": "Copier",
+    "actClear": "Effacer",
+    "emptyTranscriptions": "Aucune transcription pour l'instant.",
+    "activeModel": "MODÈLE ACTIF",
+    "localFull": "Traitement 100 % local · Sans cloud",
+    "backToClassic": "REVENIR AU SKIN CLASSIQUE"
+  },
   "logo": {
     "tagline": "« Di la <accent>palabra</accent>. »"
+  },
+  "escucha": {
+    "title": "VOX",
+    "openFile": "Ouvrir un fichier…",
+    "readClipboard": "Lire le presse-papiers",
+    "play": "Lire",
+    "pause": "Pause",
+    "pauseHint": "Pause à la fin de la phrase en cours",
+    "resume": "Reprendre",
+    "stop": "Arrêter",
+    "speed": "Vitesse",
+    "voiceProse": "Voix prose",
+    "voiceCode": "Voix code",
+    "noVoices": "Aucune voix système trouvée",
+    "empty": "Ouvrez un fichier ou lisez le presse-papiers pour commencer.",
+    "engineUnavailable": "Le moteur vocal du système n'est pas disponible.",
+    "errorRead": "Impossible de lire le contenu.",
+    "errorSpeak": "Impossible de lancer la lecture.",
+    "escHint": "Échap arrête la lecture.",
+    "clipboard": "Presse-papiers",
+    "clipboardEmpty": "Le presse-papiers ne contient pas de texte.",
+    "fileFilter": "Texte, Markdown ou code",
+    "sentences": "{{total}} phrases",
+    "verbosity": "Symboles",
+    "verbosityNatural": "Naturel (moins de bruit)",
+    "verbosityLiteral": "Littéral (tous les symboles)"
+  },
+  "tts": {
+    "voiceLangEs": "Espagnol",
+    "voiceLangEn": "Anglais",
+    "voiceSettings": "Paramètres de la voix",
+    "speed": "Vitesse",
+    "pitch": "Hauteur",
+    "pitchLow": "Grave",
+    "pitchNormal": "Normale",
+    "pitchHigh": "Aiguë",
+    "pitchHint": "La hauteur s'applique uniquement à la voix en ligne.",
+    "vram": "({{gb}} GB VRAM)",
+    "descOnline": "Voix neuronales de Microsoft (Azure). Pas local : envoie le texte par internet.",
+    "onlineWarning": "nécessite internet · ton texte quitte l'appareil",
+    "preparingVoice": "Préparation de {{engine}}… la première fois prend quelques secondes.",
+    "engineSystem": "Voix du système",
+    "title": "Moteur vocal",
+    "localBadge": "100% local",
+    "detecting": "Détection de votre appareil…",
+    "detected": "Appareil détecté :",
+    "recommendation": "Nous recommandons {{engine}} pour la meilleure voix — en local et hors connexion.",
+    "activeEngine": "Moteur actif : {{engine}}",
+    "detectFailed": "Impossible de détecter le matériel ; les voix du système seront utilisées.",
+    "useRecommended": "Utiliser le moteur recommandé",
+    "chooseOther": "Choisir un autre moteur",
+    "redetect": "Relancer la détection",
+    "testVoice": "Tester la voix",
+    "sampleTextEs": "Hola, soy la voz de Abrax. Di la palabra y yo la leo por ti.",
+    "sampleTextEn": "Hi, I'm the voice of Abrax. Say the word and I'll read it for you.",
+    "voice": "Voix",
+    "noGpu": "sans GPU dédié",
+    "available": "Disponible",
+    "unavailable": "Non disponible",
+    "needsGpu": "nécessite un GPU compatible (NVIDIA ou Apple Silicon)",
+    "needsDownload": "nécessite le téléchargement du moteur",
+    "recommended": "Recommandé",
+    "activeShort": "Actif",
+    "use": "Utiliser",
+    "download": "Activer",
+    "downloading": "Téléchargement…",
+    "installed": "Moteur installé",
+    "errorDownload": "Impossible de télécharger le moteur.",
+    "errorSetEngine": "Impossible de changer de moteur.",
+    "descSystem": "Voix du système d'exploitation. Toujours disponible, sans téléchargement.",
+    "descPiper": "Voix neuronale en français, légère, fonctionne sur CPU.",
+    "descKokoro": "Voix neuronale de haute qualité sur CPU."
+  },
+  "carpetaModelos": {
+    "titulo": "Models folder",
+    "cambiar": "Change",
+    "discoConNombre": "{{nombre}} ({{punto}})",
+    "removible": "· removable",
+    "espacio": "{{libre}} GB free of {{total}} GB",
+    "volverPorDefecto": "Back to the original folder",
+    "avisoNoMueve": "New downloads will go to this folder. Already-downloaded models stay where they were; if they don't show up, go back to the original folder or download them again here.",
+    "moverPregunta": "Déplacer les modèles déjà téléchargés ({{gb}} Go) vers le nouveau dossier ?",
+    "moverAhora": "Déplacer maintenant",
+    "soloNuevas": "Nouveaux téléchargements uniquement",
+    "cancelar": "Annuler",
+    "moviendo": "Déplacement de {{archivo}}…",
+    "moverError": "Le déplacement n'a pas pu être terminé : {{detalle}}. Rien n'a été perdu : ce qui n'a pas été déplacé reste dans le dossier précédent."
+  },
+  "quiet": {
+    "nav": {
+      "listen": "Écoute",
+      "shortcuts": "Raccourcis",
+      "streaming": "Streaming",
+      "transcriptions": "Transcriptions",
+      "models": "Models",
+      "settings": "Settings",
+      "more": "Plus"
+    },
+    "ready": "ABRAX is ready",
+    "holdHint": "Maintiens <k>{{atajo}}</k> pendant que tu parles, puis relâche à la fin.",
+    "holdHintNoBinding": "Définis un raccourci dans les Réglages et maintiens-le pendant que tu parles.",
+    "start": "Start transcription",
+    "stop": "Stop",
+    "recent": "Recent transcriptions",
+    "empty": "No transcriptions yet. Hold the shortcut and say the word.",
+    "local": "Local processing",
+    "noCloud": "No cloud connection",
+    "min": "Minimize",
+    "max": "Maximize",
+    "close": "Close",
+    "tray": "Send to tray",
+    "dictando": "Je t’écoute… relâche à la fin",
+    "panel": {
+      "modelo": "Modèle",
+      "sinModelo": "Aucun modèle",
+      "descargar": "télécharger",
+      "descargando": "Téléchargement de {{modelo}} · {{pct}} %",
+      "voz": "Voix",
+      "hint": {
+        "fillers": "Supprime les mots de remplissage («euh», «ben») de ce que vous dictez.",
+        "autocorreccion": "Si vous vous corrigez à voix haute («non, pardon»), le texte sort déjà corrigé.",
+        "emoji": "Dites «emoji» puis son nom, et il s'insère. Par table, sans IA.",
+        "systemAudio": "Transcrit ce qui joue sur l'ordinateur au lieu de votre micro. Si le modèle actif ne convient pas, Abrax en choisit un autre."
+      },
+      "sinModeloSistema": "Téléchargez l'un de ces modèles pour capturer l'audio du système.",
+      "elegirModelo": "Choisir un modèle",
+      "usaraSistema": "Aucun choix. Si vous activez l'audio du système, Abrax utilisera « {{modelo}} ».",
+      "descargado": "téléchargé"
+    },
+    "modo": {
+      "grupo": {
+        "gesto": "Comment on le déclenche",
+        "microfono": "Votre micro",
+        "texto": "Ce qui arrive au texte",
+        "pegado": "Où il s’écrit",
+        "salida": "Par où ça sort",
+        "fuente": "D’où vient l’audio",
+        "apariencia": "Apparence"
+      },
+      "streaming": {
+        "que": "Transcrit ce qui joue sur l’ordinateur —un cours, une vidéo, une réunion— au lieu de votre micro.",
+        "resto": "Le reste —correction, tics de langage, dictionnaire, collage— est le même que dans Écoute : réglé une fois, valable pour les deux."
+      },
+      "vox": {
+        "que": "Lit à voix haute le texte que vous avez sélectionné, dans n’importe quelle application.",
+        "como": "Appuyez sur <k>{{atajo}}</k> et la lecture démarre ; appuyez de nouveau pour arrêter."
+      },
+      "escucha": {
+        "que": "Vous parlez et le texte apparaît là où vous écriviez. Tout se passe sur votre machine : rien ne part sur Internet."
+      }
+    }
+  },
+  "soundPicker": {
+    "custom": "Personnalisé",
+    "preview": "Écouter le thème (début et fin)"
+  },
+  "vox": {
+    "atajoHint": "Pour VOX, appuyez sur <k>{{atajo}}</k> et il lit à voix haute le texte sélectionné dans n’importe quelle app.",
+    "atajoSinBinding": "Pour VOX, définissez un raccourci dans les Réglages et il lira à voix haute le texte sélectionné."
   }
 }

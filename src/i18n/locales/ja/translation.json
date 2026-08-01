@@ -6,16 +6,23 @@
     "unloadModel": "モデルをアンロード",
     "model": "モデル",
     "quit": "終了",
-    "cancel": "キャンセル"
+    "cancel": "キャンセル",
+    "errorTitle": "Abrax で問題が発生しました",
+    "errorRecording": "録音を開始できませんでした。Abrax を開いて原因を確認してください。",
+    "errorTranscription": "文字起こしに失敗しました。Abrax を開いて履歴から再試行してください。",
+    "errorPaste": "テキストを貼り付けられませんでした。履歴に保存されています。",
+    "errorModelLoad": "音声モデルの読み込みに失敗しました。Abrax を開いて原因を確認してください。",
+    "errorModelDownload": "モデルのダウンロードに失敗しました。Abrax を開いて再試行してください。",
+    "show": "Show Abrax"
   },
   "sidebar": {
     "general": "一般",
     "models": "モデル",
     "advanced": "詳細設定",
-    "postProcessing": "後処理",
     "history": "履歴",
     "debug": "デバッグ",
-    "about": "概要"
+    "about": "概要",
+    "escucha": "VOX"
   },
   "onboarding": {
     "subtitle": "開始するには、文字起こしのモデルを選択してください",
@@ -46,11 +53,11 @@
         "name": "Whisper Large",
         "description": "良好な精度、ただし低速。"
       },
-      "parakeet-tdt-0.6b-v2": {
+      "parakeet-tdt-0_6b-v2": {
         "name": "Parakeet V2",
         "description": "英語のみ。英語話者に最適なモデル。"
       },
-      "parakeet-tdt-0.6b-v3": {
+      "parakeet-tdt-0_6b-v3": {
         "name": "Parakeet V3",
         "description": "高速で正確"
       },
@@ -93,6 +100,21 @@
       "cohere-int8": {
         "name": "Cohere",
         "description": "大型で低速ですが、非常に高精度な多言語モデル。"
+      },
+      "handy-computer_canary-180m-flash-gguf": {
+        "description": "最も軽くて速い — 1分足らずでダウンロードでき、古いノートでも動きます。その代わり、とても短い言葉ではまったく聞き取れないことがあります。"
+      },
+      "handy-computer_whisper-large-v3-turbo-gguf": {
+        "description": "Balanced — the everyday pick: understands 100 languages and doesn't keep you waiting."
+      },
+      "handy-computer_whisper-large-v3-gguf": {
+        "description": "Widest coverage — the big Whisper, the one everyone names. Slower, but complete."
+      },
+      "handy-computer_nemotron-3_5-asr-streaming-0_6b-gguf": {
+        "description": "Live — writes as you speak, word by word. This is the one that makes the sphere dance."
+      },
+      "handy-computer_cohere-transcribe-03-2026-gguf": {
+        "description": "最高精度 — カタログで最も正確、14言語対応。まずはこれをおすすめします。1.6 GB あり、力のあるパソコンが要ります。"
       }
     },
     "errors": {
@@ -117,6 +139,15 @@
         "checkFailed": "権限の確認に失敗しました。もう一度お試しください。",
         "requestFailed": "権限のリクエストに失敗しました。もう一度お試しください。"
       }
+    },
+    "emptyCatalog": "利用可能なモデルがありません。ログを確認して Abrax を再起動してください。",
+    "welcome": {
+      "pitch": "話すと、テキストがこの端末に現れます。",
+      "badgeLocal": "100% ローカル",
+      "badgeNoCloud": "クラウド不要",
+      "badgeFree": "無料",
+      "whyModel": "聞き取るために、Abrax は音声モデルを一度だけダウンロードします。そのあとはオフラインで動きます。",
+      "start": "はじめる"
     }
   },
   "modelSelector": {
@@ -151,7 +182,18 @@
     },
     "cancel": "キャンセル",
     "cancelDownload": "ダウンロードをキャンセル",
-    "legacy": "旧式"
+    "legacy": "旧式",
+    "downloadFailed": "ダウンロードに失敗しました",
+    "downloadFailedHelp": "モデルをダウンロードできませんでした。接続を確認して、もう一度お試しください。",
+    "checkFailed": "モデルの状態を確認できませんでした",
+    "loadFailed": "モデルを読み込めませんでした",
+    "switchFailed": "モデルを切り替えられませんでした",
+    "statusTitle": "モデルの状態: {{estado}}",
+    "confirmDownload": {
+      "title": "Download model",
+      "body": "{{modelName}} — {{size}}\n\n{{description}}\n\nIt downloads once and stays on your machine. After that it works offline.",
+      "ok": "Download"
+    }
   },
   "settings": {
     "modelSettings": {
@@ -192,6 +234,10 @@
           "cancel": {
             "name": "キャンセルのショートカット",
             "description": "現在の録音をキャンセルするためのキーボードショートカット。"
+          },
+          "leer_seleccion": {
+            "name": "選択範囲を読み上げる",
+            "description": "どのアプリでも選択したテキストを読み上げます。もう一度押すと停止します。"
           },
           "transcribe_with_post_process": {
             "name": "後処理のショートカット",
@@ -245,7 +291,10 @@
         "output": "出力",
         "transcription": "文字起こし",
         "history": "履歴",
-        "experimental": "実験的"
+        "experimental": "実験的",
+        "dictionary": "リビング辞書",
+        "correccion": "ローカル補正",
+        "memoria": "メモリー"
       },
       "experimentalToggle": {
         "label": "実験的な機能",
@@ -278,7 +327,7 @@
       },
       "showTrayIcon": {
         "label": "トレイアイコンを表示",
-        "description": "システムトレイに Abrax のアイコンを表示します。"
+        "description": "システムトレイに Abrax のアイコンを表示します。 非表示にすると、ウィンドウを閉じたときに Abrax が完全に終了します（macOS では Dock に残ります）。"
       },
       "overlay": {
         "style": {
@@ -287,7 +336,8 @@
           "options": {
             "none": "なし",
             "minimal": "ミニマル",
-            "live": "ライブ"
+            "live": "ライブ",
+            "esfera": "エスフェラ"
           }
         },
         "position": {
@@ -296,6 +346,14 @@
           "options": {
             "bottom": "下",
             "top": "上"
+          }
+        },
+        "esferaModo": {
+          "title": "Esfera モード",
+          "description": "Esfera 球体の動作です。音声：球体があなたの声に反応します。単語：口述した単語が球体へ飛んでいき、一瞬読み上げられて膜に溶け込みます（単語が話しながらリアルタイムで届くストリーミング対応モデルで最適です）。",
+          "options": {
+            "audio": "音声リアクティブ",
+            "palabras": "生きた単語"
           }
         }
       },
@@ -322,6 +380,7 @@
       "clipboardHandling": {
         "title": "クリップボードの処理",
         "description": "クリップボードを変更しないを選択すると、文字起こし後も現在のクリップボード内容が保持されます。クリップボードにコピーを選択すると、貼り付け後も文字起こし結果がクリップボードに残ります。",
+        "lockedByPasteMethod": "Locked by the paste method: pasting through the clipboard already leaves the transcription there. Choose Direct or None if you want your clipboard left untouched.",
         "options": {
           "dontModify": "クリップボードを変更しない",
           "copyToClipboard": "クリップボードにコピー"
@@ -380,63 +439,85 @@
         "resetDefaults": "デフォルトリストに戻す",
         "disable": "フィルターを無効にする"
       },
-      "voiceActivityDetection": {
-        "title": "音声区間検出 (VAD)",
-        "description": "録音から無音部分を除去します。ストリーミング対応モデルはより長い音声検出区間を使用します。VAD を無効にすると音声をそのまま録音します。"
-      }
-    },
-    "postProcessing": {
-      "hotkey": {
-        "title": "ショートカット"
-      },
-      "api": {
-        "title": "API (OpenAI 互換)",
-        "provider": {
-          "title": "プロバイダー",
-          "description": "OpenAI 互換のプロバイダーを選択。"
-        },
-        "appleIntelligence": {
-          "unavailable": "このデバイスでは Apple Intelligence を利用できません。macOS Tahoe (26.0) 以降を実行し、システム設定で Apple Intelligence が有効になっている Apple Silicon Mac が必要です。"
-        },
-        "baseUrl": {
-          "title": "ベース URL",
-          "description": "選択したプロバイダーの API ベース URL。カスタムプロバイダーのみ編集可能。",
-          "placeholder": "https://api.openai.com/v1"
-        },
-        "apiKey": {
-          "title": "API キー",
-          "description": "選択したプロバイダーの API キー。",
-          "placeholder": "sk-…"
-        },
-        "model": {
-          "title": "モデル",
-          "descriptionCustom": "カスタムエンドポイントが期待するモデル識別子を指定。",
-          "descriptionDefault": "選択したプロバイダーが提供するモデルを選択。",
-          "placeholderWithOptions": "モデルを検索または選択",
-          "placeholderNoOptions": "モデル名を入力",
-          "refreshModels": "モデルを更新"
+      "autocorreccion": {
+        "title": "言い直しの自動修正",
+        "description": "口述中に「いや、ごめん」「言い間違えた」と言い直すと、テキストは修正済みで出てきます。ルールベースで即座に、オフラインで動作し、AIモデルは使いません。言い直した部分を置き換えるだけで、自分から削除することはなく、迷ったときは何も触りません。既定でオンです。",
+        "ejemplo": "例：「打ち合わせは火曜日に設定して……あ、違う、水曜日で」→「打ち合わせは水曜日に設定して。」",
+        "sustitucionTitle": "言い直しの合図",
+        "sustitucionDescription": "直前に言った内容を置き換えるときに口にする言葉です（例：「あ、違う」「じゃなくて」）。合図より前に同じ種類の語句（曜日、月、時刻、数、名前）が見つかったときだけ置き換えます。見つからなければ何も変更しません。",
+        "placeholder": "合図を追加",
+        "add": "追加",
+        "remove": "{{senal}} を削除",
+        "duplicate": "「{{senal}}」はすでにあります",
+        "showDefaults": "標準を使う",
+        "resetDefaults": "標準に戻す",
+        "disable": "レベルを無効にする",
+        "mode": {
+          "defaults": "標準のもの",
+          "custom": "自分のもの"
         }
       },
-      "prompts": {
-        "title": "プロンプト",
-        "selectedPrompt": {
-          "title": "選択したプロンプト",
-          "description": "文字起こしを改善するテンプレートを選択するか、新しく作成します。プロンプトテキスト内で ${output} を使用して、キャプチャした文字起こしを参照します。"
-        },
-        "noPrompts": "プロンプトがありません",
-        "selectPrompt": "プロンプトを選択",
-        "createNew": "新しいプロンプトを作成",
-        "promptLabel": "プロンプト名",
-        "promptLabelPlaceholder": "プロンプト名を入力",
-        "promptInstructions": "プロンプトの指示",
-        "promptInstructionsPlaceholder": "文字起こし後に実行する指示を記述します。例: 以下のテキストの文法と明瞭さを改善してください: ${output}",
-        "promptTip": "ヒント: <code>${output}</code> を使用して、文字起こしテキストをプロンプトに挿入します。",
-        "updatePrompt": "プロンプトを更新",
-        "deletePrompt": "プロンプトを削除",
-        "createPrompt": "プロンプトを作成",
-        "cancel": "キャンセル",
-        "selectToEdit": "上からプロンプトを選択して、詳細を表示・編集します。",
-        "createFirst": "上の「新しいプロンプトを作成」をクリックして、最初の後処理プロンプトを作成してください。"
+      "emojiDictado": {
+        "title": "絵文字の音声入力",
+        "description": "「絵文字」（emoji）という言葉に続けてその名前を言うと、絵文字が挿入されます。テーブル方式で即座に、オフラインで動作し、AIモデルは一切使いません。この言葉がなければ何も変わらず、名前を認識できなかった場合は口述したままのテキストが残ります。",
+        "ejemplo": "例：「絵文字いいねを送っておいて」は「👍を送っておいて」になります。「絵文字の炎」→ 🔥 も使えます。",
+        "verDiccionario": "名前を見る",
+        "copiado": "{{emoji}} をコピーしました",
+        "noCopiado": "コピーできませんでした",
+        "diccionario": {
+          "titulo": "絵文字の名前",
+          "ayuda": "「emoji」に続けて名前を言います。タップするとコピーできます。",
+          "buscar": "名前を検索",
+          "copiar": "コピー",
+          "cargando": "読み込み中…",
+          "error": "一覧を読み込めませんでした。",
+          "sinResultados": "一致する名前はありません。",
+          "total": "{{total}} 件",
+          "recorte": "{{total}} 件中 {{mostrados}} 件を表示中。検索を絞り込んでください。"
+        }
+      },
+      "voiceActivityDetection": {
+        "title": "音声区間の検出",
+        "description": "録音から無音部分を除去します。ストリーミング対応モデルはより長い音声検出区間を使用します。VAD を無効にすると音声をそのまま録音します。"
+      },
+      "dictionary": {
+        "title": "プロジェクト辞書",
+        "description": "音声モデルはコードの専門用語を知りません。Abrax はアクティブなプロジェクトをインデックス化して学習します。識別子・git ブランチ・ファイル名が音声入力を補正します。",
+        "pickProject": "プロジェクトを選択",
+        "changeProject": "プロジェクトを変更",
+        "pickTitle": "プロジェクトフォルダーを選択",
+        "reindex": "再インデックス",
+        "enable": "このプロジェクトから学習",
+        "enableDescription": "オンにするとインデックス化された用語が音声入力を補正します。オフにしても索引は保持されます。",
+        "termCount": "インデックス済み用語: {{count}}",
+        "noIndex": "まだインデックスされていません",
+        "lastIndexed": "{{date}} にインデックス",
+        "indexed": "プロジェクトをインデックス化: {{count}} 用語",
+        "indexError": "インデックス化に失敗: {{error}}",
+        "privacy": "インデックスはディスク上に保存されます。コードの内容がこのコンピューターの外に出ることはありません。",
+        "source": {
+          "code": "リポジトリから",
+          "branch": "git ブランチ",
+          "path": "ファイル名"
+        }
+      },
+      "customReplacements": {
+        "title": "完全一致の置換",
+        "description": "モデルが常に聞き間違える単語は決定的に修正します。大文字小文字を区別する完全一致のトークン置換です。",
+        "fromPlaceholder": "聞こえた語",
+        "toPlaceholder": "置換後",
+        "add": "追加",
+        "remove": "{{word}} を削除",
+        "duplicate": "「{{word}}」の置換は既に存在します"
+      },
+      "memoria": {
+        "title": "修正メモリー",
+        "description": "履歴で文字起こしを修正すると ABRAX が学習します。単語を消して正しい語を入力すれば、次回から正しく書かれます。すべてローカルです。",
+        "empty": "学習した修正はまだありません。履歴で文字起こしを編集（鉛筆アイコン）すると、ABRAX が変更から学習します。",
+        "forget": "この修正を忘れる",
+        "clearAll": "すべて忘れる",
+        "enSitioTitle": "書いている場所で学習",
+        "enSitioDescription": "ディクテーション開始時に、ABRAX は入力中のフィールドを（アクセシビリティ経由で、100% ローカルに）読み直し、前回のディクテーションにそこで加えた修正から学習します。フィールドの内容は保存されず、端末の外にも出ません。"
       }
     },
     "history": {
@@ -452,7 +533,17 @@
       "retranscribe": "再文字起こし",
       "retranscribeError": "再文字起こしに失敗しました。もう一度お試しください。",
       "transcribing": "文字起こし中…",
-      "transcriptionFailed": "文字起こしに失敗しました。リトライアイコンを使用して再文字起こしできます。"
+      "transcriptionFailed": "文字起こしに失敗しました。リトライアイコンを使用して再文字起こしできます。",
+      "loadError": "履歴を読み込めませんでした。音声入力データはディスクに残っています。",
+      "edit": {
+        "action": "文字起こしを編集",
+        "save": "保存",
+        "cancel": "キャンセル",
+        "hint": "保存すると、メモリーが修正を学習します。",
+        "saved": "文字起こしを更新しました。",
+        "learned": "メモリー: {{pares}} を学習しました",
+        "error": "編集を保存できませんでした。"
+      }
     },
     "debug": {
       "title": "デバッグ",
@@ -510,10 +601,6 @@
         "title": "クラムシェルマイク",
         "description": "ノートパソコンの蓋を閉じたときに使用するマイク"
       },
-      "postProcessingToggle": {
-        "label": "後処理",
-        "description": "文字起こし後の AI によるテキスト改善を有効化"
-      },
       "muteWhileRecording": {
         "label": "録音中にミュート",
         "description": "録音中にシステムオーディオをミュート"
@@ -568,9 +655,9 @@
         "button": "GitHub で見る"
       },
       "supportDevelopment": {
-        "title": "開発を支援",
-        "description": "Abrax の開発を支援してください",
-        "button": "寄付する"
+        "title": "Handy（オリジナルプロジェクト）を支援",
+        "description": "寄付は Handy の作者 CJ Pais に届きます。ABRAX は Handy のフォークです。",
+        "button": "Handy を支援"
       },
       "acknowledgments": {
         "title": "謝辞",
@@ -583,11 +670,21 @@
           "title": "ggml",
           "description": "オンデバイス機械学習推論のための高性能テンソルライブラリ",
           "details": "Abrax のローカルの音声からテキストへの文字起こしは transcribe.cpp と ggml を基盤としています。Georgi Gerganov 氏と貢献者の皆様の素晴らしい仕事に感謝します。"
+        },
+        "modelos": {
+          "title": "音声認識モデル",
+          "description": "モデルは必要に応じてダウンロードされ、インストーラーには含まれていません。各モデルはそれぞれのライセンスに従います。CC-BY のモデルは帰属表示が必要なため、ここに記載しています。全文は LICENSES-THIRD-PARTY.md をご覧ください。"
         }
       },
       "whatsNewUpdates": {
         "label": "新機能を表示",
         "description": "Abrax のアップデート後にリリースノートを表示"
+      }
+    },
+    "streaming": {
+      "systemAudio": {
+        "label": "システム音声を取り込む",
+        "description": "マイクではなく、パソコンで鳴っている音（授業・動画・会議）を書き起こします。システム音声に向いたモデルが必要で、有効なモデルが向かない場合は Abrax が適したものに切り替えます。"
       }
     }
   },
@@ -611,7 +708,14 @@
     "open": "開く",
     "copy": "コピー",
     "clear": "クリア",
-    "noOptionsFound": "オプションが見つかりません"
+    "noOptionsFound": "オプションが見つかりません",
+    "retry": "再試行",
+    "play": "再生",
+    "pause": "一時停止",
+    "seek": "再生位置",
+    "moreInfo": "詳細情報",
+    "selectOption": "オプションを選択…",
+    "systemDefault": "既定"
   },
   "accessibility": {
     "permissionsDescription": "Abrax が文字起こしテキストを入力するには、アクセシビリティ権限が必要です。",
@@ -627,13 +731,37 @@
       "linux": "システムのサウンドまたはプライバシー設定でマイクへのアクセスを許可してください。"
     },
     "noInputDeviceTitle": "マイクが見つかりません",
+    "recordingNoAudioTitle": "No audio detected",
     "noInputDevice": "オーディオ入力デバイスが検出されませんでした。マイクまたはヘッドセットを接続してから再試行してください。",
     "recordingFailed": "録音の開始に失敗しました: {{error}}",
     "modelLoadFailed": "モデルの読み込みに失敗しました: {{model}}",
     "modelLoadFailedUnknown": "不明なモデル",
     "pasteFailedTitle": "テキストの貼り付けに失敗しました",
     "pasteFailed": "アクティブなアプリにテキストを貼り付けられませんでした。",
-    "transcriptionFailedTitle": "文字起こしに失敗しました"
+    "transcriptionFailedTitle": "文字起こしに失敗しました",
+    "recordingFailedTitle": "録音に失敗しました",
+    "modelLoadFailedTitle": "モデルの読み込みに失敗しました",
+    "modelDownloadFailedTitle": "モデルのダウンロードに失敗しました",
+    "center": {
+      "title": "最近のお知らせ（{{count}}）",
+      "dismiss": "閉じる",
+      "toggle": "すべてのお知らせを表示"
+    },
+    "recordingTooShortTitle": "ほとんど録音されませんでした",
+    "recordingTooShort": "録音は1秒未満でした。ショートカットを使う場合は、話している間 {{atajo}} を押し続けてください。",
+    "recordingTooShortNoBinding": "録音は1秒未満でした。停止する前に少し話してください。",
+    "transcriptionEmptyTitle": "何も聞き取れませんでした",
+    "transcriptionEmpty": "単語を認識できませんでした。もう少し大きな声で、またはマイクに近づいて話してみてください。",
+    "sistemaSinModeloAptoTitle": "より高性能なモデルが必要です",
+    "sistemaSinModeloApto": "システム音声は取り込めましたが、現在のモデルでは会議や動画の音声を認識できません。「モデル」で Nemotron Streaming 3.5（716 MB）または Whisper Large v3 Turbo（845 MB）をダウンロードしてください。Abrax が自動的にそのモデルに切り替えます。",
+    "sistemaSinModeloAptoDescargar": "ダウンロード ({{mb}} MB)",
+    "shortcutRegistrationTitle": "ショートカットを有効にできませんでした",
+    "shortcutRegistration": "Abrax はキーボードショートカットを登録できませんでした。再起動してください。続く場合は設定 → 一般で別のショートカットを指定してください。",
+    "atajoOcupado": "別のアプリがこのショートカットを使用しています: {{atajos}}。動作させるには設定で変更してください。",
+    "atajoOcupadoCambiar": "ショートカットを変更",
+    "sistemaModeloCambiadoTitle": "システム音声のためにモデルを変更しました",
+    "sistemaModeloCambiado": "Abrax はシステム音声を理解できる {{modelo}} に切り替えました。このモデルは話している最中の文字も 1 分あたりの語数も表示せず、離した時にまとめて出ます。リアルタイム表示が必要なら、モデル画面で Nemotron Streaming 3.5（716 MB）をダウンロードしてください。",
+    "descargaIniciada": "モデルをダウンロード中です。モデル画面で確認できます。"
   },
   "appLanguage": {
     "title": "アプリの言語",
@@ -648,14 +776,352 @@
       "dark": "ダーク"
     }
   },
+  "palette": {
+    "title": "パレット",
+    "description": "Abrax のカラーパレットを選択します。Imperial は設計上ダークなテーマで、有効な間はダークモードが強制されます。",
+    "options": {
+      "abrax": "ABRAX",
+      "imperial": "Imperial",
+      "escuderia": "Escudería"
+    }
+  },
   "overlay": {
     "transcribing": "文字起こし中…",
-    "processing": "処理中…"
+    "processing": "処理中…",
+    "leyendo": "読み上げ中",
+    "preparando": "読み上げの準備中"
   },
   "whatsNew": {
     "title": "Abrax v{{version}} の新機能"
   },
+  "correccion": {
+    "motor": {
+      "title": "補正エンジン",
+      "description": "文字起こしから貼り付けまでの間に口述を整えます。「オフ」は文字起こしのまま何も変えません。「ルールのみ」は即時の決定的な修正だけを適用します。",
+      "options": {
+        "solo_reglas": "ルールのみ",
+        "desactivado": "オフ"
+      }
+    },
+    "modo": {
+      "title": "補正レベル",
+      "description": "そのままは空白と文頭の大文字だけを直します。すっきりはさらに、記号（「五パーセント」→ 5%）、口述で抜ける記号、メールとパス、繰り返し（「それから それから」）、そして下でオンのままなら数字を算用数字にします。話し言葉の言い直し修正はこれに左右されません。専用のスイッチがあります。",
+      "options": {
+        "literal": "そのまま",
+        "limpio": "クリーン"
+      }
+    },
+    "numeros": {
+      "title": "数字を算用数字に",
+      "description": "話した数を算用数字にします：「一万二千八百」→12800、「十七時三十分」→17:30。技術的なものだけでなく全部を変換するので、「二分」は「2分」になります。漢数字のままがよければオフに——「整える」の他の機能はそのまま動きます。"
+    }
+  },
+  "pruebaMic": {
+    "title": "マイクをテスト",
+    "description": "モデルが聞くのとまったく同じ音声を3秒録音し(16 kHz・VADなし)、再生して実際のレベルで判定します。Defaultの裏に実際にどのデバイスがあるかも表示します。",
+    "boton": "3秒録音",
+    "grabando": "録音中…",
+    "niveles": "RMS {{rms}} dBFS · pico {{pico}} dBFS",
+    "nivelClip": " · clip {{clip}}%",
+    "veredicto": {
+      "sin_senal": "信号なし — マイクから音声が届いていません",
+      "muy_bajo": "非常に小さい — このレベルでは書き起こしは失敗します",
+      "bajo": "小さい — 動作しますが精度が落ちます",
+      "sano": "良好なレベル",
+      "saturado": "クリッピング — マイクが飽和しています"
+    },
+    "dispositivo": "マイク: {{nombre}}({{contexto}})",
+    "esElDefault": "システム既定",
+    "esElegido": "設定で選択"
+  },
+  "shell": {
+    "title": "ウィンドウの形状",
+    "description": "Abrax ウィンドウの形状を選びます。クラシックは従来の設定ウィンドウ、Quiet はホーム画面に球体を配したミニマルなダークパネルです。ウィンドウ枠の変更は Abrax の再起動時に完了します。",
+    "options": {
+      "classic": "クラシック",
+      "retro": "レトロ",
+      "quiet": "Quiet",
+      "bancada": "Karting"
+    }
+  },
+  "bancada": {
+    "local": "Procesamiento local · 0% Nube",
+    "tray": "Enviar a la bandeja",
+    "min": "Minimizar",
+    "close": "Cerrar",
+    "nav": {
+      "tablero": "TABLERO",
+      "bitacora": "BITÁCORA",
+      "setup": "SETUP"
+    },
+    "pitRadio": "PIT RADIO",
+    "lcdReady": "En boxes · listo",
+    "lcdListening": "Escuchando…",
+    "launch": "TU LARGADA · {{atajo}}",
+    "start": "Arrancar dictado",
+    "stop": "Detener dictado",
+    "dictate": "Dictar",
+    "stopping": "Detener",
+    "ignitionStart": "START",
+    "ignitionStop": "STOP",
+    "appearance": "APARIENCIA",
+    "speakers": "Hablantes",
+    "systemAudio": "System audio",
+    "speakersAuto": "Auto",
+    "speakersN": "{{n}}",
+    "mergeInto": "Actually is…",
+    "resetSpeakers": "Reset",
+    "wpmUnit": "PAL/MIN",
+    "copied": "Copiado al portapapeles",
+    "on": "ON",
+    "off": "OFF",
+    "btn": {
+      "cancel": "Cancelar",
+      "copy": "Copiar",
+      "clear": "Limpiar",
+      "translate": "Traducir → EN",
+      "fillers": "Muletillas",
+      "log": "Bitácora"
+    },
+    "dial": {
+      "vad": "VAD",
+      "palette": "Paleta"
+    },
+    "lamp": {
+      "idle": "RALENTÍ",
+      "rec": "REC",
+      "transcribing": "TRANSCRIBIENDO",
+      "polishing": "PULIENDO",
+      "error": "FALLA"
+    },
+    "estado": {
+      "idle": "Ralentí",
+      "rec": "Grabando",
+      "transcribing": "Transcribiendo",
+      "polishing": "Puliendo",
+      "error": "Falla"
+    },
+    "speakerLabel": "話者 {{n}}"
+  },
+  "retro": {
+    "menu": "Abrax メニュー",
+    "titleMain": "ABRAX · レトロモード",
+    "titleSettings": "ABRAX · クイック設定",
+    "titleHistory": "ABRAX · 履歴",
+    "fold": "折りたたむ",
+    "close": "閉じる",
+    "marquee": "ABRAX ··· ひと言どうぞ ··· レトロモード ··· 100% ローカル ··· スペイン語ファースト ···",
+    "lamp": {
+      "model": "モデル",
+      "local": "LOCAL",
+      "filler": "フィラー",
+      "dict": "辞書",
+      "ptt": "PTT",
+      "vad": "VAD",
+      "translate": "翻訳",
+      "sphere": "スフィア"
+    },
+    "dictate": "音声入力",
+    "stop": "停止",
+    "settings": "クイック設定",
+    "history": "履歴",
+    "compiler": "プロンプトコンパイラ",
+    "sections": "セクション ▾",
+    "slider": {
+      "buffer": "バッファ",
+      "volume": "音量",
+      "threshold": "閾値"
+    },
+    "emptyHistory": "まだ音声入力がありません — ショートカットを押しながら話してください。",
+    "copyHint": "ダブルクリックでコピー",
+    "copy": "コピー",
+    "save": "★ 保存",
+    "delete": "削除",
+    "compile": "✦ コンパイル",
+    "count": "{{n}} 件の音声入力 · LOCAL",
+    "copied": "クリップボードにコピーしました",
+    "menuSections": "セクション",
+    "menuWindows": "ウィンドウ",
+    "toClassic": "クラシックに戻る",
+    "theme": "テーマ",
+    "footer": "レトロモード — ABRAX のスキン · 同じ透明ウィンドウ",
+    "tray": "Send to tray",
+    "minimize": "Minimize",
+    "localBadge": "ローカル処理 · クラウド0%",
+    "infoPalette": "パレット",
+    "infoLanguage": "言語",
+    "infoFillers": "フィラー",
+    "infoTranslate": "翻訳",
+    "infoAutoVoice": "自動音声",
+    "infoVisual": "表示",
+    "words": "{{n}} 語",
+    "actCopy": "コピー",
+    "actClear": "クリア",
+    "emptyTranscriptions": "まだ文字起こしがありません。",
+    "activeModel": "使用中のモデル",
+    "localFull": "100% ローカル処理 · クラウドなし",
+    "backToClassic": "クラシックスキンに戻る"
+  },
   "logo": {
     "tagline": "« Di la <accent>palabra</accent>. »"
+  },
+  "escucha": {
+    "title": "VOX",
+    "openFile": "ファイルを開く…",
+    "readClipboard": "クリップボードを読む",
+    "play": "読む",
+    "pause": "一時停止",
+    "pauseHint": "現在の文の終わりで一時停止します",
+    "resume": "再開",
+    "stop": "停止",
+    "speed": "速度",
+    "voiceProse": "文章の声",
+    "voiceCode": "コードの声",
+    "noVoices": "システム音声が見つかりません",
+    "empty": "ファイルを開くか、クリップボードを読み上げて開始します。",
+    "engineUnavailable": "システムの音声エンジンを利用できません。",
+    "errorRead": "内容を読み込めませんでした。",
+    "errorSpeak": "読み上げを再生できませんでした。",
+    "escHint": "Esc で読み上げを停止します。",
+    "clipboard": "クリップボード",
+    "clipboardEmpty": "クリップボードにテキストがありません。",
+    "fileFilter": "テキスト、Markdown、コード",
+    "sentences": "{{total}} 文",
+    "verbosity": "記号",
+    "verbosityNatural": "自然（ノイズ控えめ）",
+    "verbosityLiteral": "リテラル（すべての記号）"
+  },
+  "tts": {
+    "voiceLangEs": "スペイン語",
+    "voiceLangEn": "英語",
+    "voiceSettings": "音声設定",
+    "speed": "速度",
+    "pitch": "ピッチ",
+    "pitchLow": "低い",
+    "pitchNormal": "標準",
+    "pitchHigh": "高い",
+    "pitchHint": "ピッチはオンライン音声にのみ適用されます。",
+    "vram": "({{gb}} GB VRAM)",
+    "descOnline": "Microsoft のニューラル音声（Azure）。ローカルではありません: テキストをインターネット経由で送信します。",
+    "onlineWarning": "インターネットが必要 · テキストが端末から送信されます",
+    "preparingVoice": "{{engine}} を準備しています… 初回は数秒かかります。",
+    "engineSystem": "システムの音声",
+    "title": "音声エンジン",
+    "localBadge": "100% ローカル",
+    "detecting": "お使いの環境を検出中…",
+    "detected": "お使いの環境を検出しました:",
+    "recommendation": "最高の音声には {{engine}} がおすすめです — ローカルで動作し、オフラインでも使えます。",
+    "activeEngine": "使用中のエンジン: {{engine}}",
+    "detectFailed": "ハードウェアを検出できませんでした。システムの音声を使用します。",
+    "useRecommended": "おすすめを使用",
+    "chooseOther": "別のエンジンを選ぶ",
+    "redetect": "再検出",
+    "testVoice": "音声を試す",
+    "sampleTextEs": "Hola, soy la voz de Abrax. Di la palabra y yo la leo por ti.",
+    "sampleTextEn": "Hi, I'm the voice of Abrax. Say the word and I'll read it for you.",
+    "voice": "音声",
+    "noGpu": "専用 GPU なし",
+    "available": "利用可能",
+    "unavailable": "利用不可",
+    "needsGpu": "対応 GPU が必要（NVIDIA または Apple Silicon）",
+    "needsDownload": "エンジンのダウンロードが必要",
+    "recommended": "おすすめ",
+    "activeShort": "使用中",
+    "use": "使用",
+    "download": "有効にする",
+    "downloading": "ダウンロード中…",
+    "installed": "エンジンをインストール済み",
+    "errorDownload": "エンジンをダウンロードできませんでした。",
+    "errorSetEngine": "エンジンを切り替えられませんでした。",
+    "descSystem": "OS のシステム音声。常に利用でき、ダウンロード不要です。",
+    "descPiper": "軽量な日本語のニューラル音声。CPU で動作します。",
+    "descKokoro": "CPU で動作する高品質なニューラル音声。"
+  },
+  "carpetaModelos": {
+    "titulo": "Models folder",
+    "cambiar": "Change",
+    "discoConNombre": "{{nombre}} ({{punto}})",
+    "removible": "· removable",
+    "espacio": "{{libre}} GB free of {{total}} GB",
+    "volverPorDefecto": "Back to the original folder",
+    "avisoNoMueve": "New downloads will go to this folder. Already-downloaded models stay where they were; if they don't show up, go back to the original folder or download them again here.",
+    "moverPregunta": "ダウンロード済みのモデル（{{gb}} GB）を新しいフォルダーに移動しますか？",
+    "moverAhora": "今すぐ移動",
+    "soloNuevas": "新規ダウンロードのみ",
+    "cancelar": "キャンセル",
+    "moviendo": "{{archivo}} を移動中…",
+    "moverError": "移動を完了できませんでした: {{detalle}}。何も失われていません。移動されなかったものは元のフォルダーに残っています。"
+  },
+  "quiet": {
+    "nav": {
+      "listen": "聞き取り",
+      "shortcuts": "ショートカット",
+      "streaming": "ストリーミング",
+      "transcriptions": "Transcriptions",
+      "models": "Models",
+      "settings": "Settings",
+      "more": "その他"
+    },
+    "ready": "ABRAX is ready",
+    "holdHint": "話している間は <k>{{atajo}}</k> を押し続け、終わったら離してください。",
+    "holdHintNoBinding": "設定でショートカットを決めて、話している間は押し続けてください。",
+    "start": "Start transcription",
+    "stop": "Stop",
+    "recent": "Recent transcriptions",
+    "empty": "No transcriptions yet. Hold the shortcut and say the word.",
+    "local": "Local processing",
+    "noCloud": "No cloud connection",
+    "min": "Minimize",
+    "max": "Maximize",
+    "close": "Close",
+    "tray": "Send to tray",
+    "dictando": "聞いています… 終わったら離してください",
+    "panel": {
+      "modelo": "モデル",
+      "sinModelo": "モデルなし",
+      "descargar": "ダウンロード",
+      "descargando": "{{modelo}} をダウンロード中 · {{pct}}%",
+      "voz": "音声",
+      "hint": {
+        "fillers": "口ぐせ（「えー」「あの」）を書き起こしから取り除きます。",
+        "autocorreccion": "話しながら言い直すと（「いや、ちがう」）、直った文が出ます。",
+        "emoji": "「絵文字」と名前を言うと挿入されます。表で処理、AIなし。",
+        "systemAudio": "マイクではなくパソコンで鳴っている音を書き起こします。有効なモデルが向かない場合は Abrax が適したものに切り替えます。"
+      },
+      "sinModeloSistema": "システム音声を取り込むには、これらのモデルのどれかをダウンロードしてください。",
+      "elegirModelo": "モデルを選ぶ",
+      "usaraSistema": "未選択です。システム音声をオンにすると Abrax は「{{modelo}}」を使います。",
+      "descargado": "ダウンロード済み"
+    },
+    "modo": {
+      "grupo": {
+        "gesto": "どう始めるか",
+        "microfono": "マイク",
+        "texto": "文字にどう手を入れるか",
+        "pegado": "どこに書き込むか",
+        "salida": "どこから鳴るか",
+        "fuente": "音の出どころ",
+        "apariencia": "外観"
+      },
+      "streaming": {
+        "que": "マイクではなく、パソコンで鳴っている音（授業・動画・会議）を書き起こします。",
+        "resto": "残り（自動修正、口ぐせ、辞書、貼り付け先）は「聞く」と同じです。一度設定すれば両方に効きます。"
+      },
+      "vox": {
+        "que": "選択したテキストを、どのアプリでも読み上げます。",
+        "como": "<k>{{atajo}}</k> を押すと読み上げが始まります。もう一度押すと止まります。"
+      },
+      "escucha": {
+        "que": "話すと、入力していた場所にそのまま文字が出ます。すべてこのパソコンの中で処理され、ネットには何も出ません。"
+      }
+    }
+  },
+  "soundPicker": {
+    "custom": "カスタム",
+    "preview": "サウンドテーマを試聴（開始と終了）"
+  },
+  "vox": {
+    "atajoHint": "VOX は <k>{{atajo}}</k> を押すと、どのアプリでも選択中の文字を読み上げます。",
+    "atajoSinBinding": "VOX は設定でショートカットを決めると、選択中の文字を読み上げます。"
   }
 }

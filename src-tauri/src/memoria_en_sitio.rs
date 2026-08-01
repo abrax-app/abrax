@@ -1,0 +1,416 @@
+//! Memoria en el sitio: aprender de las correcciones hechas DONDE se dicta.
+//!
+//! El flujo cómodo que pide el producto: el usuario dicta, ABRAX tipea, el
+//! usuario corrige una palabra ahí mismo (en su editor) y sigue. Al EMPEZAR el
+//! siguiente dictado, ABRAX relee el campo de texto enfocado vía la API de
+//! accesibilidad del sistema (UI Automation en Windows; en otras plataformas
+//! esta vía se degrada a no-op y queda el camino del Historial), localiza lo
+//! que él mismo tipeó la última vez y, si el usuario lo corrigió, aprende la
+//! diferencia con las MISMAS puertas de seguridad de la Memoria.
+//!
+//! Privacidad (regla del producto: procesamiento local, nada de loguear
+//! contenido): solo se lee el campo enfocado en el instante en que el usuario
+//! ya decidió dictar AHÍ; solo se compara contra el último texto que ABRAX
+//! tipeó; nada del campo se persiste ni se loguea — únicamente los pares
+//! aprendidos (que ya viven redactados en logs). Lectura acotada y con
+//! vigencia: si pasó mucho tiempo o el foco está en otra aplicación, no se
+//! hace nada.
+
+use std::sync::Mutex;
+use std::time::{Duration, Instant};
+
+use log::{debug, info};
+use serde::{Deserialize, Serialize};
+use specta::Type;
+use tauri::AppHandle;
+use tauri_specta::Event;
+
+use crate::audio_toolkit::build_match_key;
+use crate::memoria::{self, ParMemoria};
+use crate::settings::{get_settings, write_settings};
+
+/// Vigencia del último dictado para el aprendizaje en el sitio: pasado esto,
+/// el campo puede haber cambiado demasiado como para atribuir la edición.
+const VIGENCIA: Duration = Duration::from_secs(10 * 60);
+/// Coincidencia mínima (razón de LCS por claves) para aceptar que una ventana
+/// del campo ES el dictado anterior editado, y no otro texto.
+const MIN_COINCIDENCIA: f64 = 0.5;
+/// Rescate de dictados CORTOS totalmente reescritos: con 1–3 palabras editadas
+/// todas, el LCS queda en cero y el ancla desaparece («An Jumab» → «anhumave»
+/// no compartía ni una clave) — justo el caso del nombre de empresa mal oído.
+/// Se acepta la ventana si su distancia Levenshtein normalizada (claves
+/// unidas) es baja; después `pasa_puertas` vuelve a filtrar cada par.
+const CORTO_MAX_PALABRAS: usize = 3;
+/// Distancia máxima (dist/len) para el rescate corto. Más estricta que la
+/// puerta general de similitud: aquí no hay ancla que respalde.
+const CORTO_SIMILITUD_MAX: f64 = 0.4;
+/// Largo mínimo de la clave unida del dictado corto: por debajo de esto
+/// («hola», «vale») cualquier palabra vecina parece una edición y se
+/// aprendería veneno (hola→bola de un campo ajeno).
+const CORTO_CLAVE_MIN: usize = 6;
+/// Cota de palabras del campo leído (campos enormes no se rastrillan).
+const MAX_PALABRAS_CAMPO: usize = 4000;
+/// Máximo de caracteres pedidos al control enfocado.
+#[cfg(windows)]
+const MAX_CHARS_CAMPO: i32 = 40_000;
+
+/// Último texto tipeado por ABRAX y dónde (pid de la ventana en foco al pegar).
+struct UltimoDictado {
+    texto: String,
+    proceso: u32,
+    cuando: Instant,
+}
+
+static ULTIMO: Mutex<Option<UltimoDictado>> = Mutex::new(None);
+
+/// Evento hacia la UI cuando el aprendizaje en el sitio suma pares (para el
+/// toast «ABRAX aprendió …»).
+#[derive(Clone, Debug, Serialize, Deserialize, Type, tauri_specta::Event)]
+pub struct MemoriaAprendida {
+    pub pares: Vec<ParMemoria>,
+}
+
+/// Registra el texto recién tipeado y la app en foco. Llamar tras un pegado
+/// exitoso.
+pub fn registrar_dictado(texto: &str) {
+    let texto = texto.trim();
+    if texto.is_empty() {
+        return;
+    }
+    let proceso = pid_ventana_en_foco();
+    debug!(
+        "en sitio: dictado registrado ({} palabras, pid {proceso})",
+        texto.split_whitespace().count()
+    );
+    *ULTIMO.lock().unwrap() = Some(UltimoDictado {
+        texto: texto.to_string(),
+        proceso,
+        cuando: Instant::now(),
+    });
+}
+
+/// Al empezar un dictado: relee el campo enfocado y aprende de la diferencia
+/// con el último texto tipeado. Diseñado para correr en un hilo aparte (la
+/// lectura por accesibilidad usa COM y puede tardar unos milisegundos).
+pub fn aprender_del_campo(app: &AppHandle) {
+    let settings = get_settings(app);
+    if !settings.memoria_activa || !settings.memoria_en_sitio {
+        return;
+    }
+    let (texto_previo, proceso_previo) = {
+        let guardia = ULTIMO.lock().unwrap();
+        match guardia.as_ref() {
+            Some(u) if u.cuando.elapsed() <= VIGENCIA => (u.texto.clone(), u.proceso),
+            Some(_) => {
+                debug!("en sitio: dictado previo vencido (> {VIGENCIA:?})");
+                return;
+            }
+            None => {
+                debug!("en sitio: sin dictado previo registrado");
+                return;
+            }
+        }
+    };
+    // Mismo destino: si el foco está en otra aplicación, la edición no es
+    // atribuible al dictado anterior.
+    let proceso_actual = pid_ventana_en_foco();
+    if proceso_previo == 0 || proceso_actual != proceso_previo {
+        debug!("en sitio: foco en otra app (pid {proceso_actual} ≠ {proceso_previo})");
+        return;
+    }
+    let Some(campo) = leer_texto_enfocado() else {
+        debug!("en sitio: el campo enfocado no expone texto por accesibilidad");
+        return;
+    };
+    debug!(
+        "en sitio: campo leído ({} caracteres), comparando con el último dictado",
+        campo.chars().count()
+    );
+    let pares = comparar_con_campo(&texto_previo, &campo);
+    if pares.is_empty() {
+        debug!("en sitio: sin correcciones aprendibles (intacto, sin coincidencia o puertas)");
+        return;
+    }
+    let mut s = get_settings(app);
+    let tocados = memoria::incorporar(pares, &mut s.memoria_correcciones);
+    write_settings(app, s);
+    info!(
+        "Memoria en el sitio: {} corrección(es) aprendida(s) del campo enfocado",
+        tocados.len()
+    );
+    let _ = MemoriaAprendida { pares: tocados }.emit(app);
+}
+
+/// Compara el texto tipeado con el contenido actual del campo: busca la
+/// ventana de palabras que mejor coincide (LCS sobre claves normalizadas, con
+/// largo ±2) y, si la coincidencia es suficiente, aprende del diff. El texto
+/// intacto (fast-path por substring) no aprende nada.
+pub fn comparar_con_campo(tipeado: &str, campo: &str) -> Vec<(String, String)> {
+    let tipeado = tipeado.trim();
+    if tipeado.is_empty() || campo.contains(tipeado) {
+        return Vec::new();
+    }
+    let obj: Vec<&str> = tipeado.split_whitespace().collect();
+    let n = obj.len();
+    let palabras: Vec<&str> = campo.split_whitespace().collect();
+    if n == 0 || palabras.is_empty() || palabras.len() > MAX_PALABRAS_CAMPO {
+        return Vec::new();
+    }
+    let claves_obj: Vec<String> = obj.iter().map(|w| build_match_key(w)).collect();
+    let claves_campo: Vec<String> = palabras.iter().map(|w| build_match_key(w)).collect();
+
+    let mut mejor: Option<(f64, usize, usize)> = None; // (razón, inicio, largo)
+    for delta in -2isize..=2 {
+        let m = n as isize + delta;
+        if m < 1 || m as usize > palabras.len() {
+            continue;
+        }
+        let m = m as usize;
+        for i in 0..=palabras.len() - m {
+            let razon = lcs_len(&claves_obj, &claves_campo[i..i + m]) as f64 / n.max(m) as f64;
+            if mejor.is_none_or(|(r, _, _)| razon > r) {
+                mejor = Some((razon, i, m));
+            }
+        }
+    }
+    let Some((razon, i, m)) = mejor else {
+        return Vec::new();
+    };
+    if razon < MIN_COINCIDENCIA {
+        // Dictado corto totalmente reescrito: sin una sola clave compartida el
+        // LCS no puede ubicarlo, pero un nombre mal oído y corregido entero
+        // («An Jumab» → «anhumave», «Grafify» → «Krafify») sigue estando ahí,
+        // parecidísimo. Se busca la ventana más CERCANA por Levenshtein.
+        if let Some((j, k)) = ventana_corta_parecida(&claves_obj, &claves_campo) {
+            return memoria::aprender_de_edicion(tipeado, &palabras[j..j + k].join(" "));
+        }
+        return Vec::new(); // el dictado anterior ya no está reconocible en el campo
+    }
+    memoria::aprender_de_edicion(tipeado, &palabras[i..i + m].join(" "))
+}
+
+/// Ventana del campo más parecida a un dictado CORTO, por distancia
+/// Levenshtein normalizada sobre las claves unidas. `None` si el dictado no
+/// aplica (largo, o clave demasiado corta) o si nada se parece lo suficiente.
+fn ventana_corta_parecida(
+    claves_obj: &[String],
+    claves_campo: &[String],
+) -> Option<(usize, usize)> {
+    let n = claves_obj.len();
+    if n == 0 || n > CORTO_MAX_PALABRAS {
+        return None;
+    }
+    let obj = claves_obj.concat();
+    if obj.chars().count() < CORTO_CLAVE_MIN {
+        return None; // «hola» editado: cualquier vecina parecería corrección
+    }
+    let mut mejor: Option<(f64, usize, usize)> = None;
+    for delta in -1isize..=1 {
+        let m = n as isize + delta;
+        if m < 1 || m as usize > claves_campo.len() {
+            continue;
+        }
+        let m = m as usize;
+        for j in 0..=claves_campo.len() - m {
+            let ventana = claves_campo[j..j + m].concat();
+            let largo = obj.chars().count().max(ventana.chars().count());
+            if largo == 0 {
+                continue;
+            }
+            let dist = strsim::levenshtein(&obj, &ventana) as f64 / largo as f64;
+            if mejor.is_none_or(|(d, _, _)| dist < d) {
+                mejor = Some((dist, j, m));
+            }
+        }
+    }
+    match mejor {
+        Some((dist, j, m)) if dist <= CORTO_SIMILITUD_MAX => Some((j, m)),
+        _ => None,
+    }
+}
+
+fn lcs_len(a: &[String], b: &[String]) -> usize {
+    let (n, m) = (a.len(), b.len());
+    let mut fila = vec![0usize; m + 1];
+    for i in (0..n).rev() {
+        let mut diagonal = 0usize; // dp[i+1][j+1]
+        for j in (0..m).rev() {
+            let abajo = fila[j]; // dp[i+1][j]
+            fila[j] = if a[i] == b[j] {
+                diagonal + 1
+            } else {
+                abajo.max(fila[j + 1])
+            };
+            diagonal = abajo;
+        }
+    }
+    fila[0]
+}
+
+#[cfg(windows)]
+fn pid_ventana_en_foco() -> u32 {
+    use windows::Win32::UI::WindowsAndMessaging::{GetForegroundWindow, GetWindowThreadProcessId};
+    unsafe {
+        let hwnd = GetForegroundWindow();
+        if hwnd.is_invalid() {
+            return 0;
+        }
+        let mut pid = 0u32;
+        GetWindowThreadProcessId(hwnd, Some(&mut pid));
+        pid
+    }
+}
+
+#[cfg(not(windows))]
+fn pid_ventana_en_foco() -> u32 {
+    0
+}
+
+/// Texto del control enfocado vía UI Automation (TextPattern con fallback a
+/// ValuePattern). Best-effort: cualquier fallo devuelve None y no se aprende.
+///
+/// Chromium/Electron (navegadores, VS Code/Cursor, Discord) construyen su
+/// árbol de accesibilidad RECIÉN cuando detectan un cliente UIA: la primera
+/// consulta puede llegar vacía y a la vez despertarlo. Por eso se reintenta
+/// una vez tras una pausa corta.
+#[cfg(windows)]
+fn leer_texto_enfocado() -> Option<String> {
+    match leer_texto_enfocado_una_vez() {
+        Some(t) if !t.trim().is_empty() => Some(t),
+        _ => {
+            std::thread::sleep(Duration::from_millis(250));
+            leer_texto_enfocado_una_vez()
+        }
+    }
+}
+
+#[cfg(windows)]
+fn leer_texto_enfocado_una_vez() -> Option<String> {
+    use windows::core::Interface;
+    use windows::Win32::System::Com::{
+        CoCreateInstance, CoInitializeEx, CLSCTX_INPROC_SERVER, COINIT_APARTMENTTHREADED,
+    };
+    use windows::Win32::UI::Accessibility::{
+        CUIAutomation, IUIAutomation, IUIAutomationTextPattern, IUIAutomationValuePattern,
+        UIA_TextPatternId, UIA_ValuePatternId,
+    };
+
+    unsafe {
+        // Puede venir ya inicializado en este hilo; ambos casos sirven.
+        let _ = CoInitializeEx(None, COINIT_APARTMENTTHREADED);
+        let auto: IUIAutomation = CoCreateInstance(&CUIAutomation, None, CLSCTX_INPROC_SERVER)
+            .map_err(|e| debug!("UIA no disponible: {e}"))
+            .ok()?;
+        let elemento = auto.GetFocusedElement().ok()?;
+        if let Ok(patron) = elemento.GetCurrentPattern(UIA_TextPatternId) {
+            if let Ok(texto) = patron.cast::<IUIAutomationTextPattern>() {
+                if let Ok(rango) = texto.DocumentRange() {
+                    if let Ok(bstr) = rango.GetText(MAX_CHARS_CAMPO) {
+                        return Some(bstr.to_string());
+                    }
+                }
+            }
+        }
+        if let Ok(patron) = elemento.GetCurrentPattern(UIA_ValuePatternId) {
+            if let Ok(valor) = patron.cast::<IUIAutomationValuePattern>() {
+                if let Ok(bstr) = valor.CurrentValue() {
+                    return Some(bstr.to_string());
+                }
+            }
+        }
+        None
+    }
+}
+
+#[cfg(not(windows))]
+fn leer_texto_enfocado() -> Option<String> {
+    // Fase Windows primero; macOS (AXUIElement) y AT-SPI quedan documentados
+    // como siguiente paso. El camino del Historial funciona en todas partes.
+    None
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    // ── rescate de dictados cortos totalmente reescritos ──────────────────
+
+    #[test]
+    fn nombre_corto_reescrito_entero_se_aprende() {
+        // El caso real del 30/07: el ASR oyó «An Jumab», el usuario lo dejó
+        // como «anhumave». Cero claves compartidas → el LCS no lo ubicaba y
+        // no se aprendía nada.
+        let pares = comparar_con_campo("An Jumab", "escríbele a anhumave por favor");
+        assert_eq!(
+            pares,
+            vec![("An Jumab".to_string(), "anhumave".to_string())]
+        );
+        // El nombre de empresa mal oído, corregido en el campo.
+        let pares = comparar_con_campo("Grafify", "la empresa Krafify factura");
+        assert_eq!(pares, vec![("Grafify".to_string(), "Krafify".to_string())]);
+    }
+
+    #[test]
+    fn corto_sin_parecido_no_aprende_de_campos_ajenos() {
+        // El campo no contiene nada parecido al dictado: no hay edición que
+        // atribuir, aunque el dictado sea corto.
+        assert!(comparar_con_campo("Grafify", "no tiene nada que ver esto").is_empty());
+    }
+
+    #[test]
+    fn corto_de_clave_diminuta_no_entra_al_rescate() {
+        // «hola» (clave de 4) editado: cualquier palabra vecina («bola»)
+        // parecería una corrección — veneno. El rescate exige clave ≥ 6.
+        assert!(comparar_con_campo("hola", "escribe bola aquí").is_empty());
+    }
+
+    #[test]
+    fn campo_intacto_no_aprende() {
+        let t = "el portapapeles crash";
+        assert!(comparar_con_campo(t, "hola\nel portapapeles crash\nchao").is_empty());
+    }
+
+    #[test]
+    fn correccion_en_el_campo_se_aprende() {
+        // ABRAX tipeó «portavapeles»; el usuario lo corrigió ahí mismo, entre
+        // más texto suyo.
+        let pares = comparar_con_campo(
+            "el portavapeles crash",
+            "notas del día\nrevisar: el portapapeles crash cuando pego\nfin",
+        );
+        assert_eq!(
+            pares,
+            vec![("portavapeles".to_string(), "portapapeles".to_string())]
+        );
+    }
+
+    #[test]
+    fn correccion_de_mayusculas_se_aprende() {
+        let pares = comparar_con_campo("hablamos de github hoy", "ayer hablamos de GitHub hoy si");
+        assert_eq!(pares, vec![("github".to_string(), "GitHub".to_string())]);
+    }
+
+    #[test]
+    fn campo_sin_el_dictado_no_aprende() {
+        assert!(comparar_con_campo(
+            "el portavapeles crash",
+            "un documento totalmente distinto sin relación alguna"
+        )
+        .is_empty());
+    }
+
+    #[test]
+    fn campo_enorme_no_se_rastrilla() {
+        let campo = "palabra ".repeat(MAX_PALABRAS_CAMPO + 10);
+        assert!(comparar_con_campo("el portavapeles crash", &campo).is_empty());
+    }
+
+    #[test]
+    fn borrar_una_palabra_del_dictado_no_aprende() {
+        // El usuario quitó una palabra (contenido): inserciones/borrados puros
+        // no son correcciones — las puertas de la memoria aplican igual aquí.
+        assert!(
+            comparar_con_campo("el portapapeles crash feo", "el portapapeles crash").is_empty()
+        );
+    }
+}

@@ -6,16 +6,23 @@
     "unloadModel": "Model ontladen",
     "model": "Model",
     "quit": "Afsluiten",
-    "cancel": "Annuleren"
+    "cancel": "Annuleren",
+    "errorTitle": "Abrax is op een probleem gestuit",
+    "errorRecording": "De opname kon niet starten. Open Abrax voor details.",
+    "errorTranscription": "De transcriptie is mislukt. Open Abrax om het opnieuw te proberen via de geschiedenis.",
+    "errorPaste": "De tekst kon niet worden geplakt. Deze is opgeslagen in je geschiedenis.",
+    "errorModelLoad": "Het spraakmodel kon niet worden geladen. Open Abrax voor de oorzaak.",
+    "errorModelDownload": "De modeldownload is mislukt. Open Abrax om het opnieuw te proberen.",
+    "show": "Show Abrax"
   },
   "sidebar": {
     "general": "Algemeen",
     "models": "Modellen",
     "advanced": "Geavanceerd",
-    "postProcessing": "Naverwerking",
     "history": "Geschiedenis",
     "debug": "Probleemoplossing",
-    "about": "Over Abrax"
+    "about": "Over Abrax",
+    "escucha": "VOX"
   },
   "onboarding": {
     "subtitle": "Kies een transcriptiemodel om aan de slag te gaan",
@@ -46,11 +53,11 @@
         "name": "Whisper Large",
         "description": "Hoge nauwkeurigheid, maar traag."
       },
-      "parakeet-tdt-0.6b-v2": {
+      "parakeet-tdt-0_6b-v2": {
         "name": "Parakeet V2",
         "description": "Alleen Engels. Het beste model voor Engelstaligen."
       },
-      "parakeet-tdt-0.6b-v3": {
+      "parakeet-tdt-0_6b-v3": {
         "name": "Parakeet V3",
         "description": "Snel en nauwkeurig."
       },
@@ -93,6 +100,21 @@
       "cohere-int8": {
         "name": "Cohere",
         "description": "Een groot, trager, maar zeer nauwkeurig meertalig model."
+      },
+      "handy-computer_canary-180m-flash-gguf": {
+        "description": "De lichtste en snelste — downloadt in minder dan een minuut en draait zelfs op een oude laptop. In ruil daarvoor verstaat hij bij heel korte zinnen soms niets."
+      },
+      "handy-computer_whisper-large-v3-turbo-gguf": {
+        "description": "Balanced — the everyday pick: understands 100 languages and doesn't keep you waiting."
+      },
+      "handy-computer_whisper-large-v3-gguf": {
+        "description": "Widest coverage — the big Whisper, the one everyone names. Slower, but complete."
+      },
+      "handy-computer_nemotron-3_5-asr-streaming-0_6b-gguf": {
+        "description": "Live — writes as you speak, word by word. This is the one that makes the sphere dance."
+      },
+      "handy-computer_cohere-transcribe-03-2026-gguf": {
+        "description": "Hoogste nauwkeurigheid — de meest exacte uit de catalogus, in 14 talen. Deze raden we aan om te beginnen. Hij weegt 1,6 GB en wil een stevige machine."
       }
     },
     "errors": {
@@ -117,6 +139,15 @@
         "checkFailed": "Machtigingen controleren mislukt. Probeer het opnieuw.",
         "requestFailed": "Machtiging aanvragen mislukt. Probeer het opnieuw."
       }
+    },
+    "emptyCatalog": "Geen modellen beschikbaar. Controleer het logboek en herstart Abrax.",
+    "welcome": {
+      "pitch": "Praat en de tekst verschijnt, op je eigen computer.",
+      "badgeLocal": "100% lokaal",
+      "badgeNoCloud": "Geen cloud",
+      "badgeFree": "Gratis",
+      "whyModel": "Om je te horen downloadt Abrax eenmalig een spraakmodel. Daarna werkt het offline.",
+      "start": "Beginnen"
     }
   },
   "modelSelector": {
@@ -151,6 +182,17 @@
       "translation": "Kan vertalen naar het Engels",
       "translate": "Vertalen",
       "streaming": "Toont live transcriptie tijdens het spreken"
+    },
+    "downloadFailed": "Download mislukt",
+    "downloadFailedHelp": "Het model kon niet worden gedownload. Controleer je verbinding en probeer het opnieuw.",
+    "checkFailed": "Kon de modelstatus niet controleren",
+    "loadFailed": "Kon het model niet laden",
+    "switchFailed": "Kon niet van model wisselen",
+    "statusTitle": "Modelstatus: {{estado}}",
+    "confirmDownload": {
+      "title": "Download model",
+      "body": "{{modelName}} — {{size}}\n\n{{description}}\n\nIt downloads once and stays on your machine. After that it works offline.",
+      "ok": "Download"
     }
   },
   "settings": {
@@ -174,6 +216,10 @@
           "cancel": {
             "name": "Sneltoets voor annuleren",
             "description": "De sneltoets om de huidige opname te annuleren."
+          },
+          "leer_seleccion": {
+            "name": "Selectie voorlezen",
+            "description": "Leest de tekst voor die je in een willekeurige toepassing hebt geselecteerd. Druk opnieuw om te stoppen."
           },
           "transcribe_with_post_process": {
             "name": "Sneltoets voor naverwerking",
@@ -245,7 +291,10 @@
         "output": "Uitvoer",
         "transcription": "Transcriptie",
         "history": "Geschiedenis",
-        "experimental": "Experimenteel"
+        "experimental": "Experimenteel",
+        "dictionary": "Levend woordenboek",
+        "correccion": "Lokale correctie",
+        "memoria": "Geheugen"
       },
       "experimentalToggle": {
         "label": "Experimentele functies",
@@ -278,7 +327,7 @@
       },
       "showTrayIcon": {
         "label": "Pictogram in systeemvak tonen",
-        "description": "Toon het Abrax-pictogram in het systeemvak."
+        "description": "Toon het Abrax-pictogram in het systeemvak. Zonder dit sluit het venster Abrax volledig af (op macOS blijft het in het Dock)."
       },
       "overlay": {
         "style": {
@@ -287,7 +336,8 @@
           "options": {
             "none": "Geen",
             "minimal": "Minimaal",
-            "live": "Live"
+            "live": "Live",
+            "esfera": "Esfera"
           }
         },
         "position": {
@@ -296,6 +346,14 @@
           "options": {
             "bottom": "Onderkant",
             "top": "Bovenkant"
+          }
+        },
+        "esferaModo": {
+          "title": "Esfera-modus",
+          "description": "Hoe de Esfera-bol zich gedraagt. Audio: de bol reageert op je stem. Woorden: de woorden die je dicteert vliegen naar de bol, worden een moment gelezen en lossen op in het membraan (het best met een streamingmodel, waarbij woorden live binnenkomen terwijl je praat).",
+          "options": {
+            "audio": "Audioreactief",
+            "palabras": "Levende woorden"
           }
         }
       },
@@ -322,6 +380,7 @@
       "clipboardHandling": {
         "title": "Klembordbeheer",
         "description": "'Klembord niet aanpassen' behoudt je huidige klembordinhoud na een transcriptie. 'Kopiëren naar klembord' laat de getranscribeerde tekst achter op je klembord.",
+        "lockedByPasteMethod": "Locked by the paste method: pasting through the clipboard already leaves the transcription there. Choose Direct or None if you want your clipboard left untouched.",
         "options": {
           "dontModify": "Klembord niet aanpassen",
           "copyToClipboard": "Kopiëren naar klembord"
@@ -380,63 +439,85 @@
         "resetDefaults": "Standaardlijst herstellen",
         "disable": "Filter uitschakelen"
       },
-      "voiceActivityDetection": {
-        "title": "Spraakactiviteitsdetectie (VAD)",
-        "description": "Filter stilte uit opnames. Streaming-modellen gebruiken een langere VAD-uitloop; het uitschakelen van VAD neemt de ruwe audio op."
-      }
-    },
-    "postProcessing": {
-      "hotkey": {
-        "title": "Sneltoets"
-      },
-      "api": {
-        "title": "API (OpenAI-compatibel)",
-        "provider": {
-          "title": "Provider",
-          "description": "Selecteer een OpenAI-compatibele provider."
-        },
-        "appleIntelligence": {
-          "unavailable": "Apple Intelligence is niet beschikbaar op dit apparaat. Vereist een Apple Silicon Mac met macOS Tahoe (26.0) of nieuwer waarop Apple Intelligence is ingeschakeld via de Systeeminstellingen."
-        },
-        "baseUrl": {
-          "title": "Basis-URL",
-          "description": "API-basis-URL voor de geselecteerde provider. Alleen de aangepaste provider kan worden bewerkt.",
-          "placeholder": "https://api.openai.com/v1"
-        },
-        "apiKey": {
-          "title": "API-sleutel",
-          "description": "API-sleutel voor de geselecteerde provider.",
-          "placeholder": "sk-..."
-        },
-        "model": {
-          "title": "Model",
-          "descriptionCustom": "Geef de model-ID op die door je aangepaste eindpunt wordt verwacht.",
-          "descriptionDefault": "Kies een model dat door de geselecteerde provider wordt aangeboden.",
-          "placeholderWithOptions": "Zoek of selecteer een model",
-          "placeholderNoOptions": "Typ een modelnaam",
-          "refreshModels": "Modellen verversen"
+      "autocorreccion": {
+        "title": "Gesproken zelfcorrectie",
+        "description": "Als je jezelf hardop corrigeert tijdens het dicteren — “nee, sorry”, “ik bedoelde” — komt de tekst al gecorrigeerd eruit. Op regels, direct en offline: geen AI-model. Het vervangt alleen wat je corrigeerde, verwijdert nooit uit zichzelf en laat bij twijfel alles staan. Standaard aan.",
+        "ejemplo": "Voorbeeld: “Zet de vergadering op dinsdag… nee, sorry, op woensdag” wordt “Zet de vergadering op woensdag.”",
+        "sustitucionTitle": "Correctiesignalen",
+        "sustitucionDescription": "Wat je zegt om iets te vervangen wat je net hebt gezegd (bijvoorbeeld “nee, sorry” of “ik bedoel”). Er wordt alleen vervangen als er vóór het signaal een vergelijkbaar stuk staat: dezelfde weekdag, maand, tijd, getal of naam. Wordt dat niet gevonden, dan verandert er niets.",
+        "placeholder": "Signaal toevoegen",
+        "add": "Toevoegen",
+        "remove": "{{senal}} verwijderen",
+        "duplicate": "“{{senal}}” bestaat al",
+        "showDefaults": "Standaard gebruiken",
+        "resetDefaults": "Terug naar standaard",
+        "disable": "Niveau uitzetten",
+        "mode": {
+          "defaults": "Standaard",
+          "custom": "De mijne"
         }
       },
-      "prompts": {
-        "title": "Prompt",
-        "selectedPrompt": {
-          "title": "Geselecteerde prompt",
-          "description": "Selecteer een sjabloon voor het verfijnen van transcripties of maak een nieuwe aan. Gebruik ${output} in de prompttekst om naar de gemaakte transcriptie te verwijzen."
-        },
-        "noPrompts": "Geen prompts beschikbaar",
-        "selectPrompt": "Selecteer een prompt",
-        "createNew": "Nieuwe prompt maken",
-        "promptLabel": "Promptnaam",
-        "promptLabelPlaceholder": "Voer promptnaam in",
-        "promptInstructions": "Prompt-instructies",
-        "promptInstructionsPlaceholder": "Schrijf de instructies die na de transcriptie moeten worden uitgevoerd. Voorbeeld: Verbeter de grammatica en helderheid van de volgende tekst: ${output}",
-        "promptTip": "Tip: Gebruik <code>${output}</code> om de getranscribeerde tekst in je prompt in te voegen.",
-        "updatePrompt": "Prompt bijwerken",
-        "deletePrompt": "Prompt verwijderen",
-        "createPrompt": "Prompt maken",
-        "cancel": "Annuleren",
-        "selectToEdit": "Selecteer hierboven een prompt om de details te bekijken en te bewerken.",
-        "createFirst": "Klik hierboven op 'Nieuwe prompt maken' om je eerste naverwerkingsprompt aan te maken."
+      "emojiDictado": {
+        "title": "Gedicteerde emoji",
+        "description": "Zeg het woord “emoji” en daarna de naam ervan, dan wordt de emoji ingevoegd. Op basis van een tabel, direct en offline: er komt geen AI-model bij kijken. Zonder dat woord verandert er niets, en als de naam niet wordt herkend, blijft de tekst precies zoals je hem hebt gedicteerd.",
+        "ejemplo": "Voorbeeld: “stuur ze een emoji duim omhoog” wordt “stuur ze een 👍”. Werkt ook met “emoji vuur” → 🔥.",
+        "verDiccionario": "Namen bekijken",
+        "copiado": "{{emoji}} gekopieerd",
+        "noCopiado": "Kopiëren mislukt",
+        "diccionario": {
+          "titulo": "Emojinamen",
+          "ayuda": "Zeg de naam met “emoji” ervoor. Tik erop om te kopiëren.",
+          "buscar": "Zoek een naam",
+          "copiar": "Kopiëren",
+          "cargando": "Laden…",
+          "error": "Kan de lijst niet laden.",
+          "sinResultados": "Geen naam komt overeen.",
+          "total": "{{total}} namen",
+          "recorte": "{{mostrados}} van {{total}} getoond. Verfijn je zoekopdracht."
+        }
+      },
+      "voiceActivityDetection": {
+        "title": "Spraakdetectie",
+        "description": "Filter stilte uit opnames. Streaming-modellen gebruiken een langere VAD-uitloop; het uitschakelen van VAD neemt de ruwe audio op."
+      },
+      "dictionary": {
+        "title": "Projectwoordenboek",
+        "description": "Spraakmodellen kennen het jargon van je code niet. Abrax leert het door je actieve project te indexeren: identifiers, git-branches en bestandsnamen corrigeren je dictaat.",
+        "pickProject": "Project kiezen",
+        "changeProject": "Project wijzigen",
+        "pickTitle": "Kies de projectmap",
+        "reindex": "Herindexeren",
+        "enable": "Leren van dit project",
+        "enableDescription": "Indien aan, corrigeren geïndexeerde termen je dictaat. Zet uit om te pauzeren zonder de index te verliezen.",
+        "termCount": "{{count}} geïndexeerde termen",
+        "noIndex": "Nog niet geïndexeerd",
+        "lastIndexed": "geïndexeerd op {{date}}",
+        "indexed": "Project geïndexeerd: {{count}} termen",
+        "indexError": "Indexeren mislukt: {{error}}",
+        "privacy": "De index staat op je schijf. Niets van je code verlaat deze computer.",
+        "source": {
+          "code": "uit de repo",
+          "branch": "git-branch",
+          "path": "bestandsnaam"
+        }
+      },
+      "customReplacements": {
+        "title": "Exacte vervangingen",
+        "description": "Als het model een woord altijd verkeerd verstaat, corrigeer het deterministisch: exacte, hoofdlettergevoelige token-match.",
+        "fromPlaceholder": "Gehoord",
+        "toPlaceholder": "Vervangen door",
+        "add": "Toevoegen",
+        "remove": "{{word}} verwijderen",
+        "duplicate": "Er bestaat al een vervanging voor \"{{word}}\""
+      },
+      "memoria": {
+        "title": "Correctiegeheugen",
+        "description": "ABRAX leert wanneer je een transcriptie in de Geschiedenis corrigeert: verwijder een woord, typ het juiste, en de volgende keer wordt het goed geschreven. Alles lokaal.",
+        "empty": "Nog geen geleerde correcties. Bewerk een transcriptie in de Geschiedenis (potlood-icoon) en ABRAX leert van je wijzigingen.",
+        "forget": "Deze correctie vergeten",
+        "clearAll": "Alles vergeten",
+        "enSitioTitle": "Leren waar je dicteert",
+        "enSitioDescription": "Bij het starten van een dictaat leest ABRAX het veld waarin je schrijft opnieuw (via toegankelijkheid, 100% lokaal) en leert van de correcties die je daar op het vorige dictaat maakte. Niets uit het veld wordt opgeslagen of verlaat je apparaat."
       }
     },
     "history": {
@@ -452,7 +533,17 @@
       "retranscribe": "Opnieuw transcriberen",
       "retranscribeError": "Opnieuw transcriberen mislukt. Probeer het opnieuw.",
       "transcribing": "Transcriberen...",
-      "transcriptionFailed": "Transcriptie mislukt. Je kunt het opnieuw proberen via het herlaad-pictogram."
+      "transcriptionFailed": "Transcriptie mislukt. Je kunt het opnieuw proberen via het herlaad-pictogram.",
+      "loadError": "De geschiedenis kon niet worden geladen. Je dictaten staan nog op de schijf.",
+      "edit": {
+        "action": "Transcriptie bewerken",
+        "save": "Opslaan",
+        "cancel": "Annuleren",
+        "hint": "Bij het opslaan leert het Geheugen je correcties.",
+        "saved": "Transcriptie bijgewerkt.",
+        "learned": "Geheugen: geleerd {{pares}}",
+        "error": "De bewerking kon niet worden opgeslagen."
+      }
     },
     "debug": {
       "title": "Probleemoplossing",
@@ -517,10 +608,6 @@
         "title": "Clamshell-microfoon",
         "description": "Microfoon die gebruikt moet worden wanneer het laptopscherm gesloten is"
       },
-      "postProcessingToggle": {
-        "label": "Naverwerking",
-        "description": "Schakel AI-gestuurde tekstverfijning in na transcriptie"
-      },
       "muteWhileRecording": {
         "label": "Dempen tijdens opname",
         "description": "Systeemgeluid dempen tijdens het opnemen"
@@ -572,9 +659,9 @@
         "button": "Bekijk op GitHub"
       },
       "supportDevelopment": {
-        "title": "Ontwikkeling ondersteunen",
-        "description": "Help ons om te blijven bouwen aan Abrax",
-        "button": "Doneren"
+        "title": "Steun Handy (het oorspronkelijke project)",
+        "description": "Donaties gaan naar CJ Pais, maker van Handy — het project waarvan ABRAX een fork is.",
+        "button": "Steun Handy"
       },
       "acknowledgments": {
         "title": "Dankbetuigingen",
@@ -587,7 +674,17 @@
           "title": "ggml",
           "description": "Krachtige tensorbibliotheek voor lokale AI-verwerking",
           "details": "Abrax's lokale spraak-naar-tekst is gebouwd op transcribe.cpp en ggml. Met dank aan het geweldige werk van Georgi Gerganov en alle bijdragers."
+        },
+        "modelos": {
+          "title": "Spraakherkenningsmodellen",
+          "description": "De modellen worden op verzoek gedownload en maken geen deel uit van het installatieprogramma. Elk model behoudt zijn eigen licentie; de CC-BY-modellen vereisen naamsvermelding, die hier wordt gegeven. Volledige tekst in LICENSES-THIRD-PARTY.md."
         }
+      }
+    },
+    "streaming": {
+      "systemAudio": {
+        "label": "Systeemgeluid opnemen",
+        "description": "Transcribeert wat er op de computer speelt —een les, een video, een vergadering— in plaats van je microfoon. Vereist een model dat geschikt is voor systeemaudio; is het actieve dat niet, dan schakelt Abrax over."
       }
     }
   },
@@ -614,7 +711,14 @@
     "open": "Openen",
     "copy": "Kopiëren",
     "clear": "Wissen",
-    "noOptionsFound": "Geen opties gevonden"
+    "noOptionsFound": "Geen opties gevonden",
+    "retry": "Opnieuw proberen",
+    "play": "Afspelen",
+    "pause": "Pauzeren",
+    "seek": "Afspeelpositie",
+    "moreInfo": "Meer informatie",
+    "selectOption": "Kies een optie…",
+    "systemDefault": "Standaard"
   },
   "accessibility": {
     "permissionsDescription": "Abrax heeft toegankelijkheidsmachtigingen nodig om getranscribeerde tekst te kunnen typen.",
@@ -630,13 +734,37 @@
       "linux": "Verleen microfoontoegang in de geluids- of privacyinstellingen van je systeem."
     },
     "noInputDeviceTitle": "Geen microfoon gevonden",
+    "recordingNoAudioTitle": "No audio detected",
     "noInputDevice": "Er is geen audio-invoerapparaat gedetecteerd. Sluit een microfoon of headset aan en probeer het opnieuw.",
     "recordingFailed": "Opname starten mislukt: {{error}}",
     "modelLoadFailed": "Model laden mislukt: {{model}}",
     "modelLoadFailedUnknown": "onbekend model",
     "pasteFailedTitle": "Tekst plakken mislukt",
     "pasteFailed": "Tekst kon niet worden geplakt in de actieve applicatie.",
-    "transcriptionFailedTitle": "Transcriptie mislukt"
+    "transcriptionFailedTitle": "Transcriptie mislukt",
+    "recordingFailedTitle": "Opname mislukt",
+    "modelLoadFailedTitle": "Model kon niet worden geladen",
+    "modelDownloadFailedTitle": "Modeldownload mislukt",
+    "center": {
+      "title": "Recente meldingen ({{count}})",
+      "dismiss": "Negeren",
+      "toggle": "Alle meldingen tonen"
+    },
+    "recordingTooShortTitle": "Er is bijna niets opgenomen",
+    "recordingTooShort": "De opname duurde minder dan een seconde. Als je de sneltoets gebruikt, houd {{atajo}} ingedrukt terwijl je praat.",
+    "recordingTooShortNoBinding": "De opname duurde minder dan een seconde. Praat even voordat je stopt.",
+    "transcriptionEmptyTitle": "Er is niets verstaan",
+    "transcriptionEmpty": "Er zijn geen woorden herkend. Probeer het opnieuw, iets luider of dichterbij.",
+    "sistemaSinModeloAptoTitle": "Er is een beter model nodig",
+    "sistemaSinModeloApto": "De systeemaudio is opgenomen, maar het huidige model herkent geen spraak uit vergaderingen of video's. Download Nemotron Streaming 3.5 (716 MB) of Whisper Large v3 Turbo (845 MB) bij Modellen, dan schakelt Abrax er automatisch naartoe over.",
+    "sistemaSinModeloAptoDescargar": "Downloaden ({{mb}} MB)",
+    "shortcutRegistrationTitle": "De sneltoets kon niet worden ingeschakeld",
+    "shortcutRegistration": "Abrax kon zijn sneltoets niet registreren. Start opnieuw; blijft het, stel dan een andere in bij Instellingen → Algemeen.",
+    "atajoOcupado": "Een andere app gebruikt deze sneltoets al: {{atajos}}. Wijzig hem in Instellingen zodat hij werkt.",
+    "atajoOcupadoCambiar": "Sneltoets wijzigen",
+    "sistemaModeloCambiadoTitle": "Model gewisseld voor systeemaudio",
+    "sistemaModeloCambiado": "Abrax schakelde over naar {{modelo}}, dat systeemaudio wél begrijpt. Dat model toont geen tekst tijdens het spreken en geen woorden per minuut: alles verschijnt bij loslaten. Wil je live tekst, download dan Nemotron Streaming 3.5 (716 MB) bij Modellen.",
+    "descargaIniciada": "Model wordt gedownload. Te zien bij Modellen."
   },
   "appLanguage": {
     "title": "Interfacetaal",
@@ -651,11 +779,349 @@
       "dark": "Donker"
     }
   },
+  "palette": {
+    "title": "Palet",
+    "description": "Kies het kleurenpalet van Abrax. Imperial is donker van opzet: zolang het actief is, forceert het de donkere modus.",
+    "options": {
+      "abrax": "ABRAX",
+      "imperial": "Imperial",
+      "escuderia": "Escudería"
+    }
+  },
   "overlay": {
     "transcribing": "Transcriberen...",
-    "processing": "Verwerken..."
+    "processing": "Verwerken...",
+    "leyendo": "Wordt voorgelezen",
+    "preparando": "Voorlezen wordt voorbereid"
+  },
+  "correccion": {
+    "motor": {
+      "title": "Correctie-engine",
+      "description": "Ruimt je dictaat op tussen transcriptie en plakken. Uit laat alles precies zoals getranscribeerd. Alleen regels past directe deterministische correcties toe.",
+      "options": {
+        "solo_reglas": "Alleen regels",
+        "desactivado": "Uit"
+      }
+    },
+    "modo": {
+      "title": "Correctieniveau",
+      "description": "Letterlijk corrigeert alleen spaties en hoofdletters. Schoon doet ook: symbolen (“vijf procent” → 5%), accenten die het dicteren mist, e-mails en paden, herhalingen (“dan dan”) en — als je het hieronder aan laat — getallen in cijfers. Gesproken zelfcorrectie hangt hier niet van af: die heeft een eigen schakelaar.",
+      "options": {
+        "literal": "Letterlijk",
+        "limpio": "Schoon"
+      }
+    },
+    "numeros": {
+      "title": "Getallen als cijfers",
+      "description": "Zet gesproken getallen om in cijfers: “twaalfduizend achthonderd” → 12800, “om half zes” → 17:30. Het zet ALLE om, niet alleen technische: “de twee minuten” wordt “de 2 minuten”. Liever voluit? Zet het uit — de rest van Schoon blijft werken."
+    }
+  },
+  "pruebaMic": {
+    "title": "Microfoon testen",
+    "description": "Neemt 3 seconden op van precies wat het model zou horen (16 kHz, zonder VAD), speelt het af en geeft een oordeel met echte niveaus. Onthult ook welk apparaat er werkelijk achter Default zit.",
+    "boton": "3 s opnemen",
+    "grabando": "Opnemen…",
+    "niveles": "RMS {{rms}} dBFS · pico {{pico}} dBFS",
+    "nivelClip": " · clip {{clip}}%",
+    "veredicto": {
+      "sin_senal": "Geen signaal — de microfoon levert geen audio",
+      "muy_bajo": "Zeer laag — op dit niveau zal dicteren mislukken",
+      "bajo": "Laag — het werkt, maar de nauwkeurigheid lijdt eronder",
+      "sano": "Gezond niveau",
+      "saturado": "Oversturing — de microfoon clipt"
+    },
+    "dispositivo": "Microfoon: {{nombre}} ({{contexto}})",
+    "esElDefault": "systeemstandaard",
+    "esElegido": "gekozen in instellingen"
+  },
+  "shell": {
+    "title": "Venstervorm",
+    "description": "Kies de vorm van het Abrax-venster. Klassiek is het standaard instellingenvenster; Quiet is een minimalistisch donker paneel met de sfeer op het startscherm. Het vensterkader wordt volledig bijgewerkt nadat je Abrax opnieuw start.",
+    "options": {
+      "classic": "Klassiek",
+      "retro": "Retro",
+      "quiet": "Quiet",
+      "bancada": "Karting"
+    }
+  },
+  "bancada": {
+    "local": "Procesamiento local · 0% Nube",
+    "tray": "Enviar a la bandeja",
+    "min": "Minimizar",
+    "close": "Cerrar",
+    "nav": {
+      "tablero": "TABLERO",
+      "bitacora": "BITÁCORA",
+      "setup": "SETUP"
+    },
+    "pitRadio": "PIT RADIO",
+    "lcdReady": "En boxes · listo",
+    "lcdListening": "Escuchando…",
+    "launch": "TU LARGADA · {{atajo}}",
+    "start": "Arrancar dictado",
+    "stop": "Detener dictado",
+    "dictate": "Dictar",
+    "stopping": "Detener",
+    "ignitionStart": "START",
+    "ignitionStop": "STOP",
+    "appearance": "APARIENCIA",
+    "speakers": "Hablantes",
+    "systemAudio": "System audio",
+    "speakersAuto": "Auto",
+    "speakersN": "{{n}}",
+    "mergeInto": "Actually is…",
+    "resetSpeakers": "Reset",
+    "wpmUnit": "PAL/MIN",
+    "copied": "Copiado al portapapeles",
+    "on": "ON",
+    "off": "OFF",
+    "btn": {
+      "cancel": "Cancelar",
+      "copy": "Copiar",
+      "clear": "Limpiar",
+      "translate": "Traducir → EN",
+      "fillers": "Muletillas",
+      "log": "Bitácora"
+    },
+    "dial": {
+      "vad": "VAD",
+      "palette": "Paleta"
+    },
+    "lamp": {
+      "idle": "RALENTÍ",
+      "rec": "REC",
+      "transcribing": "TRANSCRIBIENDO",
+      "polishing": "PULIENDO",
+      "error": "FALLA"
+    },
+    "estado": {
+      "idle": "Ralentí",
+      "rec": "Grabando",
+      "transcribing": "Transcribiendo",
+      "polishing": "Puliendo",
+      "error": "Falla"
+    },
+    "speakerLabel": "Spreker {{n}}"
+  },
+  "retro": {
+    "menu": "Abrax-menu",
+    "titleMain": "ABRAX · RETROMODUS",
+    "titleSettings": "ABRAX · SNELLE INSTELLINGEN",
+    "titleHistory": "ABRAX · GESCHIEDENIS",
+    "fold": "Inklappen",
+    "close": "Sluiten",
+    "marquee": "ABRAX ··· ZEG HET WOORD ··· RETROMODUS ··· 100% LOKAAL ··· SPAANS VOOROP ···",
+    "lamp": {
+      "model": "Model",
+      "local": "LOKAAL",
+      "filler": "VULWOORDEN",
+      "dict": "DICT",
+      "ptt": "PTT",
+      "vad": "VAD",
+      "translate": "VERTAAL",
+      "sphere": "BOL"
+    },
+    "dictate": "Dicteren",
+    "stop": "Stoppen",
+    "settings": "Snelle instellingen",
+    "history": "Geschiedenis",
+    "compiler": "Prompt-compiler",
+    "sections": "SECTIES ▾",
+    "slider": {
+      "buffer": "BUFFER",
+      "volume": "VOL",
+      "threshold": "DREMPEL"
+    },
+    "emptyHistory": "Nog geen dictaten — houd de sneltoets ingedrukt en spreek.",
+    "copyHint": "Dubbelklik om te kopiëren",
+    "copy": "KOPIEER",
+    "save": "★ OPSLAAN",
+    "delete": "VERWIJDER",
+    "compile": "✦ COMPILEER",
+    "count": "{{n}} dictaten · LOKAAL",
+    "copied": "Gekopieerd naar klembord",
+    "menuSections": "SECTIES",
+    "menuWindows": "VENSTERS",
+    "toClassic": "Terug naar Klassiek",
+    "theme": "Thema",
+    "footer": "RETROMODUS — een ABRAX-skin · hetzelfde transparante venster",
+    "tray": "Send to tray",
+    "minimize": "Minimize",
+    "localBadge": "Lokale verwerking · 0% cloud",
+    "infoPalette": "Palet",
+    "infoLanguage": "Taal",
+    "infoFillers": "Stopwoorden",
+    "infoTranslate": "Vertalen",
+    "infoAutoVoice": "Auto-stem",
+    "infoVisual": "Visueel",
+    "words": "{{n}} woorden",
+    "actCopy": "Kopiëren",
+    "actClear": "Wissen",
+    "emptyTranscriptions": "Nog geen transcripties.",
+    "activeModel": "ACTIEF MODEL",
+    "localFull": "100% lokale verwerking · Geen cloud",
+    "backToClassic": "TERUG NAAR DE KLASSIEKE SKIN"
   },
   "logo": {
     "tagline": "« Di la <accent>palabra</accent>. »"
+  },
+  "escucha": {
+    "title": "VOX",
+    "openFile": "Bestand openen…",
+    "readClipboard": "Klembord voorlezen",
+    "play": "Lezen",
+    "pause": "Pauze",
+    "pauseHint": "Pauzeert aan het einde van de huidige zin",
+    "resume": "Hervatten",
+    "stop": "Stoppen",
+    "speed": "Snelheid",
+    "voiceProse": "Proza-stem",
+    "voiceCode": "Code-stem",
+    "noVoices": "Geen systeemstemmen gevonden",
+    "empty": "Open een bestand of lees het klembord om te beginnen.",
+    "engineUnavailable": "De spraakengine van het systeem is niet beschikbaar.",
+    "errorRead": "Kan de inhoud niet lezen.",
+    "errorSpeak": "Kan het voorlezen niet afspelen.",
+    "escHint": "Esc stopt het voorlezen.",
+    "clipboard": "Klembord",
+    "clipboardEmpty": "Het klembord bevat geen tekst.",
+    "fileFilter": "Tekst, Markdown of code",
+    "sentences": "{{total}} zinnen",
+    "verbosity": "Symbolen",
+    "verbosityNatural": "Natuurlijk (minder ruis)",
+    "verbosityLiteral": "Letterlijk (alle symbolen)"
+  },
+  "tts": {
+    "voiceLangEs": "Spaans",
+    "voiceLangEn": "Engels",
+    "voiceSettings": "Steminstellingen",
+    "speed": "Snelheid",
+    "pitch": "Toonhoogte",
+    "pitchLow": "Laag",
+    "pitchNormal": "Normaal",
+    "pitchHigh": "Hoog",
+    "pitchHint": "Toonhoogte geldt alleen voor de online stem.",
+    "vram": "({{gb}} GB VRAM)",
+    "descOnline": "Neurale stemmen van Microsoft (Azure). Niet lokaal: verstuurt de tekst via internet.",
+    "onlineWarning": "vereist internet · je tekst verlaat het apparaat",
+    "preparingVoice": "{{engine}} wordt voorbereid… de eerste keer duurt een paar seconden.",
+    "engineSystem": "Systeemstemmen",
+    "title": "Spraakengine",
+    "localBadge": "100% lokaal",
+    "detecting": "Je apparaat detecteren…",
+    "detected": "We hebben je apparaat gedetecteerd:",
+    "recommendation": "We raden {{engine}} aan voor de beste stem — lokaal en offline.",
+    "activeEngine": "Actieve engine: {{engine}}",
+    "detectFailed": "Kon de hardware niet detecteren; de systeemstemmen worden gebruikt.",
+    "useRecommended": "Aanbevolen gebruiken",
+    "chooseOther": "Andere engine kiezen",
+    "redetect": "Opnieuw detecteren",
+    "testVoice": "Stem testen",
+    "sampleTextEs": "Hola, soy la voz de Abrax. Di la palabra y yo la leo por ti.",
+    "sampleTextEn": "Hi, I'm the voice of Abrax. Say the word and I'll read it for you.",
+    "voice": "Stem",
+    "noGpu": "geen speciale GPU",
+    "available": "Beschikbaar",
+    "unavailable": "Niet beschikbaar",
+    "needsGpu": "vereist een compatibele GPU (NVIDIA of Apple Silicon)",
+    "needsDownload": "vereist het downloaden van de engine",
+    "recommended": "Aanbevolen",
+    "activeShort": "Actief",
+    "use": "Gebruiken",
+    "download": "Inschakelen",
+    "downloading": "Bezig met downloaden…",
+    "installed": "Engine geïnstalleerd",
+    "errorDownload": "Kon de engine niet downloaden.",
+    "errorSetEngine": "Kon niet van engine wisselen.",
+    "descSystem": "Stemmen van het besturingssysteem. Altijd beschikbaar, geen downloads.",
+    "descPiper": "Neurale stem in het Nederlands, licht, draait op CPU.",
+    "descKokoro": "Hoogwaardige neurale stem op CPU."
+  },
+  "carpetaModelos": {
+    "titulo": "Models folder",
+    "cambiar": "Change",
+    "discoConNombre": "{{nombre}} ({{punto}})",
+    "removible": "· removable",
+    "espacio": "{{libre}} GB free of {{total}} GB",
+    "volverPorDefecto": "Back to the original folder",
+    "avisoNoMueve": "New downloads will go to this folder. Already-downloaded models stay where they were; if they don't show up, go back to the original folder or download them again here.",
+    "moverPregunta": "Reeds gedownloade modellen ({{gb}} GB) naar de nieuwe map verplaatsen?",
+    "moverAhora": "Nu verplaatsen",
+    "soloNuevas": "Alleen nieuwe downloads",
+    "cancelar": "Annuleren",
+    "moviendo": "{{archivo}} verplaatsen…",
+    "moverError": "De verplaatsing kon niet worden voltooid: {{detalle}}. Er is niets verloren gegaan: wat niet verplaatst is, staat nog in de vorige map."
+  },
+  "quiet": {
+    "nav": {
+      "listen": "Luisteren",
+      "shortcuts": "Sneltoetsen",
+      "streaming": "Streaming",
+      "transcriptions": "Transcriptions",
+      "models": "Models",
+      "settings": "Settings",
+      "more": "Meer"
+    },
+    "ready": "ABRAX is ready",
+    "holdHint": "Houd <k>{{atajo}}</k> ingedrukt terwijl je praat en laat los als je klaar bent.",
+    "holdHintNoBinding": "Stel een sneltoets in bij Instellingen en houd die ingedrukt terwijl je praat.",
+    "start": "Start transcription",
+    "stop": "Stop",
+    "recent": "Recent transcriptions",
+    "empty": "No transcriptions yet. Hold the shortcut and say the word.",
+    "local": "Local processing",
+    "noCloud": "No cloud connection",
+    "min": "Minimize",
+    "max": "Maximize",
+    "close": "Close",
+    "tray": "Send to tray",
+    "dictando": "Ik luister… laat los als je klaar bent",
+    "panel": {
+      "modelo": "Model",
+      "sinModelo": "Geen model",
+      "descargar": "downloaden",
+      "descargando": "{{modelo}} downloaden · {{pct}}%",
+      "voz": "Stem",
+      "hint": {
+        "fillers": "Haalt stopwoorden («eh», «uhm») uit wat je dicteert.",
+        "autocorreccion": "Als je jezelf hardop verbetert («nee, sorry»), komt de tekst al gecorrigeerd eruit.",
+        "emoji": "Zeg «emoji» en de naam, en hij wordt ingevoegd. Via tabel, zonder AI.",
+        "systemAudio": "Transcribeert wat er op de computer speelt in plaats van je microfoon. Deugt het actieve model niet, dan schakelt Abrax over."
+      },
+      "sinModeloSistema": "Download een van deze modellen om systeemaudio op te nemen.",
+      "elegirModelo": "Model kiezen",
+      "usaraSistema": "Niet gekozen. Als je systeemaudio aanzet, gebruikt Abrax '{{modelo}}'.",
+      "descargado": "gedownload"
+    },
+    "modo": {
+      "grupo": {
+        "gesto": "Hoe je het start",
+        "microfono": "Je microfoon",
+        "texto": "Wat er met de tekst gebeurt",
+        "pegado": "Waar het wordt getypt",
+        "salida": "Waar het klinkt",
+        "fuente": "Waar het geluid vandaan komt",
+        "apariencia": "Uiterlijk"
+      },
+      "streaming": {
+        "que": "Transcribeert wat er op de computer speelt —een les, een video, een vergadering— in plaats van je microfoon.",
+        "resto": "De rest —autocorrectie, stopwoorden, woordenboek, plakken— is hetzelfde als bij Luisteren: één keer instellen, geldt voor beide."
+      },
+      "vox": {
+        "que": "Leest de tekst die je hebt geselecteerd hardop voor, in elke toepassing.",
+        "como": "Druk op <k>{{atajo}}</k> en het begint te lezen; nog een keer drukken stopt het."
+      },
+      "escucha": {
+        "que": "Je spreekt en de tekst verschijnt waar je aan het typen was. Alles gebeurt op je computer — er gaat niets online."
+      }
+    }
+  },
+  "soundPicker": {
+    "custom": "Aangepast",
+    "preview": "Thema beluisteren (start en stop)"
+  },
+  "vox": {
+    "atajoHint": "Voor VOX druk je op <k>{{atajo}}</k> en leest het de tekst voor die je in een app hebt geselecteerd.",
+    "atajoSinBinding": "Stel voor VOX een sneltoets in bij Instellingen; dan leest het je geselecteerde tekst voor."
   }
 }

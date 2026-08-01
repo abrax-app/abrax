@@ -6,16 +6,23 @@
     "unloadModel": "Avlasta modell",
     "model": "Modell",
     "quit": "Avsluta",
-    "cancel": "Avbryt"
+    "cancel": "Avbryt",
+    "errorTitle": "Abrax stötte på ett problem",
+    "errorRecording": "Inspelningen kunde inte starta. Öppna Abrax för mer information.",
+    "errorTranscription": "Transkriberingen misslyckades. Öppna Abrax och försök igen från historiken.",
+    "errorPaste": "Texten kunde inte klistras in. Den är sparad i historiken.",
+    "errorModelLoad": "Talmodellen kunde inte läsas in. Öppna Abrax för orsaken.",
+    "errorModelDownload": "Modellnedladdningen misslyckades. Öppna Abrax för att försöka igen.",
+    "show": "Show Abrax"
   },
   "sidebar": {
     "general": "Allmänt",
     "models": "Modeller",
     "advanced": "Avancerat",
-    "postProcessing": "Efterbearbetning",
     "history": "Historik",
     "debug": "Felsökning",
-    "about": "Om"
+    "about": "Om",
+    "escucha": "VOX"
   },
   "onboarding": {
     "subtitle": "För att komma igång, välj en transkriptionsmodell",
@@ -46,11 +53,11 @@
         "name": "Whisper Large",
         "description": "Bra noggrannhet, men långsam."
       },
-      "parakeet-tdt-0.6b-v2": {
+      "parakeet-tdt-0_6b-v2": {
         "name": "Parakeet V2",
         "description": "Endast engelska. Den bästa modellen för engelsktalande."
       },
-      "parakeet-tdt-0.6b-v3": {
+      "parakeet-tdt-0_6b-v3": {
         "name": "Parakeet V3",
         "description": "Snabb och noggrann"
       },
@@ -93,6 +100,21 @@
       "cohere-int8": {
         "name": "Cohere",
         "description": "En stor, långsammare, men mycket noggrann flerspråkig modell."
+      },
+      "handy-computer_canary-180m-flash-gguf": {
+        "description": "Den lättaste och snabbaste — laddas ner på under en minut och går även på en gammal bärbar. I gengäld uppfattar den ibland inget alls vid mycket korta meningar."
+      },
+      "handy-computer_whisper-large-v3-turbo-gguf": {
+        "description": "Balanced — the everyday pick: understands 100 languages and doesn't keep you waiting."
+      },
+      "handy-computer_whisper-large-v3-gguf": {
+        "description": "Widest coverage — the big Whisper, the one everyone names. Slower, but complete."
+      },
+      "handy-computer_nemotron-3_5-asr-streaming-0_6b-gguf": {
+        "description": "Live — writes as you speak, word by word. This is the one that makes the sphere dance."
+      },
+      "handy-computer_cohere-transcribe-03-2026-gguf": {
+        "description": "Högsta precision — den mest exakta i katalogen, på 14 språk. Den rekommenderar vi att börja med. Den väger 1,6 GB och vill ha en kraftig dator."
       }
     },
     "errors": {
@@ -117,6 +139,15 @@
         "checkFailed": "Misslyckades med att kontrollera behörigheter. Försök igen.",
         "requestFailed": "Misslyckades med att begära behörighet. Försök igen."
       }
+    },
+    "emptyCatalog": "Inga modeller tillgängliga. Kontrollera loggen och starta om Abrax.",
+    "welcome": {
+      "pitch": "Prata så dyker texten upp, på din egen dator.",
+      "badgeLocal": "100% lokalt",
+      "badgeNoCloud": "Ingen moln",
+      "badgeFree": "Gratis",
+      "whyModel": "För att höra dig laddar Abrax ner en röstmodell en gång. Sedan fungerar det offline.",
+      "start": "Kom igång"
     }
   },
   "modelSelector": {
@@ -151,7 +182,18 @@
       "translate": "Översätt till engelska",
       "streaming": "Visar transkription i realtid medan du talar"
     },
-    "legacy": "Äldre"
+    "legacy": "Äldre",
+    "downloadFailed": "Nedladdningen misslyckades",
+    "downloadFailedHelp": "Det gick inte att ladda ner modellen. Kontrollera din anslutning och försök igen.",
+    "checkFailed": "Kunde inte kontrollera modellens status",
+    "loadFailed": "Kunde inte läsa in modellen",
+    "switchFailed": "Kunde inte byta modell",
+    "statusTitle": "Modellstatus: {{estado}}",
+    "confirmDownload": {
+      "title": "Download model",
+      "body": "{{modelName}} — {{size}}\n\n{{description}}\n\nIt downloads once and stays on your machine. After that it works offline.",
+      "ok": "Download"
+    }
   },
   "settings": {
     "modelSettings": {
@@ -174,6 +216,10 @@
           "cancel": {
             "name": "Kortkommando för att avbryta",
             "description": "Kortkommandot för att avbryta den aktuella inspelningen."
+          },
+          "leer_seleccion": {
+            "name": "Läs upp markeringen",
+            "description": "Läser upp texten du har markerat i valfritt program. Tryck igen för att avbryta."
           },
           "transcribe_with_post_process": {
             "name": "Snabbkommando för efterbearbetning",
@@ -245,7 +291,10 @@
         "output": "Utmatning",
         "transcription": "Transkription",
         "history": "Historik",
-        "experimental": "Experimentellt"
+        "experimental": "Experimentellt",
+        "dictionary": "Levande ordbok",
+        "correccion": "Lokal korrigering",
+        "memoria": "Minne"
       },
       "experimentalToggle": {
         "label": "Experimentella funktioner",
@@ -278,7 +327,7 @@
       },
       "showTrayIcon": {
         "label": "Visa ikon i systemfältet",
-        "description": "Visa Abrax-ikonen i systemfältet."
+        "description": "Visa Abrax-ikonen i systemfältet. Utan den avslutas Abrax helt när du stänger fönstret (på macOS ligger den kvar i Dock)."
       },
       "overlay": {
         "style": {
@@ -287,7 +336,8 @@
           "options": {
             "none": "Ingen",
             "minimal": "Minimal",
-            "live": "Live"
+            "live": "Live",
+            "esfera": "Esfera"
           }
         },
         "position": {
@@ -296,6 +346,14 @@
           "options": {
             "bottom": "Nederst",
             "top": "Överst"
+          }
+        },
+        "esferaModo": {
+          "title": "Esfera-läge",
+          "description": "Hur Esfera-sfären beter sig. Ljud: sfären reagerar på din röst. Ord: orden du dikterar flyger in i sfären, läses ett ögonblick och löses upp i dess membran (bäst med en streamingmodell, där orden kommer in live medan du talar).",
+          "options": {
+            "audio": "Ljudreaktiv",
+            "palabras": "Levande ord"
           }
         }
       },
@@ -322,6 +380,7 @@
       "clipboardHandling": {
         "title": "Hantering av urklipp",
         "description": "Ändra inte urklipp bevarar ditt nuvarande urklippsinnehåll efter transkription. Kopiera till urklipp lämnar transkriptionsresultatet i ditt urklipp efter att ha klistrat in.",
+        "lockedByPasteMethod": "Locked by the paste method: pasting through the clipboard already leaves the transcription there. Choose Direct or None if you want your clipboard left untouched.",
         "options": {
           "dontModify": "Ändra inte urklipp",
           "copyToClipboard": "Kopiera till urklipp"
@@ -380,63 +439,85 @@
         "resetDefaults": "Återställ standardlistan",
         "disable": "Stäng av filtret"
       },
-      "voiceActivityDetection": {
-        "title": "Voice Activity Detection",
-        "description": "Filter silence from recordings. Streaming-capable models use a longer VAD tail; disabling VAD records raw audio."
-      }
-    },
-    "postProcessing": {
-      "hotkey": {
-        "title": "Snabbkommando"
+      "autocorreccion": {
+        "title": "Talad självkorrigering",
+        "description": "Om du rättar dig själv högt medan du dikterar – ”nej, förlåt”, ”jag menade” – kommer texten ut redan rättad. Regelbaserat, direkt och offline: ingen AI-modell. Den ersätter bara det du rättade, raderar aldrig på eget bevåg och rör inget vid tveksamhet. På som standard.",
+        "ejemplo": "Exempel: ”Boka mötet på tisdag… nej, förlåt, på onsdag” → ”Boka mötet på onsdag.”",
+        "sustitucionTitle": "Rättelsesignaler",
+        "sustitucionDescription": "Det du säger för att byta ut något du precis sagt (t.ex. ”nej, förlåt”, ”jag menar”). Bytet sker bara om det finns ett likvärdigt avsnitt före signalen – samma veckodag, månad, tid, siffra eller namn. Hittas inget ändras ingenting.",
+        "placeholder": "Lägg till signal",
+        "add": "Lägg till",
+        "remove": "Ta bort {{senal}}",
+        "duplicate": "”{{senal}}” finns redan",
+        "mode": {
+          "defaults": "Fabriksinställda",
+          "custom": "Mina"
+        },
+        "showDefaults": "Använd de inbyggda",
+        "resetDefaults": "Tillbaka till inbyggda",
+        "disable": "Stäng av nivån"
       },
-      "api": {
-        "title": "API (OpenAI-kompatibelt)",
-        "provider": {
-          "title": "Leverantör",
-          "description": "Välj en OpenAI-kompatibel leverantör."
-        },
-        "appleIntelligence": {
-          "unavailable": "Apple Intelligence är inte tillgängligt på den här enheten. Kräver en Apple Silicon Mac som kör macOS Tahoe (26.0) eller senare med Apple Intelligence aktiverat i systeminställningarna."
-        },
-        "baseUrl": {
-          "title": "Bas-URL",
-          "description": "API-bas-URL för den valda leverantören. Endast den anpassade leverantören kan redigeras.",
-          "placeholder": "https://api.openai.com/v1"
-        },
-        "apiKey": {
-          "title": "API-nyckel",
-          "description": "API-nyckel för den valda leverantören.",
-          "placeholder": "sk-..."
-        },
-        "model": {
-          "title": "Modell",
-          "descriptionCustom": "Ange den modellidentifierare som förväntas av din anpassade slutpunkt.",
-          "descriptionDefault": "Välj en modell som exponeras av den valda leverantören.",
-          "placeholderWithOptions": "Sök eller välj en modell",
-          "placeholderNoOptions": "Ange ett modellnamn",
-          "refreshModels": "Uppdatera modeller"
+      "emojiDictado": {
+        "title": "Dikterade emojier",
+        "description": "Säg ordet ”emoji” och därefter dess namn, så infogas emojin. Tabellbaserat, direkt och offline: ingen AI-modell är inblandad. Utan det ordet ändras ingenting, och om namnet inte känns igen lämnas texten exakt som du dikterade den.",
+        "ejemplo": "Exempel: ”skicka dem en emoji tummen upp” blir ”skicka dem en 👍”. Fungerar även med ”emoji eld” → 🔥.",
+        "verDiccionario": "Visa namnen",
+        "copiado": "{{emoji}} kopierad",
+        "noCopiado": "Kunde inte kopiera",
+        "diccionario": {
+          "titulo": "Emojinamn",
+          "ayuda": "Säg namnet med ”emoji” före. Tryck på ett för att kopiera det.",
+          "buscar": "Sök ett namn",
+          "copiar": "Kopiera",
+          "cargando": "Läser in…",
+          "error": "Kunde inte läsa in listan.",
+          "sinResultados": "Inget namn matchar.",
+          "total": "{{total}} namn",
+          "recorte": "Visar {{mostrados}} av {{total}}. Förfina sökningen."
         }
       },
-      "prompts": {
-        "title": "Prompt",
-        "selectedPrompt": {
-          "title": "Vald prompt",
-          "description": "Välj en mall för att förfina transkriptioner eller skapa en ny. Använd ${output} inuti prompttexten för att referera till den fångade transkriptionen."
-        },
-        "noPrompts": "Inga prompter tillgängliga",
-        "selectPrompt": "Välj en prompt",
-        "createNew": "Skapa ny prompt",
-        "promptLabel": "Prompt-etikett",
-        "promptLabelPlaceholder": "Ange namn på prompt",
-        "promptInstructions": "Prompt-instruktioner",
-        "promptInstructionsPlaceholder": "Skriv instruktionerna som ska köras efter transkription. Exempel: Förbättra grammatik och tydlighet för följande text: ${output}",
-        "promptTip": "Tips: Använd <code>${output}</code> för att infoga den transkriberade texten i din prompt.",
-        "updatePrompt": "Uppdatera prompt",
-        "deletePrompt": "Ta bort prompt",
-        "createPrompt": "Skapa prompt",
-        "cancel": "Avbryt",
-        "selectToEdit": "Välj en prompt ovan för att visa och redigera dess detaljer.",
-        "createFirst": "Klicka på 'Skapa ny prompt' ovan för att skapa din första prompt för efterbearbetning."
+      "voiceActivityDetection": {
+        "title": "Röstaktivitetsdetektering",
+        "description": "Filter silence from recordings. Streaming-capable models use a longer VAD tail; disabling VAD records raw audio."
+      },
+      "dictionary": {
+        "title": "Projektordbok",
+        "description": "Talmodeller känner inte till din kods jargong. Abrax lär sig den genom att indexera ditt aktiva projekt: identifierare, git-grenar och filnamn korrigerar din diktering.",
+        "pickProject": "Välj projekt",
+        "changeProject": "Byt projekt",
+        "pickTitle": "Välj projektmappen",
+        "reindex": "Indexera om",
+        "enable": "Lär av det här projektet",
+        "enableDescription": "När på korrigerar indexerade termer din diktering. Stäng av för att pausa utan att förlora indexet.",
+        "termCount": "{{count}} indexerade termer",
+        "noIndex": "Inte indexerad ännu",
+        "lastIndexed": "indexerad {{date}}",
+        "indexed": "Projekt indexerat: {{count}} termer",
+        "indexError": "Indexeringen misslyckades: {{error}}",
+        "privacy": "Indexet finns på din disk. Inget från din kod lämnar den här datorn.",
+        "source": {
+          "code": "från repot",
+          "branch": "git-gren",
+          "path": "filnamn"
+        }
+      },
+      "customReplacements": {
+        "title": "Exakta ersättningar",
+        "description": "När modellen alltid hör fel på ett ord, rätta det deterministiskt: exakt, skiftlägeskänslig token-matchning.",
+        "fromPlaceholder": "Hört",
+        "toPlaceholder": "Ersätt med",
+        "add": "Lägg till",
+        "remove": "Ta bort {{word}}",
+        "duplicate": "En ersättning för \"{{word}}\" finns redan"
+      },
+      "memoria": {
+        "title": "Rättelseminne",
+        "description": "ABRAX lär sig när du rättar en transkription i Historiken: ta bort ett ord, skriv det rätta, och nästa gång skrivs det korrekt. Allt lokalt.",
+        "empty": "Inga inlärda rättelser ännu. Redigera en transkription i Historiken (pennikonen) så lär sig ABRAX av dina ändringar.",
+        "forget": "Glöm denna rättelse",
+        "clearAll": "Glöm allt",
+        "enSitioTitle": "Lär där du dikterar",
+        "enSitioDescription": "När du börjar diktera läser ABRAX om fältet du skriver i (via hjälpmedel, 100 % lokalt) och lär sig av de rättelser du gjorde där i förra dikteringen. Inget från fältet sparas eller lämnar din enhet."
       }
     },
     "history": {
@@ -452,7 +533,17 @@
       "retranscribe": "Transkribera igen",
       "retranscribeError": "Misslyckades med att transkribera igen. Försök igen.",
       "transcribing": "Transkriberar...",
-      "transcriptionFailed": "Transkribering misslyckades. Du kan transkribera igen med hjälp av ikonen för nytt försök."
+      "transcriptionFailed": "Transkribering misslyckades. Du kan transkribera igen med hjälp av ikonen för nytt försök.",
+      "loadError": "Historiken kunde inte läsas in. Dina diktat finns kvar på disken.",
+      "edit": {
+        "action": "Redigera transkription",
+        "save": "Spara",
+        "cancel": "Avbryt",
+        "hint": "När du sparar lär sig Minnet dina rättelser.",
+        "saved": "Transkription uppdaterad.",
+        "learned": "Minne: lärde sig {{pares}}",
+        "error": "Redigeringen kunde inte sparas."
+      }
     },
     "debug": {
       "title": "Felsökning",
@@ -510,10 +601,6 @@
         "title": "Clamshell-mikrofon",
         "description": "Mikrofon som ska användas när bärbara datorns lock är stängt"
       },
-      "postProcessingToggle": {
-        "label": "Efterbearbetning",
-        "description": "Aktivera AI-driven textförfining efter transkription"
-      },
       "muteWhileRecording": {
         "label": "Ljudlös under inspelning",
         "description": "Stäng av systemljudet under inspelning"
@@ -568,9 +655,9 @@
         "button": "Visa på GitHub"
       },
       "supportDevelopment": {
-        "title": "Stöd utvecklingen",
-        "description": "Hjälp oss att fortsätta bygga Abrax",
-        "button": "Donera"
+        "title": "Stöd Handy (originalprojektet)",
+        "description": "Donationer går till CJ Pais, skaparen av Handy — projektet som ABRAX är en fork av.",
+        "button": "Stöd Handy"
       },
       "acknowledgments": {
         "title": "Tack till",
@@ -583,11 +670,21 @@
           "title": "ggml",
           "description": "Högpresterande inferens av OpenAI:s Whisper-modell för automatisk taligenkänning",
           "details": "Abrax använder ggml för snabb, lokal tal-till-text-behandling. Tack till det fantastiska arbete som utförts av Georgi Gerganov med medarbetare."
+        },
+        "modelos": {
+          "title": "Modeller för taligenkänning",
+          "description": "Modellerna laddas ned vid behov och ingår inte i installationsprogrammet. Varje modell behåller sin egen licens; de med CC-BY kräver attribution, som anges här. Fullständig text finns i LICENSES-THIRD-PARTY.md."
         }
       },
       "whatsNewUpdates": {
         "label": "Visa nyheter",
         "description": "Visa versionsinformation efter Abrax-uppdateringar"
+      }
+    },
+    "streaming": {
+      "systemAudio": {
+        "label": "Spela in systemljud",
+        "description": "Transkriberar det som spelas på datorn —en lektion, en video, ett möte— i stället för din mikrofon. Kräver en modell som passar systemljud; om den aktiva inte gör det byter Abrax till en som gör det."
       }
     }
   },
@@ -611,7 +708,14 @@
     "open": "Öppna",
     "copy": "Kopiera",
     "clear": "Rensa",
-    "noOptionsFound": "Inga alternativ hittades"
+    "noOptionsFound": "Inga alternativ hittades",
+    "retry": "Försök igen",
+    "play": "Spela upp",
+    "pause": "Pausa",
+    "seek": "Uppspelningsposition",
+    "moreInfo": "Mer information",
+    "selectOption": "Välj ett alternativ…",
+    "systemDefault": "Standard"
   },
   "accessibility": {
     "permissionsDescription": "Abrax behöver behörighet för hjälpmedel för att kunna skriva transkriberad text.",
@@ -630,10 +734,34 @@
     "modelLoadFailed": "Misslyckades med att ladda modell: {{model}}",
     "modelLoadFailedUnknown": "okänd modell",
     "noInputDeviceTitle": "Ingen mikrofon hittades",
+    "recordingNoAudioTitle": "No audio detected",
     "noInputDevice": "Ingen ljudenhet hittades. Anslut en mikrofon eller ett headset och försök igen.",
     "pasteFailedTitle": "Det gick inte att klistra in texten",
     "pasteFailed": "Texten kunde inte klistras in i det aktiva programmet.",
-    "transcriptionFailedTitle": "Transkriptionen misslyckades"
+    "transcriptionFailedTitle": "Transkriptionen misslyckades",
+    "recordingFailedTitle": "Inspelningen misslyckades",
+    "modelLoadFailedTitle": "Modellen kunde inte läsas in",
+    "modelDownloadFailedTitle": "Modellnedladdningen misslyckades",
+    "center": {
+      "title": "Senaste meddelanden ({{count}})",
+      "dismiss": "Avfärda",
+      "toggle": "Visa alla meddelanden"
+    },
+    "recordingTooShortTitle": "Nästan inget spelades in",
+    "recordingTooShort": "Inspelningen varade mindre än en sekund. Om du använder kortkommandot, håll ner {{atajo}} medan du pratar.",
+    "recordingTooShortNoBinding": "Inspelningen varade mindre än en sekund. Prata en stund innan du stoppar.",
+    "transcriptionEmptyTitle": "Inget uppfattades",
+    "transcriptionEmpty": "Inga ord kändes igen. Försök igen, prata lite högre eller närmare.",
+    "sistemaSinModeloAptoTitle": "En bättre modell behövs",
+    "sistemaSinModeloApto": "Systemljudet spelades in, men den nuvarande modellen känner inte igen tal från möten eller videor. Ladda ner Nemotron Streaming 3.5 (716 MB) eller Whisper Large v3 Turbo (845 MB) under Modeller, så byter Abrax till den automatiskt.",
+    "sistemaSinModeloAptoDescargar": "Ladda ner ({{mb}} MB)",
+    "shortcutRegistrationTitle": "Kortkommandot kunde inte aktiveras",
+    "shortcutRegistration": "Abrax kunde inte registrera sitt kortkommando. Starta om; kvarstår det, välj ett annat i Inställningar → Allmänt.",
+    "atajoOcupado": "En annan app använder redan detta kortkommando: {{atajos}}. Ändra det i Inställningar så att det fungerar.",
+    "atajoOcupadoCambiar": "Ändra kortkommando",
+    "sistemaModeloCambiadoTitle": "Modellen byttes för systemljud",
+    "sistemaModeloCambiado": "Abrax bytte till {{modelo}}, som förstår systemljud. Den modellen visar varken text medan du talar eller ord per minut – allt dyker upp när du släpper. Vill du ha live-text, hämta Nemotron Streaming 3.5 (716 MB) under Modeller.",
+    "descargaIniciada": "Hämtar modellen. Se under Modeller."
   },
   "appLanguage": {
     "title": "Applikationsspråk",
@@ -648,14 +776,352 @@
       "dark": "Mörkt"
     }
   },
+  "palette": {
+    "title": "Palett",
+    "description": "Välj Abrax färgpalett. Imperial är mörk till sin design: så länge den är aktiv tvingar den fram mörkt läge.",
+    "options": {
+      "abrax": "ABRAX",
+      "imperial": "Imperial",
+      "escuderia": "Escudería"
+    }
+  },
   "overlay": {
     "transcribing": "Transkriberar...",
-    "processing": "Bearbetar..."
+    "processing": "Bearbetar...",
+    "leyendo": "Läser upp",
+    "preparando": "Förbereder uppläsning"
   },
   "whatsNew": {
     "title": "Nytt i Abrax v{{version}}"
   },
+  "correccion": {
+    "motor": {
+      "title": "Korrigeringsmotor",
+      "description": "Städar upp din diktering mellan transkribering och inklistring. Av lämnar allt exakt som det transkriberades. Endast regler tillämpar omedelbara deterministiska korrigeringar.",
+      "options": {
+        "solo_reglas": "Endast regler",
+        "desactivado": "Av"
+      }
+    },
+    "modo": {
+      "title": "Korrigeringsnivå",
+      "description": "Ordagrant rättar bara mellanslag och meningsversaler. Ren gör dessutom: symboler (”fem procent” → 5 %), accenter som dikteringen tappar, e-post och sökvägar, upprepningar (”sedan sedan”) och – om du låter det vara på nedan – tal som siffror. Talad självrättning beror inte på detta: den har en egen brytare.",
+      "options": {
+        "literal": "Ordagrann",
+        "limpio": "Ren"
+      }
+    },
+    "numeros": {
+      "title": "Tal som siffror",
+      "description": "Gör talade tal till siffror: ”tolvtusen åttahundra” → 12800, ”klockan sjutton trettio” → 17:30. Den gör om ALLA, inte bara tekniska: ”de två minuterna” blir ”de 2 minuterna”. Föredrar du bokstäver? Stäng av — resten av Rent fortsätter."
+    }
+  },
+  "pruebaMic": {
+    "title": "Testa mikrofon",
+    "description": "Spelar in 3 sekunder av exakt det modellen skulle höra (16 kHz, utan VAD), spelar upp det och ger ett utlåtande med verkliga nivåer. Avslöjar också vilken enhet som faktiskt döljer sig bakom Default.",
+    "boton": "Spela in 3 s",
+    "grabando": "Spelar in…",
+    "niveles": "RMS {{rms}} dBFS · pico {{pico}} dBFS",
+    "nivelClip": " · clip {{clip}}%",
+    "veredicto": {
+      "sin_senal": "Ingen signal — mikrofonen levererar inget ljud",
+      "muy_bajo": "Mycket låg — på den här nivån kommer dikteringen att misslyckas",
+      "bajo": "Låg — det fungerar, men precisionen blir lidande",
+      "sano": "Sund nivå",
+      "saturado": "Övermodulerad — mikrofonen klipper"
+    },
+    "dispositivo": "Mikrofon: {{nombre}} ({{contexto}})",
+    "esElDefault": "systemets standard",
+    "esElegido": "vald i inställningarna"
+  },
+  "shell": {
+    "title": "Fönsterform",
+    "description": "Välj formen på Abrax-fönstret. Klassisk är det vanliga inställningsfönstret; Quiet är en minimalistisk mörk panel med sfären på startsidan. Fönsterramen uppdateras helt när du startar om Abrax.",
+    "options": {
+      "classic": "Klassisk",
+      "retro": "Retro",
+      "quiet": "Quiet",
+      "bancada": "Karting"
+    }
+  },
+  "bancada": {
+    "local": "Procesamiento local · 0% Nube",
+    "tray": "Enviar a la bandeja",
+    "min": "Minimizar",
+    "close": "Cerrar",
+    "nav": {
+      "tablero": "TABLERO",
+      "bitacora": "BITÁCORA",
+      "setup": "SETUP"
+    },
+    "pitRadio": "PIT RADIO",
+    "lcdReady": "En boxes · listo",
+    "lcdListening": "Escuchando…",
+    "launch": "TU LARGADA · {{atajo}}",
+    "start": "Arrancar dictado",
+    "stop": "Detener dictado",
+    "dictate": "Dictar",
+    "stopping": "Detener",
+    "ignitionStart": "START",
+    "ignitionStop": "STOP",
+    "appearance": "APARIENCIA",
+    "speakers": "Hablantes",
+    "systemAudio": "System audio",
+    "speakersAuto": "Auto",
+    "speakersN": "{{n}}",
+    "mergeInto": "Actually is…",
+    "resetSpeakers": "Reset",
+    "wpmUnit": "PAL/MIN",
+    "copied": "Copiado al portapapeles",
+    "on": "ON",
+    "off": "OFF",
+    "btn": {
+      "cancel": "Cancelar",
+      "copy": "Copiar",
+      "clear": "Limpiar",
+      "translate": "Traducir → EN",
+      "fillers": "Muletillas",
+      "log": "Bitácora"
+    },
+    "dial": {
+      "vad": "VAD",
+      "palette": "Paleta"
+    },
+    "lamp": {
+      "idle": "RALENTÍ",
+      "rec": "REC",
+      "transcribing": "TRANSCRIBIENDO",
+      "polishing": "PULIENDO",
+      "error": "FALLA"
+    },
+    "estado": {
+      "idle": "Ralentí",
+      "rec": "Grabando",
+      "transcribing": "Transcribiendo",
+      "polishing": "Puliendo",
+      "error": "Falla"
+    },
+    "speakerLabel": "Talare {{n}}"
+  },
+  "retro": {
+    "menu": "Abrax-meny",
+    "titleMain": "ABRAX · RETROLÄGE",
+    "titleSettings": "ABRAX · SNABBINSTÄLLNINGAR",
+    "titleHistory": "ABRAX · HISTORIK",
+    "fold": "Fäll ihop",
+    "close": "Stäng",
+    "marquee": "ABRAX ··· SÄG ORDET ··· RETROLÄGE ··· 100% LOKALT ··· SPANSKA FÖRST ···",
+    "lamp": {
+      "model": "Modell",
+      "local": "LOKAL",
+      "filler": "FYLLORD",
+      "dict": "ORDB",
+      "ptt": "PTT",
+      "vad": "VAD",
+      "translate": "ÖVERSÄTT",
+      "sphere": "SFÄR"
+    },
+    "dictate": "Diktera",
+    "stop": "Stopp",
+    "settings": "Snabbinställningar",
+    "history": "Historik",
+    "compiler": "Promptkompilator",
+    "sections": "SEKTIONER ▾",
+    "slider": {
+      "buffer": "BUFFERT",
+      "volume": "VOL",
+      "threshold": "TRÖSKEL"
+    },
+    "emptyHistory": "Inga dikteringar än — håll in kortkommandot och tala.",
+    "copyHint": "Dubbelklicka för att kopiera",
+    "copy": "KOPIERA",
+    "save": "★ SPARA",
+    "delete": "RADERA",
+    "compile": "✦ KOMPILERA",
+    "count": "{{n}} dikteringar · LOKALT",
+    "copied": "Kopierat till urklipp",
+    "menuSections": "SEKTIONER",
+    "menuWindows": "FÖNSTER",
+    "toClassic": "Tillbaka till Klassiskt",
+    "theme": "Tema",
+    "footer": "RETROLÄGE — ett ABRAX-skin · samma transparenta fönster",
+    "tray": "Send to tray",
+    "minimize": "Minimize",
+    "localBadge": "Lokal bearbetning · 0 % moln",
+    "infoPalette": "Palett",
+    "infoLanguage": "Språk",
+    "infoFillers": "Utfyllnadsord",
+    "infoTranslate": "Översätt",
+    "infoAutoVoice": "Autoröst",
+    "infoVisual": "Visuellt",
+    "words": "{{n}} ord",
+    "actCopy": "Kopiera",
+    "actClear": "Rensa",
+    "emptyTranscriptions": "Inga transkriberingar ännu.",
+    "activeModel": "AKTIV MODELL",
+    "localFull": "100 % lokal bearbetning · Inget moln",
+    "backToClassic": "TILLBAKA TILL KLASSISKT SKAL"
+  },
   "logo": {
     "tagline": "« Di la <accent>palabra</accent>. »"
+  },
+  "escucha": {
+    "title": "VOX",
+    "openFile": "Öppna fil…",
+    "readClipboard": "Läs urklipp",
+    "play": "Läs",
+    "pause": "Paus",
+    "pauseHint": "Pausar i slutet av den aktuella meningen",
+    "resume": "Fortsätt",
+    "stop": "Stoppa",
+    "speed": "Hastighet",
+    "voiceProse": "Prosaröst",
+    "voiceCode": "Kodröst",
+    "noVoices": "Inga systemröster hittades",
+    "empty": "Öppna en fil eller läs urklipp för att börja.",
+    "engineUnavailable": "Systemets talmotor är inte tillgänglig.",
+    "errorRead": "Kunde inte läsa innehållet.",
+    "errorSpeak": "Kunde inte spela upp läsningen.",
+    "escHint": "Esc stoppar uppläsningen.",
+    "clipboard": "Urklipp",
+    "clipboardEmpty": "Urklipp innehåller ingen text.",
+    "fileFilter": "Text, Markdown eller kod",
+    "sentences": "{{total}} meningar",
+    "verbosity": "Symboler",
+    "verbosityNatural": "Naturlig (mindre brus)",
+    "verbosityLiteral": "Bokstavlig (alla symboler)"
+  },
+  "tts": {
+    "voiceLangEs": "Spanska",
+    "voiceLangEn": "Engelska",
+    "voiceSettings": "Röstinställningar",
+    "speed": "Hastighet",
+    "pitch": "Tonhöjd",
+    "pitchLow": "Låg",
+    "pitchNormal": "Normal",
+    "pitchHigh": "Hög",
+    "pitchHint": "Tonhöjd gäller endast för onlinerösten.",
+    "vram": "({{gb}} GB VRAM)",
+    "descOnline": "Microsofts neurala röster (Azure). Inte lokalt: skickar texten över internet.",
+    "onlineWarning": "kräver internet · din text lämnar enheten",
+    "preparingVoice": "Förbereder {{engine}}… första gången tar det några sekunder.",
+    "engineSystem": "Systemröster",
+    "title": "Röstmotor",
+    "localBadge": "100% lokal",
+    "detecting": "Identifierar din dator…",
+    "detected": "Vi identifierade din dator:",
+    "recommendation": "Vi rekommenderar {{engine}} för bästa rösten – lokal och offline.",
+    "activeEngine": "Aktiv motor: {{engine}}",
+    "detectFailed": "Det gick inte att identifiera maskinvaran; systemets röster används.",
+    "useRecommended": "Använd rekommenderad",
+    "chooseOther": "Välj en annan motor",
+    "redetect": "Identifiera igen",
+    "testVoice": "Testa rösten",
+    "sampleTextEs": "Hola, soy la voz de Abrax. Di la palabra y yo la leo por ti.",
+    "sampleTextEn": "Hi, I'm the voice of Abrax. Say the word and I'll read it for you.",
+    "voice": "Röst",
+    "noGpu": "utan dedikerad GPU",
+    "available": "Tillgänglig",
+    "unavailable": "Inte tillgänglig",
+    "needsGpu": "kräver kompatibel GPU (NVIDIA eller Apple Silicon)",
+    "needsDownload": "kräver nedladdning av motorn",
+    "recommended": "Rekommenderad",
+    "activeShort": "Aktiv",
+    "use": "Använd",
+    "download": "Aktivera",
+    "downloading": "Laddar ner…",
+    "installed": "Motor installerad",
+    "errorDownload": "Det gick inte att ladda ner motorn.",
+    "errorSetEngine": "Det gick inte att byta motor.",
+    "descSystem": "Operativsystemets röster. Alltid tillgängliga, inga nedladdningar.",
+    "descPiper": "Neural röst på svenska, lätt, körs på CPU.",
+    "descKokoro": "Neural röst av hög kvalitet på CPU."
+  },
+  "carpetaModelos": {
+    "titulo": "Models folder",
+    "cambiar": "Change",
+    "discoConNombre": "{{nombre}} ({{punto}})",
+    "removible": "· removable",
+    "espacio": "{{libre}} GB free of {{total}} GB",
+    "volverPorDefecto": "Back to the original folder",
+    "avisoNoMueve": "New downloads will go to this folder. Already-downloaded models stay where they were; if they don't show up, go back to the original folder or download them again here.",
+    "moverPregunta": "Flytta redan nedladdade modeller ({{gb}} GB) till den nya mappen?",
+    "moverAhora": "Flytta nu",
+    "soloNuevas": "Endast nya nedladdningar",
+    "cancelar": "Avbryt",
+    "moviendo": "Flyttar {{archivo}}…",
+    "moverError": "Flytten kunde inte slutföras: {{detalle}}. Inget gick förlorat: det som inte flyttades finns kvar i den tidigare mappen."
+  },
+  "quiet": {
+    "nav": {
+      "listen": "Lyssna",
+      "shortcuts": "Kortkommandon",
+      "streaming": "Streaming",
+      "transcriptions": "Transcriptions",
+      "models": "Models",
+      "settings": "Settings",
+      "more": "Mer"
+    },
+    "ready": "ABRAX is ready",
+    "holdHint": "Håll ner <k>{{atajo}}</k> medan du pratar och släpp när du är klar.",
+    "holdHintNoBinding": "Ställ in ett kortkommando i Inställningar och håll ner det medan du pratar.",
+    "start": "Start transcription",
+    "stop": "Stop",
+    "recent": "Recent transcriptions",
+    "empty": "No transcriptions yet. Hold the shortcut and say the word.",
+    "local": "Local processing",
+    "noCloud": "No cloud connection",
+    "min": "Minimize",
+    "max": "Maximize",
+    "close": "Close",
+    "tray": "Send to tray",
+    "dictando": "Jag lyssnar… släpp när du är klar",
+    "panel": {
+      "modelo": "Modell",
+      "sinModelo": "Ingen modell",
+      "descargar": "ladda ner",
+      "descargando": "Laddar ner {{modelo}} · {{pct}} %",
+      "voz": "Röst",
+      "hint": {
+        "fillers": "Tar bort utfyllnadsord («eh», «öh») från det du dikterar.",
+        "autocorreccion": "Om du rättar dig högt («nej, förlåt») kommer texten redan rättad.",
+        "emoji": "Säg «emoji» och namnet, så infogas den. Via tabell, utan AI.",
+        "systemAudio": "Transkriberar det som spelas på datorn i stället för din mikrofon. Duger inte den aktiva modellen byter Abrax till en som gör det."
+      },
+      "sinModeloSistema": "Ladda ner en av dessa modeller för att spela in systemljud.",
+      "elegirModelo": "Välj modell",
+      "usaraSistema": "Inte vald. Om du slår på systemljud använder Abrax ”{{modelo}}”.",
+      "descargado": "nedladdad"
+    },
+    "modo": {
+      "grupo": {
+        "gesto": "Hur den startas",
+        "microfono": "Din mikrofon",
+        "texto": "Vad som händer med texten",
+        "pegado": "Var den skrivs",
+        "salida": "Var det hörs",
+        "fuente": "Var ljudet kommer från",
+        "apariencia": "Utseende"
+      },
+      "streaming": {
+        "que": "Transkriberar det som spelas på datorn —en lektion, en video, ett möte— i stället för din mikrofon.",
+        "resto": "Resten —autokorrigering, utfyllnadsord, ordlista, inklistring— är samma som i Lyssna: ställ in en gång, gäller båda."
+      },
+      "vox": {
+        "que": "Läser upp texten du har markerat, i vilket program som helst.",
+        "como": "Tryck på <k>{{atajo}}</k> så börjar den läsa; tryck igen för att tysta."
+      },
+      "escucha": {
+        "que": "Du talar och texten dyker upp där du skrev. Allt sker på din dator — inget skickas ut på nätet."
+      }
+    }
+  },
+  "soundPicker": {
+    "custom": "Anpassad",
+    "preview": "Lyssna på temat (start och stopp)"
+  },
+  "vox": {
+    "atajoHint": "För VOX, tryck <k>{{atajo}}</k> så läses den text du markerat i valfri app upp.",
+    "atajoSinBinding": "För VOX, ställ in ett kortkommando i Inställningar så läses den markerade texten upp."
   }
 }
