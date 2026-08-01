@@ -124,12 +124,12 @@ h2::before {
   max-width: 1400px;
   margin: 0 auto;
   /* aire generoso: cada sección respira como una pantalla propia */
-  padding: clamp(130px, 16vh, 190px) 28px 0;
+  padding: clamp(90px, 11vh, 130px) 28px 0;
 }
 /* la demo es corta: su aire más el de la sección siguiente sumaban un
    hueco doble — la sección que la sigue respira un poco menos */
 .seccion--demo + .seccion {
-  padding-top: clamp(80px, 10vh, 120px);
+  padding-top: clamp(60px, 8vh, 90px);
 }
 
 /* ── HERO ── */
@@ -481,23 +481,6 @@ h2::before {
 }
 .res {
   color: var(--cian);
-}
-/* muestras de paleta: fila de puntos + nombre — el pie de cada tira */
-.paleta-fila {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-top: 8px;
-  font-size: 9px;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: var(--suave);
-}
-.paleta-fila i {
-  width: 14px;
-  height: 14px;
-  border-radius: 50%;
-  display: inline-block;
 }
 
 /* ── listas ── */
@@ -1193,7 +1176,7 @@ h2::before {
   display: flex;
   gap: 52px;
   align-items: center;
-  margin-bottom: 104px;
+  margin-bottom: 56px;
 }
 .fila-funcion--invertida {
   flex-direction: row-reverse;
@@ -1205,7 +1188,7 @@ h2::before {
 .fila-funcion .visual {
   flex: 1 1 360px;
   min-width: 280px;
-  max-width: 620px; /* la ventana no domina la fila: texto y captura en balance */
+  max-width: 560px; /* la ventana no domina la fila: texto y captura en balance */
 }
 .titulo-fn {
   font-size: clamp(22px, 3vw, 36px);
@@ -1244,92 +1227,52 @@ h2::before {
   }
 }
 
-/* rejilla de formas: las 4 pieles de la misma app, tiles uniformes
-   (aspect-ratio + cover para que Retro, vertical, no rompa las filas) */
-.mini-grid {
-  display: grid;
-  /* dos fotos apiladas a lo ancho, como las tiras de paleta de al lado;
-     minmax(0,…) evita que el mínimo intrínseco de la captura reviente el card */
-  grid-template-columns: minmax(0, 1fr);
-  gap: 14px;
+/* los modos: dos fotos enteras, columnas proporcionadas a su aspecto
+   (1006/881 : 498/653) para que queden a la misma altura sin recortes */
+.modos {
+  margin: 0 0 48px;
 }
-.mini-grid figure {
+.modos-grid {
+  margin-top: 24px;
+  display: grid;
+  grid-template-columns: minmax(0, 1.497fr) minmax(0, 1fr);
+  gap: 18px;
+  align-items: start;
+}
+.modos-grid figure {
   margin: 0;
   min-width: 0;
 }
-.mini-grid img {
+.modos-grid img {
   display: block;
   width: 100%;
-  height: auto; /* anula el atributo height: sin esto el aspect-ratio no aplica */
-  aspect-ratio: 16 / 10;
-  object-fit: cover;
-  object-position: top;
+  height: auto;
   border: 1px solid var(--borde);
-  border-radius: 8px;
+  border-radius: 12px;
 }
-.mini-grid figcaption {
-  margin-top: 6px;
+.modos-grid figcaption {
+  margin-top: 8px;
   font-size: 9px;
   letter-spacing: 0.18em;
   text-transform: uppercase;
   color: var(--suave);
 }
-/* en pantallas anchas la foto crece hasta llenar la card (una sola foto
-   anclada abajo dejaba un vacío gigante frente a la card de paletas) */
-@media (min-width: 641px) {
-  .card > .mini-grid {
-    flex: 1 1 auto;
-    display: flex;
-    flex-direction: column;
+@media (max-width: 720px) {
+  .modos-grid {
+    grid-template-columns: minmax(0, 1fr);
   }
-  .mini-grid figure {
-    flex: 1;
-    min-height: 0;
-    display: flex;
-    flex-direction: column;
-  }
-  .mini-grid img {
-    flex: 1 1 0;
-    min-height: 0;
-    height: auto;
-    aspect-ratio: auto;
-    object-fit: cover;
-    object-position: left top;
-  }
-}
-/* tiras de paleta: la misma pantalla, tres pieles de color */
-.paleta-ej {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-.paleta-ej figure {
-  margin: 0;
-}
-.paleta-ej img {
-  display: block;
-  width: 100%;
-  height: auto; /* anula el atributo height — si no, la tira sale estirada */
-  border: 1px solid var(--borde);
-  border-radius: 8px;
 }
 /* cards con pieza visual (rejilla, tiras o ejemplo): la card es columna y
    la pieza se ancla al borde inferior — así toda la fila queda a ras aunque
    los textos midan distinto. El margen del párrafo es el respiro mínimo
    cuando la card es la más alta y el `auto` colapsa a cero. */
-.card:has(> .mini-grid),
-.card:has(> .paleta-ej),
 .card:has(> .ejemplo) {
   display: flex;
   flex-direction: column;
 }
-.card:has(> .mini-grid) > p,
-.card:has(> .paleta-ej) > p,
 .card:has(> .ejemplo) > p {
   margin-bottom: 12px;
 }
-.card > .mini-grid,
-.card > .paleta-ej,
 .card > p + .ejemplo {
   margin-top: auto;
 }
@@ -1460,10 +1403,6 @@ h2::before {
   }
   .card {
     padding: 18px;
-  }
-  .mini-grid,
-  .paleta-ej {
-    gap: 12px;
   }
   .tabla-nota {
     margin-top: 10px;
