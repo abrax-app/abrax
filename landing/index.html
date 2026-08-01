@@ -320,8 +320,8 @@
 
       <div class="cards">
         <div class="card">
-          <div class="titulo">2 formas principales</div>
-          <p>Quiet y Retro. Y dos más en Ajustes: Clásico y Karting.</p>
+          <div class="titulo">Quiet</div>
+          <p>Y tenemos un modo para los más vintage.</p>
           <div class="mini-grid">
             <figure>
               <img
@@ -331,17 +331,6 @@
                 height="881"
                 loading="lazy"
               />
-              <figcaption>Quiet</figcaption>
-            </figure>
-            <figure>
-              <img
-                src="assets/capturas/shell-retro.webp"
-                alt="Forma Retro: reproductor compacto con la esfera y el reloj de dictado"
-                width="498"
-                height="653"
-                loading="lazy"
-              />
-              <figcaption>Retro</figcaption>
             </figure>
           </div>
         </div>
@@ -522,10 +511,9 @@
           </ul>
           <div class="limite-titulo">Límites honestos</div>
           <p>
-            macOS bloquea la app la primera vez, porque no está firmada:
-            <a href="#avisos">te explicamos abajo qué hacer</a>. Pide conceder
-            Accesibilidad y Micrófono. El instalador que publicamos es solo para
-            Apple Silicon; en un Mac Intel hay que compilar desde el código.
+            macOS la bloquea la primera vez (no está firmada): se abre desde
+            Ajustes → Privacidad y seguridad. El instalador es solo Apple
+            Silicon; en Intel se compila desde el código.
           </p>
         </div>
         <div class="card card--compat">
@@ -538,9 +526,8 @@
           </ul>
           <div class="limite-titulo">Límites honestos</div>
           <p>
-            Windows muestra dos avisos antes de instalar, porque el instalador
-            no está firmado:
-            <a href="#avisos">te explicamos abajo qué hacer</a>.
+            Windows muestra dos avisos (instalador sin firmar): Más información
+            → Ejecutar de todas formas.
           </p>
         </div>
         <!-- Linux queda FUERA de esta entrega: el codigo compila y hay
@@ -612,69 +599,6 @@
       </p>
     </section>
 
-    <!-- ═══════════ MODELOS ═══════════ -->
-    <section class="seccion" id="modelos" aria-labelledby="t-modelos">
-      <h2 id="t-modelos">Los modelos</h2>
-      <p class="sub-seccion">
-        Cinco en el catálogo, con sus números reales. Se descargan una vez y
-        transcriben sin conexión.
-      </p>
-      <div class="tabla-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th scope="col">Modelo</th>
-              <th scope="col">Tamaño</th>
-              <th scope="col">Idiomas</th>
-              <th scope="col">Precisión</th>
-              <th scope="col">Velocidad</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <th scope="row">Cohere Transcribe — el recomendado</th>
-              <td>2.0B</td>
-              <td>14</td>
-              <td>92</td>
-              <td>63</td>
-            </tr>
-            <tr>
-              <th scope="row">Whisper Large v3 Turbo</th>
-              <td>809M</td>
-              <td>100</td>
-              <td>87</td>
-              <td>35</td>
-            </tr>
-            <tr>
-              <th scope="row">Whisper Large v3</th>
-              <td>1.5B</td>
-              <td>100</td>
-              <td>89</td>
-              <td>23</td>
-            </tr>
-            <tr>
-              <th scope="row">Nemotron Streaming 3.5</th>
-              <td>0.6B</td>
-              <td>28</td>
-              <td>82</td>
-              <td>84</td>
-            </tr>
-            <tr>
-              <th scope="row">Canary 180M Flash</th>
-              <td>180M</td>
-              <td>4</td>
-              <td>88</td>
-              <td>98</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-      <p class="tabla-nota">
-        Puntajes del catálogo, de 0 a 100. Los cinco entienden español; solo
-        Nemotron escribe mientras hablas, y Whisper y Canary traducen al inglés.
-      </p>
-    </section>
-
     <!-- ═══════════ FAQ ═══════════ -->
     <section class="seccion" id="faq" aria-labelledby="t-faq">
       <h2 id="t-faq">Preguntas</h2>
@@ -726,82 +650,6 @@
     </section>
 
     <!-- ═══════════ CTA FINAL ═══════════ -->
-    <!-- ═══════════ AVISOS DE INSTALACIÓN ═══════════
-         Windows y macOS advierten antes de dejar instalar ABRAX, porque no
-         está firmado con un certificado comercial. Preferimos decirlo aquí,
-         con los botones exactos, a que alguien vea un aviso de seguridad sin
-         contexto y cierre la ventana. -->
-    <section class="seccion" id="avisos" aria-labelledby="t-avisos">
-      <h2 id="t-avisos">Antes de instalar</h2>
-      <p class="sub-seccion">
-        Tu sistema va a advertirte; te contamos exactamente qué vas a ver.
-      </p>
-      <p>
-        ABRAX no está firmado: cuesta cientos de dólares al año y no haría el
-        programa más seguro. Tu sistema avisará que no conoce al editor — es
-        cierto, y por eso el código está entero a la vista.
-      </p>
-
-      <div class="cards">
-        <div class="card card--compat">
-          <span class="chip chip--on" style="margin-bottom: 12px">Windows</span>
-          <p>
-            Primero una pantalla azul de SmartScreen diciendo que protegió tu
-            equipo. Después, una ventana de permisos donde el editor aparece
-            como desconocido y se ve la ruta completa del archivo.
-          </p>
-          <div class="limite-titulo">Qué hacer</div>
-          <ul class="lista">
-            <li>En la pantalla azul: <strong>Más información</strong></li>
-            <li>Luego: <strong>Ejecutar de todas formas</strong></li>
-            <li>En la ventana de permisos: <strong>Sí</strong></li>
-          </ul>
-          <p style="font-size: 13px; color: var(--suave-lectura)">
-            SmartScreen no dice que el archivo sea peligroso: dice que es nuevo
-            y que poca gente lo ha descargado todavía.
-          </p>
-        </div>
-
-        <div class="card card--compat">
-          <span class="chip chip--on" style="margin-bottom: 12px">macOS</span>
-          <p>
-            La primera vez, macOS bloquea la app y te ofrece moverla a la
-            papelera. <strong>Ese aviso no trae ningún botón para abrir</strong>
-            — el permiso se da en otro sitio.
-          </p>
-          <div class="limite-titulo">Qué hacer</div>
-          <ul class="lista">
-            <li>Arrastra ABRAX a Aplicaciones y ábrela desde ahí</li>
-            <li>Cuando salga el aviso, ciérralo</li>
-            <li>Menú Apple → Ajustes del Sistema → Privacidad y seguridad</li>
-            <li>Abajo del todo: <strong>Abrir de todas formas</strong></li>
-          </ul>
-          <p style="font-size: 13px; color: var(--suave-lectura)">
-            El clic derecho → Abrir ya no sirve: Apple lo quitó en macOS 15. Y
-            ese botón caduca en cosa de una hora — si tardas, vuelve a abrir la
-            app y repite.
-          </p>
-        </div>
-
-        <div class="card card--compat">
-          <span class="chip" style="margin-bottom: 12px">Si se atasca</span>
-          <p>
-            Si macOS dice que ABRAX <em>está dañado</em>, no lo está: es la
-            marca de cuarentena que pone el navegador al descargar. Se quita con
-            una línea en la Terminal.
-          </p>
-          <div class="ejemplo">
-            <span class="dolar">$</span> xattr -dr com.apple.quarantine
-            /Applications/Abrax.app
-          </div>
-          <p style="font-size: 13px; color: var(--suave-lectura)">
-            En Windows, si el instalador no arranca, abre las Propiedades del
-            archivo y marca <strong>Desbloquear</strong> abajo del todo.
-          </p>
-        </div>
-      </div>
-    </section>
-
     <section
       class="seccion cta-final"
       id="descarga"
@@ -855,12 +703,7 @@
           <span class="dolar">$</span> git clone
           https://github.com/abrax-app/abrax
         </div>
-        <p>
-          No hace falta creernos: el código está entero y puedes compilar tu
-          copia. Los binarios no van firmados —
-          <a href="#avisos">por eso tu sistema avisa</a> — y la garantía es esa:
-          poder mirar.
-        </p>
+        <p>La garantía: el código entero, para poder mirar.</p>
       </div>
     </section>
 
