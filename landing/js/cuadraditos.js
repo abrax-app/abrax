@@ -110,19 +110,33 @@
 
     const start = performance.now();
     let raf;
+    let fin = false;
+    /* la onda TERMINA aunque el navegador estrangule el rAF (pestaña de
+       fondo, equipos lentos): sin este candado la retícula quedaba
+       congelada a medio camino tapando la página */
+    function terminar() {
+      if (fin) return;
+      fin = true;
+      cancelAnimationFrame(raf);
+      try {
+        ctx.clearRect(0, 0, W, H);
+      } catch (e) {}
+      cv.remove();
+      if (opts.alFinal) opts.alFinal();
+    }
     function draw(now) {
+      if (fin) return;
       const t = now - start;
       pintar(t);
       if (t < SPREAD + DUR + 80) {
         raf = requestAnimationFrame(draw);
       } else {
-        ctx.clearRect(0, 0, W, H);
-        cv.remove();
-        if (opts.alFinal) opts.alFinal();
+        terminar();
       }
     }
     raf = requestAnimationFrame(draw);
-    return () => cancelAnimationFrame(raf);
+    setTimeout(terminar, SPREAD + DUR + 700);
+    return terminar;
   }
 
   window.CUADRADITOS = { revelar, sampleGrad };

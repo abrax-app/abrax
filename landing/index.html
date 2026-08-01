@@ -848,7 +848,12 @@
           coreoHero();
         }
         function transformar() {
-          if (reduced || typeof CUADRADITOS === "undefined") {
+          /* en táctiles y equipos de pocos núcleos la retícula se arrastra:
+             ahí la entrada es un fundido simple, no una animación fea */
+          const equipoJusto =
+            window.matchMedia("(pointer: coarse)").matches ||
+            (navigator.hardwareConcurrency || 8) <= 4;
+          if (reduced || equipoJusto || typeof CUADRADITOS === "undefined") {
             cortina.style.transition = "opacity 450ms ease";
             cortina.style.opacity = "0";
             cortina.style.pointerEvents = "none";
